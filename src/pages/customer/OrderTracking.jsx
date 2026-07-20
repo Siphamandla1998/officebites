@@ -5,14 +5,27 @@ import StatusBadge from "../../components/ui/StatusBadge";
 import { useAsync } from "../../hooks/useAsync";
 import { orderService } from "../../services/orderService";
 import { formatCurrency, formatDate } from "../../utils/formatters";
-import { ORDER_STATUS, ORDER_STATUS_LABELS } from "../../utils/constants";
+import { ORDER_STATUS } from "../../utils/constants";
 
 const TIMELINE = [
   ORDER_STATUS.CONFIRMED,
+  ORDER_STATUS.ACCEPTED,
   ORDER_STATUS.PREPARING,
   ORDER_STATUS.READY,
+  ORDER_STATUS.COLLECTED,
   ORDER_STATUS.COMPLETED,
 ];
+
+// Short labels for the compact 6-step mobile timeline (StatusBadge above it
+// already shows the full label).
+const SHORT_LABELS = {
+  [ORDER_STATUS.CONFIRMED]: "Confirmed",
+  [ORDER_STATUS.ACCEPTED]: "Accepted",
+  [ORDER_STATUS.PREPARING]: "Preparing",
+  [ORDER_STATUS.READY]: "Ready",
+  [ORDER_STATUS.COLLECTED]: "Collected",
+  [ORDER_STATUS.COMPLETED]: "Done",
+};
 
 function SubOrderTimeline({ subOrder }) {
   const currentIndex = TIMELINE.indexOf(subOrder.status);
@@ -40,8 +53,8 @@ function SubOrderTimeline({ subOrder }) {
       </div>
       <div className="flex justify-between mt-2">
         {TIMELINE.map((step) => (
-          <span key={step} className="text-[10px] text-ink-muted w-14 text-center first:text-left last:text-right">
-            {ORDER_STATUS_LABELS[step]}
+          <span key={step} className="text-[9px] text-ink-muted w-10 text-center first:text-left last:text-right">
+            {SHORT_LABELS[step]}
           </span>
         ))}
       </div>

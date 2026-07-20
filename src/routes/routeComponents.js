@@ -30,11 +30,27 @@ export const VendorMenu = lazy(() => import("../pages/vendor/VendorMenu"));
 export const VendorRevenue = lazy(() => import("../pages/vendor/VendorRevenue"));
 export const VendorInsights = lazy(() => import("../pages/vendor/VendorInsights"));
 export const VendorChat = lazy(() => import("../pages/vendor/VendorChat"));
+export const VendorNotifications = lazy(() => import("../pages/vendor/VendorNotifications"));
+export const VendorSettings = lazy(() => import("../pages/vendor/VendorSettings"));
 
 export const AdminOverview = lazy(() => import("../pages/admin/AdminOverview"));
 export const AdminVendors = lazy(() => import("../pages/admin/AdminVendors"));
 export const AdminCustomers = lazy(() => import("../pages/admin/AdminCustomers"));
 export const AdminAnalytics = lazy(() => import("../pages/admin/AdminAnalytics"));
 export const AdminReports = lazy(() => import("../pages/admin/AdminReports"));
+
+export const HelpHome = lazy(() => import("../pages/help/HelpHome"));
+export const FAQPage = lazy(() => import("../pages/help/FAQPage"));
+export const ContactSupport = lazy(() => import("../pages/help/ContactSupport"));
+export const ReportProblem = lazy(() => import("../pages/help/ReportProblem"));
+export const SupportTickets = lazy(() => import("../pages/help/SupportTickets"));
+export const LiveChatSupport = lazy(() => import("../pages/help/LiveChatSupport"));
+export const Guides = lazy(() => import("../pages/help/Guides"));
+export const GuideDetail = lazy(() => import("../pages/help/GuideDetail"));
+export const Feedback = lazy(() => import("../pages/help/Feedback"));
+export const Terms = lazy(() => import("../pages/help/Terms"));
+export const Privacy = lazy(() => import("../pages/help/Privacy"));
+export const RefundPolicy = lazy(() => import("../pages/help/RefundPolicy"));
+export const BusinessHours = lazy(() => import("../pages/help/BusinessHours"));
 
 export const NotFound = lazy(() => import("../pages/shared/NotFound"));

@@ -9,11 +9,11 @@ export const users = [
     role: ROLES.CUSTOMER,
     avatar: "https://i.pravatar.cc/150?img=47",
     building: "Alice Lane Office Tower",
-    favouriteMealIds: ["m-1", "m-7"],
+    favouriteMealIds: ["m-1", "m-19"],
   },
   {
     id: "u-2",
-    name: "Sipho Mokoena",
+    name: "Sne Mokoena",
     email: "vendor@officebites.co.za",
     role: ROLES.VENDOR,
     avatar: "https://i.pravatar.cc/150?img=12",

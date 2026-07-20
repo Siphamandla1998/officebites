@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
-import { FiGrid, FiClock, FiCheckCircle, FiBarChart2, FiMenu, FiPieChart, FiMessageSquare } from "react-icons/fi";
+import { FiGrid, FiClock, FiCheckCircle, FiBarChart2, FiMenu, FiPieChart, FiMessageSquare, FiBell, FiSettings, FiHelpCircle } from "react-icons/fi";
 import Sidebar from "../components/layout/Sidebar";
 
 const TABS = [
@@ -10,6 +10,9 @@ const TABS = [
   { to: "/vendor/revenue", icon: FiBarChart2, label: "Revenue" },
   { to: "/vendor/insights", icon: FiPieChart, label: "Popular meals" },
   { to: "/vendor/chat", icon: FiMessageSquare, label: "Messages" },
+  { to: "/vendor/notifications", icon: FiBell, label: "Notifications" },
+  { to: "/vendor/settings", icon: FiSettings, label: "Settings" },
+  { to: "/help", icon: FiHelpCircle, label: "Help & Support" },
 ];
 
 export default function VendorLayout() {

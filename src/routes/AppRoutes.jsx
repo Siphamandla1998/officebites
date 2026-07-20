@@ -37,11 +37,26 @@ import {
   VendorRevenue,
   VendorInsights,
   VendorChat,
+  VendorNotifications,
+  VendorSettings,
   AdminOverview,
   AdminVendors,
   AdminCustomers,
   AdminAnalytics,
   AdminReports,
+  HelpHome,
+  FAQPage,
+  ContactSupport,
+  ReportProblem,
+  SupportTickets,
+  LiveChatSupport,
+  Guides,
+  GuideDetail,
+  Feedback,
+  Terms,
+  Privacy,
+  RefundPolicy,
+  BusinessHours,
   NotFound,
 } from "./routeComponents";
 
@@ -127,6 +142,8 @@ export default function AppRoutes() {
           <Route path="revenue" element={<VendorRevenue />} />
           <Route path="insights" element={<VendorInsights />} />
           <Route path="chat" element={<VendorChat />} />
+          <Route path="notifications" element={<VendorNotifications />} />
+          <Route path="settings" element={<VendorSettings />} />
         </Route>
 
         {/* Admin dashboard */}
@@ -143,6 +160,29 @@ export default function AppRoutes() {
           <Route path="customers" element={<AdminCustomers />} />
           <Route path="analytics" element={<AdminAnalytics />} />
           <Route path="reports" element={<AdminReports />} />
+        </Route>
+
+        {/* Help & Support — available to any signed-in customer or vendor */}
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={[ROLES.CUSTOMER, ROLES.VENDOR]}>
+              <PublicLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="/help" element={<HelpHome />} />
+          <Route path="/help/faq" element={<FAQPage />} />
+          <Route path="/help/contact" element={<ContactSupport />} />
+          <Route path="/help/report" element={<ReportProblem />} />
+          <Route path="/help/tickets" element={<SupportTickets />} />
+          <Route path="/help/chat" element={<LiveChatSupport />} />
+          <Route path="/help/guides" element={<Guides />} />
+          <Route path="/help/guides/:id" element={<GuideDetail />} />
+          <Route path="/help/feedback" element={<Feedback />} />
+          <Route path="/help/terms" element={<Terms />} />
+          <Route path="/help/privacy" element={<Privacy />} />
+          <Route path="/help/refunds" element={<RefundPolicy />} />
+          <Route path="/help/hours" element={<BusinessHours />} />
         </Route>
 
         <Route path="/404" element={<NotFound />} />

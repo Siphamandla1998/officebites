@@ -1,10 +1,11 @@
-import { FiDollarSign, FiPercent, FiTrendingUp } from "react-icons/fi";
+import { FiDollarSign, FiPercent, FiTrendingUp, FiCalendar } from "react-icons/fi";
 import StatCard from "../../components/ui/StatCard";
 import BarChart from "../../components/charts/BarChart";
 import Table from "../../components/ui/Table";
 import StatusBadge from "../../components/ui/StatusBadge";
 import { useAsync } from "../../hooks/useAsync";
 import { paymentService } from "../../services/paymentService";
+import { vendorService } from "../../services/vendorService";
 import { useAuth } from "../../context/AuthContext";
 import { vendorRevenue7d } from "../../mock/analytics";
 import { formatCurrency, formatDate } from "../../utils/formatters";
@@ -12,9 +13,13 @@ import { formatCurrency, formatDate } from "../../utils/formatters";
 export default function VendorRevenue() {
   const { user } = useAuth();
   const { data: payouts, loading } = useAsync(() => paymentService.getVendorPayouts(user.vendorId), [user.vendorId]);
+  const { data: stats, loading: statsLoading } = useAsync(
+    () => vendorService.getDashboardStats(user.vendorId),
+    [user.vendorId]
+  );
 
-  const gross = vendorRevenue7d.reduce((s, d) => s + d.revenue, 0);
-  const { commission, vendorPayout } = paymentService.calculateCommission(gross);
+  const monthlyGross = stats?.monthlyRevenue || 0;
+  const { commission, vendorPayout } = paymentService.calculateCommission(monthlyGross);
 
   const columns = [
     { key: "date", header: "Date", render: (p) => formatDate(p.date) },
@@ -31,10 +36,20 @@ export default function VendorRevenue() {
         <p className="text-sm text-ink-muted mt-0.5">OfficeBites takes a 10% commission per completed order.</p>
       </div>
 
+      {statsLoading ? (
+        <div className="skeleton h-24" />
+      ) : (
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
+          <StatCard label="Today's revenue" value={formatCurrency(stats.todaysRevenue)} icon={FiCalendar} />
+          <StatCard label="Weekly revenue" value={formatCurrency(stats.weeklyRevenue)} icon={FiTrendingUp} />
+          <StatCard label="Monthly revenue" value={formatCurrency(stats.monthlyRevenue)} icon={FiDollarSign} />
+          <StatCard label="Average order value" value={formatCurrency(stats.averageOrderValue)} icon={FiTrendingUp} />
+        </div>
+      )}
+
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-3.5">
-        <StatCard label="Gross (7 days)" value={formatCurrency(gross)} icon={FiTrendingUp} />
-        <StatCard label="Commission" value={formatCurrency(commission)} icon={FiPercent} />
-        <StatCard label="Net payout" value={formatCurrency(vendorPayout)} icon={FiDollarSign} trend="Paid weekly" trendUp />
+        <StatCard label="Commission paid (month)" value={formatCurrency(commission)} icon={FiPercent} />
+        <StatCard label="Net earnings (month)" value={formatCurrency(vendorPayout)} icon={FiDollarSign} trend="Paid weekly" trendUp />
       </div>
 
       <div className="card p-5">

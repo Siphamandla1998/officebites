@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { FiUploadCloud, FiCheckCircle, FiImage } from "react-icons/fi";
+import { FiUploadCloud, FiCheckCircle } from "react-icons/fi";
 
 export default function FileUpload({ onFileSelect, accept = "image/*", label = "Upload proof of payment" }) {
   const inputRef = useRef(null);

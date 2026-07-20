@@ -20,6 +20,10 @@ export default function ChatConversation() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [conversation?.messages?.length]);
 
+  useEffect(() => {
+    if (conversation) chatService.markConversationRead(id, myRole);
+  }, [conversation, id, myRole]);
+
   const send = async () => {
     if (!text.trim()) return;
     const message = await chatService.sendMessage(id, { sender: myRole, text });

@@ -22,7 +22,7 @@ export const paymentService = {
     return calcCommission(amount);
   },
 
-  async getVendorPayouts(vendorId) {
+  async getVendorPayouts(_vendorId) {
     // Mock payout ledger for the vendor revenue dashboard.
     return mockResolve([
       { id: "p-1", date: "2026-07-11", gross: 890, commission: 89, net: 801, status: "paid" },

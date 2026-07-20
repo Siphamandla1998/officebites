@@ -61,7 +61,11 @@ export default function Home() {
         )}
 
         <div className="mt-4">
-          <SearchBar value={query} onChange={setQuery} onFocus={() => {}} />
+          <SearchBar
+            value={query}
+            onChange={setQuery}
+            onKeyDown={(e) => e.key === "Enter" && goToSearch()}
+          />
         </div>
       </div>
 
