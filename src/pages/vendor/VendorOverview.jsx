@@ -15,7 +15,6 @@ import { useAsync } from "../../hooks/useAsync";
 import { orderService } from "../../services/orderService";
 import { vendorService } from "../../services/vendorService";
 import { useAuth } from "../../context/AuthContext";
-import { vendorRevenue7d } from "../../mock/analytics";
 import { formatCurrency } from "../../utils/formatters";
 
 export default function VendorOverview() {
