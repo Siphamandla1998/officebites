@@ -8,7 +8,6 @@ import EmptyState from "../../components/ui/EmptyState";
 import { useAsync } from "../../hooks/useAsync";
 import { useDebounce } from "../../hooks/useDebounce";
 import { vendorService } from "../../services/vendorService";
-import { categories } from "../../mock/categories";
 import { FiSearch } from "react-icons/fi";
 
 export default function VendorListing() {
