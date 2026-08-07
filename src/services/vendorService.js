@@ -30,6 +30,38 @@ const daysAgo = (n) => {
 
 };
 
+const uploadMealImage = async (vendorId, file) => {
+
+  if (!file) return null;
+
+
+  if (!file.type.startsWith("image/")) {
+    throw new Error(
+      "Only image files are allowed"
+    );
+  }
+
+
+  if (file.size > 5 * 1024 * 1024) {
+    throw new Error(
+      "Image must be smaller than 5MB"
+    );
+  }
+
+
+  const safeName = file.name
+    .replace(/\s+/g, "-")
+    .replace(/[^a-zA-Z0-9.-]/g, "");
+
+
+  return await uploadToBucket(
+    BUCKETS.MEAL_IMAGES,
+    `${vendorId}/${Date.now()}-${safeName}`,
+    file
+  );
+
+};
+
 
 
 export const vendorService = {
@@ -262,9 +294,6 @@ export const vendorService = {
   },
 
 
-
-
-
   // ===========================
   // ADMIN ACTIONS
   // ===========================
@@ -359,58 +388,6 @@ export const vendorService = {
   },
 
 
-
-  // ===========================
-// MENU CRUD
-// ===========================
-
-
-
-const uploadMealImage = async(vendorId,file)=>{
-
-if(!file) return null;
-
-
-if(!file.type.startsWith("image/")){
-throw new Error(
-"Only image files are allowed"
-);
-}
-
-
-
-if(file.size > 5 * 1024 * 1024){
-throw new Error(
-"Image must be smaller than 5MB"
-);
-}
-
-
-
-const safeName =
-file.name
-.replace(/\s+/g,"-")
-.replace(/[^a-zA-Z0-9.-]/g,"");
-
-
-
-return await uploadToBucket(
-
-BUCKETS.MEAL_IMAGES,
-
-`${vendorId}/${Date.now()}-${safeName}`,
-
-file
-
-);
-
-
-};
-
-
-
-
-
 async addMeal(vendorId, meal){
 
 let image =
@@ -427,7 +404,6 @@ meal.imageFile
 );
 
 }
-
 
 
 const {
