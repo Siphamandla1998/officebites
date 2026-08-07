@@ -50,7 +50,21 @@ export const foodService = {
 
     let query = supabase
       .from("meals")
-      .select("*, vendors(name)");
+      .select(`
+        *,
+        vendors(
+          name,
+          status
+        )
+      `)
+      .eq(
+        "available",
+        true
+      )
+      .eq(
+        "vendors.status",
+        "approved"
+      );
 
 
 
@@ -92,61 +106,14 @@ export const foodService = {
 
 
     if (error) {
-      throw {
-        message: error.message,
-      };
+      throw new Error(error.message);
     }
 
 
 
-    let meals = (data || []).map(mapMeal);
-
-
-
-    // Include vendor name search
-    if (search) {
-
-      const searchText =
-        search.toLowerCase();
-
-
-
-      const existingIds =
-        new Set(
-          meals.map(
-            (meal) => meal.id
-          )
-        );
-
-
-
-      const {
-        data: vendorMeals,
-      } = await supabase
-        .from("meals")
-        .select("*, vendors(name)");
-
-
-
-      (vendorMeals || [])
-        .map(mapMeal)
-        .filter(
-          (meal) =>
-            meal.vendorName
-              ?.toLowerCase()
-              .includes(searchText)
-            &&
-            !existingIds.has(meal.id)
-        )
-        .forEach(
-          (meal) => meals.push(meal)
-        );
-
-    }
-
-
-
-    return meals;
+    return (
+      data || []
+    ).map(mapMeal);
 
   },
 
@@ -160,24 +127,31 @@ export const foodService = {
       error,
     } = await supabase
       .from("meals")
-      .select("*, vendors(name)")
-      .eq("id", id)
+      .select(`
+        *,
+        vendors(
+          name,
+          status
+        )
+      `)
+      .eq(
+        "id",
+        id
+      )
       .maybeSingle();
 
 
 
     if (error) {
-      throw {
-        message:error.message,
-      };
+      throw new Error(error.message);
     }
 
 
 
     if (!data) {
-      throw {
-        message:"Meal not found",
-      };
+      throw new Error(
+        "Meal not found"
+      );
     }
 
 
@@ -190,48 +164,42 @@ export const foodService = {
 
   async getPopularMeals(limit = 6) {
 
-  const {
-    data,
-    error,
-  } = await supabase
-    .from("meals")
-    .select(`
-      *,
-      vendors!inner(
-        name,
-        status
+
+    const {
+      data,
+      error,
+    } = await supabase
+      .from("meals")
+      .select(`
+        *,
+        vendors!inner(
+          name,
+          status
+        )
+      `)
+      .eq(
+        "vendors.status",
+        "approved"
       )
-    `)
-    .eq(
-      "vendors.status",
-      "approved"
-    )
-    .eq(
-      "available",
-      true
-    )
-    .order(
-      "rating",
-      {
-        ascending:false,
-      }
-    )
-    .limit(limit);
+      .eq(
+        "available",
+        true
+      )
+      .limit(limit);
 
 
 
-  if(error){
-
-    throw {
-      message:error.message,
-    };
-
-  }
+    if (error) {
+      throw new Error(error.message);
+    }
 
 
 
-  return (
-    data || []
-  ).map(mapMeal);
+    return (
+      data || []
+    ).map(mapMeal);
 
-},
+  },
+
+
+};
