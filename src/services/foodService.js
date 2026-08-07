@@ -1,6 +1,6 @@
 import { supabase } from "./api/supabaseClient";
 import { mapMeal } from "./api/mappers";
-import { categories } from "../mock/categories";
+
 
 // Categories are a small, slow-changing taxonomy (6 fixed rows) — kept as a
 // local constant rather than a table. Move to a `categories` table only if
