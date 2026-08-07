@@ -5,40 +5,38 @@ export default function LineChart({
   height = 140,
   stroke = "#B8925A",
 }) {
-  const width = 320;
+  const safeData = Array.isArray(data) ? data : [];
 
-  // Prevent null/undefined crashes
-  const chartData = Array.isArray(data) ? data : [];
-
-  // Empty state
-  if (chartData.length === 0) {
+  if (safeData.length === 0) {
     return (
-      <div
-        className="flex items-center justify-center text-sm text-gray-400"
-        style={{ height }}
-      >
-        No data available
+      <div className="h-36 flex items-center justify-center text-sm text-ink-muted">
+        No data available yet
       </div>
     );
   }
 
-  const values = chartData.map((d) => Number(d[yKey]) || 0);
+  const width = 320;
+
+  const values = safeData.map((d) => Number(d[yKey]) || 0);
 
   const max = Math.max(...values, 1);
   const min = Math.min(...values, 0);
+
   const range = max - min || 1;
 
-  const stepX = width / (chartData.length - 1 || 1);
+  const stepX = width / (safeData.length - 1 || 1);
 
-  const points = chartData.map((d, i) => {
+  const points = safeData.map((d, i) => {
     const x = i * stepX;
     const y =
       height -
-      ((Number(d[yKey]) - min) / range) * (height - 16) -
+      ((Number(d[yKey]) - min) / range) *
+        (height - 16) -
       8;
 
     return `${x},${y}`;
   });
+
 
   const areaPath = `M0,${height} L${points.join(
     " L"
@@ -46,28 +44,26 @@ export default function LineChart({
 
   const linePath = `M${points.join(" L")}`;
 
+
   return (
     <svg
       viewBox={`0 0 ${width} ${height}`}
       className="w-full"
       style={{ minWidth: 280 }}
     >
-      {/* Area */}
       <path
         d={areaPath}
-        fill={`${stroke}22`}
+        fill="rgba(184,146,90,0.12)"
       />
 
-      {/* Line */}
       <path
         d={linePath}
         fill="none"
         stroke={stroke}
-        strokeWidth="3"
+        strokeWidth="2"
       />
 
-      {/* Points */}
-      {chartData.map((d, i) => {
+      {safeData.map((d, i) => {
         const [x, y] = points[i].split(",");
 
         return (
@@ -75,20 +71,19 @@ export default function LineChart({
             key={i}
             cx={x}
             cy={y}
-            r="4"
+            r="3"
             fill={stroke}
           />
         );
       })}
 
-      {/* Labels */}
-      {chartData.map((d, i) => (
+      {safeData.map((d, i) => (
         <text
           key={i}
           x={i * stepX}
           y={height - 2}
+          fontSize="9"
           textAnchor="middle"
-          fontSize="10"
         >
           {d[xKey]}
         </text>
