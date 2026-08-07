@@ -3,12 +3,32 @@ import { mapMeal } from "./api/mappers";
 
 
 // Fixed menu categories
-// Keep local until admin management is required.
+// Move to Supabase later when admin management is required.
 const categories = [
-  { name: "Meals" },
-  { name: "Drinks" },
-  { name: "Snacks" },
-  { name: "Desserts" },
+  {
+    id: "meals",
+    name: "Meals",
+    emoji: "🍱",
+    color: "#F5E6D3",
+  },
+  {
+    id: "drinks",
+    name: "Drinks",
+    emoji: "🥤",
+    color: "#E8DCC8",
+  },
+  {
+    id: "snacks",
+    name: "Snacks",
+    emoji: "🍪",
+    color: "#EFE3D5",
+  },
+  {
+    id: "desserts",
+    name: "Desserts",
+    emoji: "🍰",
+    color: "#F3D8D8",
+  },
 ];
 
 
@@ -16,9 +36,7 @@ export const foodService = {
 
 
   async getCategories() {
-
     return categories;
-
   },
 
 
@@ -37,23 +55,19 @@ export const foodService = {
 
 
     if (vendorId) {
-
       query = query.eq(
         "vendor_id",
         vendorId
       );
-
     }
 
 
 
     if (category) {
-
       query = query.eq(
         "category",
         category
       );
-
     }
 
 
@@ -78,11 +92,9 @@ export const foodService = {
 
 
     if (error) {
-
       throw {
         message: error.message,
       };
-
     }
 
 
@@ -91,11 +103,8 @@ export const foodService = {
 
 
 
-
-    // Search vendor names client-side
-    // because PostgREST cannot filter joined tables
+    // Include vendor name search
     if (search) {
-
 
       const searchText =
         search.toLowerCase();
@@ -130,10 +139,8 @@ export const foodService = {
             !existingIds.has(meal.id)
         )
         .forEach(
-          (meal) =>
-            meals.push(meal)
+          (meal) => meals.push(meal)
         );
-
 
     }
 
@@ -142,8 +149,6 @@ export const foodService = {
     return meals;
 
   },
-
-
 
 
 
@@ -162,21 +167,17 @@ export const foodService = {
 
 
     if (error) {
-
       throw {
-        message: error.message,
+        message:error.message,
       };
-
     }
 
 
 
     if (!data) {
-
       throw {
-        message: "Meal not found",
+        message:"Meal not found",
       };
-
     }
 
 
@@ -184,9 +185,6 @@ export const foodService = {
     return mapMeal(data);
 
   },
-
-
-
 
 
 
@@ -199,22 +197,24 @@ export const foodService = {
     } = await supabase
       .from("meals")
       .select("*, vendors(name)")
+      .eq(
+        "available",
+        true
+      )
       .order(
         "rating",
         {
-          ascending: false,
+          ascending:false,
         }
       )
       .limit(limit);
 
 
 
-    if (error) {
-
+    if(error){
       throw {
-        message: error.message,
+        message:error.message,
       };
-
     }
 
 
@@ -222,7 +222,6 @@ export const foodService = {
     return (
       data || []
     ).map(mapMeal);
-
 
   },
 
