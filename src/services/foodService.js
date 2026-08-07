@@ -190,40 +190,48 @@ export const foodService = {
 
   async getPopularMeals(limit = 6) {
 
-
-    const {
-      data,
-      error,
-    } = await supabase
-      .from("meals")
-      .select("*, vendors(name)")
-      .eq(
-        "available",
-        true
+  const {
+    data,
+    error,
+  } = await supabase
+    .from("meals")
+    .select(`
+      *,
+      vendors!inner(
+        name,
+        status
       )
-      .order(
-        "rating",
-        {
-          ascending:false,
-        }
-      )
-      .limit(limit);
+    `)
+    .eq(
+      "vendors.status",
+      "approved"
+    )
+    .eq(
+      "available",
+      true
+    )
+    .order(
+      "rating",
+      {
+        ascending:false,
+      }
+    )
+    .limit(limit);
 
 
 
-    if(error){
-      throw {
-        message:error.message,
-      };
-    }
+  if(error){
+
+    throw {
+      message:error.message,
+    };
+
+  }
 
 
 
-    return (
-      data || []
-    ).map(mapMeal);
+  return (
+    data || []
+  ).map(mapMeal);
 
-  },
-
-
-};
+},
