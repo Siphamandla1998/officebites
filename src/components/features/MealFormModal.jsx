@@ -3,6 +3,7 @@ import Modal from "../ui/Modal";
 import TextField from "../forms/TextField";
 import TextAreaField from "../forms/TextAreaField";
 import SelectField from "../forms/SelectField";
+import FileUpload from "../ui/FileUpload";
 
 const DEFAULT_CATEGORIES = [
   { name: "Meals" },
@@ -22,6 +23,7 @@ const EMPTY_FORM = {
   image: "",
 };
 
+
 /**
  * Reusable add/edit form for a vendor's menu item.
  * Pass `meal` to edit an existing item, or omit it to add a new one.
@@ -34,41 +36,55 @@ export default function MealFormModal({
   saving,
   categories = DEFAULT_CATEGORIES,
 }) {
+
   const [form, setForm] = useState(EMPTY_FORM);
   const [errors, setErrors] = useState({});
   const [imageFile, setImageFile] = useState(null);
 
-  useEffect(() => {
-    if (open) {
-      setForm(
-        meal
-          ? {
-              name: meal.name || "",
-              description: meal.description || "",
-              price: meal.price || "",
-              category: meal.category || "Meals",
-              preparationTime: meal.preparationTime || "",
-              available: meal.available ?? true,
-              featured: meal.featured ?? false,
-              image: meal.image || "",
-            }
-          : EMPTY_FORM
-      );
 
-      setErrors({});
-      setImageFile(null);
-    }
+  useEffect(() => {
+
+    if (!open) return;
+
+    setForm(
+      meal
+        ? {
+            name: meal.name || "",
+            description: meal.description || "",
+            price: meal.price || "",
+            category: meal.category || "Meals",
+            preparationTime: meal.preparationTime || "",
+            available: meal.available ?? true,
+            featured: meal.featured ?? false,
+            image: meal.image || "",
+          }
+        : EMPTY_FORM
+    );
+
+    setErrors({});
+    setImageFile(null);
+
   }, [open, meal]);
 
+
   const update = (key) => (e) => {
-    const value = e?.target ? e.target.value : e;
+
+    const value =
+      e?.target?.type === "checkbox"
+        ? e.target.checked
+        : e?.target
+        ? e.target.value
+        : e;
+
     setForm((prev) => ({
       ...prev,
       [key]: value,
     }));
   };
 
+
   const validate = () => {
+
     const next = {};
 
     if (!form.name.trim()) {
@@ -87,8 +103,12 @@ export default function MealFormModal({
       next.category = "Choose a category";
     }
 
-    if (!form.preparationTime || Number(form.preparationTime) <= 0) {
-      next.preparationTime = "Enter preparation time in minutes";
+    if (
+      !form.preparationTime ||
+      Number(form.preparationTime) <= 0
+    ) {
+      next.preparationTime =
+        "Enter preparation time in minutes";
     }
 
     setErrors(next);
@@ -96,27 +116,41 @@ export default function MealFormModal({
     return Object.keys(next).length === 0;
   };
 
+
   const handleSubmit = (e) => {
+
     e.preventDefault();
 
     if (!validate()) return;
+
 
     onSave({
       ...form,
       price: Number(form.price),
       preparationTime: Number(form.preparationTime),
-      image: form.image || undefined,
-      imageFile: imageFile || undefined,
+
+      // Existing image remains if editing
+      image: form.image || null,
+
+      // New upload goes to Supabase Storage
+      imageFile: imageFile || null,
     });
+
   };
 
+
   return (
+
     <Modal
       open={open}
       onClose={onClose}
       title={meal ? "Edit meal" : "Add meal"}
     >
-      <form onSubmit={handleSubmit} className="space-y-4">
+
+      <form
+        onSubmit={handleSubmit}
+        className="space-y-4"
+      >
 
         <TextField
           label="Name"
@@ -125,6 +159,7 @@ export default function MealFormModal({
           error={errors.name}
         />
 
+
         <TextAreaField
           label="Description"
           value={form.description}
@@ -132,6 +167,7 @@ export default function MealFormModal({
           error={errors.description}
           rows={3}
         />
+
 
         <TextField
           label="Price (R)"
@@ -143,6 +179,7 @@ export default function MealFormModal({
           error={errors.price}
         />
 
+
         <TextField
           label="Prep time (mins)"
           type="number"
@@ -151,6 +188,7 @@ export default function MealFormModal({
           onChange={update("preparationTime")}
           error={errors.preparationTime}
         />
+
 
         <SelectField
           label="Category"
@@ -163,43 +201,63 @@ export default function MealFormModal({
           }))}
         />
 
+
+        <FileUpload
+          label="Meal image"
+          accept="image/*"
+          onFileSelect={(file) =>
+            setImageFile(file)
+          }
+        />
+
+
         <label className="flex items-center gap-2">
+
           <input
             type="checkbox"
             checked={form.available}
-            onChange={(e) =>
-              update("available")(e.target.checked)
-            }
+            onChange={update("available")}
             className="h-4 w-4 rounded border-line accent-ink"
           />
+
           Available
+
         </label>
 
+
         <label className="flex items-center gap-2">
+
           <input
             type="checkbox"
             checked={form.featured}
-            onChange={(e) =>
-              update("featured")(e.target.checked)
-            }
+            onChange={update("featured")}
             className="h-4 w-4 rounded border-line accent-ink"
           />
+
           Featured
+
         </label>
+
 
         <button
           type="submit"
           disabled={saving}
           className="btn-primary w-full"
         >
+
           {saving
             ? "Saving..."
             : meal
             ? "Save changes"
             : "Add meal"}
+
         </button>
 
+
       </form>
+
     </Modal>
+
   );
+
 }
