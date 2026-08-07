@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import Navbar from "../../components/layout/Navbar";
 import SearchBar from "../../components/ui/SearchBar";
@@ -12,11 +12,16 @@ import { FiSearch } from "react-icons/fi";
 
 export default function VendorListing() {
   const [params] = useSearchParams();
+
   const [query, setQuery] = useState(params.get("q") || "");
   const [category, setCategory] = useState("all");
+
   const debouncedQuery = useDebounce(query, 300);
 
-  const { data: vendors, loading } = useAsync(
+  const {
+    data: vendors = [],
+    loading,
+  } = useAsync(
     () =>
       vendorService.getVendors({
         search: debouncedQuery || undefined,
@@ -25,28 +30,49 @@ export default function VendorListing() {
     [debouncedQuery, category]
   );
 
-  const categoryNames = useMemo(() => categories.map((c) => c.name), []);
-
   return (
     <div>
-      <Navbar title="Vendors" />
-      <div className="ob-container pt-4 flex flex-col gap-4">
-        <SearchBar value={query} onChange={setQuery} placeholder="Search vendors..." />
-        <Filters options={categoryNames} active={category} onChange={setCategory} />
-      </div>
+      <Navbar />
 
-      <div className="ob-container mt-5 flex flex-col gap-3.5 pb-8">
-        {loading
-          ? Array.from({ length: 4 }).map((_, i) => <div key={i} className="skeleton h-24" />)
-          : vendors.length === 0
-          ? (
+      <div className="ob-container mt-5">
+
+        <SearchBar
+          value={query}
+          onChange={setQuery}
+        />
+
+        <Filters
+          value={category}
+          onChange={setCategory}
+        />
+
+        <div className="mt-5 flex flex-col gap-3.5 pb-8">
+
+          {loading ? (
+            Array.from({ length: 4 }).map((_, i) => (
+              <div
+                key={i}
+                className="skeleton h-24"
+              />
+            ))
+          ) : vendors.length === 0 ? (
             <EmptyState
               icon={<FiSearch size={20} />}
               title="No vendors found"
               description="Try a different search term or category."
             />
-          )
-          : vendors.map((v) => <VendorCard key={v.id} vendor={v} layout="row" />)}
+          ) : (
+            vendors.map((v) => (
+              <VendorCard
+                key={v.id}
+                vendor={v}
+                layout="row"
+              />
+            ))
+          )}
+
+        </div>
+
       </div>
     </div>
   );
