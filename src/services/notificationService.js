@@ -1,7 +1,7 @@
 ```javascript
 import { supabase } from "./api/supabaseClient";
 
-async function getUserId() {
+const getUserId = async () => {
   const {
     data: { user },
     error,
@@ -16,19 +16,17 @@ async function getUserId() {
   }
 
   return user.id;
-}
+};
 
-function mapNotification(notification) {
-  return {
-    id: notification.id,
-    type: notification.type,
-    title: notification.title,
-    body: notification.body,
-    read: notification.read,
-    dismissed: notification.dismissed,
-    createdAt: notification.created_at,
-  };
-}
+const mapNotification = (notification) => ({
+  id: notification.id,
+  type: notification.type,
+  title: notification.title,
+  body: notification.body,
+  read: notification.read,
+  dismissed: notification.dismissed,
+  createdAt: notification.created_at,
+});
 
 export const notificationService = {
   async getNotifications() {
