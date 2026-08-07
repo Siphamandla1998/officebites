@@ -1,145 +1,315 @@
-import { mockResolve } from "./api/mockAdapter";
-import { loadState, saveState } from "./localPersist";
+```javascript
+import { supabase } from "./api/supabaseClient";
 
-const hoursAgo = (h) => new Date(Date.now() - h * 60 * 60 * 1000).toISOString();
+const getCurrentUserId = async () => {
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
 
-const seedCustomerNotifications = [
-  {
-    id: "n-1",
-    title: "Order confirmed",
-    body: "Your order OB-202607-4821 has been confirmed by Sne's Kitchen.",
-    read: false,
-    dismissed: false,
-    createdAt: hoursAgo(2),
-  },
-  {
-    id: "n-2",
-    title: "Payment verified",
-    body: "OfficeBites verified your payment for order OB-202607-1187.",
-    read: true,
-    dismissed: false,
-    createdAt: hoursAgo(48),
-  },
-  {
-    id: "n-3",
-    title: "New review",
-    body: "You received a new 5-star review from Aisha K.",
-    read: false,
-    dismissed: false,
-    createdAt: hoursAgo(96),
-  },
-];
+  if (error) {
+    throw new Error(error.message);
+  }
 
-// Vendor notifications cover the events listed in the vendor dashboard spec:
-// new order, order cancelled, payment received, customer message, meal out of stock.
-const seedVendorNotifications = [
-  {
-    id: "vn-1",
-    type: "new_order",
-    title: "New order received",
-    body: "Order OB-202607-4821 was just confirmed — 2 items for collection today.",
-    read: false,
-    dismissed: false,
-    createdAt: hoursAgo(2),
-  },
-  {
-    id: "vn-2",
-    type: "payment_received",
-    title: "Payment received",
-    body: "Payment for order OB-202607-3391 has been verified by OfficeBites.",
-    read: false,
-    dismissed: false,
-    createdAt: hoursAgo(3),
-  },
-  {
-    id: "vn-3",
-    type: "customer_message",
-    title: "New customer message",
-    body: "A customer asked about extra chakalaka on their order.",
-    read: true,
-    dismissed: false,
-    createdAt: hoursAgo(20),
-  },
-  {
-    id: "vn-4",
-    type: "order_cancelled",
-    title: "Order cancelled",
-    body: "Order OB-202607-2276 was cancelled before payment was verified.",
-    read: true,
-    dismissed: false,
-    createdAt: hoursAgo(28),
-  },
-  {
-    id: "vn-5",
-    type: "out_of_stock",
-    title: "Meal marked out of stock",
-    body: "\"Green Salad\" is running low — consider restocking before lunch.",
-    read: false,
-    dismissed: false,
-    createdAt: hoursAgo(30),
-  },
-];
+  if (!user) {
+    throw new Error("You must be signed in.");
+  }
 
-let customerNotifications = loadState("notifications_customer", seedCustomerNotifications);
-let vendorNotifications = loadState("notifications_vendor", seedVendorNotifications);
+  return user.id;
+};
 
-const persistCustomer = () => saveState("notifications_customer", customerNotifications);
-const persistVendor = () => saveState("notifications_vendor", vendorNotifications);
+const getCurrentProfile = async () => {
+  const userId = await getCurrentUserId();
+
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", userId)
+    .single();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return data;
+};
 
 export const notificationService = {
+  // ============================================================
+  // CUSTOMER NOTIFICATIONS
+  // ============================================================
+
   async getNotifications() {
-    return mockResolve(customerNotifications.filter((n) => !n.dismissed));
+    const userId = await getCurrentUserId();
+
+    const { data, error } = await supabase
+      .from("notifications")
+      .select("*")
+      .eq("user_id", userId)
+      .eq("dismissed", false)
+      .order("created_at", {
+        ascending: false,
+      });
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return (data || []).map((notification) => ({
+      id: notification.id,
+      type: notification.type,
+      title: notification.title,
+      body: notification.body,
+      read: notification.read,
+      dismissed: notification.dismissed,
+      createdAt: notification.created_at,
+    }));
   },
 
-  /** Pushes a live notification — called by other services when a real event happens (payment verified, etc). */
-  async addNotification({ title, body }) {
-    customerNotifications = [
-      { id: `n-${Date.now()}`, title, body, read: false, dismissed: false, createdAt: new Date().toISOString() },
-      ...customerNotifications,
-    ];
-    persistCustomer();
-    return mockResolve({ success: true }, { delay: 80 });
+  async addNotification({ type = "general", title, body }) {
+    const userId = await getCurrentUserId();
+
+    const { data, error } = await supabase
+      .from("notifications")
+      .insert({
+        user_id: userId,
+        type,
+        title,
+        body,
+        read: false,
+        dismissed: false,
+      })
+      .select()
+      .single();
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return {
+      success: true,
+      notification: {
+        id: data.id,
+        type: data.type,
+        title: data.title,
+        body: data.body,
+        read: data.read,
+        dismissed: data.dismissed,
+        createdAt: data.created_at,
+      },
+    };
   },
 
   async markAsRead(id) {
-    customerNotifications = customerNotifications.map((n) => (n.id === id ? { ...n, read: true } : n));
-    persistCustomer();
-    return mockResolve({ success: true }, { delay: 120 });
+    const userId = await getCurrentUserId();
+
+    const { error } = await supabase
+      .from("notifications")
+      .update({
+        read: true,
+      })
+      .eq("id", id)
+      .eq("user_id", userId);
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return {
+      success: true,
+    };
   },
 
   async dismiss(id) {
-    customerNotifications = customerNotifications.map((n) => (n.id === id ? { ...n, dismissed: true } : n));
-    persistCustomer();
-    return mockResolve({ success: true }, { delay: 120 });
+    const userId = await getCurrentUserId();
+
+    const { error } = await supabase
+      .from("notifications")
+      .update({
+        dismissed: true,
+      })
+      .eq("id", id)
+      .eq("user_id", userId);
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return {
+      success: true,
+    };
   },
 
   async getUnreadCount() {
-    return mockResolve(customerNotifications.filter((n) => !n.read && !n.dismissed).length, { delay: 100 });
+    const userId = await getCurrentUserId();
+
+    const { count, error } = await supabase
+      .from("notifications")
+      .select("id", {
+        count: "exact",
+        head: true,
+      })
+      .eq("user_id", userId)
+      .eq("read", false)
+      .eq("dismissed", false);
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return count || 0;
   },
 
-  // --- Vendor notifications ---
+  // ============================================================
+  // VENDOR NOTIFICATIONS
+  // ============================================================
+
   async getVendorNotifications() {
-    return mockResolve(vendorNotifications.filter((n) => !n.dismissed));
+    const profile = await getCurrentProfile();
+
+    if (!profile.vendor_id) {
+      return [];
+    }
+
+    /*
+     * Vendor notifications are stored against the vendor user's
+     * profile ID, not the vendor table ID.
+     *
+     * This keeps notifications tied to the authenticated account.
+     */
+
+    const { data, error } = await supabase
+      .from("notifications")
+      .select("*")
+      .eq("user_id", profile.id)
+      .eq("dismissed", false)
+      .order("created_at", {
+        ascending: false,
+      });
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return (data || []).map((notification) => ({
+      id: notification.id,
+      type: notification.type,
+      title: notification.title,
+      body: notification.body,
+      read: notification.read,
+      dismissed: notification.dismissed,
+      createdAt: notification.created_at,
+    }));
   },
 
-  async addVendorNotification({ type, title, body }) {
-    vendorNotifications = [
-      { id: `vn-${Date.now()}`, type, title, body, read: false, dismissed: false, createdAt: new Date().toISOString() },
-      ...vendorNotifications,
-    ];
-    persistVendor();
-    return mockResolve({ success: true }, { delay: 80 });
+  async addVendorNotification({ type = "general", title, body }) {
+    const profile = await getCurrentProfile();
+
+    if (!profile.vendor_id) {
+      throw new Error("The current account is not linked to a vendor.");
+    }
+
+    const { data, error } = await supabase
+      .from("notifications")
+      .insert({
+        user_id: profile.id,
+        type,
+        title,
+        body,
+        read: false,
+        dismissed: false,
+      })
+      .select()
+      .single();
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return {
+      success: true,
+      notification: {
+        id: data.id,
+        type: data.type,
+        title: data.title,
+        body: data.body,
+        read: data.read,
+        dismissed: data.dismissed,
+        createdAt: data.created_at,
+      },
+    };
   },
 
   async markVendorNotificationRead(id) {
-    vendorNotifications = vendorNotifications.map((n) => (n.id === id ? { ...n, read: true } : n));
-    persistVendor();
-    return mockResolve({ success: true }, { delay: 120 });
+    const profile = await getCurrentProfile();
+
+    if (!profile.vendor_id) {
+      throw new Error("The current account is not linked to a vendor.");
+    }
+
+    const { error } = await supabase
+      .from("notifications")
+      .update({
+        read: true,
+      })
+      .eq("id", id)
+      .eq("user_id", profile.id);
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return {
+      success: true,
+    };
   },
 
   async dismissVendorNotification(id) {
-    vendorNotifications = vendorNotifications.map((n) => (n.id === id ? { ...n, dismissed: true } : n));
-    persistVendor();
-    return mockResolve({ success: true }, { delay: 120 });
+    const profile = await getCurrentProfile();
+
+    if (!profile.vendor_id) {
+      throw new Error("The current account is not linked to a vendor.");
+    }
+
+    const { error } = await supabase
+      .from("notifications")
+      .update({
+        dismissed: true,
+      })
+      .eq("id", id)
+      .eq("user_id", profile.id);
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return {
+      success: true,
+    };
+  },
+
+  async getVendorUnreadCount() {
+    const profile = await getCurrentProfile();
+
+    if (!profile.vendor_id) {
+      return 0;
+    }
+
+    const { count, error } = await supabase
+      .from("notifications")
+      .select("id", {
+        count: "exact",
+        head: true,
+      })
+      .eq("user_id", profile.id)
+      .eq("read", false)
+      .eq("dismissed", false);
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return count || 0;
   },
 };
+```
