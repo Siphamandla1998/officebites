@@ -7,7 +7,7 @@ import EmptyState from "../../components/ui/EmptyState";
 import { useAsync } from "../../hooks/useAsync";
 import { useDebounce } from "../../hooks/useDebounce";
 import { supportService } from "../../services/supportService";
-import { FAQ_CATEGORIES } from "../../mock/support";
+
 
 export default function FAQPage() {
   const [query, setQuery] = useState("");
