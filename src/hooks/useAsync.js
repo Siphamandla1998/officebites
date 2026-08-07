@@ -1,33 +1,109 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import {
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+} from "react";
+
 
 /**
- * Runs an async service call and tracks loading/error/data state.
- * `deps` re-triggers the fetch — pass [] to run once on mount.
+ * Runs async service calls safely.
+ * Always keeps data as an array/object fallback instead of null.
  */
 export function useAsync(asyncFn, deps = []) {
-  const [data, setData] = useState(null);
+
+  const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
   const mounted = useRef(true);
 
-  const run = useCallback(() => {
+
+
+  const run = useCallback(async () => {
+
     setLoading(true);
     setError(null);
-    asyncFn()
-      .then((result) => mounted.current && setData(result))
-      .catch((err) => mounted.current && setError(err))
-      .finally(() => mounted.current && setLoading(false));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
+
+    try {
+
+      const result = await asyncFn();
+
+
+      if (!mounted.current) return;
+
+
+      // Prevent null data breaking React rendering
+      setData(
+        result ?? []
+      );
+
+
+    } catch (err) {
+
+
+      if (!mounted.current) return;
+
+
+      console.error(
+        "useAsync error:",
+        err
+      );
+
+
+      setError(err);
+
+
+      // Keep UI alive
+      setData([]);
+
+
+    } finally {
+
+
+      if (mounted.current) {
+        setLoading(false);
+      }
+
+
+    }
+
+
   }, deps);
+
+
 
   useEffect(() => {
-    mounted.current = true;
-    run();
-    return () => {
-      mounted.current = false;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, deps);
 
-  return { data, loading, error, refetch: run, setData };
+    mounted.current = true;
+
+    run();
+
+
+    return () => {
+
+      mounted.current = false;
+
+    };
+
+
+  }, [run]);
+
+
+
+  return {
+
+    data,
+
+    loading,
+
+    error,
+
+    refetch: run,
+
+    setData,
+
+  };
+
 }
