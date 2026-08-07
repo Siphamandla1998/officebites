@@ -31,6 +31,11 @@ export default function Home() {
     data: categories = [],
     loading: catLoading,
   } = useAsync(() => foodService.getCategories(), []);
+  console.log("HOME DATA", {
+    categories,
+    featuredVendors,
+    popularMeals,
+  });
 
   const {
     data: featuredVendors = [],
