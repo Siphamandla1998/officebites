@@ -53,7 +53,7 @@ export default function VendorRevenue() {
 
       <div className="card p-5">
         <h3 className="section-title mb-4">Revenue trend</h3>
-        <BarChart data={stats?,revenueChart || []} xKey="day" yKey="revenue" />
+        <BarChart data={stats?.revenueChart || []} xKey="day" yKey="revenue" />
       </div>
 
       <div>
