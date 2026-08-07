@@ -1,9 +1,7 @@
 import { Link } from "react-router-dom";
 
 export default function CategoryCard({ category }) {
-
   if (!category) return null;
-
 
   return (
     <Link
@@ -14,17 +12,15 @@ export default function CategoryCard({ category }) {
       <div
         className="h-16 w-16 rounded-2xl flex items-center justify-center text-2xl"
         style={{
-          backgroundColor: category.color || "#eee"
+          backgroundColor: category.color || "#eee",
         }}
       >
         {category.emoji || "🍽️"}
       </div>
 
-
       <span className="text-xs text-center text-ink">
-        {category.name}
+        {category.name || "Category"}
       </span>
-
 
     </Link>
   );
