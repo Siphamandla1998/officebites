@@ -365,10 +365,6 @@ export const vendorService = {
 // ===========================
 
 
-const DEFAULT_MEAL_IMAGE =
-"https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&q=80";
-
-
 
 const uploadMealImage = async(vendorId,file)=>{
 
@@ -704,3 +700,579 @@ success:true
 
 
 },
+  // ===============================
+  // ADMIN ACTIONS
+  // ===============================
+
+
+  async approveVendor(id){
+
+
+    const {
+      error
+    } =
+      await supabase
+        .from("vendors")
+        .update({
+          status:
+            VENDOR_STATUS.APPROVED
+        })
+        .eq(
+          "id",
+          id
+        );
+
+
+
+    if(error){
+
+      throw {
+        message:error.message
+      };
+
+    }
+
+
+
+    return {
+      success:true
+    };
+
+  },
+
+
+
+
+
+  async rejectVendor(id){
+
+
+    const {
+      error
+    } =
+      await supabase
+        .from("vendors")
+        .update({
+          status:
+            VENDOR_STATUS.REJECTED
+        })
+        .eq(
+          "id",
+          id
+        );
+
+
+
+    if(error){
+
+      throw {
+        message:error.message
+      };
+
+    }
+
+
+
+    return {
+      success:true
+    };
+
+  },
+
+
+
+
+
+  async suspendVendor(id){
+
+
+    const {
+      error
+    } =
+      await supabase
+        .from("vendors")
+        .update({
+          status:
+            VENDOR_STATUS.SUSPENDED
+        })
+        .eq(
+          "id",
+          id
+        );
+
+
+
+    if(error){
+
+      throw {
+        message:error.message
+      };
+
+    }
+
+
+
+    return {
+      success:true
+    };
+
+  },
+
+
+
+
+
+  // ===============================
+  // MEAL CRUD
+  // ===============================
+
+
+
+  async addMeal(vendorId, meal){
+
+
+    let image =
+      DEFAULT_MEAL_IMAGE;
+
+
+
+    if(meal.imageFile){
+
+      image =
+        await uploadMealImage(
+          vendorId,
+          meal.imageFile
+        );
+
+    }
+
+
+
+    const {
+      data,
+      error
+    } =
+      await supabase
+        .from("meals")
+        .insert({
+
+          vendor_id:
+            vendorId,
+
+          name:
+            meal.name,
+
+          description:
+            meal.description || "",
+
+          price:
+            Number(meal.price),
+
+
+          category:
+            meal.category,
+
+
+          image,
+
+
+          preparation_time:
+            Number(meal.preparationTime || 0),
+
+
+          available:
+            meal.available ?? true,
+
+
+          featured:
+            meal.featured ?? false,
+
+
+          tags:
+            meal.tags || []
+
+        })
+        .select("*, vendors(name)")
+        .single();
+
+
+
+    if(error){
+
+      throw {
+        message:error.message
+      };
+
+    }
+
+
+
+    return mapMeal(data);
+
+  },
+
+
+
+
+
+  async updateMeal(mealId, updates){
+
+
+    let image =
+      updates.image;
+
+
+
+    if(updates.imageFile){
+
+      image =
+        await uploadMealImage(
+          updates.vendorId || "meal",
+          updates.imageFile
+        );
+
+    }
+
+
+
+    const patch = {
+
+
+
+      ...(updates.name !== undefined && {
+
+        name:
+          updates.name
+
+      }),
+
+
+
+      ...(updates.description !== undefined && {
+
+        description:
+          updates.description
+
+      }),
+
+
+
+      ...(updates.price !== undefined && {
+
+        price:
+          Number(updates.price)
+
+      }),
+
+
+
+      ...(updates.category !== undefined && {
+
+        category:
+          updates.category
+
+      }),
+
+
+
+      ...(image && {
+
+        image
+
+      }),
+
+
+
+      ...(updates.preparationTime !== undefined && {
+
+        preparation_time:
+          Number(updates.preparationTime)
+
+      }),
+
+
+
+      ...(updates.available !== undefined && {
+
+        available:
+          updates.available
+
+      }),
+
+
+
+      ...(updates.featured !== undefined && {
+
+        featured:
+          updates.featured
+
+      }),
+
+
+
+      ...(updates.tags !== undefined && {
+
+        tags:
+          updates.tags
+
+      })
+
+    };
+
+
+
+
+    const {
+      data,
+      error
+    } =
+      await supabase
+        .from("meals")
+        .update(patch)
+        .eq(
+          "id",
+          mealId
+        )
+        .select("*, vendors(name)")
+        .single();
+
+
+
+    if(error){
+
+      throw {
+        message:error.message
+      };
+
+    }
+
+
+
+    return mapMeal(data);
+
+  },
+
+
+
+
+
+  async deleteMeal(mealId){
+
+
+    const {
+      error
+    } =
+      await supabase
+        .from("meals")
+        .delete()
+        .eq(
+          "id",
+          mealId
+        );
+
+
+
+    if(error){
+
+      throw {
+        message:error.message
+      };
+
+    }
+
+
+
+    return {
+      success:true
+    };
+
+  },
+
+
+
+
+
+  async updateMealAvailability(
+    mealId,
+    available
+  ){
+
+
+    const {
+      error
+    } =
+      await supabase
+        .from("meals")
+        .update({
+          available
+        })
+        .eq(
+          "id",
+          mealId
+        );
+
+
+
+    if(error){
+
+      throw {
+        message:error.message
+      };
+
+    }
+
+
+
+    return {
+      success:true
+    };
+
+  },
+
+
+
+
+
+  async updateMealFeatured(
+    mealId,
+    featured
+  ){
+
+
+    const {
+      error
+    } =
+      await supabase
+        .from("meals")
+        .update({
+          featured
+        })
+        .eq(
+          "id",
+          mealId
+        );
+
+
+
+    if(error){
+
+      throw {
+        message:error.message
+      };
+
+    }
+
+
+
+    return {
+      success:true
+    };
+
+  },
+
+
+
+
+
+  // ===============================
+  // VENDOR PROFILE
+  // ===============================
+
+
+
+  async updateVendorProfile(
+    vendorId,
+    updates
+  ){
+
+
+    const patch = {
+
+
+      ...(updates.name !== undefined && {
+
+        name:
+          updates.name
+
+      }),
+
+
+
+      ...(updates.tagline !== undefined && {
+
+        tagline:
+          updates.tagline
+
+      }),
+
+
+
+      ...(updates.building !== undefined && {
+
+        building:
+          updates.building
+
+      }),
+
+
+
+      ...(updates.contactNumber !== undefined && {
+
+        contact_number:
+          updates.contactNumber
+
+      }),
+
+
+
+      ...(updates.logo !== undefined && {
+
+        logo:
+          updates.logo
+
+      }),
+
+
+
+      ...(updates.coverImage !== undefined && {
+
+        cover_image:
+          updates.coverImage
+
+      })
+
+    };
+
+
+
+    const {
+      data,
+      error
+    } =
+      await supabase
+        .from("vendors")
+        .update(patch)
+        .eq(
+          "id",
+          vendorId
+        )
+        .select()
+        .single();
+
+
+
+    if(error){
+
+      throw {
+        message:error.message
+      };
+
+    }
+
+
+
+    return mapVendor(data);
+
+  }
+
+};
