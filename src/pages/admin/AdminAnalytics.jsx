@@ -76,32 +76,41 @@ export default function AdminAnalytics() {
       </div>
 
 
-      {/* Revenue */}
+      {/* Commission revenue */}
       <div className="card p-5">
+
         <h3 className="section-title mb-4">
           Commission revenue trend
         </h3>
 
+
         {revenueLoading ? (
+
           <div className="skeleton h-36" />
+
         ) : (
+
           <LineChart
             data={revenue || []}
             xKey="week"
             yKey="commission"
           />
+
         )}
+
       </div>
 
 
-      {/* Vendors */}
+      {/* Top vendors */}
       <div className="card p-5">
+
         <h3 className="section-title mb-4">
           Top performing vendors
         </h3>
 
 
         {vendorsLoading ? (
+
           <div className="skeleton h-36" />
 
         ) : topVendors.length === 0 ? (
@@ -116,7 +125,7 @@ export default function AdminAnalytics() {
             data={topVendors}
             xKey="name"
             yKey="score"
-            formatValue={(v) => `${v} pts`}
+            formatValue={(value) => `${value} pts`}
           />
 
         )}
@@ -124,16 +133,18 @@ export default function AdminAnalytics() {
       </div>
 
 
-      {/* Categories */}
+      {/* Category demand */}
       <div className="card p-5">
 
         <h3 className="section-title mb-4 flex items-center gap-2">
+
           <FiTrendingUp
             size={15}
             className="text-nude-600"
           />
 
           Category demand
+
         </h3>
 
 
@@ -163,6 +174,7 @@ export default function AdminAnalytics() {
                     {category}
                   </p>
 
+
                   <p className="text-lg font-bold text-ink">
                     {count} meals
                   </p>
@@ -177,6 +189,7 @@ export default function AdminAnalytics() {
         )}
 
       </div>
+
 
     </div>
   );
