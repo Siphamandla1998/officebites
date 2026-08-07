@@ -5,19 +5,25 @@ import TextAreaField from "../forms/TextAreaField";
 import SelectField from "../forms/SelectField";
 import FileUpload from "../forms/FileUpload";
 import Spinner from "../ui/Spinner";
-import { categories } from "../../mock/categories";
+
+
+const DEFAULT_CATEGORIES = [
+  { name: "Meals" },
+  { name: "Drinks" },
+  { name: "Snacks" },
+  { name: "Desserts" },
+];
 
 const EMPTY_FORM = {
   name: "",
   description: "",
   price: "",
-  category: categories[0]?.name || "",
+  category: DEFAULT_CATEGORIES[0].name,
   preparationTime: "",
   available: true,
   featured: false,
   image: "",
 };
-
 /**
  * Reusable add/edit form for a vendor's menu item. Pass `meal` to edit an
  * existing item, or omit it to add a new one. Validates required fields
@@ -117,7 +123,10 @@ export default function MealFormModal({ open, onClose, onSave, meal, saving }) {
           value={form.category}
           onChange={update("category")}
           error={errors.category}
-          options={categories.map((c) => ({ value: c.name, label: c.name }))}
+          options={DEFAULT_CATEGORIES.map((c) => ({
+            value: c.name,
+            label: c.name,
+          }))}
         />
         <FileUpload label="Meal image" onFileSelect={setImageFile} />
         <div className="flex gap-5">
@@ -141,7 +150,7 @@ export default function MealFormModal({ open, onClose, onSave, meal, saving }) {
           </label>
         </div>
         <button type="submit" className="btn-primary w-full" disabled={saving}>
-          {saving ? <Spinner size={16} className="!border-paper/30 !border-t-paper" /> : meal ? "Save changes" : "Add meal"}
+          {saving ? "Saving..." : meal ? "Save changes" : "Add meal"}
         </button>
       </form>
     </Modal>
