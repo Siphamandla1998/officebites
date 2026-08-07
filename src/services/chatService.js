@@ -1,5 +1,4 @@
 import { mockResolve } from "./api/mockAdapter";
-import { chats } from "../mock/chats";
 import { loadState, saveState } from "./localPersist";
 
 let chatStore = loadState("chats", chats);
