@@ -1,5 +1,4 @@
 import { mockResolve } from "./api/mockAdapter";
-import { faqs, guides, initialTickets, FAQ_CATEGORIES } from "../mock/support";
 import { TICKET_STATUS } from "../utils/constants";
 
 let ticketStore = [...initialTickets];
