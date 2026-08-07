@@ -1,9 +1,20 @@
-export default function Filters({ options, active, onChange, allLabel = "All", labels = {} }) {
-  const list = ["all", ...options];
+import React from "react";
+
+export default function Filters({
+  options = [],
+  active,
+  onChange,
+  allLabel = "All",
+  labels = {},
+}) {
+  const safeOptions = Array.isArray(options) ? options : [];
+  const list = ["all", ...safeOptions];
+
   return (
-    <div className="flex gap-2 overflow-x-auto no-scrollbar -mx-5 px-5 pb-1">
+    <div className="flex gap-2 overflow-x-auto no-scrollbar">
       {list.map((opt) => {
         const isActive = active === opt;
+
         return (
           <button
             key={opt}
