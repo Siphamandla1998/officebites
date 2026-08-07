@@ -7,7 +7,6 @@ import { useAsync } from "../../hooks/useAsync";
 import { paymentService } from "../../services/paymentService";
 import { vendorService } from "../../services/vendorService";
 import { useAuth } from "../../context/AuthContext";
-import { vendorRevenue7d } from "../../mock/analytics";
 import { formatCurrency, formatDate } from "../../utils/formatters";
 
 export default function VendorRevenue() {
@@ -54,7 +53,7 @@ export default function VendorRevenue() {
 
       <div className="card p-5">
         <h3 className="section-title mb-4">Revenue trend</h3>
-        <BarChart data={vendorRevenue7d} xKey="day" yKey="revenue" />
+        <BarChart data={stats?,revenueChart || []} xKey="day" yKey="revenue" />
       </div>
 
       <div>
