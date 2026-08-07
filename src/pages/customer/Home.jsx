@@ -27,44 +27,67 @@ export default function Home() {
   const { addItem } = useCart();
   const { showToast } = useToast();
 
+
   const {
     data: categories = [],
     loading: catLoading,
-  } = useAsync(() => foodService.getCategories(), []);
+  } = useAsync(
+    () => foodService.getCategories(),
+    []
+  );
+
+
+  const {
+    data: featuredVendors = [],
+    loading: vendorLoading,
+  } = useAsync(
+    () => vendorService.getFeaturedVendors(),
+    []
+  );
+
+
+  const {
+    data: popularMeals = [],
+    loading: mealsLoading,
+  } = useAsync(
+    () => foodService.getPopularMeals(6),
+    []
+  );
+
+
   console.log("HOME DATA", {
     categories,
     featuredVendors,
     popularMeals,
   });
 
-  const {
-    data: featuredVendors = [],
-    loading: vendorLoading,
-  } = useAsync(() => vendorService.getFeaturedVendors(), []);
-
-  const {
-    data: popularMeals = [],
-    loading: mealsLoading,
-  } = useAsync(() => foodService.getPopularMeals(6), []);
 
   const orderingOpen = isOrderingOpen(new Date());
+
 
   const handleAdd = (meal) => {
     addItem(meal);
 
-    showToast(`Added ${meal.name} to cart`, {
-      type: "success",
-    });
+    showToast(
+      `Added ${meal.name} to cart`,
+      {
+        type: "success",
+      }
+    );
   };
+
 
   const goToSearch = () => {
     if (query.trim()) {
-      navigate(`/vendors?q=${encodeURIComponent(query)}`);
+      navigate(
+        `/vendors?q=${encodeURIComponent(query)}`
+      );
     }
   };
 
+
   return (
-    <div className="pb-8">
+    <>
 
       {/* Header */}
       <div className="ob-container pt-6 pb-5">
@@ -75,9 +98,12 @@ export default function Home() {
             : "Order from local office vendors — no account needed"}
         </div>
 
+
         <h1 className="text-2xl font-semibold mt-2">
           {isAuthenticated
-            ? `Hey ${user?.name?.split(" ")[0] || "there"}, hungry?`
+            ? `Hey ${
+                user?.name?.split(" ")[0] || "there"
+              }, hungry?`
             : `Welcome to ${APP_NAME}`}
         </h1>
 
@@ -121,9 +147,11 @@ export default function Home() {
       <section className="pb-6">
 
         <div className="ob-container flex items-center justify-between mb-3">
+
           <h3 className="section-title">
             Categories
           </h3>
+
         </div>
 
 
@@ -142,7 +170,7 @@ export default function Home() {
 
             (categories || []).map((category) => (
               <CategoryCard
-                key={category.id}
+                key={category.id || category.name}
                 category={category}
               />
             ))
@@ -152,6 +180,7 @@ export default function Home() {
         </div>
 
       </section>
+
 
 
 
@@ -173,10 +202,12 @@ export default function Home() {
             <FiChevronRight size={12} />
           </button>
 
+
         </div>
 
 
         <div className="flex gap-3.5 overflow-x-auto no-scrollbar px-5 pb-1">
+
 
           {vendorLoading ? (
 
@@ -198,9 +229,11 @@ export default function Home() {
 
           )}
 
+
         </div>
 
       </section>
+
 
 
 
@@ -215,6 +248,7 @@ export default function Home() {
           </h3>
 
         </div>
+
 
 
         <div className="ob-container grid grid-cols-2 gap-3.5">
@@ -247,6 +281,6 @@ export default function Home() {
       </section>
 
 
-    </div>
+    </>
   );
 }
