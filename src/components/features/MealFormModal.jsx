@@ -23,11 +23,6 @@ const EMPTY_FORM = {
   image: "",
 };
 
-
-/**
- * Reusable add/edit form for a vendor's menu item.
- * Pass `meal` to edit an existing item, or omit it to add a new one.
- */
 export default function MealFormModal({
   open,
   onClose,
@@ -36,14 +31,11 @@ export default function MealFormModal({
   saving,
   categories = DEFAULT_CATEGORIES,
 }) {
-
   const [form, setForm] = useState(EMPTY_FORM);
   const [errors, setErrors] = useState({});
   const [imageFile, setImageFile] = useState(null);
 
-
   useEffect(() => {
-
     if (!open) return;
 
     setForm(
@@ -63,18 +55,14 @@ export default function MealFormModal({
 
     setErrors({});
     setImageFile(null);
-
   }, [open, meal]);
 
 
   const update = (key) => (e) => {
-
     const value =
-      e?.target?.type === "checkbox"
+      e.target?.type === "checkbox"
         ? e.target.checked
-        : e?.target
-        ? e.target.value
-        : e;
+        : e.target.value;
 
     setForm((prev) => ({
       ...prev,
@@ -87,177 +75,142 @@ export default function MealFormModal({
 
     const next = {};
 
-    if (!form.name.trim()) {
+    if (!form.name.trim())
       next.name = "Meal name is required";
-    }
 
-    if (!form.description.trim()) {
-      next.description = "Add a short description";
-    }
+    if (!form.description.trim())
+      next.description = "Description required";
 
-    if (!form.price || Number(form.price) <= 0) {
-      next.price = "Enter a valid price";
-    }
+    if (!form.price || Number(form.price)<=0)
+      next.price = "Enter valid price";
 
-    if (!form.category) {
-      next.category = "Choose a category";
-    }
+    if (!form.preparationTime)
+      next.preparationTime="Preparation time required";
 
-    if (
-      !form.preparationTime ||
-      Number(form.preparationTime) <= 0
-    ) {
-      next.preparationTime =
-        "Enter preparation time in minutes";
-    }
 
     setErrors(next);
 
-    return Object.keys(next).length === 0;
+    return Object.keys(next).length===0;
   };
 
 
-  const handleSubmit = (e) => {
-
+  const submit = (e)=>{
     e.preventDefault();
 
-    if (!validate()) return;
+    if(!validate()) return;
 
 
     onSave({
       ...form,
-      price: Number(form.price),
-      preparationTime: Number(form.preparationTime),
-
-      // Existing image remains if editing
-      image: form.image || null,
-
-      // New upload goes to Supabase Storage
-      imageFile: imageFile || null,
+      price:Number(form.price),
+      preparationTime:Number(form.preparationTime),
+      imageFile
     });
 
   };
 
 
   return (
-
     <Modal
       open={open}
       onClose={onClose}
-      title={meal ? "Edit meal" : "Add meal"}
+      title={meal ? "Edit meal":"Add meal"}
     >
 
-      <form
-        onSubmit={handleSubmit}
-        className="space-y-4"
-      >
-
-        <TextField
-          label="Name"
-          value={form.name}
-          onChange={update("name")}
-          error={errors.name}
-        />
+<form onSubmit={submit} className="space-y-4">
 
 
-        <TextAreaField
-          label="Description"
-          value={form.description}
-          onChange={update("description")}
-          error={errors.description}
-          rows={3}
-        />
+<FileUpload
+label="Meal image"
+accept="image/*"
+onFileSelect={setImageFile}
+/>
 
 
-        <TextField
-          label="Price (R)"
-          type="number"
-          min="0"
-          step="0.01"
-          value={form.price}
-          onChange={update("price")}
-          error={errors.price}
-        />
+<TextField
+label="Meal name"
+value={form.name}
+onChange={update("name")}
+error={errors.name}
+/>
 
 
-        <TextField
-          label="Prep time (mins)"
-          type="number"
-          min="1"
-          value={form.preparationTime}
-          onChange={update("preparationTime")}
-          error={errors.preparationTime}
-        />
+<TextAreaField
+label="Description"
+rows={3}
+value={form.description}
+onChange={update("description")}
+error={errors.description}
+/>
 
 
-        <SelectField
-          label="Category"
-          value={form.category}
-          onChange={update("category")}
-          error={errors.category}
-          options={categories.map((c) => ({
-            value: c.name,
-            label: c.name,
-          }))}
-        />
+<TextField
+label="Price (R)"
+type="number"
+value={form.price}
+onChange={update("price")}
+error={errors.price}
+/>
 
 
-        <FileUpload
-          label="Meal image"
-          accept="image/*"
-          onFileSelect={(file) =>
-            setImageFile(file)
-          }
-        />
+<TextField
+label="Preparation time (minutes)"
+type="number"
+value={form.preparationTime}
+onChange={update("preparationTime")}
+error={errors.preparationTime}
+/>
 
 
-        <label className="flex items-center gap-2">
-
-          <input
-            type="checkbox"
-            checked={form.available}
-            onChange={update("available")}
-            className="h-4 w-4 rounded border-line accent-ink"
-          />
-
-          Available
-
-        </label>
-
-
-        <label className="flex items-center gap-2">
-
-          <input
-            type="checkbox"
-            checked={form.featured}
-            onChange={update("featured")}
-            className="h-4 w-4 rounded border-line accent-ink"
-          />
-
-          Featured
-
-        </label>
+<SelectField
+label="Category"
+value={form.category}
+onChange={update("category")}
+options={
+categories.map(c=>({
+value:c.name,
+label:c.name
+}))
+}
+/>
 
 
-        <button
-          type="submit"
-          disabled={saving}
-          className="btn-primary w-full"
-        >
-
-          {saving
-            ? "Saving..."
-            : meal
-            ? "Save changes"
-            : "Add meal"}
-
-        </button>
+<label className="flex gap-2">
+<input
+type="checkbox"
+checked={form.available}
+onChange={update("available")}
+/>
+Available
+</label>
 
 
-      </form>
+<label className="flex gap-2">
+<input
+type="checkbox"
+checked={form.featured}
+onChange={update("featured")}
+/>
+Featured
+</label>
+
+
+<button
+disabled={saving}
+className="btn-primary w-full"
+>
+{
+saving
+?"Saving..."
+:meal
+?"Save changes"
+:"Add meal"
+}
+</button>
+
+
+</form>
 
     </Modal>
-
   );
-
 }
