@@ -34,7 +34,7 @@ export default function AdminAnalytics() {
 
       <div className="card p-5">
         <h3 className="section-title mb-4">Commission revenue trend</h3>
-        {revenueLoading ? <div className="skeleton h-36" /> : <LineChart data={revenue} xKey="week" yKey="commission" />}
+        {revenueLoading ? <div className="skeleton h-36" /> : <LineChart data={revenue || []} xKey="week" yKey="commission"/>
       </div>
 
       <div className="card p-5">
