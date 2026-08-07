@@ -4,7 +4,6 @@ import FoodCard from "../../components/features/FoodCard";
 import EmptyState from "../../components/ui/EmptyState";
 import { useAsync } from "../../hooks/useAsync";
 import { foodService } from "../../services/foodService";
-import { categories } from "../../mock/categories";
 import { useCart } from "../../context/CartContext";
 import { useToast } from "../../context/ToastContext";
 import { FiSearch } from "react-icons/fi";
