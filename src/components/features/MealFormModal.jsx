@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+
 import Modal from "../ui/Modal";
 import TextField from "../forms/TextField";
 import TextAreaField from "../forms/TextAreaField";
 import SelectField from "../forms/SelectField";
-import FileUpload from "../ui/FileUpload";
+
 
 const DEFAULT_CATEGORIES = [
   { name: "Meals" },
@@ -11,6 +12,7 @@ const DEFAULT_CATEGORIES = [
   { name: "Snacks" },
   { name: "Desserts" },
 ];
+
 
 const EMPTY_FORM = {
   name: "",
@@ -23,6 +25,8 @@ const EMPTY_FORM = {
   image: "",
 };
 
+
+
 export default function MealFormModal({
   open,
   onClose,
@@ -31,186 +35,550 @@ export default function MealFormModal({
   saving,
   categories = DEFAULT_CATEGORIES,
 }) {
-  const [form, setForm] = useState(EMPTY_FORM);
-  const [errors, setErrors] = useState({});
-  const [imageFile, setImageFile] = useState(null);
 
-  useEffect(() => {
-    if (!open) return;
 
-    setForm(
-      meal
-        ? {
-            name: meal.name || "",
-            description: meal.description || "",
-            price: meal.price || "",
-            category: meal.category || "Meals",
-            preparationTime: meal.preparationTime || "",
-            available: meal.available ?? true,
-            featured: meal.featured ?? false,
-            image: meal.image || "",
-          }
-        : EMPTY_FORM
+  const [form,setForm] =
+    useState(EMPTY_FORM);
+
+
+  const [errors,setErrors] =
+    useState({});
+
+
+  const [imageFile,setImageFile] =
+    useState(null);
+
+
+  const [preview,setPreview] =
+    useState("");
+
+
+
+
+
+  useEffect(()=>{
+
+
+    if(!open) return;
+
+
+
+    const initial = meal
+      ? {
+
+          name:
+            meal.name || "",
+
+          description:
+            meal.description || "",
+
+          price:
+            meal.price || "",
+
+          category:
+            meal.category || "Meals",
+
+          preparationTime:
+            meal.preparationTime || "",
+
+          available:
+            meal.available ?? true,
+
+          featured:
+            meal.featured ?? false,
+
+          image:
+            meal.image || "",
+
+        }
+      :
+        EMPTY_FORM;
+
+
+
+    setForm(initial);
+
+
+    setPreview(
+      meal?.image || ""
     );
 
-    setErrors({});
+
     setImageFile(null);
-  }, [open, meal]);
 
 
-  const update = (key) => (e) => {
+    setErrors({});
+
+
+
+  },[open,meal]);
+
+
+
+
+
+
+
+  const update = (key)=>(e)=>{
+
+
     const value =
       e.target?.type === "checkbox"
         ? e.target.checked
         : e.target.value;
 
-    setForm((prev) => ({
+
+
+    setForm(prev=>({
+
       ...prev,
-      [key]: value,
+
+      [key]:value,
+
     }));
+
   };
 
 
-  const validate = () => {
 
-    const next = {};
 
-    if (!form.name.trim())
-      next.name = "Meal name is required";
 
-    if (!form.description.trim())
-      next.description = "Description required";
 
-    if (!form.price || Number(form.price)<=0)
-      next.price = "Enter valid price";
 
-    if (!form.preparationTime)
-      next.preparationTime="Preparation time required";
+  const handleImageChange = (e)=>{
+
+
+    const file =
+      e.target.files?.[0];
+
+
+
+    if(!file) return;
+
+
+
+    setImageFile(file);
+
+
+
+    setPreview(
+      URL.createObjectURL(file)
+    );
+
+  };
+
+
+
+
+
+
+
+  const validate = ()=>{
+
+
+    const next={};
+
+
+
+    if(!form.name.trim()){
+
+      next.name =
+        "Meal name is required";
+
+    }
+
+
+
+    if(!form.description.trim()){
+
+      next.description =
+        "Add a short description";
+
+    }
+
+
+
+    if(
+      !form.price ||
+      Number(form.price)<=0
+    ){
+
+      next.price =
+        "Enter a valid price";
+
+    }
+
+
+
+    if(!form.category){
+
+      next.category =
+        "Choose a category";
+
+    }
+
+
+
+    if(
+      !form.preparationTime ||
+      Number(form.preparationTime)<=0
+    ){
+
+      next.preparationTime =
+        "Enter preparation time";
+
+    }
+
 
 
     setErrors(next);
 
-    return Object.keys(next).length===0;
+
+
+    return (
+      Object.keys(next).length===0
+    );
+
   };
 
 
-  const submit = (e)=>{
+
+
+
+
+
+
+
+  const submit = async(e)=>{
+
+
     e.preventDefault();
+
+
 
     if(!validate()) return;
 
 
-    onSave({
+
+    await onSave({
+
       ...form,
-      price:Number(form.price),
-      preparationTime:Number(form.preparationTime),
-      imageFile
+
+
+      price:
+        Number(form.price),
+
+
+      preparationTime:
+        Number(form.preparationTime),
+
+
+      imageFile:
+
+
+        imageFile || undefined,
+
+
+
     });
 
   };
 
 
-  return (
-    <Modal
-      open={open}
-      onClose={onClose}
-      title={meal ? "Edit meal":"Add meal"}
-    >
-
-<form onSubmit={submit} className="space-y-4">
 
 
-<FileUpload
-label="Meal image"
-accept="image/*"
-onFileSelect={setImageFile}
-/>
+
+
+
+
+
+return (
+
+<Modal
+  open={open}
+  onClose={onClose}
+  title={
+    meal
+      ? "Edit meal"
+      : "Add meal"
+  }
+>
+
+
+<form
+  onSubmit={submit}
+  className="space-y-4"
+>
+
 
 
 <TextField
-label="Meal name"
-value={form.name}
-onChange={update("name")}
-error={errors.name}
+
+  label="Name"
+
+  value={form.name}
+
+  onChange={update("name")}
+
+  error={errors.name}
+
 />
+
+
+
 
 
 <TextAreaField
-label="Description"
-rows={3}
-value={form.description}
-onChange={update("description")}
-error={errors.description}
+
+  label="Description"
+
+  value={form.description}
+
+  onChange={update("description")}
+
+  error={errors.description}
+
+  rows={3}
+
 />
+
+
+
+
+
 
 
 <TextField
-label="Price (R)"
-type="number"
-value={form.price}
-onChange={update("price")}
-error={errors.price}
+
+  label="Price (R)"
+
+  type="number"
+
+  min="0"
+
+  step="0.01"
+
+  value={form.price}
+
+  onChange={update("price")}
+
+  error={errors.price}
+
 />
+
+
+
+
+
 
 
 <TextField
-label="Preparation time (minutes)"
-type="number"
-value={form.preparationTime}
-onChange={update("preparationTime")}
-error={errors.preparationTime}
+
+  label="Preparation time (minutes)"
+
+  type="number"
+
+  min="1"
+
+  value={form.preparationTime}
+
+  onChange={update("preparationTime")}
+
+  error={errors.preparationTime}
+
 />
+
+
+
+
+
 
 
 <SelectField
+
 label="Category"
+
 value={form.category}
+
 onChange={update("category")}
+
+error={errors.category}
+
 options={
 categories.map(c=>({
+
 value:c.name,
-label:c.name
+
+label:c.name,
+
 }))
 }
+
 />
 
 
-<label className="flex gap-2">
+
+
+
+
+
+
+<div>
+
+
+<label className="block text-sm font-medium mb-2">
+
+Meal image
+
+</label>
+
+
 <input
+
+type="file"
+
+accept="image/*"
+
+onChange={handleImageChange}
+
+className="block w-full text-sm"
+
+/>
+
+
+
+{
+preview && (
+
+<img
+
+src={preview}
+
+alt="Preview"
+
+className="mt-3 h-32 w-full rounded-lg object-cover"
+
+/>
+
+)
+
+}
+
+
+</div>
+
+
+
+
+
+
+
+
+<label className="flex items-center gap-2">
+
+
+<input
+
 type="checkbox"
+
 checked={form.available}
+
 onChange={update("available")}
+
+className="h-4 w-4"
+
 />
+
+
+<span>
 Available
+</span>
+
+
 </label>
 
 
-<label className="flex gap-2">
+
+
+
+
+
+
+<label className="flex items-center gap-2">
+
+
 <input
+
 type="checkbox"
+
 checked={form.featured}
+
 onChange={update("featured")}
+
+className="h-4 w-4"
+
 />
+
+
+<span>
 Featured
+</span>
+
+
 </label>
+
+
+
+
+
+
 
 
 <button
+
+type="submit"
+
 disabled={saving}
+
 className="btn-primary w-full"
+
 >
+
+
 {
 saving
-?"Saving..."
-:meal
-?"Save changes"
-:"Add meal"
+
+?
+
+"Saving..."
+
+:
+
+meal
+
+?
+
+"Save changes"
+
+:
+
+"Add meal"
+
 }
+
+
 </button>
+
+
+
 
 
 </form>
 
-    </Modal>
-  );
+
+</Modal>
+
+
+);
+
 }
