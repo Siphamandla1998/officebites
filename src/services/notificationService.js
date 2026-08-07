@@ -1,4 +1,3 @@
-```javascript
 import { supabase } from "./api/supabaseClient";
 
 const getUserId = async () => {
