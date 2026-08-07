@@ -19,15 +19,19 @@ const getUserId = async () => {
 
 const mapNotification = (notification) => ({
   id: notification.id,
-  type: notification.type,
+  type: notification.type || "general",
   title: notification.title,
   body: notification.body,
-  read: notification.read,
-  dismissed: notification.dismissed,
+  read: notification.read ?? false,
+  dismissed: notification.dismissed ?? false,
   createdAt: notification.created_at,
 });
 
 export const notificationService = {
+  // ===============================
+  // CUSTOMER NOTIFICATIONS
+  // ===============================
+
   async getNotifications() {
     const userId = await getUserId();
 
@@ -133,6 +137,10 @@ export const notificationService = {
     return count || 0;
   },
 
+  // ===============================
+  // VENDOR NOTIFICATIONS
+  // ===============================
+
   async getVendorNotifications() {
     const userId = await getUserId();
 
@@ -166,7 +174,11 @@ export const notificationService = {
     return (data || []).map(mapNotification);
   },
 
-  async addVendorNotification({ type = "general", title, body }) {
+  async addVendorNotification({
+    type = "general",
+    title,
+    body,
+  }) {
     const userId = await getUserId();
 
     const { data: profile, error: profileError } = await supabase
@@ -180,7 +192,9 @@ export const notificationService = {
     }
 
     if (profile.role !== "vendor" || !profile.vendor_id) {
-      throw new Error("Current account is not linked to a vendor.");
+      throw new Error(
+        "Current account is not linked to a vendor."
+      );
     }
 
     const { data, error } = await supabase
@@ -280,4 +294,3 @@ export const notificationService = {
     return count || 0;
   },
 };
-```
