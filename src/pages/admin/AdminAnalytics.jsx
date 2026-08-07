@@ -36,33 +36,29 @@ export default function AdminAnalytics() {
     .slice()
     .sort(
       (a, b) =>
-        (b.rating || 0) * (b.reviewCount || 0) -
-        (a.rating || 0) * (a.reviewCount || 0)
+        ((b.rating || 0) * (b.reviewCount || 0)) -
+        ((a.rating || 0) * (a.reviewCount || 0))
     )
     .slice(0, 5)
-    .map((v) => ({
-      name: v.name,
+    .map((vendor) => ({
+      name: vendor.name,
       score: Math.round(
-        (v.rating || 0) * (v.reviewCount || 0)
+        (vendor.rating || 0) * (vendor.reviewCount || 0)
       ),
     }));
 
 
-  const categoryCounts = (meals || []).reduce(
-    (acc, meal) => {
-      const category = meal.category || "Other";
+  const categoryCounts = (meals || []).reduce((acc, meal) => {
+    const category = meal.category || "Other";
 
-      acc[category] =
-        (acc[category] || 0) + 1;
+    acc[category] = (acc[category] || 0) + 1;
 
-      return acc;
-    },
-    {}
-  );
+    return acc;
+  }, {});
 
 
   return (
-    <div className="space-y-5">
+    <div className="flex flex-col gap-5">
 
       {/* Header */}
       <div>
@@ -76,80 +72,61 @@ export default function AdminAnalytics() {
       </div>
 
 
-      {/* Commission revenue */}
+      {/* Revenue */}
       <div className="card p-5">
-
         <h3 className="section-title mb-4">
           Commission revenue trend
         </h3>
 
-
         {revenueLoading ? (
-
           <div className="skeleton h-36" />
-
         ) : (
-
           <LineChart
             data={revenue || []}
             xKey="week"
             yKey="commission"
           />
-
         )}
-
       </div>
 
 
-      {/* Top vendors */}
+      {/* Vendors */}
       <div className="card p-5">
-
         <h3 className="section-title mb-4">
           Top performing vendors
         </h3>
 
-
         {vendorsLoading ? (
-
           <div className="skeleton h-36" />
-
         ) : topVendors.length === 0 ? (
-
           <p className="text-sm text-ink-muted">
             No approved vendors yet.
           </p>
-
         ) : (
-
           <BarChart
             data={topVendors}
             xKey="name"
             yKey="score"
             formatValue={(value) => `${value} pts`}
           />
-
         )}
-
       </div>
 
 
-      {/* Category demand */}
+      {/* Categories */}
       <div className="card p-5">
 
         <h3 className="section-title mb-4 flex items-center gap-2">
-
           <FiTrendingUp
             size={15}
             className="text-nude-600"
           />
 
           Category demand
-
         </h3>
 
 
         {mealsLoading ? (
-
           <div className="skeleton h-20" />
 
         ) : Object.keys(categoryCounts).length === 0 ? (
@@ -174,7 +151,6 @@ export default function AdminAnalytics() {
                     {category}
                   </p>
 
-
                   <p className="text-lg font-bold text-ink">
                     {count} meals
                   </p>
@@ -189,7 +165,6 @@ export default function AdminAnalytics() {
         )}
 
       </div>
-
 
     </div>
   );
