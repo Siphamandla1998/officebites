@@ -1,7 +1,7 @@
 ```javascript
 import { supabase } from "./api/supabaseClient";
 
-const getCurrentUserId = async () => {
+async function getUserId() {
   const {
     data: { user },
     error,
@@ -16,31 +16,23 @@ const getCurrentUserId = async () => {
   }
 
   return user.id;
-};
+}
 
-const getCurrentProfile = async () => {
-  const userId = await getCurrentUserId();
-
-  const { data, error } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("id", userId)
-    .single();
-
-  if (error) {
-    throw new Error(error.message);
-  }
-
-  return data;
-};
+function mapNotification(notification) {
+  return {
+    id: notification.id,
+    type: notification.type,
+    title: notification.title,
+    body: notification.body,
+    read: notification.read,
+    dismissed: notification.dismissed,
+    createdAt: notification.created_at,
+  };
+}
 
 export const notificationService = {
-  // ============================================================
-  // CUSTOMER NOTIFICATIONS
-  // ============================================================
-
   async getNotifications() {
-    const userId = await getCurrentUserId();
+    const userId = await getUserId();
 
     const { data, error } = await supabase
       .from("notifications")
@@ -55,19 +47,11 @@ export const notificationService = {
       throw new Error(error.message);
     }
 
-    return (data || []).map((notification) => ({
-      id: notification.id,
-      type: notification.type,
-      title: notification.title,
-      body: notification.body,
-      read: notification.read,
-      dismissed: notification.dismissed,
-      createdAt: notification.created_at,
-    }));
+    return (data || []).map(mapNotification);
   },
 
   async addNotification({ type = "general", title, body }) {
-    const userId = await getCurrentUserId();
+    const userId = await getUserId();
 
     const { data, error } = await supabase
       .from("notifications")
@@ -88,20 +72,12 @@ export const notificationService = {
 
     return {
       success: true,
-      notification: {
-        id: data.id,
-        type: data.type,
-        title: data.title,
-        body: data.body,
-        read: data.read,
-        dismissed: data.dismissed,
-        createdAt: data.created_at,
-      },
+      notification: mapNotification(data),
     };
   },
 
   async markAsRead(id) {
-    const userId = await getCurrentUserId();
+    const userId = await getUserId();
 
     const { error } = await supabase
       .from("notifications")
@@ -121,7 +97,7 @@ export const notificationService = {
   },
 
   async dismiss(id) {
-    const userId = await getCurrentUserId();
+    const userId = await getUserId();
 
     const { error } = await supabase
       .from("notifications")
@@ -141,7 +117,7 @@ export const notificationService = {
   },
 
   async getUnreadCount() {
-    const userId = await getCurrentUserId();
+    const userId = await getUserId();
 
     const { count, error } = await supabase
       .from("notifications")
@@ -160,28 +136,27 @@ export const notificationService = {
     return count || 0;
   },
 
-  // ============================================================
-  // VENDOR NOTIFICATIONS
-  // ============================================================
-
   async getVendorNotifications() {
-    const profile = await getCurrentProfile();
+    const userId = await getUserId();
 
-    if (!profile.vendor_id) {
-      return [];
+    const { data: profile, error: profileError } = await supabase
+      .from("profiles")
+      .select("vendor_id, role")
+      .eq("id", userId)
+      .single();
+
+    if (profileError) {
+      throw new Error(profileError.message);
     }
 
-    /*
-     * Vendor notifications are stored against the vendor user's
-     * profile ID, not the vendor table ID.
-     *
-     * This keeps notifications tied to the authenticated account.
-     */
+    if (profile.role !== "vendor" || !profile.vendor_id) {
+      return [];
+    }
 
     const { data, error } = await supabase
       .from("notifications")
       .select("*")
-      .eq("user_id", profile.id)
+      .eq("user_id", userId)
       .eq("dismissed", false)
       .order("created_at", {
         ascending: false,
@@ -191,28 +166,30 @@ export const notificationService = {
       throw new Error(error.message);
     }
 
-    return (data || []).map((notification) => ({
-      id: notification.id,
-      type: notification.type,
-      title: notification.title,
-      body: notification.body,
-      read: notification.read,
-      dismissed: notification.dismissed,
-      createdAt: notification.created_at,
-    }));
+    return (data || []).map(mapNotification);
   },
 
   async addVendorNotification({ type = "general", title, body }) {
-    const profile = await getCurrentProfile();
+    const userId = await getUserId();
 
-    if (!profile.vendor_id) {
-      throw new Error("The current account is not linked to a vendor.");
+    const { data: profile, error: profileError } = await supabase
+      .from("profiles")
+      .select("vendor_id, role")
+      .eq("id", userId)
+      .single();
+
+    if (profileError) {
+      throw new Error(profileError.message);
+    }
+
+    if (profile.role !== "vendor" || !profile.vendor_id) {
+      throw new Error("Current account is not linked to a vendor.");
     }
 
     const { data, error } = await supabase
       .from("notifications")
       .insert({
-        user_id: profile.id,
+        user_id: userId,
         type,
         title,
         body,
@@ -228,24 +205,12 @@ export const notificationService = {
 
     return {
       success: true,
-      notification: {
-        id: data.id,
-        type: data.type,
-        title: data.title,
-        body: data.body,
-        read: data.read,
-        dismissed: data.dismissed,
-        createdAt: data.created_at,
-      },
+      notification: mapNotification(data),
     };
   },
 
   async markVendorNotificationRead(id) {
-    const profile = await getCurrentProfile();
-
-    if (!profile.vendor_id) {
-      throw new Error("The current account is not linked to a vendor.");
-    }
+    const userId = await getUserId();
 
     const { error } = await supabase
       .from("notifications")
@@ -253,7 +218,7 @@ export const notificationService = {
         read: true,
       })
       .eq("id", id)
-      .eq("user_id", profile.id);
+      .eq("user_id", userId);
 
     if (error) {
       throw new Error(error.message);
@@ -265,11 +230,7 @@ export const notificationService = {
   },
 
   async dismissVendorNotification(id) {
-    const profile = await getCurrentProfile();
-
-    if (!profile.vendor_id) {
-      throw new Error("The current account is not linked to a vendor.");
-    }
+    const userId = await getUserId();
 
     const { error } = await supabase
       .from("notifications")
@@ -277,7 +238,7 @@ export const notificationService = {
         dismissed: true,
       })
       .eq("id", id)
-      .eq("user_id", profile.id);
+      .eq("user_id", userId);
 
     if (error) {
       throw new Error(error.message);
@@ -289,9 +250,19 @@ export const notificationService = {
   },
 
   async getVendorUnreadCount() {
-    const profile = await getCurrentProfile();
+    const userId = await getUserId();
 
-    if (!profile.vendor_id) {
+    const { data: profile, error: profileError } = await supabase
+      .from("profiles")
+      .select("vendor_id, role")
+      .eq("id", userId)
+      .single();
+
+    if (profileError) {
+      throw new Error(profileError.message);
+    }
+
+    if (profile.role !== "vendor" || !profile.vendor_id) {
       return 0;
     }
 
@@ -301,7 +272,7 @@ export const notificationService = {
         count: "exact",
         head: true,
       })
-      .eq("user_id", profile.id)
+      .eq("user_id", userId)
       .eq("read", false)
       .eq("dismissed", false);
 
