@@ -1,7 +1,7 @@
 import { mockResolve } from "./api/mockAdapter";
 import { loadState, saveState } from "./localPersist";
 
-let chatStore = loadState("chats", chats);
+let chatStore = loadState("chats", []);
 const persistChats = () => saveState("chats", chatStore);
 
 // Single mock live-support conversation, seeded with a friendly greeting —
