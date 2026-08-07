@@ -6,6 +6,9 @@ import {
   ORDER_STATUS,
 } from "../utils/constants";
 
+const DEFAULT_MEAL_IMAGE =
+  "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&q=80";
+
 
 const startOfDay = (d) =>
   new Date(
