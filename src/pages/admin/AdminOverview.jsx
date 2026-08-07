@@ -32,7 +32,11 @@ export default function AdminOverview() {
         {revLoading ? (
           <div className="skeleton h-36" />
         ) : (
-          <LineChart data={revenue} xKey="week" yKey="gmv" />
+          <LineChart 
+           data={revenue || []} 
+           xKey="week" 
+           yKey="gmv" 
+          />
         )}
       </div>
     </div>
