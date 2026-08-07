@@ -208,7 +208,7 @@ export default function VendorOverview() {
         </h3>
 
         <BarChart
-          data={vendorRevenue7d}
+          data={stats?.revenueChart || []}
           xKey="day"
           yKey="revenue"
         />
