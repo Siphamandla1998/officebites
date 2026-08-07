@@ -12,12 +12,9 @@ export default function FoodCard({
   onToggleFavourite,
   layout = "grid",
 }) {
-
   if (!meal) return null;
 
-
   if (layout === "row") {
-
     return (
       <div className="shrink-0 w-56 card overflow-hidden">
 
@@ -29,11 +26,9 @@ export default function FoodCard({
           />
         </Link>
 
-
         <div className="p-3">
 
           <Link to={`/food/${meal.id}`}>
-
             <h4 className="text-sm font-semibold text-ink truncate">
               {meal.name}
             </h4>
@@ -41,7 +36,6 @@ export default function FoodCard({
             <p className="text-xs text-ink-muted">
               {meal.vendorName}
             </p>
-
           </Link>
 
 
@@ -57,9 +51,8 @@ export default function FoodCard({
               className="btn-icon !h-8 !w-8 !bg-ink !text-paper !border-ink"
               aria-label="Add to cart"
             >
-              <FiPlus size={15}/>
+              <FiPlus size={15} />
             </button>
-
 
           </div>
 
@@ -67,34 +60,25 @@ export default function FoodCard({
 
       </div>
     );
-
   }
 
 
-
   return (
-
     <div className="card overflow-hidden relative">
-
 
       <div className="relative">
 
-
         <Link to={`/food/${meal.id}`}>
-
           <img
             src={meal.image || PLACEHOLDER_IMAGE}
             alt={meal.name}
             className="h-40 w-full object-cover"
             loading="lazy"
           />
-
         </Link>
 
 
-
         {onToggleFavourite && (
-
           <button
             onClick={() => onToggleFavourite(meal)}
             className="absolute top-2 right-2 h-8 w-8 rounded-full bg-paper-raised/90 backdrop-blur flex items-center justify-center shadow-card"
@@ -105,34 +89,26 @@ export default function FoodCard({
               size={15}
               className={
                 isFavourite
-                ? "fill-danger text-danger"
-                : "text-ink-soft"
+                  ? "fill-danger text-danger"
+                  : "text-ink-soft"
               }
             />
 
           </button>
-
         )}
 
 
-
-        {meal.tags?.[0] && (
-
+        {meal.tags?.length > 0 && (
           <span className="absolute bottom-2 left-2 badge">
             {meal.tags[0]}
           </span>
-
         )}
-
 
       </div>
 
 
 
-
-
       <div className="p-3.5">
-
 
         <Link to={`/food/${meal.id}`}>
 
@@ -145,57 +121,36 @@ export default function FoodCard({
             {meal.vendorName}
           </p>
 
-
         </Link>
 
 
-
-
-
         {meal.rating > 0 && (
-
           <div className="mt-2">
-            <Rating value={meal.rating}/>
+            <Rating value={meal.rating} />
           </div>
-
         )}
 
 
-
-
-
         <div className="flex items-center justify-between mt-3">
-
 
           <span className="text-sm font-semibold text-nude-700">
             {formatCurrency(meal.price)}
           </span>
 
 
-
           <button
-
             onClick={() => onAdd?.(meal)}
-
             className="btn-icon !h-8 !w-8 !bg-ink !text-paper !border-ink"
-
             aria-label="Add to cart"
-
           >
-
-            <FiPlus size={15}/>
-
+            <FiPlus size={15} />
           </button>
-
 
         </div>
 
 
       </div>
 
-
     </div>
-
   );
-
 }
