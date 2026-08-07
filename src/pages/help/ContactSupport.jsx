@@ -9,7 +9,7 @@ import TicketSubmittedPanel from "../../components/features/TicketSubmittedPanel
 import { supportService } from "../../services/supportService";
 import { useToast } from "../../context/ToastContext";
 import { useAuth } from "../../context/AuthContext";
-import { FAQ_CATEGORIES } from "../../mock/support";
+
 
 export default function ContactSupport() {
   const { user } = useAuth();
