@@ -41,32 +41,27 @@ export default function MealFormModal({
       return;
     }
 
-    const initial = meal
-      ? {
-          name: meal.name || "",
-          description: meal.description || "",
-          price: meal.price ?? "",
-          category: meal.category || "Meals",
-          preparationTime: meal.preparationTime ?? "",
-          available: meal.available ?? true,
-          featured: meal.featured ?? false,
-          image: meal.image || "",
-        }
-      : { ...EMPTY_FORM };
+    if (meal) {
+      setForm({
+        name: meal.name || "",
+        description: meal.description || "",
+        price: meal.price ?? "",
+        category: meal.category || "Meals",
+        preparationTime: meal.preparationTime ?? "",
+        available: meal.available ?? true,
+        featured: meal.featured ?? false,
+        image: meal.image || "",
+      });
 
-    setForm(initial);
-    setPreview(meal?.image || "");
+      setPreview(meal.image || "");
+    } else {
+      setForm({ ...EMPTY_FORM });
+      setPreview("");
+    }
+
     setImageFile(null);
     setErrors({});
   }, [open, meal]);
-
-  useEffect(() => {
-    return () => {
-      if (preview?.startsWith("blob:")) {
-        URL.revokeObjectURL(preview);
-      }
-    };
-  }, [preview]);
 
   const update = (key) => (event) => {
     const value =
@@ -90,7 +85,7 @@ export default function MealFormModal({
     if (!file.type.startsWith("image/")) {
       setErrors((previous) => ({
         ...previous,
-        image: "Please select an image file.",
+        image: "Only image files are allowed.",
       }));
       return;
     }
@@ -105,23 +100,23 @@ export default function MealFormModal({
 
     setErrors((previous) => ({
       ...previous,
-      image: undefined,
+      image: "",
     }));
 
     setImageFile(file);
-
     setPreview(URL.createObjectURL(file));
   };
 
   const validate = () => {
-    const next = {};
+    const nextErrors = {};
 
     if (!form.name.trim()) {
-      next.name = "Meal name is required.";
+      nextErrors.name = "Meal name is required.";
     }
 
     if (!form.description.trim()) {
-      next.description = "Add a short description.";
+      nextErrors.description =
+        "Add a short description.";
     }
 
     if (
@@ -129,24 +124,24 @@ export default function MealFormModal({
       form.price === null ||
       Number(form.price) <= 0
     ) {
-      next.price = "Enter a valid price.";
+      nextErrors.price = "Enter a valid price.";
     }
 
     if (!form.category) {
-      next.category = "Choose a category.";
+      nextErrors.category = "Choose a category.";
     }
 
     if (
       form.preparationTime === "" ||
       Number(form.preparationTime) <= 0
     ) {
-      next.preparationTime =
+      nextErrors.preparationTime =
         "Enter preparation time.";
     }
 
-    setErrors(next);
+    setErrors(nextErrors);
 
-    return Object.keys(next).length === 0;
+    return Object.keys(nextErrors).length === 0;
   };
 
   const submit = async (event) => {
@@ -237,10 +232,6 @@ export default function MealFormModal({
             onChange={handleImageChange}
             className="block w-full text-sm"
           />
-
-          <p className="text-xs text-gray-500">
-            JPG, PNG, WEBP or another image format. Maximum 5MB.
-          </p>
 
           {errors.image && (
             <p className="text-sm text-danger">
