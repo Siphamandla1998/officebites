@@ -1,80 +1,206 @@
 import { useState, useRef, useEffect } from "react";
-import { useParams } from "react-router-dom";
-import { FiSend } from "react-icons/fi";
+import { useParams, useNavigate } from "react-router-dom";
+import { FiSend, FiArrowLeft } from "react-icons/fi";
+
 import Navbar from "../../components/layout/Navbar";
 import { useAsync } from "../../hooks/useAsync";
 import { chatService } from "../../services/chatService";
 import { useAuth } from "../../context/AuthContext";
-import { ROLES } from "../../utils/constants";
 import { formatTime } from "../../utils/formatters";
 
 export default function ChatConversation() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { user } = useAuth();
-  const { data: conversation, setData } = useAsync(() => chatService.getConversation(id), [id]);
+
+  const {
+    data: conversation,
+    loading,
+    refetch,
+  } = useAsync(
+    () => chatService.getConversation(id),
+    [id]
+  );
+
   const [text, setText] = useState("");
+  const [sending, setSending] = useState(false);
+
   const bottomRef = useRef(null);
-  const myRole = user?.role === ROLES.VENDOR ? "vendor" : "customer";
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [conversation?.messages?.length]);
+    if (!conversation) return;
 
-  useEffect(() => {
-    if (conversation) chatService.markConversationRead(id, myRole);
-  }, [conversation, id, myRole]);
+    bottomRef.current?.scrollIntoView({
+      behavior: "smooth",
+    });
+
+    chatService.markConversationRead(id).catch(() => {});
+  }, [conversation, id]);
 
   const send = async () => {
-    if (!text.trim()) return;
-    const message = await chatService.sendMessage(id, { sender: myRole, text });
-    setData((prev) => ({ ...prev, messages: [...prev.messages, message] }));
-    setText("");
+    const messageText = text.trim();
+
+    if (!messageText || sending) {
+      return;
+    }
+
+    try {
+      setSending(true);
+
+      await chatService.sendMessage(
+        id,
+        messageText
+      );
+
+      setText("");
+
+      await refetch();
+    } catch (error) {
+      console.error("Failed to send message:", error);
+    } finally {
+      setSending(false);
+    }
   };
+
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      send();
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-paper">
+        <Navbar />
+
+        <div className="max-w-3xl mx-auto px-4 py-10">
+          Loading conversation...
+        </div>
+      </div>
+    );
+  }
 
   if (!conversation) {
     return (
-      <div>
-        <Navbar showBack showCart={false} />
-        <div className="ob-container pt-4"><div className="skeleton h-40" /></div>
+      <div className="min-h-screen bg-paper">
+        <Navbar />
+
+        <div className="max-w-3xl mx-auto px-4 py-10">
+          <button
+            onClick={() => navigate("/chat")}
+            className="flex items-center gap-2 text-sm mb-6"
+          >
+            <FiArrowLeft />
+            Back to messages
+          </button>
+
+          <div className="card p-6">
+            Conversation not found.
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col h-screen">
-      <Navbar showBack title={conversation.vendorName} showCart={false} />
-      <div className="flex-1 overflow-y-auto ob-container py-4 flex flex-col gap-2.5">
-        {conversation.messages.map((m) => {
-          const mine = m.sender === myRole;
-          return (
-            <div key={m.id} className={`flex ${mine ? "justify-end" : "justify-start"}`}>
-              <div
-                className={`max-w-[75%] rounded-2xl px-3.5 py-2.5 text-sm ${
-                  mine ? "bg-ink text-paper rounded-br-sm" : "bg-nude-100 text-ink rounded-bl-sm"
-                }`}
-              >
-                {m.text}
-                <p className={`text-[10px] mt-1 ${mine ? "text-paper/50" : "text-ink-muted"}`}>
-                  {formatTime(m.time)}
-                </p>
-              </div>
+    <div className="min-h-screen bg-paper flex flex-col">
+      <Navbar />
+
+      <main className="flex-1 max-w-3xl w-full mx-auto flex flex-col">
+        <div className="border-b border-nude-200 px-4 py-4 flex items-center gap-3">
+          <button
+            onClick={() => navigate("/chat")}
+            className="btn-icon"
+            aria-label="Back to messages"
+          >
+            <FiArrowLeft />
+          </button>
+
+          <div>
+            <h1 className="font-semibold">
+              {user?.id === conversation.customerId
+                ? "Vendor"
+                : "Customer"}
+            </h1>
+
+            <p className="text-xs text-ink-muted">
+              OfficeBites messages
+            </p>
+          </div>
+        </div>
+
+        <div className="flex-1 px-4 py-6 space-y-3 overflow-y-auto">
+          {conversation.messages.length === 0 ? (
+            <div className="text-center text-sm text-ink-muted py-10">
+              No messages yet. Start the conversation.
             </div>
-          );
-        })}
-        <div ref={bottomRef} />
-      </div>
-      <div className="ob-container pb-4 pt-2 flex items-center gap-2 border-t border-line">
-        <input
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && send()}
-          placeholder="Type a message..."
-          className="input flex-1"
-        />
-        <button onClick={send} className="btn-icon !bg-ink !text-paper !border-ink">
-          <FiSend size={15} />
-        </button>
-      </div>
+          ) : (
+            conversation.messages.map((message) => {
+              const mine =
+                message.senderId === user?.id;
+
+              return (
+                <div
+                  key={message.id}
+                  className={`flex ${
+                    mine
+                      ? "justify-end"
+                      : "justify-start"
+                  }`}
+                >
+                  <div
+                    className={`max-w-[75%] rounded-2xl px-3.5 py-2.5 text-sm ${
+                      mine
+                        ? "bg-ink text-paper rounded-br-sm"
+                        : "bg-nude-100 text-ink rounded-bl-sm"
+                    }`}
+                  >
+                    <div>{message.text}</div>
+
+                    <p
+                      className={`text-[10px] mt-1 ${
+                        mine
+                          ? "text-paper/50"
+                          : "text-ink-muted"
+                      }`}
+                    >
+                      {formatTime(message.time)}
+                    </p>
+                  </div>
+                </div>
+              );
+            })
+          )}
+
+          <div ref={bottomRef} />
+        </div>
+
+        <div className="border-t border-nude-200 p-4">
+          <div className="flex gap-2">
+            <input
+              value={text}
+              onChange={(event) =>
+                setText(event.target.value)
+              }
+              onKeyDown={handleKeyDown}
+              placeholder="Type a message..."
+              className="input flex-1"
+              disabled={sending}
+            />
+
+            <button
+              onClick={send}
+              disabled={!text.trim() || sending}
+              className="btn-primary flex items-center gap-2"
+            >
+              <FiSend />
+
+              {sending ? "Sending..." : "Send"}
+            </button>
+          </div>
+        </div>
+      </main>
     </div>
   );
 }
