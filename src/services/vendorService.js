@@ -17,9 +17,11 @@ const DEFAULT_MEAL_IMAGE =
   "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&q=80";
 
 const uploadMealImage = async (vendorId, file) => {
-  if (!file) return null;
+  if (!file) {
+    return null;
+  }
 
-  if (!file.type.startsWith("image/")) {
+  if (!file.type || !file.type.startsWith("image/")) {
     throw new Error("Only image files are allowed");
   }
 
@@ -31,9 +33,16 @@ const uploadMealImage = async (vendorId, file) => {
     .replace(/\s+/g, "-")
     .replace(/[^a-zA-Z0-9.-]/g, "");
 
+  const filePath =
+    String(vendorId) +
+    "/" +
+    String(Date.now()) +
+    "-" +
+    safeName;
+
   return uploadToBucket(
     BUCKETS.MEAL_IMAGES,
-    `${vendorId}/${Date.now()}-${safeName}`,
+    filePath,
     file
   );
 };
@@ -72,7 +81,11 @@ export const vendorService = {
 
     if (search) {
       query = query.or(
-        `name.ilike.%${search}%,category.ilike.%${search}%`
+        "name.ilike.%" +
+          search +
+          "%,category.ilike.%" +
+          search +
+          "%"
       );
     }
 
@@ -103,7 +116,9 @@ export const vendorService = {
   },
 
   async getVendorById(id) {
-    if (!id) return null;
+    if (!id) {
+      return null;
+    }
 
     const { data, error } = await supabase
       .from("vendors")
@@ -119,7 +134,9 @@ export const vendorService = {
   },
 
   async getVendorMenu(id) {
-    if (!id) return [];
+    if (!id) {
+      return [];
+    }
 
     const { data, error } = await supabase
       .from("meals")
@@ -144,6 +161,10 @@ export const vendorService = {
   },
 
   async getVendorReviews(id) {
+    if (!id) {
+      return [];
+    }
+
     const { data, error } = await supabase
       .from("reviews")
       .select("*")
@@ -217,7 +238,7 @@ export const vendorService = {
       throw new Error("Vendor ID is required.");
     }
 
-    if (!meal?.name?.trim()) {
+    if (!meal || !meal.name || !meal.name.trim()) {
       throw new Error("Meal name is required.");
     }
 
@@ -227,6 +248,12 @@ export const vendorService = {
       meal.price === ""
     ) {
       throw new Error("Meal price is required.");
+    }
+
+    const numericPrice = Number(meal.price);
+
+    if (!Number.isFinite(numericPrice) || numericPrice <= 0) {
+      throw new Error("Meal price must be a valid amount.");
     }
 
     let image = DEFAULT_MEAL_IMAGE;
@@ -244,16 +271,20 @@ export const vendorService = {
         vendor_id: vendorId,
         name: meal.name.trim(),
         description: meal.description || "",
-        price: Number(meal.price),
-        category: meal.category || "meals",
-        image,
+        price: numericPrice,
+        category: meal.category || "Meals",
+        image: image,
         preparation_time: Number(
           meal.preparationTime || 0
         ),
         available:
-          meal.available ?? true,
+          meal.available !== undefined
+            ? meal.available
+            : true,
         featured:
-          meal.featured ?? false,
+          meal.featured !== undefined
+            ? meal.featured
+            : false,
         tags: meal.tags || [],
       })
       .select(`
@@ -289,45 +320,47 @@ export const vendorService = {
       );
     }
 
-    const patch = {
-      ...(updates.name !== undefined && {
-        name: updates.name,
-      }),
+    const patch = {};
 
-      ...(updates.description !== undefined && {
-        description: updates.description,
-      }),
+    if (updates.name !== undefined) {
+      patch.name = updates.name;
+    }
 
-      ...(updates.price !== undefined && {
-        price: Number(updates.price),
-      }),
+    if (updates.description !== undefined) {
+      patch.description = updates.description;
+    }
 
-      ...(updates.category !== undefined && {
-        category: updates.category,
-      }),
+    if (updates.price !== undefined) {
+      patch.price = Number(updates.price);
+    }
 
-      ...(image && {
-        image,
-      }),
+    if (updates.category !== undefined) {
+      patch.category = updates.category;
+    }
 
-      ...(updates.preparationTime !== undefined && {
-        preparation_time: Number(
-          updates.preparationTime
-        ),
-      }),
+    if (image) {
+      patch.image = image;
+    }
 
-      ...(updates.available !== undefined && {
-        available: updates.available,
-      }),
+    if (
+      updates.preparationTime !== undefined
+    ) {
+      patch.preparation_time = Number(
+        updates.preparationTime
+      );
+    }
 
-      ...(updates.featured !== undefined && {
-        featured: updates.featured,
-      }),
+    if (updates.available !== undefined) {
+      patch.available = updates.available;
+    }
 
-      ...(updates.tags !== undefined && {
-        tags: updates.tags,
-      }),
-    };
+    if (updates.featured !== undefined) {
+      patch.featured = updates.featured;
+    }
+
+    if (updates.tags !== undefined) {
+      patch.tags = updates.tags;
+    }
 
     const { data, error } = await supabase
       .from("meals")
@@ -347,6 +380,10 @@ export const vendorService = {
   },
 
   async deleteMeal(mealId) {
+    if (!mealId) {
+      throw new Error("Meal ID is required.");
+    }
+
     const { error } = await supabase
       .from("meals")
       .delete()
@@ -366,7 +403,7 @@ export const vendorService = {
     const { error } = await supabase
       .from("meals")
       .update({
-        available,
+        available: available,
       })
       .eq("id", mealId);
 
@@ -384,7 +421,7 @@ export const vendorService = {
     const { error } = await supabase
       .from("meals")
       .update({
-        featured,
+        featured: featured,
       })
       .eq("id", mealId);
 
@@ -403,33 +440,37 @@ export const vendorService = {
     vendorId,
     updates
   ) {
-    const patch = {
-      ...(updates.name !== undefined && {
-        name: updates.name,
-      }),
+    if (!vendorId) {
+      throw new Error("Vendor ID is required.");
+    }
 
-      ...(updates.tagline !== undefined && {
-        tagline: updates.tagline,
-      }),
+    const patch = {};
 
-      ...(updates.building !== undefined && {
-        building: updates.building,
-      }),
+    if (updates.name !== undefined) {
+      patch.name = updates.name;
+    }
 
-      ...(updates.contactNumber !== undefined && {
-        contact_number:
-          updates.contactNumber,
-      }),
+    if (updates.tagline !== undefined) {
+      patch.tagline = updates.tagline;
+    }
 
-      ...(updates.logo !== undefined && {
-        logo: updates.logo,
-      }),
+    if (updates.building !== undefined) {
+      patch.building = updates.building;
+    }
 
-      ...(updates.coverImage !== undefined && {
-        cover_image:
-          updates.coverImage,
-      }),
-    };
+    if (updates.contactNumber !== undefined) {
+      patch.contact_number =
+        updates.contactNumber;
+    }
+
+    if (updates.logo !== undefined) {
+      patch.logo = updates.logo;
+    }
+
+    if (updates.coverImage !== undefined) {
+      patch.cover_image =
+        updates.coverImage;
+    }
 
     const { data, error } = await supabase
       .from("vendors")
