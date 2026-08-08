@@ -1,4 +1,3 @@
-```javascript
 import {
   supabase,
   uploadToBucket,
@@ -16,38 +15,40 @@ import { VENDOR_STATUS } from "../utils/constants";
 const DEFAULT_MEAL_IMAGE =
   "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&q=80";
 
+/**
+ * Upload a meal image to Supabase Storage.
+ */
 const uploadMealImage = async (vendorId, file) => {
   if (!file) {
     return null;
   }
 
-  if (!file.type || !file.type.startsWith("image/")) {
-    throw new Error("Only image files are allowed");
+  if (!file.type?.startsWith("image/")) {
+    throw new Error("Only image files are allowed.");
   }
 
   if (file.size > 5 * 1024 * 1024) {
-    throw new Error("Image must be smaller than 5MB");
+    throw new Error("Image must be smaller than 5MB.");
   }
 
   const safeName = file.name
     .replace(/\s+/g, "-")
     .replace(/[^a-zA-Z0-9.-]/g, "");
 
-  const filePath =
-    String(vendorId) +
-    "/" +
-    String(Date.now()) +
-    "-" +
-    safeName;
+  const path = `${vendorId}/${Date.now()}-${safeName}`;
 
   return uploadToBucket(
     BUCKETS.MEAL_IMAGES,
-    filePath,
+    path,
     file
   );
 };
 
 export const vendorService = {
+  // =========================================================
+  // CUSTOMER VENDOR FETCHING
+  // =========================================================
+
   async getVendors({
     category,
     building,
@@ -77,11 +78,7 @@ export const vendorService = {
 
     if (search) {
       query = query.or(
-        "name.ilike.%" +
-          search +
-          "%,category.ilike.%" +
-          search +
-          "%"
+        `name.ilike.%${search}%,category.ilike.%${search}%`
       );
     }
 
@@ -129,19 +126,28 @@ export const vendorService = {
     return data ? mapVendor(data) : null;
   },
 
-  async getVendorMenu(id) {
-    if (!id) {
+  async getVendorMenu(vendorId) {
+    if (!vendorId) {
       return [];
     }
 
     const { data, error } = await supabase
       .from("meals")
-      .select("*, vendors(name, status)")
-      .eq("vendor_id", id)
+      .select(`
+        *,
+        vendors!inner(
+          name,
+          status
+        )
+      `)
+      .eq("vendor_id", vendorId)
       .eq(
         "vendors.status",
         VENDOR_STATUS.APPROVED
-      );
+      )
+      .order("created_at", {
+        ascending: false,
+      });
 
     if (error) {
       throw new Error(error.message);
@@ -150,15 +156,15 @@ export const vendorService = {
     return (data || []).map(mapMeal);
   },
 
-  async getVendorReviews(id) {
-    if (!id) {
+  async getVendorReviews(vendorId) {
+    if (!vendorId) {
       return [];
     }
 
     const { data, error } = await supabase
       .from("reviews")
       .select("*")
-      .eq("vendor_id", id)
+      .eq("vendor_id", vendorId)
       .order("created_at", {
         ascending: false,
       });
@@ -170,65 +176,71 @@ export const vendorService = {
     return (data || []).map(mapReview);
   },
 
-  // ==========================================
+  // =========================================================
   // ADMIN VENDOR MANAGEMENT
-  // ==========================================
+  // =========================================================
 
-  async approveVendor(id) {
+  async approveVendor(vendorId) {
     const { error } = await supabase
       .from("vendors")
       .update({
         status: VENDOR_STATUS.APPROVED,
       })
-      .eq("id", id);
+      .eq("id", vendorId);
 
     if (error) {
       throw new Error(error.message);
     }
 
-    return { success: true };
+    return {
+      success: true,
+    };
   },
 
-  async rejectVendor(id) {
+  async rejectVendor(vendorId) {
     const { error } = await supabase
       .from("vendors")
       .update({
         status: VENDOR_STATUS.REJECTED,
       })
-      .eq("id", id);
+      .eq("id", vendorId);
 
     if (error) {
       throw new Error(error.message);
     }
 
-    return { success: true };
+    return {
+      success: true,
+    };
   },
 
-  async suspendVendor(id) {
+  async suspendVendor(vendorId) {
     const { error } = await supabase
       .from("vendors")
       .update({
         status: VENDOR_STATUS.SUSPENDED,
       })
-      .eq("id", id);
+      .eq("id", vendorId);
 
     if (error) {
       throw new Error(error.message);
     }
 
-    return { success: true };
+    return {
+      success: true,
+    };
   },
 
-  // ==========================================
+  // =========================================================
   // MEAL CRUD
-  // ==========================================
+  // =========================================================
 
   async addMeal(vendorId, meal) {
     if (!vendorId) {
       throw new Error("Vendor ID is required.");
     }
 
-    if (!meal || !meal.name || !meal.name.trim()) {
+    if (!meal?.name?.trim()) {
       throw new Error("Meal name is required.");
     }
 
@@ -243,9 +255,7 @@ export const vendorService = {
     const price = Number(meal.price);
 
     if (!Number.isFinite(price) || price <= 0) {
-      throw new Error(
-        "Meal price must be a valid amount."
-      );
+      throw new Error("Meal price must be greater than zero.");
     }
 
     let image = DEFAULT_MEAL_IMAGE;
@@ -262,24 +272,21 @@ export const vendorService = {
       .insert({
         vendor_id: vendorId,
         name: meal.name.trim(),
-        description: meal.description || "",
-        price: price,
+        description: meal.description?.trim() || "",
+        price,
         category: meal.category || "Meals",
-        image: image,
+        image,
         preparation_time: Number(
           meal.preparationTime || 0
         ),
-        available:
-          meal.available !== undefined
-            ? meal.available
-            : true,
-        featured:
-          meal.featured !== undefined
-            ? meal.featured
-            : false,
+        available: meal.available ?? true,
+        featured: meal.featured ?? false,
         tags: meal.tags || [],
       })
-      .select("*, vendors(name)")
+      .select(`
+        *,
+        vendors(name)
+      `)
       .single();
 
     if (error) {
@@ -289,7 +296,7 @@ export const vendorService = {
     return mapMeal(data);
   },
 
-  async updateMeal(mealId, updates) {
+  async updateMeal(mealId, updates = {}) {
     if (!mealId) {
       throw new Error("Meal ID is required.");
     }
@@ -312,15 +319,24 @@ export const vendorService = {
     const patch = {};
 
     if (updates.name !== undefined) {
-      patch.name = updates.name;
+      patch.name = updates.name.trim();
     }
 
     if (updates.description !== undefined) {
-      patch.description = updates.description;
+      patch.description =
+        updates.description?.trim() || "";
     }
 
     if (updates.price !== undefined) {
-      patch.price = Number(updates.price);
+      const price = Number(updates.price);
+
+      if (!Number.isFinite(price) || price <= 0) {
+        throw new Error(
+          "Meal price must be greater than zero."
+        );
+      }
+
+      patch.price = price;
     }
 
     if (updates.category !== undefined) {
@@ -355,7 +371,10 @@ export const vendorService = {
       .from("meals")
       .update(patch)
       .eq("id", mealId)
-      .select("*, vendors(name)")
+      .select(`
+        *,
+        vendors(name)
+      `)
       .single();
 
     if (error) {
@@ -379,7 +398,9 @@ export const vendorService = {
       throw new Error(error.message);
     }
 
-    return { success: true };
+    return {
+      success: true,
+    };
   },
 
   async updateMealAvailability(
@@ -393,7 +414,7 @@ export const vendorService = {
     const { error } = await supabase
       .from("meals")
       .update({
-        available: available,
+        available: Boolean(available),
       })
       .eq("id", mealId);
 
@@ -401,7 +422,9 @@ export const vendorService = {
       throw new Error(error.message);
     }
 
-    return { success: true };
+    return {
+      success: true,
+    };
   },
 
   async updateMealFeatured(
@@ -415,7 +438,7 @@ export const vendorService = {
     const { error } = await supabase
       .from("meals")
       .update({
-        featured: featured,
+        featured: Boolean(featured),
       })
       .eq("id", mealId);
 
@@ -423,16 +446,18 @@ export const vendorService = {
       throw new Error(error.message);
     }
 
-    return { success: true };
+    return {
+      success: true,
+    };
   },
 
-  // ==========================================
+  // =========================================================
   // VENDOR PROFILE
-  // ==========================================
+  // =========================================================
 
   async updateVendorProfile(
     vendorId,
-    updates
+    updates = {}
   ) {
     if (!vendorId) {
       throw new Error("Vendor ID is required.");
@@ -452,7 +477,9 @@ export const vendorService = {
       patch.building = updates.building;
     }
 
-    if (updates.contactNumber !== undefined) {
+    if (
+      updates.contactNumber !== undefined
+    ) {
       patch.contact_number =
         updates.contactNumber;
     }
@@ -470,7 +497,7 @@ export const vendorService = {
       .from("vendors")
       .update(patch)
       .eq("id", vendorId)
-      .select("*")
+      .select()
       .single();
 
     if (error) {
@@ -480,4 +507,3 @@ export const vendorService = {
     return mapVendor(data);
   },
 };
-```
