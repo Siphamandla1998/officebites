@@ -40,54 +40,50 @@ export default function Login() {
         password,
       });
 
-      // Make sure the profile returned by Supabase has a valid role.
-      if (!user?.role) {
+      if (!user || !user.role) {
         throw new Error(
           "Your account role could not be determined. Please contact OfficeBites support."
         );
       }
 
-      // Vendor accounts must have a vendor ID.
       if (user.role === ROLES.VENDOR && !user.vendorId) {
         throw new Error(
           "Your vendor account is missing its vendor profile. Please contact OfficeBites support."
         );
       }
 
-      // Debug information while we verify the login flow.
-      console.log("[OfficeBites] Login successful:", {
+      console.log("[OfficeBites] Login successful", {
         id: user.id,
         name: user.name,
         role: user.role,
         vendorId: user.vendorId,
       });
 
+      const firstName = user.name
+        ? user.name.split(" ")[0]
+        : "there";
+
       showToast(
-        `Welcome back, ${(user.name || "there").split(" ")[0]}!`,
+        "Welcome back, " + firstName + "!",
         {
           type: "success",
         }
       );
 
-      /*
-       * If the user was redirected to login because they tried
-       * to access a protected page, return them there.
-       *
-       * Otherwise send them to the correct home for their role.
-       */
       const requestedPath = location.state?.from?.pathname;
 
-      const destination =
-        requestedPath && requestedPath !== "/login"
-          ? requestedPath
-          : ROLE_HOME[user.role] || "/";
+      let destination = ROLE_HOME[user.role] || "/";
+
+      if (requestedPath && requestedPath !== "/login") {
+        destination = requestedPath;
+      }
 
       navigate(destination, {
         replace: true,
         state: {},
       });
     } catch (err) {
-      console.error("[OfficeBites] Login failed:", err);
+      console.error("[OfficeBites] Login failed", err);
 
       showToast(
         err?.message || "Couldn't sign in. Please check your details.",
