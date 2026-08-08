@@ -60,7 +60,7 @@ import {
   Privacy,
   RefundPolicy,
   BusinessHours,
-  NotFound
+  NotFound,
 } from "./routeComponents";
 
 function PageFallback() {
@@ -71,6 +71,16 @@ function PageFallback() {
   );
 }
 
+/*
+ * The root route decides where an already-authenticated user belongs.
+ *
+ * Customer -> customer home
+ * Vendor   -> vendor dashboard
+ * Admin    -> admin dashboard
+ *
+ * This is important when the browser is reopened and Supabase restores
+ * the existing session automatically.
+ */
 function HomeRoute() {
   const { user, loading } = useAuth();
 
@@ -93,16 +103,17 @@ function HomeRoute() {
   return <Home />;
 }
 
-export default function AppRoutes() {
+function AppRoutes() {
   return (
     <Suspense fallback={<PageFallback />}>
       <Routes>
-
+        {/* Authentication */}
         <Route element={<AuthLayout />}>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
         </Route>
 
+        {/* Customer application */}
         <Route element={<CustomerLayout />}>
           <Route path="/" element={<HomeRoute />} />
 
@@ -172,6 +183,7 @@ export default function AppRoutes() {
           />
         </Route>
 
+        {/* Checkout and payment */}
         <Route element={<PublicLayout />}>
           <Route
             path="/checkout"
@@ -184,6 +196,7 @@ export default function AppRoutes() {
           />
         </Route>
 
+        {/* Customer/vendor conversation */}
         <Route
           element={
             <ProtectedRoute
@@ -199,6 +212,7 @@ export default function AppRoutes() {
           />
         </Route>
 
+        {/* Vendor dashboard */}
         <Route
           path="/vendor"
           element={
@@ -248,6 +262,7 @@ export default function AppRoutes() {
           />
         </Route>
 
+        {/* Admin dashboard */}
         <Route
           path="/admin"
           element={
@@ -287,6 +302,7 @@ export default function AppRoutes() {
           />
         </Route>
 
+        {/* Help and support */}
         <Route element={<PublicLayout />}>
           <Route
             path="/help"
@@ -354,6 +370,7 @@ export default function AppRoutes() {
           />
         </Route>
 
+        {/* 404 */}
         <Route
           path="/404"
           element={<NotFound />}
@@ -363,9 +380,19 @@ export default function AppRoutes() {
           path="*"
           element={<Navigate to="/404" replace />}
         />
-
       </Routes>
     </Suspense>
   );
 }
+
+/*
+ * IMPORTANT:
+ * Export the component separately rather than using
+ * "export default function AppRoutes()".
+ *
+ * This guarantees that App.jsx can import:
+ *
+ * import AppRoutes from "./routes/AppRoutes";
+ */
+export default AppRoutes;
 ```
