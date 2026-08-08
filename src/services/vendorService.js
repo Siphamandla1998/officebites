@@ -48,10 +48,6 @@ const uploadMealImage = async (vendorId, file) => {
 };
 
 export const vendorService = {
-  // ==========================================
-  // CUSTOMER VENDOR FETCHING
-  // ==========================================
-
   async getVendors({
     category,
     building,
@@ -140,13 +136,7 @@ export const vendorService = {
 
     const { data, error } = await supabase
       .from("meals")
-      .select(`
-        *,
-        vendors!inner(
-          name,
-          status
-        )
-      `)
+      .select("*, vendors(name, status)")
       .eq("vendor_id", id)
       .eq(
         "vendors.status",
@@ -250,10 +240,12 @@ export const vendorService = {
       throw new Error("Meal price is required.");
     }
 
-    const numericPrice = Number(meal.price);
+    const price = Number(meal.price);
 
-    if (!Number.isFinite(numericPrice) || numericPrice <= 0) {
-      throw new Error("Meal price must be a valid amount.");
+    if (!Number.isFinite(price) || price <= 0) {
+      throw new Error(
+        "Meal price must be a valid amount."
+      );
     }
 
     let image = DEFAULT_MEAL_IMAGE;
@@ -271,7 +263,7 @@ export const vendorService = {
         vendor_id: vendorId,
         name: meal.name.trim(),
         description: meal.description || "",
-        price: numericPrice,
+        price: price,
         category: meal.category || "Meals",
         image: image,
         preparation_time: Number(
@@ -287,10 +279,7 @@ export const vendorService = {
             : false,
         tags: meal.tags || [],
       })
-      .select(`
-        *,
-        vendors(name)
-      `)
+      .select("*, vendors(name)")
       .single();
 
     if (error) {
@@ -366,10 +355,7 @@ export const vendorService = {
       .from("meals")
       .update(patch)
       .eq("id", mealId)
-      .select(`
-        *,
-        vendors(name)
-      `)
+      .select("*, vendors(name)")
       .single();
 
     if (error) {
@@ -400,6 +386,10 @@ export const vendorService = {
     mealId,
     available
   ) {
+    if (!mealId) {
+      throw new Error("Meal ID is required.");
+    }
+
     const { error } = await supabase
       .from("meals")
       .update({
@@ -418,6 +408,10 @@ export const vendorService = {
     mealId,
     featured
   ) {
+    if (!mealId) {
+      throw new Error("Meal ID is required.");
+    }
+
     const { error } = await supabase
       .from("meals")
       .update({
@@ -476,7 +470,7 @@ export const vendorService = {
       .from("vendors")
       .update(patch)
       .eq("id", vendorId)
-      .select()
+      .select("*")
       .single();
 
     if (error) {
