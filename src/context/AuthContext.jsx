@@ -1,4 +1,12 @@
-import { createContext, useContext, useEffect, useState, useCallback } from "react";
+```jsx
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+} from "react";
+
 import { authService } from "../services/authService";
 
 const AuthContext = createContext(null);
@@ -7,62 +15,162 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  /*
+   * Initial authentication check.
+   *
+   * IMPORTANT:
+   * We wait for Supabase to restore the session and then fetch
+   * the user's profile before allowing the application to finish
+   * its authentication loading state.
+   */
   useEffect(() => {
-    let active = true;
-    authService
-      .getCurrentUser()
-      .then((current) => active && setUser(current))
-      .catch(() => active && setUser(null))
-      .finally(() => active && setLoading(false));
+    let mounted = true;
 
-    // Keep in sync with Supabase's own session lifecycle (token refresh,
-    // sign-out from another tab, magic-link completion, etc.) rather than
-    // only reacting to calls made through this context.
-    const unsubscribe = authService.onAuthStateChange(async (session) => {
-      if (!session) {
-        if (active) setUser(null);
-        return;
-      }
+    const initializeAuth = async () => {
       try {
-        const current = await authService.getCurrentUser();
-        if (active) setUser(current);
-      } catch {
-        if (active) setUser(null);
+        const currentUser = await authService.getCurrentUser();
+
+        if (!mounted) return;
+
+        setUser(currentUser || null);
+      } catch (error) {
+        console.error(
+          "[OfficeBites] Failed to restore session:",
+          error
+        );
+
+        if (mounted) {
+          setUser(null);
+        }
+      } finally {
+        if (mounted) {
+          setLoading(false);
+        }
       }
-    });
+    };
+
+    initializeAuth();
+
+    /*
+     * Keep authentication state synchronized after initialization.
+     *
+     * We intentionally do NOT immediately process the initial
+     * session event here because initializeAuth() already handles it.
+     */
+    const unsubscribe = authService.onAuthStateChange(
+      async (session) => {
+        if (!mounted) return;
+
+        if (!session) {
+          setUser(null);
+          setLoading(false);
+          return;
+        }
+
+        try {
+          const currentUser =
+            await authService.getCurrentUser();
+
+          if (!mounted) return;
+
+          setUser(currentUser || null);
+        } catch (error) {
+          console.error(
+            "[OfficeBites] Failed to refresh profile:",
+            error
+          );
+
+          if (mounted) {
+            setUser(null);
+          }
+        }
+      }
+    );
 
     return () => {
-      active = false;
+      mounted = false;
       unsubscribe();
     };
   }, []);
 
-  const login = useCallback(async ({ email, password }) => {
-    const { user: loggedInUser } = await authService.login({ email, password });
-    setUser(loggedInUser);
-    return loggedInUser;
-  }, []);
+  const login = useCallback(
+    async ({ email, password }) => {
+      const result = await authService.login({
+        email,
+        password,
+      });
 
-  const register = useCallback(async (payload) => {
-    const { user: newUser, needsEmailConfirmation } = await authService.register(payload);
-    if (!needsEmailConfirmation) setUser(newUser);
-    return { user: newUser, needsEmailConfirmation };
-  }, []);
+      const loggedInUser = result.user;
+
+      if (!loggedInUser) {
+        throw new Error(
+          "Unable to load your account profile."
+        );
+      }
+
+      console.log(
+        "[OfficeBites] Authenticated user:",
+        {
+          id: loggedInUser.id,
+          role: loggedInUser.role,
+          vendorId: loggedInUser.vendorId,
+        }
+      );
+
+      setUser(loggedInUser);
+
+      return loggedInUser;
+    },
+    []
+  );
+
+  const register = useCallback(
+    async (payload) => {
+      const result =
+        await authService.register(payload);
+
+      if (!result.needsEmailConfirmation) {
+        setUser(result.user);
+      }
+
+      return result;
+    },
+    []
+  );
 
   const logout = useCallback(async () => {
-    await authService.logout();
-    setUser(null);
+    try {
+      await authService.logout();
+    } finally {
+      setUser(null);
+    }
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout, isAuthenticated: !!user }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        login,
+        register,
+        logout,
+        isAuthenticated: Boolean(user),
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
 }
 
 export function useAuth() {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error("useAuth must be used within AuthProvider");
-  return ctx;
+  const context = useContext(AuthContext);
+
+  if (!context) {
+    throw new Error(
+      "useAuth must be used within AuthProvider"
+    );
+  }
+
+  return context;
 }
+```
