@@ -17,7 +17,6 @@ import { useAuth } from "../context/AuthContext";
 import {
   Login,
   Register,
-
   Home,
   CategoryDetail,
   VendorListing,
@@ -34,7 +33,6 @@ import {
   Reviews,
   Notifications,
   ChatConversation,
-
   VendorOverview,
   VendorOrders,
   VendorMenu,
@@ -43,14 +41,12 @@ import {
   VendorChat,
   VendorNotifications,
   VendorSettings,
-
   AdminOverview,
   AdminPayments,
   AdminVendors,
   AdminCustomers,
   AdminAnalytics,
   AdminReports,
-
   HelpHome,
   FAQPage,
   ContactSupport,
@@ -64,30 +60,10 @@ import {
   Privacy,
   RefundPolicy,
   BusinessHours,
-
   NotFound,
 } from "./routeComponents";
 
 
-/*
- * ---------------------------------------------------------
- * ROLE HOME
- * ---------------------------------------------------------
- *
- * Decides where an authenticated user should land.
- */
-const ROLE_HOME = {
-  [ROLES.CUSTOMER]: "/",
-  [ROLES.VENDOR]: "/vendor",
-  [ROLES.ADMIN]: "/admin",
-};
-
-
-/*
- * ---------------------------------------------------------
- * PAGE FALLBACK
- * ---------------------------------------------------------
- */
 function PageFallback() {
   return (
     <div className="min-h-screen flex items-center justify-center">
@@ -98,85 +74,39 @@ function PageFallback() {
 
 
 /*
- * ---------------------------------------------------------
- * ROLE-AWARE HOME
- * ---------------------------------------------------------
+ * The root page is normally the customer home page.
  *
- * This is the important fix.
- *
- * When a vendor closes the browser and later opens
- * OfficeBites again, Supabase restores the session.
- *
- * AuthContext loads the profile and gives us:
- *
- * user.role === "vendor"
- *
- * Instead of blindly rendering the customer Home page,
- * this component sends the user to /vendor.
- *
- * Guests still see the normal customer Home page.
+ * However, if Supabase restores an existing vendor/admin session
+ * when the browser is reopened, redirect them to their dashboard
+ * instead of showing the customer UI first.
  */
-function RoleAwareHome() {
+function HomeRoute() {
   const { user, loading } = useAuth();
 
   if (loading) {
     return <PageFallback />;
   }
 
-  if (!user) {
-    return <Home />;
+  if (user?.role === ROLES.VENDOR) {
+    return <Navigate to="/vendor" replace />;
   }
 
-  const destination = ROLE_HOME[user.role];
-
-  if (destination && destination !== "/") {
-    return <Navigate to={destination} replace />;
+  if (user?.role === ROLES.ADMIN) {
+    return <Navigate to="/admin" replace />;
   }
 
   return <Home />;
 }
 
 
-/*
- * ---------------------------------------------------------
- * ROLE-AWARE HOME REDIRECT
- * ---------------------------------------------------------
- *
- * Handles /home as well.
- */
-function RoleAwareHomeRedirect() {
-  const { user, loading } = useAuth();
-
-  if (loading) {
-    return <PageFallback />;
-  }
-
-  if (!user) {
-    return <Navigate to="/" replace />;
-  }
-
-  return (
-    <Navigate
-      to={ROLE_HOME[user.role] || "/"}
-      replace
-    />
-  );
-}
-
-
-/*
- * ---------------------------------------------------------
- * APPLICATION ROUTES
- * ---------------------------------------------------------
- */
 export default function AppRoutes() {
   return (
     <Suspense fallback={<PageFallback />}>
       <Routes>
 
-        {/* =================================================
+        {/* =========================
             AUTH
-            ================================================= */}
+            ========================= */}
 
         <Route element={<AuthLayout />}>
           <Route path="/login" element={<Login />} />
@@ -184,20 +114,17 @@ export default function AppRoutes() {
         </Route>
 
 
-        {/* =================================================
-            CUSTOMER / PUBLIC APP
-            ================================================= */}
+        {/* =========================
+            CUSTOMER APP
+            ========================= */}
 
         <Route element={<CustomerLayout />}>
 
-          {/* IMPORTANT:
-              / is now role-aware.
-          */}
-          <Route path="/" element={<RoleAwareHome />} />
+          <Route path="/" element={<HomeRoute />} />
 
           <Route
             path="/home"
-            element={<RoleAwareHomeRedirect />}
+            element={<Navigate to="/" replace />}
           />
 
           <Route
@@ -263,9 +190,9 @@ export default function AppRoutes() {
         </Route>
 
 
-        {/* =================================================
+        {/* =========================
             CHECKOUT / PAYMENT
-            ================================================= */}
+            ========================= */}
 
         <Route element={<PublicLayout />}>
 
@@ -282,9 +209,9 @@ export default function AppRoutes() {
         </Route>
 
 
-        {/* =================================================
-            CUSTOMER / VENDOR CHAT THREAD
-            ================================================= */}
+        {/* =========================
+            CUSTOMER / VENDOR CHAT
+            ========================= */}
 
         <Route
           element={
@@ -307,9 +234,9 @@ export default function AppRoutes() {
         </Route>
 
 
-        {/* =================================================
+        {/* =========================
             VENDOR DASHBOARD
-            ================================================= */}
+            ========================= */}
 
         <Route
           path="/vendor"
@@ -365,9 +292,9 @@ export default function AppRoutes() {
         </Route>
 
 
-        {/* =================================================
+        {/* =========================
             ADMIN DASHBOARD
-            ================================================= */}
+            ========================= */}
 
         <Route
           path="/admin"
@@ -413,9 +340,9 @@ export default function AppRoutes() {
         </Route>
 
 
-        {/* =================================================
+        {/* =========================
             HELP & SUPPORT
-            ================================================= */}
+            ========================= */}
 
         <Route element={<PublicLayout />}>
 
@@ -487,9 +414,9 @@ export default function AppRoutes() {
         </Route>
 
 
-        {/* =================================================
+        {/* =========================
             404
-            ================================================= */}
+            ========================= */}
 
         <Route
           path="/404"
