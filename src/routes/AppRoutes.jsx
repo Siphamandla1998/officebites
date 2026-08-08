@@ -60,7 +60,7 @@ import {
   Privacy,
   RefundPolicy,
   BusinessHours,
-  NotFound,
+  NotFound
 } from "./routeComponents";
 
 function PageFallback() {
@@ -93,50 +93,97 @@ function HomeRoute() {
   return <Home />;
 }
 
-function AppRoutes() {
+export default function AppRoutes() {
   return (
     <Suspense fallback={<PageFallback />}>
       <Routes>
-        {/* Authentication */}
+
         <Route element={<AuthLayout />}>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
         </Route>
 
-        {/* Customer / public app */}
         <Route element={<CustomerLayout />}>
           <Route path="/" element={<HomeRoute />} />
-          <Route path="/home" element={<Navigate to="/" replace />} />
-          <Route path="/categories/:id" element={<CategoryDetail />} />
-          <Route path="/vendors" element={<VendorListing />} />
-          <Route path="/vendors/:id" element={<VendorProfile />} />
-          <Route path="/food/:id" element={<FoodDetails />} />
-          <Route path="/orders" element={<OrderHistory />} />
-          <Route path="/orders/:orderId" element={<OrderTracking />} />
+
+          <Route
+            path="/home"
+            element={<Navigate to="/" replace />}
+          />
+
+          <Route
+            path="/categories/:id"
+            element={<CategoryDetail />}
+          />
+
+          <Route
+            path="/vendors"
+            element={<VendorListing />}
+          />
+
+          <Route
+            path="/vendors/:id"
+            element={<VendorProfile />}
+          />
+
+          <Route
+            path="/food/:id"
+            element={<FoodDetails />}
+          />
+
+          <Route
+            path="/orders"
+            element={<OrderHistory />}
+          />
+
+          <Route
+            path="/orders/:orderId"
+            element={<OrderTracking />}
+          />
+
           <Route
             path="/orders/:orderId/ticket"
             element={<TicketConfirmation />}
           />
+
           <Route
             path="/orders/:orderId/review"
             element={<Reviews />}
           />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/favourites" element={<Favourites />} />
-          <Route path="/chat" element={<ChatList />} />
-          <Route path="/notifications" element={<Notifications />} />
+
+          <Route
+            path="/profile"
+            element={<Profile />}
+          />
+
+          <Route
+            path="/favourites"
+            element={<Favourites />}
+          />
+
+          <Route
+            path="/chat"
+            element={<ChatList />}
+          />
+
+          <Route
+            path="/notifications"
+            element={<Notifications />}
+          />
         </Route>
 
-        {/* Checkout and payment */}
         <Route element={<PublicLayout />}>
-          <Route path="/checkout" element={<Checkout />} />
+          <Route
+            path="/checkout"
+            element={<Checkout />}
+          />
+
           <Route
             path="/payment/:orderId"
             element={<PaymentUpload />}
           />
         </Route>
 
-        {/* Individual chat conversation */}
         <Route
           element={
             <ProtectedRoute
@@ -146,10 +193,12 @@ function AppRoutes() {
             </ProtectedRoute>
           }
         >
-          <Route path="/chat/:id" element={<ChatConversation />} />
+          <Route
+            path="/chat/:id"
+            element={<ChatConversation />}
+          />
         </Route>
 
-        {/* Vendor dashboard */}
         <Route
           path="/vendor"
           element={
@@ -158,20 +207,47 @@ function AppRoutes() {
             </ProtectedRoute>
           }
         >
-          <Route index element={<VendorOverview />} />
-          <Route path="orders" element={<VendorOrders />} />
-          <Route path="menu" element={<VendorMenu />} />
-          <Route path="revenue" element={<VendorRevenue />} />
-          <Route path="insights" element={<VendorInsights />} />
-          <Route path="chat" element={<VendorChat />} />
+          <Route
+            index
+            element={<VendorOverview />}
+          />
+
+          <Route
+            path="orders"
+            element={<VendorOrders />}
+          />
+
+          <Route
+            path="menu"
+            element={<VendorMenu />}
+          />
+
+          <Route
+            path="revenue"
+            element={<VendorRevenue />}
+          />
+
+          <Route
+            path="insights"
+            element={<VendorInsights />}
+          />
+
+          <Route
+            path="chat"
+            element={<VendorChat />}
+          />
+
           <Route
             path="notifications"
             element={<VendorNotifications />}
           />
-          <Route path="settings" element={<VendorSettings />} />
+
+          <Route
+            path="settings"
+            element={<VendorSettings />}
+          />
         </Route>
 
-        {/* Admin dashboard */}
         <Route
           path="/admin"
           element={
@@ -180,47 +256,116 @@ function AppRoutes() {
             </ProtectedRoute>
           }
         >
-          <Route index element={<AdminOverview />} />
-          <Route path="payments" element={<AdminPayments />} />
-          <Route path="vendors" element={<AdminVendors />} />
-          <Route path="customers" element={<AdminCustomers />} />
-          <Route path="analytics" element={<AdminAnalytics />} />
-          <Route path="reports" element={<AdminReports />} />
+          <Route
+            index
+            element={<AdminOverview />}
+          />
+
+          <Route
+            path="payments"
+            element={<AdminPayments />}
+          />
+
+          <Route
+            path="vendors"
+            element={<AdminVendors />}
+          />
+
+          <Route
+            path="customers"
+            element={<AdminCustomers />}
+          />
+
+          <Route
+            path="analytics"
+            element={<AdminAnalytics />}
+          />
+
+          <Route
+            path="reports"
+            element={<AdminReports />}
+          />
         </Route>
 
-        {/* Help and support */}
         <Route element={<PublicLayout />}>
-          <Route path="/help" element={<HelpHome />} />
-          <Route path="/help/faq" element={<FAQPage />} />
-          <Route path="/help/contact" element={<ContactSupport />} />
-          <Route path="/help/report" element={<ReportProblem />} />
-          <Route path="/help/tickets" element={<SupportTickets />} />
-          <Route path="/help/chat" element={<LiveChatSupport />} />
-          <Route path="/help/guides" element={<Guides />} />
+          <Route
+            path="/help"
+            element={<HelpHome />}
+          />
+
+          <Route
+            path="/help/faq"
+            element={<FAQPage />}
+          />
+
+          <Route
+            path="/help/contact"
+            element={<ContactSupport />}
+          />
+
+          <Route
+            path="/help/report"
+            element={<ReportProblem />}
+          />
+
+          <Route
+            path="/help/tickets"
+            element={<SupportTickets />}
+          />
+
+          <Route
+            path="/help/chat"
+            element={<LiveChatSupport />}
+          />
+
+          <Route
+            path="/help/guides"
+            element={<Guides />}
+          />
+
           <Route
             path="/help/guides/:id"
             element={<GuideDetail />}
           />
-          <Route path="/help/feedback" element={<Feedback />} />
-          <Route path="/help/terms" element={<Terms />} />
-          <Route path="/help/privacy" element={<Privacy />} />
+
+          <Route
+            path="/help/feedback"
+            element={<Feedback />}
+          />
+
+          <Route
+            path="/help/terms"
+            element={<Terms />}
+          />
+
+          <Route
+            path="/help/privacy"
+            element={<Privacy />}
+          />
+
           <Route
             path="/help/refunds"
             element={<RefundPolicy />}
           />
+
           <Route
             path="/help/hours"
             element={<BusinessHours />}
           />
         </Route>
 
-        {/* 404 */}
-        <Route path="/404" element={<NotFound />} />
-        <Route path="*" element={<Navigate to="/404" replace />} />
+        <Route
+          path="/404"
+          element={<NotFound />}
+        />
+
+        <Route
+          path="*"
+          element={<Navigate to="/404" replace />}
+        />
+
       </Routes>
     </Suspense>
   );
 }
-
-export default AppRoutes;
 ```
