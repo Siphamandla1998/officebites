@@ -1,10 +1,20 @@
-import { supabase, uploadToBucket, BUCKETS } from "./api/supabaseClient";
-import { mapVendor, mapMeal, mapReview } from "./api/mappers";
+```javascript
+import {
+  supabase,
+  uploadToBucket,
+  BUCKETS,
+} from "./api/supabaseClient";
+
+import {
+  mapVendor,
+  mapMeal,
+  mapReview,
+} from "./api/mappers";
+
 import { VENDOR_STATUS } from "../utils/constants";
 
 const DEFAULT_MEAL_IMAGE =
   "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&q=80";
-
 
 const uploadMealImage = async (vendorId, file) => {
   if (!file) return null;
@@ -28,14 +38,10 @@ const uploadMealImage = async (vendorId, file) => {
   );
 };
 
-
 export const vendorService = {
-
-
-  // ===============================
+  // ==========================================
   // CUSTOMER VENDOR FETCHING
-  // ===============================
-
+  // ==========================================
 
   async getVendors({
     category,
@@ -43,17 +49,12 @@ export const vendorService = {
     search,
     status,
   } = {}) {
-
     let query = supabase
       .from("vendors")
       .select("*");
 
-
     if (status) {
-      query = query.eq(
-        "status",
-        status
-      );
+      query = query.eq("status", status);
     } else {
       query = query.eq(
         "status",
@@ -61,22 +62,13 @@ export const vendorService = {
       );
     }
 
-
     if (category) {
-      query = query.eq(
-        "category",
-        category
-      );
+      query = query.eq("category", category);
     }
-
 
     if (building) {
-      query = query.eq(
-        "building",
-        building
-      );
+      query = query.eq("building", building);
     }
-
 
     if (search) {
       query = query.or(
@@ -84,88 +76,52 @@ export const vendorService = {
       );
     }
 
-
-    const {
-      data,
-      error,
-    } = await query;
-
+    const { data, error } = await query;
 
     if (error) {
       throw new Error(error.message);
     }
 
-
     return (data || []).map(mapVendor);
   },
 
-
-
   async getFeaturedVendors() {
-
-    const {
-      data,
-      error,
-    } = await supabase
+    const { data, error } = await supabase
       .from("vendors")
       .select("*")
-      .eq(
-        "featured",
-        true
-      )
+      .eq("featured", true)
       .eq(
         "status",
         VENDOR_STATUS.APPROVED
       );
 
-
     if (error) {
       throw new Error(error.message);
     }
-
 
     return (data || []).map(mapVendor);
   },
 
-
-
   async getVendorById(id) {
-
     if (!id) return null;
 
-
-    const {
-      data,
-      error,
-    } = await supabase
+    const { data, error } = await supabase
       .from("vendors")
       .select("*")
-      .eq(
-        "id",
-        id
-      )
+      .eq("id", id)
       .maybeSingle();
-
 
     if (error) {
       throw new Error(error.message);
     }
 
-
-    return mapVendor(data);
+    return data ? mapVendor(data) : null;
   },
 
-
-
   async getVendorMenu(id) {
-
     if (!id) return [];
 
-
-    const {
-      data,
-      error,
-    } = await supabase
+    const { data, error } = await supabase
       .from("meals")
       .select(`
         *,
@@ -174,152 +130,106 @@ export const vendorService = {
           status
         )
       `)
-      .eq(
-        "vendor_id",
-        id
-      )
+      .eq("vendor_id", id)
       .eq(
         "vendors.status",
         VENDOR_STATUS.APPROVED
       );
 
-
     if (error) {
       throw new Error(error.message);
     }
-
 
     return (data || []).map(mapMeal);
   },
 
-
-
   async getVendorReviews(id) {
-
-    const {
-      data,
-      error,
-    } = await supabase
+    const { data, error } = await supabase
       .from("reviews")
       .select("*")
-      .eq(
-        "vendor_id",
-        id
-      )
-      .order(
-        "created_at",
-        {
-          ascending:false,
-        }
-      );
-
+      .eq("vendor_id", id)
+      .order("created_at", {
+        ascending: false,
+      });
 
     if (error) {
       throw new Error(error.message);
     }
 
-
     return (data || []).map(mapReview);
   },
 
-
-
-  // ===============================
+  // ==========================================
   // ADMIN VENDOR MANAGEMENT
-  // ===============================
-
+  // ==========================================
 
   async approveVendor(id) {
-
-    const {
-      error,
-    } = await supabase
+    const { error } = await supabase
       .from("vendors")
       .update({
-        status:
-          VENDOR_STATUS.APPROVED,
+        status: VENDOR_STATUS.APPROVED,
       })
-      .eq(
-        "id",
-        id
-      );
+      .eq("id", id);
 
-
-    if(error){
+    if (error) {
       throw new Error(error.message);
     }
 
-
-    return {
-      success:true,
-    };
+    return { success: true };
   },
-
-
 
   async rejectVendor(id) {
-
-    const {
-      error,
-    } = await supabase
+    const { error } = await supabase
       .from("vendors")
       .update({
-        status:
-          VENDOR_STATUS.REJECTED,
+        status: VENDOR_STATUS.REJECTED,
       })
-      .eq(
-        "id",
-        id
-      );
+      .eq("id", id);
 
-
-    if(error){
+    if (error) {
       throw new Error(error.message);
     }
 
-
-    return {
-      success:true,
-    };
+    return { success: true };
   },
-
-
 
   async suspendVendor(id) {
-
-    const {
-      error,
-    } = await supabase
+    const { error } = await supabase
       .from("vendors")
       .update({
-        status:
-          VENDOR_STATUS.SUSPENDED,
+        status: VENDOR_STATUS.SUSPENDED,
       })
-      .eq(
-        "id",
-        id
-      );
+      .eq("id", id);
 
-
-    if(error){
+    if (error) {
       throw new Error(error.message);
     }
 
-
-    return {
-      success:true,
-    };
+    return { success: true };
   },
 
-    // ===============================
+  // ==========================================
   // MEAL CRUD
-  // ===============================
-
+  // ==========================================
 
   async addMeal(vendorId, meal) {
+    if (!vendorId) {
+      throw new Error("Vendor ID is required.");
+    }
+
+    if (!meal?.name?.trim()) {
+      throw new Error("Meal name is required.");
+    }
+
+    if (
+      meal.price === undefined ||
+      meal.price === null ||
+      meal.price === ""
+    ) {
+      throw new Error("Meal price is required.");
+    }
 
     let image = DEFAULT_MEAL_IMAGE;
-
 
     if (meal.imageFile) {
       image = await uploadMealImage(
@@ -328,41 +238,23 @@ export const vendorService = {
       );
     }
 
-
-    const {
-      data,
-      error,
-    } = await supabase
+    const { data, error } = await supabase
       .from("meals")
       .insert({
-
         vendor_id: vendorId,
-
-        name: meal.name,
-
-        description:
-          meal.description || "",
-
-        price:
-          Number(meal.price),
-
-        category:
-          meal.category,
-
+        name: meal.name.trim(),
+        description: meal.description || "",
+        price: Number(meal.price),
+        category: meal.category || "meals",
         image,
-
-        preparation_time:
-          Number(meal.preparationTime || 0),
-
+        preparation_time: Number(
+          meal.preparationTime || 0
+        ),
         available:
           meal.available ?? true,
-
         featured:
           meal.featured ?? false,
-
-        tags:
-          meal.tags || [],
-
+        tags: meal.tags || [],
       })
       .select(`
         *,
@@ -370,280 +262,187 @@ export const vendorService = {
       `)
       .single();
 
-
-    if(error){
+    if (error) {
       throw new Error(error.message);
     }
-
 
     return mapMeal(data);
   },
 
-
-
   async updateMeal(mealId, updates) {
+    if (!mealId) {
+      throw new Error("Meal ID is required.");
+    }
 
     let image = updates.image;
 
-
-    if(updates.imageFile){
+    if (updates.imageFile) {
+      if (!updates.vendorId) {
+        throw new Error(
+          "Vendor ID is required to upload an image."
+        );
+      }
 
       image = await uploadMealImage(
-        updates.vendorId || "meal",
+        updates.vendorId,
         updates.imageFile
       );
-
     }
 
-
     const patch = {
-
-
       ...(updates.name !== undefined && {
-        name:
-          updates.name
+        name: updates.name,
       }),
-
 
       ...(updates.description !== undefined && {
-        description:
-          updates.description
+        description: updates.description,
       }),
-
 
       ...(updates.price !== undefined && {
-        price:
-          Number(updates.price)
+        price: Number(updates.price),
       }),
-
 
       ...(updates.category !== undefined && {
-        category:
-          updates.category
+        category: updates.category,
       }),
-
 
       ...(image && {
-        image
+        image,
       }),
-
 
       ...(updates.preparationTime !== undefined && {
-        preparation_time:
-          Number(updates.preparationTime)
+        preparation_time: Number(
+          updates.preparationTime
+        ),
       }),
-
 
       ...(updates.available !== undefined && {
-        available:
-          updates.available
+        available: updates.available,
       }),
-
 
       ...(updates.featured !== undefined && {
-        featured:
-          updates.featured
+        featured: updates.featured,
       }),
-
 
       ...(updates.tags !== undefined && {
-        tags:
-          updates.tags
+        tags: updates.tags,
       }),
-
     };
 
-
-    const {
-      data,
-      error,
-    } = await supabase
+    const { data, error } = await supabase
       .from("meals")
       .update(patch)
-      .eq(
-        "id",
-        mealId
-      )
+      .eq("id", mealId)
       .select(`
         *,
         vendors(name)
       `)
       .single();
 
-
-    if(error){
+    if (error) {
       throw new Error(error.message);
     }
-
 
     return mapMeal(data);
-
   },
 
-
-
   async deleteMeal(mealId) {
-
-    const {
-      error,
-    } = await supabase
+    const { error } = await supabase
       .from("meals")
       .delete()
-      .eq(
-        "id",
-        mealId
-      );
+      .eq("id", mealId);
 
-
-    if(error){
+    if (error) {
       throw new Error(error.message);
     }
 
-
-    return {
-      success:true,
-    };
-
+    return { success: true };
   },
-
-
 
   async updateMealAvailability(
     mealId,
     available
-  ){
-
-    const {
-      error,
-    } = await supabase
+  ) {
+    const { error } = await supabase
       .from("meals")
       .update({
         available,
       })
-      .eq(
-        "id",
-        mealId
-      );
+      .eq("id", mealId);
 
-
-    if(error){
+    if (error) {
       throw new Error(error.message);
     }
 
-
-    return {
-      success:true,
-    };
-
+    return { success: true };
   },
-
-
 
   async updateMealFeatured(
     mealId,
     featured
-  ){
-
-    const {
-      error,
-    } = await supabase
+  ) {
+    const { error } = await supabase
       .from("meals")
       .update({
         featured,
       })
-      .eq(
-        "id",
-        mealId
-      );
+      .eq("id", mealId);
 
-
-    if(error){
+    if (error) {
       throw new Error(error.message);
     }
 
-
-    return {
-      success:true,
-    };
-
+    return { success: true };
   },
 
-
-
-  // ===============================
+  // ==========================================
   // VENDOR PROFILE
-  // ===============================
-
+  // ==========================================
 
   async updateVendorProfile(
     vendorId,
     updates
-  ){
-
+  ) {
     const patch = {
-
-
       ...(updates.name !== undefined && {
-        name:
-          updates.name
+        name: updates.name,
       }),
-
 
       ...(updates.tagline !== undefined && {
-        tagline:
-          updates.tagline
+        tagline: updates.tagline,
       }),
-
 
       ...(updates.building !== undefined && {
-        building:
-          updates.building
+        building: updates.building,
       }),
-
 
       ...(updates.contactNumber !== undefined && {
         contact_number:
-          updates.contactNumber
+          updates.contactNumber,
       }),
-
 
       ...(updates.logo !== undefined && {
-        logo:
-          updates.logo
+        logo: updates.logo,
       }),
-
 
       ...(updates.coverImage !== undefined && {
         cover_image:
-          updates.coverImage
+          updates.coverImage,
       }),
-
-
     };
 
-
-    const {
-      data,
-      error,
-    } = await supabase
+    const { data, error } = await supabase
       .from("vendors")
       .update(patch)
-      .eq(
-        "id",
-        vendorId
-      )
+      .eq("id", vendorId)
       .select()
       .single();
 
-
-    if(error){
+    if (error) {
       throw new Error(error.message);
     }
 
-
     return mapVendor(data);
-
   },
-
-
 };
+```
