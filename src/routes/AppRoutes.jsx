@@ -18,7 +18,6 @@ import {
   Login,
   Register,
 
-  // Customer
   Home,
   CategoryDetail,
   VendorListing,
@@ -33,10 +32,10 @@ import {
   Favourites,
   ChatList,
   Reviews,
+
   Notifications,
   ChatConversation,
 
-  // Vendor
   VendorOverview,
   VendorOrders,
   VendorMenu,
@@ -46,7 +45,6 @@ import {
   VendorNotifications,
   VendorSettings,
 
-  // Admin
   AdminOverview,
   AdminPayments,
   AdminVendors,
@@ -54,7 +52,6 @@ import {
   AdminAnalytics,
   AdminReports,
 
-  // Help
   HelpHome,
   FAQPage,
   ContactSupport,
@@ -72,35 +69,26 @@ import {
   NotFound,
 } from "./routeComponents";
 
-function PageFallback() {
-  return (
-    <div className="min-h-screen flex items-center justify-center">
-      <Spinner size={28} />
-    </div>
-  );
-}
 
 /*
- * IMPORTANT:
- * This component decides where an already-authenticated user belongs.
+ * Decide where an authenticated user should land.
  *
- * Supabase keeps the session after the browser is closed.
- * Therefore, when the app opens again:
- *
- * customer -> /
- * vendor   -> /vendor
- * admin    -> /admin
- *
- * Guests can still browse the customer homepage.
+ * This is important because "/" is also the public customer homepage.
+ * Supabase can restore an existing session when the browser is reopened,
+ * so we must check the user's role before displaying the customer homepage.
  */
-function HomeEntry() {
-  const { user, loading, isAuthenticated } = useAuth();
+function RoleHomeRedirect() {
+  const { user, loading } = useAuth();
 
   if (loading) {
-    return <PageFallback />;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Spinner size={28} />
+      </div>
+    );
   }
 
-  if (!isAuthenticated || !user) {
+  if (!user) {
     return <Home />;
   }
 
@@ -115,67 +103,47 @@ function HomeEntry() {
   return <Home />;
 }
 
+
 /*
- * Prevent authenticated users from sitting on /login or /register.
- * If a vendor is already logged in and visits /login, send them to /vendor.
+ * Used while lazy-loaded pages are being downloaded.
  */
-function AuthEntry() {
-  const { user, loading, isAuthenticated } = useAuth();
-
-  if (loading) {
-    return <PageFallback />;
-  }
-
-  if (isAuthenticated && user) {
-    if (user.role === ROLES.VENDOR) {
-      return <Navigate to="/vendor" replace />;
-    }
-
-    if (user.role === ROLES.ADMIN) {
-      return <Navigate to="/admin" replace />;
-    }
-
-    return <Navigate to="/" replace />;
-  }
-
-  return null;
+function PageFallback() {
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <Spinner size={28} />
+    </div>
+  );
 }
+
 
 export default function AppRoutes() {
   return (
     <Suspense fallback={<PageFallback />}>
       <Routes>
 
-        {/* =========================================================
-            AUTH
-        ========================================================= */}
+        {/* ============================================================
+            AUTHENTICATION
+           ============================================================ */}
 
         <Route element={<AuthLayout />}>
-          <Route
-            path="/login"
-            element={
-              <AuthEntry />
-            }
-          />
-
-          <Route
-            path="/register"
-            element={
-              <Register />
-            }
-          />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
         </Route>
 
-        {/* =========================================================
-            CUSTOMER / PUBLIC APP
-        ========================================================= */}
+
+        {/* ============================================================
+            CUSTOMER / PUBLIC FOOD EXPERIENCE
+
+            IMPORTANT:
+            "/" is public, but RoleHomeRedirect prevents an already
+            authenticated vendor/admin from being shown the customer UI
+            after Supabase restores their session.
+           ============================================================ */}
 
         <Route element={<CustomerLayout />}>
 
-          {/* Root is role-aware */}
-          <Route path="/" element={<HomeEntry />} />
+          <Route path="/" element={<RoleHomeRedirect />} />
 
-          {/* /home behaves exactly like / */}
           <Route
             path="/home"
             element={<Navigate to="/" replace />}
@@ -240,12 +208,15 @@ export default function AppRoutes() {
             path="/notifications"
             element={<Notifications />}
           />
+
         </Route>
 
-        {/* =========================================================
+
+        {/* ============================================================
             CHECKOUT / PAYMENT
-            Guest accessible
-        ========================================================= */}
+
+            These remain accessible to guests.
+           ============================================================ */}
 
         <Route element={<PublicLayout />}>
 
@@ -261,10 +232,13 @@ export default function AppRoutes() {
 
         </Route>
 
-        {/* =========================================================
+
+        {/* ============================================================
             CUSTOMER / VENDOR CHAT THREAD
-            Requires authentication
-        ========================================================= */}
+
+            Must be authenticated because messages are tied to the
+            currently logged-in user's identity.
+           ============================================================ */}
 
         <Route
           element={
@@ -275,26 +249,31 @@ export default function AppRoutes() {
             </ProtectedRoute>
           }
         >
+
           <Route
             path="/chat/:id"
             element={<ChatConversation />}
           />
+
         </Route>
 
-        {/* =========================================================
+
+        {/* ============================================================
             VENDOR DASHBOARD
-        ========================================================= */}
+
+            Only users whose profile role is VENDOR can enter this
+            section.
+           ============================================================ */}
 
         <Route
           path="/vendor"
           element={
-            <ProtectedRoute
-              allowedRoles={[ROLES.VENDOR]}
-            >
+            <ProtectedRoute allowedRoles={[ROLES.VENDOR]}>
               <VendorLayout />
             </ProtectedRoute>
           }
         >
+
           <Route
             index
             element={<VendorOverview />}
@@ -334,22 +313,26 @@ export default function AppRoutes() {
             path="settings"
             element={<VendorSettings />}
           />
+
         </Route>
 
-        {/* =========================================================
+
+        {/* ============================================================
             ADMIN DASHBOARD
-        ========================================================= */}
+
+            Only users whose profile role is ADMIN can enter this
+            section.
+           ============================================================ */}
 
         <Route
           path="/admin"
           element={
-            <ProtectedRoute
-              allowedRoles={[ROLES.ADMIN]}
-            >
+            <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
               <AdminLayout />
             </ProtectedRoute>
           }
         >
+
           <Route
             index
             element={<AdminOverview />}
@@ -379,12 +362,15 @@ export default function AppRoutes() {
             path="reports"
             element={<AdminReports />}
           />
+
         </Route>
 
-        {/* =========================================================
+
+        {/* ============================================================
             HELP & SUPPORT
-            Guest accessible
-        ========================================================= */}
+
+            Available to guests and authenticated users.
+           ============================================================ */}
 
         <Route element={<PublicLayout />}>
 
@@ -455,9 +441,10 @@ export default function AppRoutes() {
 
         </Route>
 
-        {/* =========================================================
+
+        {/* ============================================================
             404
-        ========================================================= */}
+           ============================================================ */}
 
         <Route
           path="/404"
