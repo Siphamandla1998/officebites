@@ -1,10 +1,7 @@
-```jsx
 import { Suspense } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-
 import ProtectedRoute from "./ProtectedRoute";
 import { ROLES } from "../utils/constants";
-import { useAuth } from "../context/AuthContext";
 
 import CustomerLayout from "../layouts/CustomerLayout";
 import VendorLayout from "../layouts/VendorLayout";
@@ -71,39 +68,7 @@ function PageFallback() {
   );
 }
 
-/*
- * The root route decides where an already-authenticated user belongs.
- *
- * Customer -> customer home
- * Vendor   -> vendor dashboard
- * Admin    -> admin dashboard
- *
- * This is important when the browser is reopened and Supabase restores
- * the existing session automatically.
- */
-function HomeRoute() {
-  const { user, loading } = useAuth();
-
-  if (loading) {
-    return <PageFallback />;
-  }
-
-  if (!user) {
-    return <Home />;
-  }
-
-  if (user.role === ROLES.VENDOR) {
-    return <Navigate to="/vendor" replace />;
-  }
-
-  if (user.role === ROLES.ADMIN) {
-    return <Navigate to="/admin" replace />;
-  }
-
-  return <Home />;
-}
-
-function AppRoutes() {
+export default function AppRoutes() {
   return (
     <Suspense fallback={<PageFallback />}>
       <Routes>
@@ -113,9 +78,9 @@ function AppRoutes() {
           <Route path="/register" element={<Register />} />
         </Route>
 
-        {/* Customer application */}
+        {/* Customer app */}
         <Route element={<CustomerLayout />}>
-          <Route path="/" element={<HomeRoute />} />
+          <Route path="/" element={<Home />} />
 
           <Route
             path="/home"
@@ -196,7 +161,7 @@ function AppRoutes() {
           />
         </Route>
 
-        {/* Customer/vendor conversation */}
+        {/* Individual chat conversation */}
         <Route
           element={
             <ProtectedRoute
@@ -221,10 +186,7 @@ function AppRoutes() {
             </ProtectedRoute>
           }
         >
-          <Route
-            index
-            element={<VendorOverview />}
-          />
+          <Route index element={<VendorOverview />} />
 
           <Route
             path="orders"
@@ -384,15 +346,3 @@ function AppRoutes() {
     </Suspense>
   );
 }
-
-/*
- * IMPORTANT:
- * Export the component separately rather than using
- * "export default function AppRoutes()".
- *
- * This guarantees that App.jsx can import:
- *
- * import AppRoutes from "./routes/AppRoutes";
- */
-export default AppRoutes;
-```
