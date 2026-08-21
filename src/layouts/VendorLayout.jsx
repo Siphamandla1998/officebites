@@ -22,11 +22,15 @@ export default function VendorLayout() {
     <div className="min-h-screen flex bg-paper">
       <Sidebar tabs={TABS} open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <div className="flex-1 min-w-0">
-        <header className="lg:hidden sticky top-0 z-30 bg-paper/90 backdrop-blur border-b border-line px-5 pt-[env(safe-area-inset-top)] h-16 flex items-center gap-3">
-          <button onClick={() => setSidebarOpen(true)} className="btn-icon">
-            <FiMenu size={18} />
-          </button>
-          <span className="text-sm font-semibold text-ink">Vendor dashboard</span>
+        <header className="lg:hidden sticky top-0 z-30 bg-paper/90 backdrop-blur border-b border-line">
+          <div className="px-5 pt-[env(safe-area-inset-top)]">
+            <div className="h-16 flex items-center gap-3">
+              <button onClick={() => setSidebarOpen(true)} className="btn-icon">
+                <FiMenu size={18} />
+              </button>
+              <span className="text-sm font-semibold text-ink">Vendor dashboard</span>
+            </div>
+          </div>
         </header>
         <main className="p-5 lg:p-8 max-w-6xl mx-auto">
           <Outlet />

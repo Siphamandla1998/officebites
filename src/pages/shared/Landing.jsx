@@ -22,7 +22,7 @@ const PILLARS = [
 
 export default function Landing() {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-[100dvh] flex flex-col pt-[env(safe-area-inset-top)]">
       <div className="relative px-6 pt-14 pb-10 overflow-hidden">
         <div className="absolute -top-24 -right-20 h-64 w-64 rounded-full bg-nude-200/70 blur-2xl" />
         <div className="absolute -bottom-10 -left-16 h-48 w-48 rounded-full bg-nude-100 blur-2xl" />
