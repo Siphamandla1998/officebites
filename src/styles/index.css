@@ -26,7 +26,16 @@
 @layer components {
   /* App shell — centers the mobile-first frame on wide viewports */
   .app-shell {
-    @apply mx-auto w-full max-w-app min-h-screen bg-paper relative;
+  @apply mx-auto w-full max-w-app bg-paper relative;
+  min-height: 100dvh;
+  }
+
+  .app-safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .app-safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
   }
 
   .ob-container {
