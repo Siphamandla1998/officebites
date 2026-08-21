@@ -1,0 +1,95 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    @apply bg-paper text-ink font-sans antialiased;
+    overscroll-behavior-y: none;
+  }
+  ::selection {
+    @apply bg-nude-300/60;
+  }
+  h1, h2, h3, h4 {
+    @apply font-semibold tracking-tight text-ink;
+  }
+  /* Hide scrollbars on horizontal chip/rail scrollers, keep function */
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+}
+
+@layer components {
+  /* App shell — centers the mobile-first frame on wide viewports */
+  .app-shell {
+    @apply mx-auto w-full max-w-app min-h-screen bg-paper relative;
+  }
+
+  .ob-container {
+    @apply px-5;
+  }
+
+  /* Buttons */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl font-medium
+      transition-all duration-150 active:scale-[0.97] disabled:opacity-40 disabled:pointer-events-none;
+  }
+  .btn-primary {
+    @apply btn bg-ink text-paper hover:bg-ink-soft px-5 py-3 text-sm shadow-card;
+  }
+  .btn-secondary {
+    @apply btn bg-nude-100 text-ink-soft hover:bg-nude-200 px-5 py-3 text-sm;
+  }
+  .btn-outline {
+    @apply btn border border-line bg-transparent text-ink hover:bg-nude-50 px-5 py-3 text-sm;
+  }
+  .btn-ghost {
+    @apply btn text-ink-soft hover:bg-nude-50 px-3 py-2 text-sm;
+  }
+  .btn-icon {
+    @apply btn h-10 w-10 shrink-0 bg-paper-raised border border-line hover:bg-nude-50;
+  }
+
+  /* Cards */
+  .card {
+    @apply bg-paper-raised rounded-2xl border border-line shadow-card;
+  }
+
+  /* Inputs */
+  .field-label {
+    @apply block text-xs font-medium uppercase tracking-wide text-ink-muted mb-1.5;
+  }
+  .input {
+    @apply w-full rounded-xl border border-line bg-paper-raised px-4 py-3 text-sm text-ink
+      placeholder:text-ink-muted/70 outline-none transition-colors
+      focus:border-nude-500 focus:ring-2 focus:ring-nude-200;
+  }
+  .textarea {
+    @apply input resize-none;
+  }
+
+  /* Badges */
+  .badge {
+    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-medium leading-none;
+  }
+
+  /* Section heading pattern used across pages */
+  .section-title {
+    @apply text-base font-semibold text-ink;
+  }
+  .section-link {
+    @apply text-xs font-medium text-nude-600 hover:text-nude-700;
+  }
+
+  /* Skeleton loading shimmer */
+  .skeleton {
+    @apply bg-nude-100 rounded-xl relative overflow-hidden;
+    background-image: linear-gradient(90deg, #F5EBDA 0px, #FBF6EE 40px, #F5EBDA 80px);
+    background-size: 600px;
+    @apply animate-shimmer;
+  }
+}
