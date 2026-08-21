@@ -88,7 +88,7 @@ export default function Home() {
 
 
   return (
-    <>
+    <div className="pt-[env(safe-area-inset-top)]">
 
       {/* Header */}
       <div className="ob-container pt-6 pb-5">
@@ -281,6 +281,6 @@ export default function Home() {
       </section>
 
 
-    </>
+    </div>
   );
 }
