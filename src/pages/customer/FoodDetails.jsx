@@ -28,9 +28,20 @@ export default function FoodDetails() {
   }
 
   const handleAdd = () => {
-    addItem(meal, qty);
-    showToast(`Added ${qty} × ${meal.name} to cart`, { type: "success" });
-  };
+  console.log("FOOD DETAILS → ADD TO CART", {
+    mealId: meal?.id,
+    mealName: meal?.name,
+    mealPrice: meal?.price,
+    vendorId: meal?.vendorId,
+    qty,
+  });
+
+  addItem(meal, qty);
+
+  showToast(`Added ${qty} × ${meal.name} to cart`, {
+    type: "success",
+  });
+};
 
   return (
     <div className="pb-28">
