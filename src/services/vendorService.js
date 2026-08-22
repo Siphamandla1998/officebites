@@ -484,6 +484,24 @@ export const vendorService = {
     };
   },
 
+  async restoreVendor(vendorId) {
+    const { error } = await supabase
+      .from("vendors")
+      .update({
+        status: VENDOR_STATUS.APPROVED,
+      })
+      .eq("id", vendorId)
+      .eq("status", VENDOR_STATUS.SUSPENDED);
+  
+    if (error) {
+      throw new Error(error.message);
+    }
+  
+    return {
+      success: true,
+    };
+  },
+
   async rejectVendor(vendorId) {
     const { error } = await supabase
       .from("vendors")
