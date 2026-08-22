@@ -202,6 +202,22 @@ export default function AdminVendors() {
 
             )
           }
+          {
+            v.status === VENDOR_STATUS.SUSPENDED && (
+              <button
+                onClick={() =>
+                  act(
+                    vendorService.restoreVendor,
+                    v,
+                    "restored"
+                  )
+                }
+                className="btn-secondary !px-3 !py-1.5 text-xs"
+              >
+                Restore
+              </button>
+            )
+          }
 
 
 
