@@ -7,24 +7,7 @@ import {
 import {
   ORDER_STATUS,
   PAYMENT_STATUS,
-  VENDOR_ORDER_FLOW,
 } from "../utils/constants";
-import { notificationService } from "./notificationService";
-
-/**
- * True if `from` -> `to` is the single next step
- * in the vendor order pipeline.
- */
-function isValidTransition(from, to) {
-  const fromIndex = VENDOR_ORDER_FLOW.indexOf(from);
-  const toIndex = VENDOR_ORDER_FLOW.indexOf(to);
-
-  if (fromIndex === -1 || toIndex === -1) {
-    return false;
-  }
-
-  return toIndex === fromIndex + 1;
-}
 
 async function fetchFullOrder(orderId) {
   const { data, error } = await supabase
@@ -331,12 +314,28 @@ export const orderService = {
 
     const updated = mapOrder(data);
 
-    // Notify the customer.
-    await notificationService.addNotification({
-      type: "payment_submitted",
-      title: "Payment submitted",
-      body: `Your proof of payment for ${updated.ticketNumber} was received and is being reviewed by OfficeBites.`,
-    });
+    // Notify the customer, if this order actually has one. Guest orders
+    // have no customer_id and nobody to notify — this used to go through
+    // notificationService.addNotification(), which resolves the *current
+    // signed-in user* via auth.getUser() and throws "You must be signed
+    // in" for guests. That meant every guest's proof upload succeeded in
+    // the database (the RPC above) but then surfaced as a failed upload in
+    // the UI, because this notification step rejected right after. Route
+    // it through the same admin-safe direct insert createNotificationForUser
+    // uses instead, targeted at the order's own customer_id, and don't let
+    // a notification failure mask an otherwise-successful upload.
+    if (updated.customerId) {
+      try {
+        await createNotificationForUser({
+          userId: updated.customerId,
+          type: "payment_submitted",
+          title: "Payment submitted",
+          body: `Your proof of payment for ${updated.ticketNumber} was received and is being reviewed by OfficeBites.`,
+        });
+      } catch (notifyError) {
+        console.error("attachPaymentProof: notification failed", notifyError);
+      }
+    }
 
     return updated;
   },
@@ -382,90 +381,47 @@ export const orderService = {
    *
    * Confirmed -> Accepted -> Preparing ->
    * Ready -> Collected -> Completed
+   *
+   * Routed through update_suborder_status_and_notify() (see migration
+   * 0015) rather than raw .update() calls. Two reasons: (1) that RPC is
+   * also what notifies the customer of the change, and a vendor's own
+   * client can't legally insert that notification directly — vendor is
+   * neither the customer nor an admin under notifications RLS, so a plain
+   * client-side insert would 403 the same way the admin-payment
+   * notification bug did; (2) it re-checks transition validity and
+   * ownership server-side rather than trusting the client's own fetch.
+   * VendorOrders.jsx keeps its own local nextStatusFor() helper (driven by
+   * VENDOR_ORDER_FLOW) purely to decide which button/label to show before
+   * the round trip — the DB trigger and this RPC remain the source of
+   * truth for whether a transition is actually allowed.
    */
   async updateSubOrderStatus(
     orderId,
     vendorId,
     nextStatus
   ) {
-    const {
-      data: current,
-      error: fetchError,
-    } = await supabase
-      .from("order_suborders")
-      .select("status")
-      .eq("order_id", orderId)
-      .eq("vendor_id", vendorId)
-      .single();
-
-    if (fetchError) {
-      throw {
-        message: "Order not found",
-        status: 404,
-      };
+    if (!vendorId) {
+      throw { message: "Missing vendor context", status: 400 };
     }
 
-    if (
-      !isValidTransition(
-        current.status,
-        nextStatus
-      )
-    ) {
-      throw {
-        message: `Can't move from "${current.status}" to "${nextStatus}" — only the next step in the pipeline is allowed.`,
-        status: 400,
-      };
-    }
-
-    const { error } = await supabase
-      .from("order_suborders")
-      .update({
-        status: nextStatus,
-      })
-      .eq("order_id", orderId)
-      .eq("vendor_id", vendorId);
+    // vendorId itself isn't passed to the RPC — it derives the caller's
+    // vendor from current_vendor_id() server-side, which is the only copy
+    // that can't be spoofed by a compromised/stale client. It's still
+    // required here as a cheap client-side guard against calling this
+    // without a vendor session at all.
+    const { data, error } = await supabase.rpc(
+      "update_suborder_status_and_notify",
+      {
+        p_order_id: orderId,
+        p_next_status: nextStatus,
+      }
+    );
 
     if (error) {
-      throw { message: error.message };
+      throw { message: error.message, status: 400 };
     }
 
-    const {
-      data: allSubs,
-      error: allSubsError,
-    } = await supabase
-      .from("order_suborders")
-      .select("status")
-      .eq("order_id", orderId);
-
-    if (allSubsError) {
-      throw { message: allSubsError.message };
-    }
-
-    if (
-      allSubs?.length &&
-      allSubs.every(
-        (subOrder) =>
-          subOrder.status === nextStatus
-      )
-    ) {
-      const { error: parentError } =
-        await supabase
-          .from("orders")
-          .update({
-            status: nextStatus,
-          })
-          .eq("id", orderId);
-
-      if (parentError) {
-        throw {
-          message: parentError.message,
-        };
-      }
-    }
-
-    return {
-      success: true,
-    };
+    return data;
   },
 
   async updateSubOrderNotes(
@@ -528,6 +484,36 @@ export const orderService = {
     return (data || []).map(mapOrder);
   },
 
+  // Orders that have actually had payment confirmed — i.e. moved past
+  // pending_payment/payment_submitted into confirmed or any status beyond
+  // it (accepted/preparing/ready/collected/completed). Cancelled orders
+  // are excluded even if they reached confirmed at some point, since a
+  // cancellation after confirmation usually means a refund/dispute, not a
+  // standing successful payment. Used for the admin dashboard's "payments
+  // made" widget — separate from getOrdersPendingPaymentReview(), which is
+  // specifically the manual-EFT review queue.
+  async getRecentPayments(limit = 10) {
+    const { data, error } = await supabase
+      .from("orders")
+      .select(ORDER_SELECT)
+      .in("status", [
+        ORDER_STATUS.CONFIRMED,
+        ORDER_STATUS.ACCEPTED,
+        ORDER_STATUS.PREPARING,
+        ORDER_STATUS.READY,
+        ORDER_STATUS.COLLECTED,
+        ORDER_STATUS.COMPLETED,
+      ])
+      .order("created_at", { ascending: false })
+      .limit(limit);
+
+    if (error) {
+      throw { message: error.message };
+    }
+
+    return (data || []).map(mapOrder);
+  },
+
   // ===============================
   // VERIFY PAYMENT
   // ===============================
@@ -568,27 +554,37 @@ export const orderService = {
     );
 
     // ---------------------------------
-    // CUSTOMER NOTIFICATION
+    // CUSTOMER + VENDOR NOTIFICATIONS
     // ---------------------------------
+    //
+    // The order/payment status update above is the operation that actually
+    // matters and has already committed by this point. Notifications are a
+    // side effect of that, not a precondition for it — if a notification
+    // insert fails (RLS misconfiguration, a bad user_id, network blip), the
+    // admin should still see "payment approved" rather than an error that
+    // implies the approval itself failed. Each notification is attempted
+    // independently and failures are logged, never thrown.
+    const notifyErrors = [];
 
     if (updated.customerId) {
-      await createNotificationForUser({
-        userId: updated.customerId,
-        type: approve
-          ? "payment_verified"
-          : "payment_rejected",
-        title: approve
-          ? "Payment verified"
-          : "Payment rejected",
-        body: approve
-          ? `Your payment for ${updated.ticketNumber} has been verified — your order is confirmed.`
-          : `We couldn't verify the payment for ${updated.ticketNumber}. Please contact support or upload valid proof.`,
-      });
+      try {
+        await createNotificationForUser({
+          userId: updated.customerId,
+          type: approve
+            ? "payment_verified"
+            : "payment_rejected",
+          title: approve
+            ? "Payment verified"
+            : "Payment rejected",
+          body: approve
+            ? `Your payment for ${updated.ticketNumber} has been verified — your order is confirmed.`
+            : `We couldn't verify the payment for ${updated.ticketNumber}. Please contact support or upload valid proof.`,
+        });
+      } catch (err) {
+        console.error("verifyPayment: customer notification failed", err);
+        notifyErrors.push(err);
+      }
     }
-
-    // ---------------------------------
-    // VENDOR NOTIFICATIONS
-    // ---------------------------------
 
     if (approve) {
       const vendorIds =
@@ -605,17 +601,23 @@ export const orderService = {
         );
 
       for (const vendorProfile of vendorProfiles) {
-        await createNotificationForUser({
-          userId: vendorProfile.id,
-          type: "new_order",
-          title: "New order received",
-          body: `Order ${updated.ticketNumber} has been confirmed and is ready for you to prepare.`,
-        });
+        try {
+          await createNotificationForUser({
+            userId: vendorProfile.id,
+            type: "new_order",
+            title: "New order received",
+            body: `Order ${updated.ticketNumber} has been confirmed and is ready for you to prepare.`,
+          });
+        } catch (err) {
+          console.error("verifyPayment: vendor notification failed", err);
+          notifyErrors.push(err);
+        }
       }
     }
 
     return {
       success: true,
+      notifyErrors: notifyErrors.length ? notifyErrors.map((e) => e.message) : undefined,
     };
   },
 };
