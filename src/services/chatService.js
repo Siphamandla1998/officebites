@@ -13,10 +13,41 @@ const mapConversation = (conversation) => ({
   id: conversation.id,
   customerId: conversation.customer_id,
   vendorId: conversation.vendor_id,
+  // Both come from joined tables — present when the query selected them
+  // (see CONVERSATION_SELECT below), undefined otherwise. Falling back to
+  // a neutral label in mapConversation rather than the page components
+  // means every caller gets a real display name without duplicating the
+  // "Guest" / "Vendor" fallback in five different UI files.
+  customerName: conversation.profiles?.name || "Guest",
+  vendorName: conversation.vendors?.name || "Vendor",
   createdAt: conversation.created_at,
   updatedAt: conversation.updated_at,
   messages: (conversation.messages || []).map(mapMessage),
 });
+
+// Used by getConversations/getConversation (customer + vendor side) so both
+// participants' names resolve the same way getAllConversationsForAdmin()
+// already did — this was previously missing here, which is the root cause
+// of chat threads showing no name for the other participant even though
+// both sides are logged in: mapConversation had nothing to read a name
+// from, because these two queries never joined profiles/vendors at all.
+const CONVERSATION_SELECT = `
+  id,
+  customer_id,
+  vendor_id,
+  created_at,
+  updated_at,
+  profiles ( name ),
+  vendors ( name ),
+  messages (
+    id,
+    conversation_id,
+    sender_id,
+    text,
+    read,
+    created_at
+  )
+`;
 
 const getCurrentUser = async () => {
   const {
@@ -111,21 +142,7 @@ export const chatService = {
 
     let query = supabase
       .from("conversations")
-      .select(`
-        id,
-        customer_id,
-        vendor_id,
-        created_at,
-        updated_at,
-        messages (
-          id,
-          conversation_id,
-          sender_id,
-          text,
-          read,
-          created_at
-        )
-      `)
+      .select(CONVERSATION_SELECT)
       .order("updated_at", {
         ascending: false,
       });
@@ -156,21 +173,7 @@ export const chatService = {
 
     let query = supabase
       .from("conversations")
-      .select(`
-        id,
-        customer_id,
-        vendor_id,
-        created_at,
-        updated_at,
-        messages (
-          id,
-          conversation_id,
-          sender_id,
-          text,
-          read,
-          created_at
-        )
-      `)
+      .select(CONVERSATION_SELECT)
       .eq("id", id);
 
     if (vendorId) {
@@ -224,6 +227,69 @@ export const chatService = {
       .single();
 
     if (error) {
+      throw new Error(error.message);
+    }
+
+    return mapConversation(data);
+  },
+
+  // ==========================================
+  // START VENDOR → CUSTOMER CONVERSATION
+  // ==========================================
+
+  /**
+   * A vendor may only message a customer who has actually placed an order
+   * involving them — never an arbitrary customer. That relationship check
+   * is enforced at the database level (see the
+   * conversations_insert_vendor_with_order policy, migration 0016): this
+   * insert will itself be rejected by RLS if the customer has no order
+   * with this vendor, not merely skipped client-side, so it's not
+   * bypassable by calling the service function directly.
+   */
+  async startConversationAsVendor({ customerId }) {
+    if (!customerId) {
+      throw new Error("Customer ID is required.");
+    }
+
+    const user = await getCurrentUser();
+    const vendorId = await getVendorIdForUser(user.id);
+
+    if (!vendorId) {
+      throw new Error("Current account is not linked to a vendor.");
+    }
+
+    const { data: existing, error: existingError } = await supabase
+      .from("conversations")
+      .select("*")
+      .eq("customer_id", customerId)
+      .eq("vendor_id", vendorId)
+      .maybeSingle();
+
+    if (existingError) {
+      throw new Error(existingError.message);
+    }
+
+    if (existing) {
+      return mapConversation(existing);
+    }
+
+    const { data, error } = await supabase
+      .from("conversations")
+      .insert({
+        customer_id: customerId,
+        vendor_id: vendorId,
+      })
+      .select("*")
+      .single();
+
+    if (error) {
+      // RLS denial (no matching order) surfaces as a generic Postgres
+      // permission error — translate it into something the vendor UI can
+      // actually explain, rather than a raw "new row violates row-level
+      // security policy" string.
+      if (error.code === "42501" || /row-level security/i.test(error.message)) {
+        throw new Error("You can only message a customer who has placed an order with you.");
+      }
       throw new Error(error.message);
     }
 

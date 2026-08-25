@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import {
   FiArrowLeft,
   FiMessageCircle,
@@ -14,6 +15,7 @@ import { formatTime } from "../../utils/formatters";
 
 export default function VendorChat() {
   const { user } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const {
     data: conversations = [],
@@ -66,6 +68,19 @@ export default function VendorChat() {
       );
     }
   };
+
+  // Deep-link support: VendorOrders.jsx's "Message customer" button
+  // navigates here with ?conversation=<id> after creating/finding the
+  // conversation, rather than duplicating this list-and-open logic there.
+  useEffect(() => {
+    const target = searchParams.get("conversation");
+    if (!target || target === activeId) return;
+    openConversation(target);
+    const next = new URLSearchParams(searchParams);
+    next.delete("conversation");
+    setSearchParams(next, { replace: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   const closeConversation = () => {
     setActiveId(null);
@@ -290,7 +305,7 @@ export default function VendorChat() {
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center justify-between gap-2">
                         <span className="font-medium text-sm text-ink">
-                          Customer
+                          {conversation.customerName}
                         </span>
 
                         {lastMessage && (
@@ -392,7 +407,7 @@ export default function VendorChat() {
 
               <div className="min-w-0">
                 <h2 className="font-semibold text-sm">
-                  Customer
+                  {activeConversation?.customerName || "Customer"}
                 </h2>
 
                 <p className="text-xs text-ink-muted truncate">

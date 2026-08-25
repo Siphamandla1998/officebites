@@ -1,11 +1,13 @@
 import { useState } from "react";
-import { FiEye } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
+import { FiEye, FiMessageCircle } from "react-icons/fi";
 import Filters from "../../components/ui/Filters";
 import Table from "../../components/ui/Table";
 import StatusBadge from "../../components/ui/StatusBadge";
 import Modal from "../../components/ui/Modal";
 import { useAsync } from "../../hooks/useAsync";
 import { orderService } from "../../services/orderService";
+import { chatService } from "../../services/chatService";
 import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../context/ToastContext";
 import { formatCurrency, formatDate, formatTime } from "../../utils/formatters";
@@ -26,8 +28,10 @@ function nextStatusFor(status) {
 export default function VendorOrders() {
   const { user } = useAuth();
   const { showToast } = useToast();
+  const navigate = useNavigate();
   const [filter, setFilter] = useState("all");
   const [selected, setSelected] = useState(null);
+  const [messaging, setMessaging] = useState(false);
   const { data: orders, loading, refetch } = useAsync(
     () => orderService.getOrdersForVendor(user.vendorId),
     [user.vendorId]
@@ -47,6 +51,26 @@ export default function VendorOrders() {
       }
     } catch (err) {
       showToast(err.message || "Couldn't update order", { type: "error" });
+    }
+  };
+
+  // Guest orders have no customerId — there's no account to attach a
+  // conversation to, so messaging isn't offered for them at all (matches
+  // conversations.customer_id being NOT NULL and the order-relationship
+  // RLS check in migration 0016, which needs a real customer_id to match
+  // against).
+  const messageCustomer = async (order) => {
+    if (!order.customerId || messaging) return;
+    setMessaging(true);
+    try {
+      const conversation = await chatService.startConversationAsVendor({
+        customerId: order.customerId,
+      });
+      navigate(`/vendor/chat?conversation=${conversation.id}`);
+    } catch (err) {
+      showToast(err.message || "Couldn't start conversation", { type: "error" });
+    } finally {
+      setMessaging(false);
     }
   };
 
@@ -112,12 +136,24 @@ export default function VendorOrders() {
         onClose={() => setSelected(null)}
         title={selected?.ticketNumber}
         footer={
-          selected &&
-          selectedNext &&
-          selected.subOrder.status !== ORDER_STATUS.CANCELLED && (
-            <button onClick={() => advance(selected)} className="btn-primary w-full">
-              {VENDOR_ORDER_ACTION_LABELS[selectedNext]}
-            </button>
+          selected && (
+            <div className="flex flex-col gap-2">
+              {selectedNext && selected.subOrder.status !== ORDER_STATUS.CANCELLED && (
+                <button onClick={() => advance(selected)} className="btn-primary w-full">
+                  {VENDOR_ORDER_ACTION_LABELS[selectedNext]}
+                </button>
+              )}
+              {selected.customerId && (
+                <button
+                  onClick={() => messageCustomer(selected)}
+                  disabled={messaging}
+                  className="btn-secondary w-full flex items-center justify-center gap-2"
+                >
+                  <FiMessageCircle size={14} />
+                  Message customer
+                </button>
+              )}
+            </div>
           )
         }
       >

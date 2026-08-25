@@ -120,8 +120,8 @@ export default function ChatConversation() {
           <div>
             <h1 className="font-semibold">
               {user?.id === conversation.customerId
-                ? "Vendor"
-                : "Customer"}
+                ? conversation.vendorName
+                : conversation.customerName}
             </h1>
 
             <p className="text-xs text-ink-muted">
