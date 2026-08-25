@@ -52,7 +52,7 @@ export default function Sidebar({ tabs, open, onClose }) {
           ))}
         </nav>
 
-        <div className="px-3 pb-6 pt-3 border-t border-paper/10 flex flex-col gap-2">
+        <div className="px-3 pb-[calc(1.5rem+env(safe-area-inset-bottom))] pt-3 border-t border-paper/10 flex flex-col gap-2">
           <div className="flex items-center gap-3 px-3.5 py-2">
             <Avatar src={user?.avatar} name={user?.name} size={34} />
             <div className="min-w-0">

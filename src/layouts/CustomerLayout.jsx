@@ -56,7 +56,7 @@ export default function CustomerLayout() {
 
   return (
     <main
-      className={`pb-24 ${
+      className={`pb-[calc(6rem+env(safe-area-inset-bottom))] ${
         NO_PADDING_TOP.includes(pathname) ? "" : ""
       }`}
     >

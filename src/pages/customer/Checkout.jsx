@@ -87,7 +87,7 @@ export default function Checkout() {
   }
 
   return (
-    <div className="pb-32">
+    <div className="pb-[calc(8rem+env(safe-area-inset-bottom))]">
       <Navbar showBack title="Checkout" showCart={false} />
       <div className="ob-container pt-4 flex flex-col gap-5">
         {!isAuthenticated && (
@@ -171,7 +171,7 @@ export default function Checkout() {
         ))}
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 mx-auto w-full max-w-app bg-paper-raised border-t border-line p-4 shadow-nav flex flex-col gap-3">
+      <div className="fixed bottom-0 left-0 right-0 mx-auto w-full max-w-app bg-paper-raised border-t border-line px-4 pt-4 pb-[calc(1rem+env(safe-area-inset-bottom))] shadow-nav flex flex-col gap-3">
         <div className="flex justify-between text-sm">
           <span className="text-ink-muted">Total</span>
           <span className="font-bold text-ink text-base">{formatCurrency(subtotal)}</span>
