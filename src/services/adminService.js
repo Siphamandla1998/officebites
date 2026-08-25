@@ -31,11 +31,12 @@ export const adminService = {
 
   /** Live platform snapshot, computed from the current order/vendor dataset rather than fixed numbers. */
   async getPlatformStats() {
-    const [orders, approvedVendors, pendingVendors, customers] = await Promise.all([
+    const [orders, approvedVendors, pendingVendors, customers, pendingPayments] = await Promise.all([
       orderService.getAllOrders(),
       vendorService.getVendors({}),
       vendorService.getVendors({ status: VENDOR_STATUS.PENDING }),
       this.getCustomers(),
+      orderService.getOrdersPendingPaymentReview(),
     ]);
 
     const today = new Date().toDateString();
@@ -54,6 +55,7 @@ export const adminService = {
       ordersToday,
       gmvThisMonth,
       commissionThisMonth,
+      pendingPayments: pendingPayments.length,
     };
   },
 

@@ -240,6 +240,13 @@ export function mapOrder(row) {
     paymentProof:
       row.payment_proof_url || null,
 
+    // Existed in the DB since migration 0006 (payfast vs manual_eft) but
+    // was never selected/mapped here, so nothing in the app — including
+    // the admin dashboard and payments queue — could show which rail a
+    // given order actually paid through.
+    paymentMethod:
+      row.payment_method || "manual_eft",
+
   };
 }
 
@@ -257,6 +264,7 @@ delivery_location,
 status,
 total,
 payment_proof_url,
+payment_method,
 created_at,
 profiles ( name ),
 order_suborders (

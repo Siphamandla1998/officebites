@@ -21,11 +21,21 @@ export default function AdminPayments() {
   const decide = async (order, approve) => {
     setActing(true);
     try {
-      await orderService.verifyPayment(order.id, approve);
+      const result = await orderService.verifyPayment(order.id, approve);
       showToast(
         approve ? `${order.ticketNumber} confirmed` : `${order.ticketNumber} rejected`,
         { type: approve ? "success" : "info" }
       );
+      // The order/payment status update always succeeded to get here — but
+      // flag it if the customer/vendor notification(s) that were supposed
+      // to go out didn't, so an RLS/config issue doesn't go unnoticed just
+      // because it no longer blocks the approval itself.
+      if (result?.notifyErrors?.length) {
+        showToast(
+          `${order.ticketNumber} was updated, but a notification failed to send. Check notifications RLS.`,
+          { type: "error" }
+        );
+      }
       setSelected(null);
       refetch();
     } catch (err) {
