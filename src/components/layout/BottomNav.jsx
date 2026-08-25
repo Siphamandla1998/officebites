@@ -3,7 +3,7 @@ import { FiHome, FiCompass, FiClock, FiUser } from "react-icons/fi";
 
 const CUSTOMER_TABS = [
   { to: "/", icon: FiHome, label: "Home" },
-  { to: "/vendors", icon: FiCompass, label: "Explore" },
+  { to: "/vendors", icon: FiCompass, label: "Vendors" },
   { to: "/orders", icon: FiClock, label: "Orders" },
   { to: "/profile", icon: FiUser, label: "Profile" },
 ];

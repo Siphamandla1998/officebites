@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import { FiClock } from "react-icons/fi";
 import Rating from "../ui/Rating";
 
 const PLACEHOLDER_IMAGE = "/placeholder-food.png";
@@ -35,13 +34,6 @@ export default function VendorCard({
           <p className="text-xs text-ink-muted">
             {vendor.tagline}
           </p>
-
-
-          <div className="flex items-center gap-1 mt-2 text-xs text-ink-muted">
-            <FiClock size={13} />
-            {vendor.prepTimeMins || 0} min
-          </div>
-
 
         </div>
 
@@ -94,14 +86,6 @@ export default function VendorCard({
             <Rating value={vendor.rating} />
           </div>
         )}
-
-
-
-        <div className="flex items-center gap-1 mt-3 text-xs text-ink-muted">
-          <FiClock size={13} />
-          {vendor.prepTimeMins || 0} min
-        </div>
-
 
       </div>
 

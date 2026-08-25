@@ -44,13 +44,6 @@ export default function Login() {
         );
       }
 
-      console.log("[OfficeBites] Login successful:", {
-        id: loggedInUser.id,
-        name: loggedInUser.name,
-        role: loggedInUser.role,
-        vendorId: loggedInUser.vendorId,
-      });
-
       /*
        * Always use the authenticated user's role as the source
        * of truth for the destination.

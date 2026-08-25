@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { FiClock, FiMapPin, FiMessageCircle } from "react-icons/fi";
+import { FiMapPin, FiMessageCircle } from "react-icons/fi";
 import Navbar from "../../components/layout/Navbar";
 import FoodCard from "../../components/features/FoodCard";
 import Rating from "../../components/ui/Rating";
@@ -79,9 +79,6 @@ export default function VendorProfile() {
               <p className="text-xs text-ink-muted">{vendor.tagline}</p>
               <div className="flex items-center gap-3 mt-1.5">
                 <Rating value={vendor.rating} count={vendor.reviewCount} />
-                <span className="inline-flex items-center gap-1 text-xs text-ink-muted">
-                  <FiClock size={12} /> {vendor.prepTimeMins} min
-                </span>
               </div>
             </div>
             <button onClick={handleChat} className="btn-icon" aria-label="Message vendor">
@@ -142,10 +139,6 @@ export default function VendorProfile() {
           <div className="card p-4 flex flex-col gap-3 text-sm text-ink-soft">
             <p>{vendor.name} serves {vendor.category.toLowerCase()} from {vendor.building}.</p>
             <div className="flex justify-between border-t border-line pt-3">
-              <span className="text-ink-muted">Preparation time</span>
-              <span className="text-ink font-medium">{vendor.prepTimeMins} minutes</span>
-            </div>
-            <div className="flex justify-between">
               <span className="text-ink-muted">Location</span>
               <span className="text-ink font-medium">{vendor.building}</span>
             </div>

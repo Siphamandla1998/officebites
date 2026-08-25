@@ -1,3 +1,41 @@
+import { useNavigate } from "react-router-dom";
+import { FiStar } from "react-icons/fi";
+import Navbar from "../../components/layout/Navbar";
+import EmptyState from "../../components/ui/EmptyState";
+
+// TODO(ratings): re-enable once there's a real reviews table + submission
+// path. This page used to render a star-rating + comment form per vendor,
+// but "submit" never wrote anything anywhere — it just showed a fake
+// "Thanks for your feedback!" toast and navigated away. That's actively
+// misleading (customers believe they left real feedback that vendors will
+// see; nothing is stored), so the flow is disabled here rather than
+// deleted. The original form UI is preserved below, commented out, so
+// reactivating this is a matter of restoring it once a reviews table
+// migration + orderService.submitReview()-style write actually exists.
+export default function Reviews() {
+  const navigate = useNavigate();
+
+  return (
+    <div className="pb-8">
+      <Navbar showBack title="Reviews" showCart={false} />
+      <div className="ob-container pt-4">
+        <EmptyState
+          icon={<FiStar size={20} />}
+          title="Reviews aren't open yet"
+          description="We're not collecting reviews on OfficeBites just yet — check back soon."
+          action={
+            <button onClick={() => navigate("/orders")} className="btn-primary">
+              Back to orders
+            </button>
+          }
+        />
+      </div>
+    </div>
+  );
+}
+
+/* ORIGINAL FORM — restore once real submission is wired up.
+
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { FiStar } from "react-icons/fi";
@@ -16,6 +54,7 @@ export default function Reviews() {
   const [comments, setComments] = useState({});
 
   const submit = () => {
+    // TODO: actually persist ratings/comments before re-enabling.
     showToast("Thanks for your feedback!", { type: "success" });
     navigate("/orders");
   };
@@ -68,3 +107,5 @@ export default function Reviews() {
     </div>
   );
 }
+
+*/

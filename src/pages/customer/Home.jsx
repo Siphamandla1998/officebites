@@ -1,15 +1,12 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { FiChevronRight } from "react-icons/fi";
 
 import SearchBar from "../../components/ui/SearchBar";
 import CategoryCard from "../../components/features/CategoryCard";
-import VendorCard from "../../components/features/VendorCard";
 import FoodCard from "../../components/features/FoodCard";
 
 import { useAsync } from "../../hooks/useAsync";
 import { foodService } from "../../services/foodService";
-import { vendorService } from "../../services/vendorService";
 
 import { useAuth } from "../../context/AuthContext";
 import { useCart } from "../../context/CartContext";
@@ -39,10 +36,10 @@ export default function Home() {
 
 
   const {
-    data: featuredVendors = [],
-    loading: vendorLoading,
+    data: upcomingMeals = [],
+    loading: upcomingLoading,
   } = useAsync(
-    () => vendorService.getFeaturedVendors(),
+    () => foodService.getMeals({ forDate: nextOrderableDate() }),
     []
   );
 
@@ -51,19 +48,30 @@ export default function Home() {
     data: popularMeals = [],
     loading: mealsLoading,
   } = useAsync(
-    () => foodService.getPopularMeals(6, { forDate: nextOrderableDate() }),
+    // "Available Menus" is general catalogue discovery, deliberately NOT
+    // filtered to the upcoming preorder date — that's what the section
+    // above is for. Passing forDate here would make the two sections show
+    // near-identical content.
+    () => foodService.getPopularMeals(6),
     []
   );
 
 
-  console.log("HOME DATA", {
-    categories,
-    featuredVendors,
-    popularMeals,
-  });
-
-
   const nextDelivery = nextOrderableDate();
+
+  // Group the upcoming day's orderable meals by vendor for the "Wednesday,
+  // 26 August" style showcase — driven by actual availability data
+  // (meals.available_days, see migration 0013) rather than a hard-coded
+  // day/date the way "Featured vendors" used to be a fixed, uncurated list.
+  const upcomingByVendor = (upcomingMeals || []).reduce((acc, meal) => {
+    const key = meal.vendorId;
+    if (!acc[key]) {
+      acc[key] = { vendorId: meal.vendorId, vendorName: meal.vendorName, meals: [] };
+    }
+    acc[key].meals.push(meal);
+    return acc;
+  }, {});
+  const upcomingVendorGroups = Object.values(upcomingByVendor);
 
 
   const handleAdd = (meal) => {
@@ -184,53 +192,54 @@ export default function Home() {
 
 
 
-      {/* Featured vendors */}
+      {/* Upcoming preorder day */}
       <section className="pb-6">
 
-        <div className="ob-container flex items-center justify-between mb-3">
+        <div className="ob-container mb-3">
 
           <h3 className="section-title">
-            Featured vendors
+            {formatDate(nextDelivery, { weekday: "long", month: "long" })}
           </h3>
 
-
-          <button
-            onClick={() => navigate("/vendors")}
-            className="section-link flex items-center gap-0.5"
-          >
-            See all
-            <FiChevronRight size={12} />
-          </button>
-
+          <p className="text-xs text-ink-muted mt-0.5">
+            Meals vendors have available to preorder for this day
+          </p>
 
         </div>
 
 
-        <div className="flex gap-3.5 overflow-x-auto no-scrollbar px-5 pb-1">
+        {upcomingLoading ? (
 
+          <div className="flex gap-3.5 overflow-x-auto no-scrollbar px-5 pb-1">
+            {Array.from({ length: 2 }).map((_, i) => (
+              <div key={i} className="skeleton h-40 w-56 shrink-0" />
+            ))}
+          </div>
 
-          {vendorLoading ? (
+        ) : upcomingVendorGroups.length === 0 ? (
 
-            Array.from({ length: 2 }).map((_, i) => (
-              <div
-                key={i}
-                className="skeleton h-40 w-64 shrink-0"
-              />
-            ))
+          <p className="ob-container text-sm text-ink-muted py-4">
+            No vendors have posted a menu for this day yet — check back soon.
+          </p>
 
-          ) : (
+        ) : (
 
-            (featuredVendors || []).map((vendor) => (
-              <VendorCard
-                key={vendor.id}
-                vendor={vendor}
-              />
-            ))
+          <div className="flex flex-col gap-5">
+            {upcomingVendorGroups.map((group) => (
+              <div key={group.vendorId}>
+                <p className="ob-container text-xs font-semibold text-nude-700 uppercase tracking-wide mb-2">
+                  {group.vendorName}
+                </p>
+                <div className="flex gap-3.5 overflow-x-auto no-scrollbar px-5 pb-1">
+                  {group.meals.map((meal) => (
+                    <FoodCard key={meal.id} meal={meal} onAdd={handleAdd} layout="row" />
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
 
-          )}
-
-
-        </div>
+        )}
 
       </section>
 
@@ -238,13 +247,13 @@ export default function Home() {
 
 
 
-      {/* Popular meals */}
+      {/* Available menus — general catalogue, not tied to a specific preorder date */}
       <section className="pb-8">
 
         <div className="ob-container flex items-center justify-between mb-3">
 
           <h3 className="section-title">
-            Popular right now
+            Available Menus
           </h3>
 
         </div>

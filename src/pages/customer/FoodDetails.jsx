@@ -28,23 +28,15 @@ export default function FoodDetails() {
   }
 
   const handleAdd = () => {
-  console.log("FOOD DETAILS → ADD TO CART", {
-    mealId: meal?.id,
-    mealName: meal?.name,
-    mealPrice: meal?.price,
-    vendorId: meal?.vendorId,
-    qty,
-  });
+    addItem(meal, qty);
 
-  addItem(meal, qty);
-
-  showToast(`Added ${qty} × ${meal.name} to cart`, {
-    type: "success",
-  });
-};
+    showToast(`Added ${qty} × ${meal.name} to cart`, {
+      type: "success",
+    });
+  };
 
   return (
-    <div className="pb-28">
+    <div className="pb-[calc(7rem+env(safe-area-inset-bottom))]">
       <Navbar showBack transparent />
       <div className="-mt-16 relative">
         <img src={meal.image} alt={meal.name} className="h-64 w-full object-cover" />
@@ -92,7 +84,7 @@ export default function FoodDetails() {
         </div>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 mx-auto w-full max-w-app bg-paper-raised border-t border-line p-4 shadow-nav">
+      <div className="fixed bottom-0 left-0 right-0 mx-auto w-full max-w-app bg-paper-raised border-t border-line px-4 pt-4 pb-[calc(1rem+env(safe-area-inset-bottom))] shadow-nav">
         <button onClick={handleAdd} className="btn-primary w-full">
           Add to cart · {formatCurrency(meal.price * qty)}
         </button>
