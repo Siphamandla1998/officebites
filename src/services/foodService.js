@@ -53,19 +53,13 @@ export const foodService = {
       .from("meals")
       .select(`
         *,
-        vendors(
+        vendors!inner(
           name,
           status
         )
       `)
-      .eq(
-        "available",
-        true
-      )
-      .eq(
-        "vendors.status",
-        "approved"
-      );
+      .eq("available", true)
+      .eq("vendors.status", "approved");
 
 
 
