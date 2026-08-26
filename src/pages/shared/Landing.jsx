@@ -40,10 +40,16 @@ export default function Landing() {
             <span className="inline-flex h-12 w-12 rounded-2xl bg-ink text-paper items-center justify-center text-base font-bold shrink-0">
               OB
             </span>
-
-            <span className="text-xl font-extrabold tracking-tight text-ink">
-              Office<span className="text-nude-600">Bites</span>
-            </span>
+          
+            <div className="flex flex-col">
+              <span className="text-xl font-extrabold tracking-tight text-ink">
+                Office<span className="text-nude-600">Bites</span>
+              </span>
+          
+              <span className="text-[10px] uppercase tracking-[0.12em] text-ink-muted font-semibold mt-0.5">
+                Office Food Marketplace
+              </span>
+            </div>
           </div>
 
           {/* Heading */}
