@@ -90,13 +90,19 @@ export default function Login() {
       <div className="w-full max-w-sm">
 
         {/* Brand */}
-        <div className="flex items-center gap-3 mb-7">
-          <span className="inline-flex h-12 w-12 rounded-2xl bg-ink text-paper items-center justify-center text-base font-bold shrink-0">
-            OB
-          </span>
+        <div className="flex flex-col items-center mb-7">
+          <div className="flex items-center gap-3">
+            <span className="inline-flex h-12 w-12 rounded-2xl bg-ink text-paper items-center justify-center text-base font-bold shrink-0">
+              OB
+            </span>
 
-          <span className="text-xl font-extrabold tracking-tight text-ink">
-            Office<span className="text-nude-600">Bites</span>
+            <span className="text-xl font-extrabold tracking-tight text-ink">
+              Office<span className="text-nude-600">Bites</span>
+            </span>
+          </div>
+
+          <span className="text-xs font-semibold uppercase tracking-[0.12em] text-ink-muted mt-2">
+            Office Food Marketplace
           </span>
         </div>
 
