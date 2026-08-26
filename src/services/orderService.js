@@ -6,26 +6,6 @@ import {
 } from "../utils/constants";
 
 /**
- * Fetch a complete order through the normal orders table.
- *
- * This is used for authenticated users/admin/vendor contexts where
- * the appropriate RLS policies allow access.
- */
-async function fetchFullOrder(orderId) {
-  const { data, error } = await supabase
-    .from("orders")
-    .select(ORDER_SELECT)
-    .eq("id", orderId)
-    .single();
-
-  if (error) {
-    throw { message: error.message };
-  }
-
-  return mapOrder(data);
-}
-
-/**
  * Create a notification directly for a specific user.
  *
  * This is important for admin actions such as payment verification:
@@ -60,29 +40,6 @@ async function createNotificationForUser({
   }
 
   return data;
-}
-
-/**
- * Get vendor owner profile(s) for the vendors attached to an order.
- */
-async function getVendorOwnerIds(vendorIds = []) {
-  if (!vendorIds.length) {
-    return [];
-  }
-
-  const uniqueVendorIds = [...new Set(vendorIds)];
-
-  const { data, error } = await supabase
-    .from("profiles")
-    .select("id, vendor_id, role")
-    .in("vendor_id", uniqueVendorIds)
-    .eq("role", "vendor");
-
-  if (error) {
-    throw { message: error.message };
-  }
-
-  return data || [];
 }
 
 export const orderService = {
@@ -537,113 +494,42 @@ export const orderService = {
   // VERIFY PAYMENT
   // ===============================
 
-  async verifyPayment(
-    orderId,
-    approve = true
-  ) {
-    const newStatus = approve
-      ? ORDER_STATUS.CONFIRMED
-      : ORDER_STATUS.CANCELLED;
-
-    const { error } = await supabase
-      .from("orders")
-      .update({
-        status: newStatus,
-      })
-      .eq("id", orderId);
-
-    if (error) {
-      throw { message: error.message };
-    }
-
-    const { error: subError } =
-      await supabase
-        .from("order_suborders")
-        .update({
-          status: newStatus,
-          payment_status: approve
-            ? PAYMENT_STATUS.PAID
-            : PAYMENT_STATUS.UNPAID,
-        })
-        .eq("order_id", orderId);
-
-    if (subError) {
-      throw { message: subError.message };
-    }
-
-    const updated = await fetchFullOrder(
-      orderId
+  /**
+   * Approve or reject a submitted payment through the secure
+   * database RPC.
+   *
+   * admin_verify_payment():
+   *   - Confirms the caller is an admin.
+   *   - Locks the order row (FOR UPDATE) to prevent a race between
+   *     two admins approving/rejecting the same order at once.
+   *   - Rejects the call outright if the order isn't currently
+   *     awaiting payment review (payment_submitted/pending_payment),
+   *     so an already-confirmed or already-cancelled order can't be
+   *     silently re-processed.
+   *   - Updates orders + order_suborders and sends every customer
+   *     and vendor notification, all inside one transaction.
+   *
+   * Do NOT replace this with separate .update() calls from the
+   * browser — that reintroduces exactly the double-approval and
+   * partial-write risks this RPC exists to close.
+   */
+  async verifyPayment(orderId, approve = true) {
+    const { data, error } = await supabase.rpc(
+      "admin_verify_payment",
+      {
+        p_order_id: orderId,
+        p_approve: approve,
+      }
     );
 
-    // ---------------------------------
-    // CUSTOMER + VENDOR NOTIFICATIONS
-    // ---------------------------------
-
-    const notifyErrors = [];
-
-    if (updated.customerId) {
-      try {
-        await createNotificationForUser({
-          userId: updated.customerId,
-          type: approve
-            ? "payment_verified"
-            : "payment_rejected",
-          title: approve
-            ? "Payment verified"
-            : "Payment rejected",
-          body: approve
-            ? `Your payment for ${updated.ticketNumber} has been verified — your order is confirmed.`
-            : `We couldn't verify the payment for ${updated.ticketNumber}. Please contact support or upload valid proof.`,
-        });
-      } catch (err) {
-        console.error(
-          "verifyPayment: customer notification failed",
-          err
-        );
-
-        notifyErrors.push(err);
-      }
-    }
-
-    if (approve) {
-      const vendorIds =
-        updated.subOrders
-          ?.map(
-            (subOrder) =>
-              subOrder.vendorId
-          )
-          .filter(Boolean) || [];
-
-      const vendorProfiles =
-        await getVendorOwnerIds(
-          vendorIds
-        );
-
-      for (const vendorProfile of vendorProfiles) {
-        try {
-          await createNotificationForUser({
-            userId: vendorProfile.id,
-            type: "new_order",
-            title: "New order received",
-            body: `Order ${updated.ticketNumber} has been confirmed and is ready for you to prepare.`,
-          });
-        } catch (err) {
-          console.error(
-            "verifyPayment: vendor notification failed",
-            err
-          );
-
-          notifyErrors.push(err);
-        }
-      }
+    if (error) {
+      throw { message: error.message, status: error.code };
     }
 
     return {
       success: true,
-      notifyErrors: notifyErrors.length
-        ? notifyErrors.map(
-            (e) => e.message
-          )
+      notifyErrors: Array.isArray(data?.notify_errors)
+        ? data.notify_errors
         : undefined,
     };
   },
