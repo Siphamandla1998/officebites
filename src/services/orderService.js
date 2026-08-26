@@ -239,28 +239,25 @@ export const orderService = {
 
     const orderRow = { id: orderId };
 
-    const { data: suborderRows, error: suborderError } =
-      await supabase
-        .from("order_suborders")
-        .insert(
-          groups.map((group) => ({
-            order_id: orderRow.id,
-            vendor_id: group.vendorId,
-            status: ORDER_STATUS.PENDING_PAYMENT,
-            payment_status: PAYMENT_STATUS.UNPAID,
-            subtotal: group.items.reduce(
-              (sum, item) =>
-                sum + item.price * item.qty,
-              0
-            ),
-          }))
-        )
-        .select();
-
+    const suborderRows = groups.map((group) => ({
+      id: crypto.randomUUID(),
+      order_id: orderRow.id,
+      vendor_id: group.vendorId,
+      status: ORDER_STATUS.PENDING_PAYMENT,
+      payment_status: PAYMENT_STATUS.UNPAID,
+      subtotal: group.items.reduce(
+        (sum, item) => sum + item.price * item.qty,
+        0
+      ),
+    }));
+    
+    const { error: suborderError } = await supabase
+      .from("order_suborders")
+      .insert(suborderRows);
+    
     if (suborderError) {
       throw { message: suborderError.message };
     }
-
     const itemRows = groups.flatMap((group) => {
       const suborder = suborderRows.find(
         (row) => row.vendor_id === group.vendorId
