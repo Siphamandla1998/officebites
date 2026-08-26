@@ -1,14 +1,16 @@
 import { supabase } from "./api/supabaseClient";
 import { mapOrder, ORDER_SELECT } from "./api/mappers";
 import {
-  splitCartByVendor,
-  generateTicketNumber,
-} from "../utils/orderRules";
-import {
   ORDER_STATUS,
   PAYMENT_STATUS,
 } from "../utils/constants";
 
+/**
+ * Fetch a complete order through the normal orders table.
+ *
+ * This is used for authenticated users/admin/vendor contexts where
+ * the appropriate RLS policies allow access.
+ */
 async function fetchFullOrder(orderId) {
   const { data, error } = await supabase
     .from("orders")
@@ -105,17 +107,23 @@ export const orderService = {
   },
 
   /**
-   * Used for guest order history. Guest orders are no longer readable
-   * through the base table (see the guest-order-security migration), so
-   * this goes through the batch RPC instead — it can only ever return rows
-   * matching ids the caller already supplied, never a full table scan.
+   * Used for guest order history.
+   *
+   * Guest orders are not readable through the base orders table.
+   * This uses the restricted guest-order RPC and only returns
+   * the order ids explicitly supplied by the caller.
    */
   async getOrdersByIds(ids = []) {
     if (ids.length === 0) {
       return [];
     }
 
-    const { data, error } = await supabase.rpc("get_guest_orders_json", { p_ids: ids });
+    const { data, error } = await supabase.rpc(
+      "get_guest_orders_json",
+      {
+        p_ids: ids,
+      }
+    );
 
     if (error) {
       throw { message: error.message };
@@ -125,23 +133,22 @@ export const orderService = {
   },
 
   /**
-   * A signed-in customer/vendor/admin still reads `orders` directly (RLS
-   * scopes them to their own rows). A guest order is no longer visible
-   * through the base table at all, so if there's no signed-in user — or the
-   * direct read comes back empty — fall back to the id-scoped guest RPC.
-   * Either path can only ever return the ONE order matching `id`.
-   */
-  /**
-   * Cross-device guest order tracking — ticket code + the contact the guest
-   * originally gave at checkout, the "order code + mobile number" second
-   * factor. Requires both to match; there's no way to enumerate orders
-   * through this, only to confirm one you already believe is yours.
+   * Cross-device guest order tracking.
+   *
+   * Requires:
+   *   1. Ticket number
+   *   2. Original guest contact/mobile number
+   *
+   * Both are checked server-side by the SECURITY DEFINER RPC.
    */
   async trackGuestOrder(ticketNumber, contact) {
-    const { data, error } = await supabase.rpc("get_guest_order_by_ticket_json", {
-      p_ticket_number: ticketNumber,
-      p_contact: contact,
-    });
+    const { data, error } = await supabase.rpc(
+      "get_guest_order_by_ticket_json",
+      {
+        p_ticket_number: ticketNumber,
+        p_contact: contact,
+      }
+    );
 
     if (error) {
       throw { message: error.message };
@@ -150,8 +157,19 @@ export const orderService = {
     return data ? mapOrder(data) : null;
   },
 
+  /**
+   * Get a single order.
+   *
+   * Authenticated users first use the normal orders table,
+   * protected by RLS.
+   *
+   * Guest orders use the dedicated guest-order RPC because
+   * guest orders are intentionally not directly selectable
+   * through the base orders table.
+   */
   async getOrderById(id) {
-    const { data: authData } = await supabase.auth.getUser();
+    const { data: authData } =
+      await supabase.auth.getUser();
 
     if (authData?.user) {
       const { data, error } = await supabase
@@ -164,18 +182,26 @@ export const orderService = {
         throw { message: error.message };
       }
 
-      if (data) return mapOrder(data);
+      if (data) {
+        return mapOrder(data);
+      }
     }
 
-    const { data: guestData, error: guestError } = await supabase.rpc("get_guest_order_json", {
-      p_order_id: id,
-    });
+    const {
+      data: guestData,
+      error: guestError,
+    } = await supabase.rpc(
+      "get_guest_order_json",
+      {
+        p_order_id: id,
+      }
+    );
 
     if (guestError) {
       throw { message: guestError.message };
     }
 
-    return mapOrder(guestData);
+    return guestData ? mapOrder(guestData) : null;
   },
 
   // ===============================
@@ -183,15 +209,37 @@ export const orderService = {
   // ===============================
 
   /**
-   * One checkout creates one customer-facing order,
-   * internally split by vendor.
+   * Creates an order through the database SECURITY DEFINER RPC.
    *
-   * The order's id and ticket_number are generated here (client-side, with a
-   * CSPRNG for the ticket) rather than read back via `.select()` after
-   * insert: guest orders are no longer selectable through the base `orders`
-   * table policy at all (see the guest-order-security migration), so an
-   * `.insert().select()` would return nothing for a guest. Since we already
-   * know every value we're inserting, there's nothing to read back.
+   * IMPORTANT:
+   *
+   * Do NOT create orders using separate browser-side inserts into:
+   *
+   *   orders
+   *   order_suborders
+   *   order_items
+   *
+   * The database function create_order_from_cart() is the secure
+   * checkout boundary.
+   *
+   * It:
+   *
+   * 1. Verifies the authenticated customer identity.
+   * 2. Determines whether the checkout is authenticated or guest.
+   * 3. Validates guest information.
+   * 4. Validates the cart.
+   * 5. Re-reads meal prices from the meals table.
+   * 6. Verifies meals are available.
+   * 7. Verifies vendors are approved.
+   * 8. Calculates the order total server-side.
+   * 9. Creates the order.
+   * 10. Splits it into vendor suborders.
+   * 11. Creates order items using database prices.
+   * 12. Runs as one PostgreSQL transaction.
+   * 13. Returns the completed order as JSON.
+   *
+   * This prevents a guest from changing item prices in DevTools
+   * before checkout and prevents partially-created orders.
    */
   async createOrder({
     customerId,
@@ -202,85 +250,69 @@ export const orderService = {
     deliveryLocation,
     cartItems,
   }) {
-    const groups = splitCartByVendor(cartItems);
+    if (!Array.isArray(cartItems) || cartItems.length === 0) {
+      throw {
+        message: "Your cart is empty",
+      };
+    }
 
-    const total = groups.reduce(
-      (sum, group) =>
-        sum +
-        group.items.reduce(
-          (subtotal, item) =>
-            subtotal + item.price * item.qty,
-          0
-        ),
-      0
+    /**
+     * Only send the information the database function needs
+     * to identify the meals and quantities.
+     *
+     * DO NOT send client-side prices to the database function
+     * as authoritative pricing.
+     *
+     * The RPC looks up the real price from meals.price.
+     */
+    const rpcItems = cartItems.map((item) => ({
+      mealId: item.mealId,
+      qty: item.qty,
+    }));
+
+    const { data, error } = await supabase.rpc(
+      "create_order_from_cart",
+      {
+        p_customer_id: customerId || null,
+        p_guest_name: customerId
+          ? null
+          : customerName,
+        p_guest_contact: customerId
+          ? null
+          : guestContact,
+        p_guest_email: customerId
+          ? null
+          : guestEmail || null,
+        p_delivery_date: deliveryDate,
+        p_delivery_location:
+          deliveryLocation || null,
+        p_items: rpcItems,
+      }
     );
 
-    const orderId = crypto.randomUUID();
-    const ticketNumber = generateTicketNumber();
-
-    const { error: orderError } = await supabase
-      .from("orders")
-      .insert({
-        id: orderId,
-        ticket_number: ticketNumber,
-        customer_id: customerId || null,
-        guest_name: customerId ? null : customerName,
-        guest_contact: customerId ? null : guestContact,
-        guest_email: customerId ? null : guestEmail || null,
-        delivery_date: deliveryDate,
-        delivery_location: deliveryLocation || null,
-        status: ORDER_STATUS.PENDING_PAYMENT,
-        total,
-      });
-
-    if (orderError) {
-      throw { message: orderError.message };
+    if (error) {
+      throw {
+        message: error.message,
+      };
     }
 
-    const orderRow = { id: orderId };
-
-    const suborderRows = groups.map((group) => ({
-      id: crypto.randomUUID(),
-      order_id: orderRow.id,
-      vendor_id: group.vendorId,
-      status: ORDER_STATUS.PENDING_PAYMENT,
-      payment_status: PAYMENT_STATUS.UNPAID,
-      subtotal: group.items.reduce(
-        (sum, item) => sum + item.price * item.qty,
-        0
-      ),
-    }));
-    
-    const { error: suborderError } = await supabase
-      .from("order_suborders")
-      .insert(suborderRows);
-    
-    if (suborderError) {
-      throw { message: suborderError.message };
-    }
-    const itemRows = groups.flatMap((group) => {
-      const suborder = suborderRows.find(
-        (row) => row.vendor_id === group.vendorId
-      );
-
-      return group.items.map((item) => ({
-        suborder_id: suborder.id,
-        meal_id: item.mealId,
-        meal_name: item.name,
-        qty: item.qty,
-        price: item.price,
-      }));
-    });
-
-    const { error: itemsError } = await supabase
-      .from("order_items")
-      .insert(itemRows);
-
-    if (itemsError) {
-      throw { message: itemsError.message };
+    if (!data) {
+      throw {
+        message:
+          "Order creation succeeded but no order was returned.",
+      };
     }
 
-    return this.getOrderById(orderId);
+    /**
+     * create_order_from_cart() returns order_to_json(...)
+     * as JSONB, so there is no need for another .select()
+     * against the orders table.
+     *
+     * This is particularly important for guest orders because
+     * guest orders are intentionally protected from direct
+     * base-table reads.
+     */
+    return mapOrder(data);
   },
 
   // ===============================
@@ -288,22 +320,19 @@ export const orderService = {
   // ===============================
 
   /**
-   * This previously did two raw `.update()` calls against `orders` and
-   * `order_suborders`. Both tables only ever had an admin-only UPDATE
-   * policy, so — for every guest and every logged-in customer — those
-   * updates silently affected 0 rows (Postgres RLS drops non-matching rows
-   * rather than erroring), while the calling code saw no error and told the
-   * customer their payment was submitted. The order was never actually
-   * marked payment_submitted, so it never reached the admin verification
-   * queue. Fixed by routing through submit_payment_proof(), a narrow
-   * SECURITY DEFINER function that verifies the caller owns this specific
-   * order before making the same two updates itself.
+   * Submit payment proof through the secure database RPC.
+   *
+   * The RPC verifies that the caller is allowed to submit
+   * proof for this specific order before updating payment state.
    */
   async attachPaymentProof(orderId, proofPath) {
-    const { data, error } = await supabase.rpc("submit_payment_proof", {
-      p_order_id: orderId,
-      p_proof_path: proofPath,
-    });
+    const { data, error } = await supabase.rpc(
+      "submit_payment_proof",
+      {
+        p_order_id: orderId,
+        p_proof_path: proofPath,
+      }
+    );
 
     if (error) {
       throw { message: error.message };
@@ -311,16 +340,16 @@ export const orderService = {
 
     const updated = mapOrder(data);
 
-    // Notify the customer, if this order actually has one. Guest orders
-    // have no customer_id and nobody to notify — this used to go through
-    // notificationService.addNotification(), which resolves the *current
-    // signed-in user* via auth.getUser() and throws "You must be signed
-    // in" for guests. That meant every guest's proof upload succeeded in
-    // the database (the RPC above) but then surfaced as a failed upload in
-    // the UI, because this notification step rejected right after. Route
-    // it through the same admin-safe direct insert createNotificationForUser
-    // uses instead, targeted at the order's own customer_id, and don't let
-    // a notification failure mask an otherwise-successful upload.
+    /**
+     * Guest orders have no customer_id, so there is no
+     * customer account to notify.
+     *
+     * Authenticated customer orders do have a customer_id,
+     * so notify that specific user.
+     *
+     * Notification failure must not make a successful
+     * payment-proof submission appear to have failed.
+     */
     if (updated.customerId) {
       try {
         await createNotificationForUser({
@@ -330,7 +359,10 @@ export const orderService = {
           body: `Your proof of payment for ${updated.ticketNumber} was received and is being reviewed by OfficeBites.`,
         });
       } catch (notifyError) {
-        console.error("attachPaymentProof: notification failed", notifyError);
+        console.error(
+          "attachPaymentProof: notification failed",
+          notifyError
+        );
       }
     }
 
@@ -347,7 +379,10 @@ export const orderService = {
       .select(ORDER_SELECT);
 
     if (date) {
-      query = query.eq("delivery_date", date);
+      query = query.eq(
+        "delivery_date",
+        date
+      );
     }
 
     const { data, error } = await query;
@@ -374,23 +409,12 @@ export const orderService = {
   },
 
   /**
-   * Moves a sub-order exactly one step forward:
+   * Moves a sub-order exactly one step forward.
    *
-   * Confirmed -> Accepted -> Preparing ->
-   * Ready -> Collected -> Completed
-   *
-   * Routed through update_suborder_status_and_notify() (see migration
-   * 0015) rather than raw .update() calls. Two reasons: (1) that RPC is
-   * also what notifies the customer of the change, and a vendor's own
-   * client can't legally insert that notification directly — vendor is
-   * neither the customer nor an admin under notifications RLS, so a plain
-   * client-side insert would 403 the same way the admin-payment
-   * notification bug did; (2) it re-checks transition validity and
-   * ownership server-side rather than trusting the client's own fetch.
-   * VendorOrders.jsx keeps its own local nextStatusFor() helper (driven by
-   * VENDOR_ORDER_FLOW) purely to decide which button/label to show before
-   * the round trip — the DB trigger and this RPC remain the source of
-   * truth for whether a transition is actually allowed.
+   * The database RPC remains the source of truth for:
+   *   - vendor ownership
+   *   - valid status transitions
+   *   - notifications
    */
   async updateSubOrderStatus(
     orderId,
@@ -398,14 +422,12 @@ export const orderService = {
     nextStatus
   ) {
     if (!vendorId) {
-      throw { message: "Missing vendor context", status: 400 };
+      throw {
+        message: "Missing vendor context",
+        status: 400,
+      };
     }
 
-    // vendorId itself isn't passed to the RPC — it derives the caller's
-    // vendor from current_vendor_id() server-side, which is the only copy
-    // that can't be spoofed by a compromised/stale client. It's still
-    // required here as a cheap client-side guard against calling this
-    // without a vendor session at all.
     const { data, error } = await supabase.rpc(
       "update_suborder_status_and_notify",
       {
@@ -415,7 +437,10 @@ export const orderService = {
     );
 
     if (error) {
-      throw { message: error.message, status: 400 };
+      throw {
+        message: error.message,
+        status: 400,
+      };
     }
 
     return data;
@@ -481,14 +506,9 @@ export const orderService = {
     return (data || []).map(mapOrder);
   },
 
-  // Orders that have actually had payment confirmed — i.e. moved past
-  // pending_payment/payment_submitted into confirmed or any status beyond
-  // it (accepted/preparing/ready/collected/completed). Cancelled orders
-  // are excluded even if they reached confirmed at some point, since a
-  // cancellation after confirmation usually means a refund/dispute, not a
-  // standing successful payment. Used for the admin dashboard's "payments
-  // made" widget — separate from getOrdersPendingPaymentReview(), which is
-  // specifically the manual-EFT review queue.
+  /**
+   * Orders that have actually had payment confirmed.
+   */
   async getRecentPayments(limit = 10) {
     const { data, error } = await supabase
       .from("orders")
@@ -501,7 +521,9 @@ export const orderService = {
         ORDER_STATUS.COLLECTED,
         ORDER_STATUS.COMPLETED,
       ])
-      .order("created_at", { ascending: false })
+      .order("created_at", {
+        ascending: false,
+      })
       .limit(limit);
 
     if (error) {
@@ -515,7 +537,10 @@ export const orderService = {
   // VERIFY PAYMENT
   // ===============================
 
-  async verifyPayment(orderId, approve = true) {
+  async verifyPayment(
+    orderId,
+    approve = true
+  ) {
     const newStatus = approve
       ? ORDER_STATUS.CONFIRMED
       : ORDER_STATUS.CANCELLED;
@@ -553,14 +578,7 @@ export const orderService = {
     // ---------------------------------
     // CUSTOMER + VENDOR NOTIFICATIONS
     // ---------------------------------
-    //
-    // The order/payment status update above is the operation that actually
-    // matters and has already committed by this point. Notifications are a
-    // side effect of that, not a precondition for it — if a notification
-    // insert fails (RLS misconfiguration, a bad user_id, network blip), the
-    // admin should still see "payment approved" rather than an error that
-    // implies the approval itself failed. Each notification is attempted
-    // independently and failures are logged, never thrown.
+
     const notifyErrors = [];
 
     if (updated.customerId) {
@@ -578,7 +596,11 @@ export const orderService = {
             : `We couldn't verify the payment for ${updated.ticketNumber}. Please contact support or upload valid proof.`,
         });
       } catch (err) {
-        console.error("verifyPayment: customer notification failed", err);
+        console.error(
+          "verifyPayment: customer notification failed",
+          err
+        );
+
         notifyErrors.push(err);
       }
     }
@@ -606,7 +628,11 @@ export const orderService = {
             body: `Order ${updated.ticketNumber} has been confirmed and is ready for you to prepare.`,
           });
         } catch (err) {
-          console.error("verifyPayment: vendor notification failed", err);
+          console.error(
+            "verifyPayment: vendor notification failed",
+            err
+          );
+
           notifyErrors.push(err);
         }
       }
@@ -614,7 +640,11 @@ export const orderService = {
 
     return {
       success: true,
-      notifyErrors: notifyErrors.length ? notifyErrors.map((e) => e.message) : undefined,
+      notifyErrors: notifyErrors.length
+        ? notifyErrors.map(
+            (e) => e.message
+          )
+        : undefined,
     };
   },
 };
