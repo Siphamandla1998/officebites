@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import TextField from "../../components/forms/TextField";
+import Spinner from "../../components/ui/Spinner";
 
 const ROLE_HOME = {
   customer: "/",
@@ -20,47 +22,25 @@ export default function Login() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
     if (submitting) return;
-
     setError("");
     setSubmitting(true);
-
     try {
-      const loggedInUser = await login({
-        email: email.trim(),
-        password,
-      });
-
+      const loggedInUser = await login({ email: email.trim(), password });
       if (!loggedInUser) {
         throw new Error("Login succeeded but your user profile could not be loaded.");
       }
-
       const role = String(loggedInUser.role || "").toLowerCase();
-
       if (!role) {
-        throw new Error(
-          "Your account role could not be determined. Please contact OfficeBites support."
-        );
+        throw new Error("Your account role could not be determined. Please contact OfficeBites support.");
       }
-
-      /*
-       * Always use the authenticated user's role as the source
-       * of truth for the destination.
-       */
       let destination = ROLE_HOME[role] || "/";
-
-      /*
-       * Do not allow a vendor/admin to be redirected back into
-       * the customer application because of an old saved route.
-       */
       if (role === "vendor") {
         destination = "/vendor";
       } else if (role === "admin") {
         destination = "/admin";
       } else if (role === "customer") {
         const requestedPath = location.state?.from?.pathname;
-
         if (
           requestedPath &&
           requestedPath !== "/login" &&
@@ -72,124 +52,82 @@ export default function Login() {
           destination = "/";
         }
       }
-
-      navigate(destination, {
-        replace: true,
-        state: {},
-      });
+      navigate(destination, { replace: true, state: {} });
     } catch (loginError) {
       console.error("[OfficeBites] Login failed:", loginError);
-
-      setError(
-        loginError?.message ||
-          "Couldn't sign in. Please check your email and password."
-      );
+      setError(loginError?.message || "Couldn't sign in. Please check your email and password.");
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-8">
-      <div className="w-full max-w-md">
-        <form
-          onSubmit={handleSubmit}
-          className="card p-6 space-y-5"
-        >
-          <div className="text-center">
-            <h1 className="text-2xl font-semibold text-ink">
-              Welcome back
-            </h1>
+    <div className="min-h-[100dvh] flex flex-col items-center justify-center px-6 py-10 pt-[calc(env(safe-area-inset-top)+2.5rem)]">
+      <div className="w-full max-w-sm">
+        <div className="flex flex-col items-center mb-7">
+          <span className="inline-flex h-12 w-12 rounded-2xl bg-ink text-paper items-center justify-center text-base font-bold mb-3">
+            OB
+          </span>
+          <span className="text-lg font-extrabold tracking-tight text-ink">
+            Office<span className="text-nude-600">Bites</span>
+          </span>
+        </div>
 
-            <p className="mt-1 text-sm text-ink-muted">
-              Sign in to your OfficeBites account
-            </p>
+        <form onSubmit={handleSubmit} className="card p-6 flex flex-col gap-5">
+          <div className="text-center">
+            <h1 className="text-xl font-semibold text-ink">Welcome back</h1>
+            <p className="mt-1 text-sm text-ink-muted">Sign in to your OfficeBites account</p>
           </div>
 
           {error && (
-            <div
-              role="alert"
-              className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
-            >
+            <div role="alert" className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
               {error}
             </div>
           )}
 
-          <div>
-            <label
-              htmlFor="login-email"
-              className="block text-sm font-medium text-ink mb-1"
-            >
-              Email
-            </label>
+          <TextField
+            label="Email"
+            type="email"
+            placeholder="you@company.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            autoComplete="email"
+            required
+          />
 
-            <input
-              id="login-email"
-              name="email"
-              type="email"
-              placeholder="you@company.com"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              autoComplete="email"
-              required
-              className="w-full rounded-lg border border-gray-300 px-3 py-2.5 outline-none focus:border-gray-500"
-            />
-          </div>
-
-          <div>
-            <label
-              htmlFor="login-password"
-              className="block text-sm font-medium text-ink mb-1"
-            >
-              Password
-            </label>
-
-            <input
-              id="login-password"
-              name="password"
-              type="password"
-              placeholder="••••••••"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              autoComplete="current-password"
-              required
-              className="w-full rounded-lg border border-gray-300 px-3 py-2.5 outline-none focus:border-gray-500"
-            />
-          </div>
+          <TextField
+            label="Password"
+            type="password"
+            placeholder="••••••••"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            autoComplete="current-password"
+            required
+          />
 
           <button
             type="submit"
             disabled={submitting}
             className="btn-primary w-full flex items-center justify-center gap-2 disabled:opacity-60"
           >
-            {submitting ? "Signing in..." : "Sign in"}
+            {submitting ? <Spinner size={16} className="!border-paper/30 !border-t-paper" /> : "Sign in"}
           </button>
 
           <div className="text-center text-sm">
-            <Link
-              to="/forgot-password"
-              className="text-ink-muted hover:text-ink"
-            >
+            <Link to="/forgot-password" className="text-ink-muted hover:text-ink">
               Forgot password?
             </Link>
           </div>
 
           <div className="text-center text-sm text-ink-muted">
             <span>New to OfficeBites? </span>
-
-            <Link
-              to="/register"
-              className="font-medium text-ink hover:underline"
-            >
+            <Link to="/register" className="font-medium text-ink hover:underline">
               Create an account
             </Link>
           </div>
 
           <div className="text-center text-sm">
-            <Link
-              to="/"
-              className="text-ink-muted hover:text-ink"
-            >
+            <Link to="/" className="text-ink-muted hover:text-ink">
               Just here to order? Continue as a guest
             </Link>
           </div>
