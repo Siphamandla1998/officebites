@@ -96,38 +96,34 @@ export default function Home() {
 
 
   return (
-    <div className="pt-[env(safe-area-inset-top)]">
-
+    <div className="app-safe-top">
+  
       {/* Header */}
       <div className="ob-container pt-6 pb-5">
-
-        <div className="text-sm text-ink-muted">
-          {isAuthenticated
-            ? user?.building || "Set your building"
-            : "Order from local office vendors — no account needed"}
-        </div>
-
-
-        <h1 className="text-2xl font-semibold mt-2">
-          {isAuthenticated
-            ? `Hey ${
-                user?.name?.split(" ")[0] || "there"
-              }, hungry?`
-            : `Welcome to ${APP_NAME}`}
-        </h1>
-
-
-        {!isAuthenticated && (
-          <p className="text-xs text-ink-muted mt-1.5">
-            Browse and order freely —{" "}
-            <Link
-              to="/login"
-              className="text-nude-600 font-medium"
-            >
-              sign in
-            </Link>{" "}
-            anytime to save favourites and track orders.
-          </p>
+  
+        {isAuthenticated ? (
+          <>
+            <div className="text-sm text-ink-muted">
+              {user?.building || "Set your building"}
+            </div>
+            <h1 className="text-2xl font-semibold mt-2">
+              {`Hey ${user?.name?.split(" ")[0] || "there"}, hungry?`}
+            </h1>
+          </>
+        ) : (
+          <div className="flex flex-col items-center text-center pt-2 pb-3">
+            <BrandMark size="md" tagline />
+            <h1 className="text-xl font-bold mt-5 text-ink leading-snug">
+              Order from local office vendors
+            </h1>
+            <p className="text-xs text-ink-muted mt-2 max-w-[280px]">
+              No account needed —{" "}
+              <Link to="/login" className="text-nude-600 font-medium">
+                sign in
+              </Link>{" "}
+              anytime to save favourites and track orders.
+            </p>
+          </div>
         )}
 
 
