@@ -15,6 +15,7 @@ import { useToast } from "../../context/ToastContext";
 import { nextOrderableDate, isPastTodaysCutoff } from "../../utils/orderRules";
 import { formatDate } from "../../utils/formatters";
 import { APP_NAME } from "../../utils/constants";
+import BrandMark from "../../components/layout/BrandMark";
 
 export default function Home() {
   const [query, setQuery] = useState("");
