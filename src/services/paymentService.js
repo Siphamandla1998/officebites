@@ -6,10 +6,10 @@ import { calcCommission } from "../utils/orderRules";
 // `platform_settings` table later if this needs to change without a deploy.
 //
 const BANK_DETAILS = {
-  accountName: "OfficeBites (Pty) Ltd",
-  bank: "Capitec Bank",
-  accountNumber: "1807398836",
-  branchCode: "410010",
+  accountName: "OFFICEBITES (Pty) Ltd",
+  bank: "First National Bank (FNB)",
+  accountNumber: "63225032901",
+  branchCode: "250655",
   reference: "Use your ticket number as reference",
 };
 
