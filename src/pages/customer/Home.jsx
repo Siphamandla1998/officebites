@@ -26,24 +26,15 @@ export default function Home() {
   const { addItem } = useCart();
   const { showToast } = useToast();
 
-
   const {
     data: categories = [],
     loading: catLoading,
-  } = useAsync(
-    () => foodService.getCategories(),
-    []
-  );
-
+  } = useAsync(() => foodService.getCategories(), []);
 
   const {
     data: upcomingMeals = [],
     loading: upcomingLoading,
-  } = useAsync(
-    () => foodService.getMeals({ forDate: nextOrderableDate() }),
-    []
-  );
-
+  } = useAsync(() => foodService.getMeals({ forDate: nextOrderableDate() }), []);
 
   const {
     data: popularMeals = [],
@@ -56,7 +47,6 @@ export default function Home() {
     () => foodService.getPopularMeals(6),
     []
   );
-
 
   const nextDelivery = nextOrderableDate();
 
@@ -74,34 +64,23 @@ export default function Home() {
   }, {});
   const upcomingVendorGroups = Object.values(upcomingByVendor);
 
-
   const handleAdd = (meal) => {
     addItem(meal);
-
-    showToast(
-      `Added ${meal.name} to cart`,
-      {
-        type: "success",
-      }
-    );
+    showToast(`Added ${meal.name} to cart`, { type: "success" });
   };
-
 
   const goToSearch = () => {
     if (query.trim()) {
-      navigate(
-        `/food/search?q=${encodeURIComponent(query)}`
-      );
+      navigate(`/food/search?q=${encodeURIComponent(query)}`);
     }
   };
 
-
   return (
     <div className="app-safe-top">
-  
+
       {/* Header */}
       <div className="ob-container pt-6 pb-5">
-  
+
         {isAuthenticated ? (
           <>
             <div className="text-sm text-ink-muted">
@@ -112,12 +91,9 @@ export default function Home() {
             </h1>
           </>
         ) : (
-          <div className="flex flex-col items-center text-center pt-2 pb-3">
+          <div className="flex flex-col items-center text-center pt-2 pb-3 max-w-xs mx-auto">
             <BrandMark size="md" tagline />
-            <h1 className="text-xl font-bold mt-5 text-ink leading-snug">
-              Order from local office vendors
-            </h1>
-            <p className="text-xs text-ink-muted mt-2 max-w-[280px]">
+            <p className="text-xs text-ink-muted mt-4">
               No account needed —{" "}
               <Link to="/login" className="text-nude-600 font-medium">
                 sign in
@@ -127,100 +103,62 @@ export default function Home() {
           </div>
         )}
 
-
         <div className="mt-3 rounded-xl bg-nude-100 text-nude-800 text-xs px-3.5 py-2.5">
           Ordering now for {formatDate(nextDelivery)} delivery
           {isPastTodaysCutoff() ? " — today's cutoff has passed" : ""}
         </div>
 
-
         <div className="mt-4">
           <SearchBar
             value={query}
             onChange={setQuery}
-            onKeyDown={(e) =>
-              e.key === "Enter" && goToSearch()
-            }
+            onKeyDown={(e) => e.key === "Enter" && goToSearch()}
           />
         </div>
 
       </div>
 
-
-
       {/* Categories */}
       <section className="pb-6">
-
         <div className="ob-container flex items-center justify-between mb-3">
-
-          <h3 className="section-title">
-            Categories
-          </h3>
-
+          <h3 className="section-title">Categories</h3>
         </div>
-
 
         <div className="flex gap-4 overflow-x-auto no-scrollbar px-5 pb-1">
-
           {catLoading ? (
-
             Array.from({ length: 6 }).map((_, i) => (
-              <div
-                key={i}
-                className="skeleton h-16 w-16 rounded-2xl shrink-0"
-              />
+              <div key={i} className="skeleton h-16 w-16 rounded-2xl shrink-0" />
             ))
-
           ) : (
-
             (categories || []).map((category) => (
-              <CategoryCard
-                key={category.id || category.name}
-                category={category}
-              />
+              <CategoryCard key={category.id || category.name} category={category} />
             ))
-
           )}
-
         </div>
-
       </section>
-
-
-
 
       {/* Upcoming preorder day */}
       <section className="pb-6">
-
         <div className="ob-container mb-3">
-
           <h3 className="section-title">
             {formatDate(nextDelivery, { weekday: "long", month: "long" })}
           </h3>
-
           <p className="text-xs text-ink-muted mt-0.5">
             Meals vendors have available to preorder for this day
           </p>
-
         </div>
 
-
         {upcomingLoading ? (
-
           <div className="flex gap-3.5 overflow-x-auto no-scrollbar px-5 pb-1">
             {Array.from({ length: 2 }).map((_, i) => (
               <div key={i} className="skeleton h-40 w-56 shrink-0" />
             ))}
           </div>
-
         ) : upcomingVendorGroups.length === 0 ? (
-
           <p className="ob-container text-sm text-ink-muted py-4">
             No vendors have posted a menu for this day yet — check back soon.
           </p>
-
         ) : (
-
           <div className="flex flex-col gap-5">
             {upcomingVendorGroups.map((group) => (
               <div key={group.vendorId}>
@@ -235,57 +173,27 @@ export default function Home() {
               </div>
             ))}
           </div>
-
         )}
-
       </section>
-
-
-
-
 
       {/* Available menus — general catalogue, not tied to a specific preorder date */}
       <section className="pb-8">
-
         <div className="ob-container flex items-center justify-between mb-3">
-
-          <h3 className="section-title">
-            Available Menus
-          </h3>
-
+          <h3 className="section-title">Available Menus</h3>
         </div>
-
-
 
         <div className="ob-container grid grid-cols-2 gap-3.5">
-
-
           {mealsLoading ? (
-
             Array.from({ length: 4 }).map((_, i) => (
-              <div
-                key={i}
-                className="skeleton h-52"
-              />
+              <div key={i} className="skeleton h-52" />
             ))
-
           ) : (
-
             (popularMeals || []).map((meal) => (
-              <FoodCard
-                key={meal.id}
-                meal={meal}
-                onAdd={handleAdd}
-              />
+              <FoodCard key={meal.id} meal={meal} onAdd={handleAdd} />
             ))
-
           )}
-
-
         </div>
-
       </section>
-
 
     </div>
   );
