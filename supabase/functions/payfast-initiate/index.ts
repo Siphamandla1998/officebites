@@ -1,3 +1,4 @@
+```ts
 // supabase/functions/payfast-initiate/index.ts
 //
 // Given an OfficeBites order id, returns the exact signed field set the
@@ -19,14 +20,32 @@ import { getPayfastConfig, signatureFromEntries } from "../_shared/payfast.ts";
 
 const SITE_URL = Deno.env.get("SITE_URL") || "https://officebites.example";
 
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "https://officebites.co.za",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+};
+
 function jsonResponse(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      ...corsHeaders,
+    },
   });
 }
 
 Deno.serve(async (req) => {
+  // Handle the browser's CORS preflight request.
+  if (req.method === "OPTIONS") {
+    return new Response("ok", {
+      status: 200,
+      headers: corsHeaders,
+    });
+  }
+
   if (req.method !== "POST") {
     return jsonResponse({ error: "Method not allowed" }, 405);
   }
@@ -54,16 +73,22 @@ Deno.serve(async (req) => {
   const authHeader = req.headers.get("Authorization");
   let callerId: string | null = null;
   if (authHeader) {
-    const anonClient = createClient(supabaseUrl, Deno.env.get("SUPABASE_ANON_KEY")!, {
-      global: { headers: { Authorization: authHeader } },
-    });
+    const anonClient = createClient(
+      supabaseUrl,
+      Deno.env.get("SUPABASE_ANON_KEY")!,
+      {
+        global: { headers: { Authorization: authHeader } },
+      },
+    );
     const { data } = await anonClient.auth.getUser();
     callerId = data?.user?.id || null;
   }
 
   const { data: order, error } = await admin
     .from("orders")
-    .select("id, ticket_number, customer_id, guest_name, guest_contact, status, total, delivery_location")
+    .select(
+      "id, ticket_number, customer_id, guest_name, guest_contact, status, total, delivery_location",
+    )
     .eq("id", orderId)
     .maybeSingle();
 
@@ -81,8 +106,10 @@ Deno.serve(async (req) => {
 
   if (order.status !== "pending_payment") {
     return jsonResponse(
-      { error: `This order is not awaiting payment (current status: ${order.status})` },
-      409
+      {
+        error: `This order is not awaiting payment (current status: ${order.status})`,
+      },
+      409,
     );
   }
 
@@ -95,7 +122,10 @@ Deno.serve(async (req) => {
     .eq("id", orderId);
 
   if (updateError) {
-    return jsonResponse({ error: "Could not prepare order for payment" }, 500);
+    return jsonResponse(
+      { error: "Could not prepare order for payment" },
+      500,
+    );
   }
 
   const config = getPayfastConfig();
@@ -110,16 +140,19 @@ Deno.serve(async (req) => {
       .select("name, email")
       .eq("id", order.customer_id)
       .maybeSingle();
+
     if (profile?.name) {
       const [first, ...rest] = profile.name.split(" ");
       nameFirst = first || nameFirst;
       nameLast = rest.join(" ") || nameLast;
     }
+
     email = profile?.email;
   } else if (order.guest_name) {
     const [first, ...rest] = order.guest_name.split(" ");
     nameFirst = first || nameFirst;
     nameLast = rest.join(" ") || nameLast;
+
     if (order.guest_contact?.includes("@")) {
       email = order.guest_contact;
     }
@@ -144,10 +177,17 @@ Deno.serve(async (req) => {
     ["custom_str1", order.id],
   ];
 
-  const signature = signatureFromEntries(fieldEntries, config.passphrase);
+  const signature = signatureFromEntries(
+    fieldEntries,
+    config.passphrase,
+  );
 
   return jsonResponse({
     processUrl: config.processUrl,
-    fields: Object.fromEntries([...fieldEntries, ["signature", signature]]),
+    fields: Object.fromEntries([
+      ...fieldEntries,
+      ["signature", signature],
+    ]),
   });
 });
+```
