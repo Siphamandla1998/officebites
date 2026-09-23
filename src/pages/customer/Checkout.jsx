@@ -8,7 +8,7 @@ import { useToast } from "../../context/ToastContext";
 import { orderService } from "../../services/orderService";
 import { splitCartByVendor, nextOrderableDate } from "../../utils/orderRules";
 import { formatCurrency, formatDate } from "../../utils/formatters";
-import { addGuestOrderId } from "../../utils/guest";
+import { addGuestOrder } from "../../utils/guest";
 import Spinner from "../../components/ui/Spinner";
 import EmptyState from "../../components/ui/EmptyState";
 import { FiShoppingBag, FiUser } from "react-icons/fi";
@@ -19,7 +19,10 @@ export default function Checkout() {
   const { showToast } = useToast();
   const navigate = useNavigate();
   const [submitting, setSubmitting] = useState(false);
-  const [guestDetails, setGuestDetails] = useState({ name: "", phone: "", email: "" });
+  const [guestDetails, setGuestDetails] = useState({
+    name: "",
+    phone: "",
+  });
   const [deliveryLocation, setDeliveryLocation] = useState("");
   const [errors, setErrors] = useState({});
 
@@ -52,15 +55,28 @@ export default function Checkout() {
         customerId: isAuthenticated ? user.id : null,
         customerName: isAuthenticated ? user.name : guestDetails.name,
         guestContact: isAuthenticated ? null : guestDetails.phone.trim(),
-        guestEmail: isAuthenticated ? null : guestDetails.email.trim() || null,
+        guestEmail: null,
         deliveryDate: deliveryDate.toISOString().slice(0, 10),
         deliveryLocation: deliveryLocation.trim(),
         cartItems: items,
       });
-      if (!isAuthenticated) addGuestOrderId(order.id);
+      if (!isAuthenticated) {
+        addGuestOrder({
+          id: order.id,
+          ticketNumber: order.ticketNumber,
+          contact: guestDetails.phone.trim(),
+        });
+      }
+
       clearCart();
-      showToast("Order created — upload proof of payment to confirm", { type: "success" });
+
+      showToast(
+        "Order created — continue to PayFast to complete payment",
+        { type: "success" }
+      );
+
       navigate(`/payment/${order.id}`);
+
     } catch (err) {
       showToast(err.message || "Couldn't place order", { type: "error" });
     } finally {

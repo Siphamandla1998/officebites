@@ -1,193 +1,455 @@
-```ts
 // supabase/functions/payfast-initiate/index.ts
 //
-// Given an OfficeBites order id, returns the exact signed field set the
-// browser should POST to PayFast. Never trusts anything from the client
-// except the order id itself — the amount, item name, and buyer details are
-// all read fresh from the database.
+// Creates the signed PayFast checkout payload for an existing OfficeBites
+// order.
 //
-// Auth: this function is called by both signed-in customers and guests
-// (guest checkout must work without an account, per the guest-order-security
-// design in migration 0005). It uses the SERVICE ROLE key to read the order,
-// which bypasses RLS entirely — so it does its OWN authorization check
-// below rather than relying on RLS to scope the read. A signed-in caller
-// must own the order; a guest can only act on an order that has no
-// customer_id (same trust model as the rest of the guest-order design: the
-// order id itself, a 122-bit random UUID, is the capability).
+// The browser never supplies the amount, item description, customer ID,
+// PayFast merchant details, or payment status. Those values are resolved
+// server-side.
+//
+// This endpoint supports both authenticated customers and guest checkout.
+//
+// Authenticated orders:
+//   The signed-in Supabase user must own the order.
+//
+// Guest orders:
+//   The caller must provide the same contact value that was stored when the
+//   order was created. The order UUID alone is not treated as authorization.
 
 import { createClient } from "jsr:@supabase/supabase-js@2";
-import { getPayfastConfig, signatureFromEntries } from "../_shared/payfast.ts";
+import {
+  getPayfastConfig,
+  signatureFromEntries,
+} from "../_shared/payfast.ts";
 
-const SITE_URL = Deno.env.get("SITE_URL") || "https://officebites.example";
+const SITE_URL =
+  Deno.env.get("SITE_URL") ||
+  "https://officebites.co.za";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "https://officebites.co.za",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-};
+const ALLOWED_ORIGINS = (
+  Deno.env.get("ALLOWED_ORIGINS") ||
+  "https://officebites.co.za"
+)
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
 
-function jsonResponse(body: unknown, status = 200) {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: {
-      "Content-Type": "application/json",
-      ...corsHeaders,
+function corsHeadersFor(req: Request) {
+  const origin = req.headers.get("Origin");
+
+  const allowedOrigin =
+    origin && ALLOWED_ORIGINS.includes(origin)
+      ? origin
+      : ALLOWED_ORIGINS[0];
+
+  return {
+    "Access-Control-Allow-Origin": allowedOrigin,
+    "Access-Control-Allow-Headers":
+      "authorization, x-client-info, apikey, content-type",
+    "Access-Control-Allow-Methods":
+      "POST, OPTIONS",
+    Vary: "Origin",
+  };
+}
+
+function jsonResponse(
+  req: Request,
+  body: unknown,
+  status = 200,
+) {
+  return new Response(
+    JSON.stringify(body),
+    {
+      status,
+      headers: {
+        "Content-Type": "application/json",
+        ...corsHeadersFor(req),
+      },
     },
-  });
+  );
 }
 
 Deno.serve(async (req) => {
-  // Handle the browser's CORS preflight request.
   if (req.method === "OPTIONS") {
-    return new Response("ok", {
-      status: 200,
-      headers: corsHeaders,
-    });
+    return new Response(
+      "ok",
+      {
+        status: 200,
+        headers: corsHeadersFor(req),
+      },
+    );
   }
 
   if (req.method !== "POST") {
-    return jsonResponse({ error: "Method not allowed" }, 405);
+    return jsonResponse(
+      req,
+      { error: "Method not allowed" },
+      405,
+    );
   }
 
   let orderId: string | undefined;
+  let guestContact: string | undefined;
+
   try {
     const body = await req.json();
-    orderId = body?.orderId;
+
+    orderId =
+      typeof body?.orderId === "string"
+        ? body.orderId.trim()
+        : undefined;
+
+    guestContact =
+      typeof body?.guestContact === "string"
+        ? body.guestContact.trim()
+        : undefined;
   } catch {
-    return jsonResponse({ error: "Invalid request body" }, 400);
+    return jsonResponse(
+      req,
+      { error: "Invalid request body" },
+      400,
+    );
   }
 
   if (!orderId) {
-    return jsonResponse({ error: "orderId is required" }, 400);
-  }
-
-  const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-  const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-  const admin = createClient(supabaseUrl, serviceRoleKey);
-
-  // Identify the caller (if any) from their own JWT, forwarded as-is by the
-  // browser — we use this only to check order ownership below, never to
-  // elevate this function's own DB access (that's what the service role is
-  // for, deliberately, so a guest with no JWT at all can still pay).
-  const authHeader = req.headers.get("Authorization");
-  let callerId: string | null = null;
-  if (authHeader) {
-    const anonClient = createClient(
-      supabaseUrl,
-      Deno.env.get("SUPABASE_ANON_KEY")!,
-      {
-        global: { headers: { Authorization: authHeader } },
-      },
+    return jsonResponse(
+      req,
+      { error: "orderId is required" },
+      400,
     );
-    const { data } = await anonClient.auth.getUser();
-    callerId = data?.user?.id || null;
   }
 
-  const { data: order, error } = await admin
+  const supabaseUrl =
+    Deno.env.get("SUPABASE_URL");
+
+  const serviceRoleKey =
+    Deno.env.get(
+      "SUPABASE_SERVICE_ROLE_KEY",
+    );
+
+  if (!supabaseUrl || !serviceRoleKey) {
+    console.error(
+      "payfast-initiate: missing Supabase environment configuration",
+    );
+
+    return jsonResponse(
+      req,
+      {
+        error:
+          "Payment service is not configured",
+      },
+      500,
+    );
+  }
+
+  const admin = createClient(
+    supabaseUrl,
+    serviceRoleKey,
+  );
+
+  /*
+   * Resolve the caller from the JWT if one was supplied.
+   *
+   * The service-role client is used only for the privileged database work
+   * after we have independently checked whether this caller may act on the
+   * requested order.
+   */
+  const authHeader =
+    req.headers.get("Authorization");
+
+  let callerId: string | null = null;
+
+  if (authHeader) {
+    const anonKey =
+      Deno.env.get("SUPABASE_ANON_KEY");
+
+    if (anonKey) {
+      const authClient = createClient(
+        supabaseUrl,
+        anonKey,
+        {
+          global: {
+            headers: {
+              Authorization: authHeader,
+            },
+          },
+        },
+      );
+
+      const { data, error } =
+        await authClient.auth.getUser();
+
+      if (!error) {
+        callerId =
+          data?.user?.id || null;
+      }
+    }
+  }
+
+  const {
+    data: order,
+    error: orderError,
+  } = await admin
     .from("orders")
     .select(
-      "id, ticket_number, customer_id, guest_name, guest_contact, status, total, delivery_location",
+      `
+        id,
+        ticket_number,
+        customer_id,
+        guest_name,
+        guest_contact,
+        guest_email,
+        status,
+        total,
+        delivery_location
+      `,
     )
     .eq("id", orderId)
     .maybeSingle();
 
-  if (error || !order) {
-    return jsonResponse({ error: "Order not found" }, 404);
-  }
-
-  // Authorization: signed-in caller must own the order; otherwise it must
-  // be an unowned (guest) order. Never let caller A pay for (and thus learn
-  // the existence/amount of) caller B's order.
-  const isOwner = order.customer_id ? order.customer_id === callerId : true;
-  if (!isOwner) {
-    return jsonResponse({ error: "Not authorized for this order" }, 403);
-  }
-
-  if (order.status !== "pending_payment") {
+  if (orderError || !order) {
     return jsonResponse(
+      req,
+      { error: "Order not found" },
+      404,
+    );
+  }
+
+  /*
+   * Authorization is deliberately different for account orders and guest
+   * orders.
+   *
+   * Account order:
+   *   The authenticated user must own it.
+   *
+   * Guest order:
+   *   The caller must know both the order identifier and the contact value
+   *   supplied during checkout.
+   */
+  if (order.customer_id) {
+    if (
+      !callerId ||
+      callerId !== order.customer_id
+    ) {
+      return jsonResponse(
+        req,
+        {
+          error:
+            "Not authorized for this order",
+        },
+        403,
+      );
+    }
+  } else {
+    const storedContact =
+      String(
+        order.guest_contact || "",
+      ).trim();
+
+    if (
+      !guestContact ||
+      !storedContact ||
+      guestContact !== storedContact
+    ) {
+      return jsonResponse(
+        req,
+        {
+          error:
+            "Guest order verification failed",
+        },
+        403,
+      );
+    }
+  }
+
+  if (
+    order.status !== "pending_payment"
+  ) {
+    return jsonResponse(
+      req,
       {
-        error: `This order is not awaiting payment (current status: ${order.status})`,
+        error:
+          `This order is not awaiting payment (current status: ${order.status})`,
       },
       409,
     );
   }
 
-  // Same order, same ticket, reused on every retry — never create a new
-  // order or a new ticket number here. m_payment_id is OUR reference to
-  // PayFast; using the ticket number keeps it stable and human-traceable.
-  const { error: updateError } = await admin
-    .from("orders")
-    .update({ payment_method: "payfast" })
-    .eq("id", orderId);
+  /*
+   * A payment retry operates on the existing order and ticket. It never
+   * creates a replacement order merely because the customer returned to
+   * PayFast.
+   */
+  const { error: updateError } =
+    await admin
+      .from("orders")
+      .update({
+        payment_method: "payfast",
+      })
+      .eq("id", order.id);
 
   if (updateError) {
+    console.error(
+      "payfast-initiate: could not mark payment method",
+      updateError,
+    );
+
     return jsonResponse(
-      { error: "Could not prepare order for payment" },
+      req,
+      {
+        error:
+          "Could not prepare order for payment",
+      },
       500,
     );
   }
 
-  const config = getPayfastConfig();
+  const config =
+    getPayfastConfig();
 
   let nameFirst = "Guest";
   let nameLast = "Customer";
   let email: string | undefined;
 
   if (order.customer_id) {
-    const { data: profile } = await admin
-      .from("profiles")
-      .select("name, email")
-      .eq("id", order.customer_id)
-      .maybeSingle();
+    const { data: profile } =
+      await admin
+        .from("profiles")
+        .select("name, email")
+        .eq(
+          "id",
+          order.customer_id,
+        )
+        .maybeSingle();
 
     if (profile?.name) {
-      const [first, ...rest] = profile.name.split(" ");
-      nameFirst = first || nameFirst;
-      nameLast = rest.join(" ") || nameLast;
+      const [
+        first,
+        ...rest
+      ] = profile.name
+        .trim()
+        .split(/\s+/);
+
+      nameFirst =
+        first || nameFirst;
+
+      nameLast =
+        rest.join(" ") ||
+        nameLast;
     }
 
-    email = profile?.email;
-  } else if (order.guest_name) {
-    const [first, ...rest] = order.guest_name.split(" ");
-    nameFirst = first || nameFirst;
-    nameLast = rest.join(" ") || nameLast;
+    if (profile?.email) {
+      email =
+        profile.email;
+    }
+  } else {
+    if (order.guest_name) {
+      const [
+        first,
+        ...rest
+      ] = order.guest_name
+        .trim()
+        .split(/\s+/);
 
-    if (order.guest_contact?.includes("@")) {
-      email = order.guest_contact;
+      nameFirst =
+        first || nameFirst;
+
+      nameLast =
+        rest.join(" ") ||
+        nameLast;
+    }
+
+    if (order.guest_email) {
+      email =
+        order.guest_email;
     }
   }
 
-  // Field order here is deliberate and must stay stable — it's part of what
-  // gets signed. This mirrors the field order PayFast's own docs use in
-  // their examples; re-verify against developers.payfast.co.za/docs before
-  // going live (see the VERIFY note in _shared/payfast.ts).
-  const fieldEntries: [string, string][] = [
-    ["merchant_id", config.merchantId],
-    ["merchant_key", config.merchantKey],
-    ["return_url", `${SITE_URL}/orders/${order.id}?payfast=return`],
-    ["cancel_url", `${SITE_URL}/orders/${order.id}?payfast=cancel`],
-    ["notify_url", `${supabaseUrl}/functions/v1/payfast-notify`],
-    ["name_first", nameFirst],
-    ["name_last", nameLast],
-    ...(email ? ([["email_address", email]] as [string, string][]) : []),
-    ["m_payment_id", order.ticket_number],
-    ["amount", order.total.toFixed(2)],
-    ["item_name", `OfficeBites order ${order.ticket_number}`],
-    ["custom_str1", order.id],
-  ];
+  /*
+   * PayFast signs the ordered field sequence. Keep this ordering stable
+   * unless the corresponding signing implementation and PayFast integration
+   * requirements are reviewed together.
+   */
+  const fieldEntries:
+    [string, string][] = [
+      [
+        "merchant_id",
+        config.merchantId,
+      ],
+      [
+        "merchant_key",
+        config.merchantKey,
+      ],
+      [
+        "return_url",
+        `${SITE_URL}/orders/${order.id}?payfast=return`,
+      ],
+      [
+        "cancel_url",
+        `${SITE_URL}/orders/${order.id}?payfast=cancel`,
+      ],
+      [
+        "notify_url",
+        `${supabaseUrl}/functions/v1/payfast-notify`,
+      ],
+      [
+        "name_first",
+        nameFirst,
+      ],
+      [
+        "name_last",
+        nameLast,
+      ],
+      ...(
+        email
+          ? [
+              [
+                "email_address",
+                email,
+              ],
+            ] as [string, string][]
+          : []
+      ),
+      [
+        "m_payment_id",
+        order.ticket_number,
+      ],
+      [
+        "amount",
+        Number(
+          order.total,
+        ).toFixed(2),
+      ],
+      [
+        "item_name",
+        `OfficeBites order ${order.ticket_number}`,
+      ],
+      [
+        "custom_str1",
+        order.id,
+      ],
+    ];
 
-  const signature = signatureFromEntries(
-    fieldEntries,
-    config.passphrase,
+  const signature =
+    signatureFromEntries(
+      fieldEntries,
+      config.passphrase,
+    );
+
+  return jsonResponse(
+    req,
+    {
+      processUrl:
+        config.processUrl,
+
+      fields:
+        Object.fromEntries([
+          ...fieldEntries,
+          [
+            "signature",
+            signature,
+          ],
+        ]),
+    },
   );
-
-  return jsonResponse({
-    processUrl: config.processUrl,
-    fields: Object.fromEntries([
-      ...fieldEntries,
-      ["signature", signature],
-    ]),
-  });
 });
-```

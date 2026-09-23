@@ -1,5 +1,5 @@
-// Converts Supabase snake_case rows into the camelCase shapes
-// used throughout OfficeBites.
+// Converts Supabase snake_case rows into the camelCase
+// shapes used throughout OfficeBites.
 
 export function mapVendor(row) {
   if (!row) return null;
@@ -10,13 +10,14 @@ export function mapVendor(row) {
 
     name: row.name || "",
     tagline: row.tagline || "",
-
     category: row.category || "",
 
     rating: Number(row.rating || 0),
     reviewCount: Number(row.review_count || 0),
 
-    prepTimeMins: Number(row.prep_time_mins || 0),
+    prepTimeMins: Number(
+      row.prep_time_mins || 0
+    ),
 
     coverImage: row.cover_image || "",
     logo: row.logo || "",
@@ -32,11 +33,8 @@ export function mapVendor(row) {
     contactNumber:
       row.contact_number || "",
 
-    email:
-      row.email || "",
-
-    address:
-      row.address || "",
+    email: row.email || "",
+    address: row.address || "",
 
     deliveryRadius:
       row.delivery_radius || "",
@@ -49,12 +47,10 @@ export function mapVendor(row) {
   };
 }
 
-
 export function mapMeal(row) {
   if (!row) return null;
 
   return {
-
     id: row.id,
 
     vendorId:
@@ -65,11 +61,8 @@ export function mapMeal(row) {
       row.vendor_name ||
       "Unknown Vendor",
 
-    name:
-      row.name || "",
-
-    description:
-      row.description || "",
+    name: row.name || "",
+    description: row.description || "",
 
     price:
       Number(row.price || 0),
@@ -90,31 +83,33 @@ export function mapMeal(row) {
       row.available ?? true,
 
     availableDays:
-      Array.isArray(row.available_days) && row.available_days.length > 0
+      Array.isArray(row.available_days) &&
+      row.available_days.length > 0
         ? row.available_days
-        : null, // null = every day
+        : null,
 
     featured:
       row.featured ?? false,
 
     preparationTime:
-      Number(row.preparation_time || 0),
+      Number(
+        row.preparation_time || 0
+      ),
 
     rating:
       Number(row.rating || 0),
 
     reviewCount:
-      Number(row.review_count || 0),
+      Number(
+        row.review_count || 0
+      ),
   };
 }
-
-
 
 export function mapReview(row) {
   if (!row) return null;
 
   return {
-
     id: row.id,
 
     vendorId:
@@ -135,68 +130,72 @@ export function mapReview(row) {
 
     createdAt:
       row.created_at || null,
-
   };
 }
-
-
 
 export function mapOrder(row) {
   if (!row) return null;
 
-
   const subOrders =
     Array.isArray(row.order_suborders)
-      ? row.order_suborders.map((so)=>({
+      ? row.order_suborders.map(
+          (subOrder) => ({
+            vendorId:
+              subOrder.vendor_id,
 
-          vendorId:
-            so.vendor_id,
+            vendorName:
+              subOrder.vendors?.name ||
+              "",
 
-          vendorName:
-            so.vendors?.name || "",
+            status:
+              subOrder.status || "",
 
-          status:
-            so.status || "",
+            paymentStatus:
+              subOrder.payment_status ||
+              "",
 
-          paymentStatus:
-            so.payment_status || "",
+            subtotal:
+              Number(
+                subOrder.subtotal || 0
+              ),
 
-          subtotal:
-            Number(so.subtotal || 0),
+            collectionTime:
+              subOrder.collection_time ||
+              "",
 
-          collectionTime:
-            so.collection_time || "",
+            notes:
+              subOrder.notes || "",
 
-          notes:
-            so.notes || "",
+            items:
+              Array.isArray(
+                subOrder.order_items
+              )
+                ? subOrder.order_items.map(
+                    (item) => ({
+                      mealId:
+                        item.meal_id,
 
+                      name:
+                        item.meal_name ||
+                        "",
 
-          items:
-            Array.isArray(so.order_items)
-            ? so.order_items.map((item)=>({
+                      qty:
+                        Number(
+                          item.qty || 0
+                        ),
 
-                mealId:
-                  item.meal_id,
-
-                name:
-                  item.meal_name || "",
-
-                qty:
-                  Number(item.qty || 0),
-
-                price:
-                  Number(item.price || 0),
-
-              }))
-            : [],
-
-        }))
+                      price:
+                        Number(
+                          item.price || 0
+                        ),
+                    })
+                  )
+                : [],
+          })
+        )
       : [];
 
-
-
   return {
-
     id:
       row.id,
 
@@ -229,28 +228,15 @@ export function mapOrder(row) {
     createdAt:
       row.created_at || null,
 
-
     subOrders,
-
 
     total:
       Number(row.total || 0),
 
-
-    paymentProof:
-      row.payment_proof_url || null,
-
-    // Existed in the DB since migration 0006 (payfast vs manual_eft) but
-    // was never selected/mapped here, so nothing in the app — including
-    // the admin dashboard and payments queue — could show which rail a
-    // given order actually paid through.
     paymentMethod:
-      row.payment_method || "manual_eft",
-
+      row.payment_method || "payfast",
   };
 }
-
-
 
 export const ORDER_SELECT = `
 id,
@@ -263,7 +249,6 @@ delivery_date,
 delivery_location,
 status,
 total,
-payment_proof_url,
 payment_method,
 created_at,
 profiles ( name ),

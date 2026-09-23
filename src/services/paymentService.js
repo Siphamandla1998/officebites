@@ -1,88 +1,70 @@
-import { supabase, uploadPrivate, getSignedUrl, BUCKETS } from "./api/supabaseClient";
+import { supabase } from "./api/supabaseClient";
 import { calcCommission } from "../utils/orderRules";
-
-// OfficeBites bank details are static configuration, not user data — kept
-// as a plain constant rather than a table. Move to an admin-editable
-// `platform_settings` table later if this needs to change without a deploy.
-//
-const BANK_DETAILS = {
-  accountName: "OFFICEBITES (Pty) Ltd",
-  bank: "First National Bank (FNB)",
-  accountNumber: "63225032901",
-  branchCode: "250655",
-  reference: "Use your ticket number as reference",
-};
 
 export const paymentService = {
   /**
-   * Calls the payfast-initiate Edge Function, which authenticates the
-   * request, re-derives the order's authoritative total server-side, and
-   * returns a server-signed field set. The browser never computes or
-   * transmits an amount — it only ever POSTs exactly what this returns.
+   * Starts a PayFast payment using the server-side Edge Function.
+   *
+   * The browser never supplies the payment amount. The Edge Function
+   * retrieves the authoritative order total from Supabase and signs the
+   * PayFast request server-side.
+   *
+   * Guest orders also provide the original checkout contact so knowing an
+   * order UUID alone is not enough to initiate payment.
    */
-  async initiatePayfastPayment(orderId) {
-    const { data, error } = await supabase.functions.invoke("payfast-initiate", {
-      body: { orderId },
-    });
+  async initiatePayfastPayment(orderId, guestContact = null) {
+    const { data, error } = await supabase.functions.invoke(
+      "payfast-initiate",
+      {
+        body: {
+          orderId,
+          ...(guestContact ? { guestContact } : {}),
+        },
+      }
+    );
 
     if (error) {
-      throw new Error(error.message || "Couldn't start PayFast payment.");
+      throw new Error(
+        error.message || "Couldn't start PayFast payment."
+      );
     }
 
-    return data; // { processUrl, fields }
+    if (!data?.processUrl || !data?.fields) {
+      throw new Error(
+        "PayFast returned an invalid payment response."
+      );
+    }
+
+    return data;
   },
 
   /**
-   * Builds and submits a real (non-fetch) HTML form POST to PayFast — this
-   * has to be an actual browser navigation, not an XHR/fetch redirect,
-   * since PayFast's checkout page isn't meant to be embedded/proxied.
+   * PayFast requires a normal browser form POST rather than an XHR redirect.
    */
   redirectToPayfast({ processUrl, fields }) {
     const form = document.createElement("form");
+
     form.method = "POST";
     form.action = processUrl;
 
     Object.entries(fields).forEach(([name, value]) => {
       const input = document.createElement("input");
+
       input.type = "hidden";
       input.name = name;
-      input.value = value;
+      input.value = String(value);
+
       form.appendChild(input);
     });
 
     document.body.appendChild(form);
     form.submit();
   },
-  /**
-   * Uploads proof of payment to the private payment-proofs bucket, namespaced
-   * by order id. Returns the storage PATH (not a URL) — the bucket is
-   * private since payment screenshots often contain banking details, so
-   * viewing it later always goes through getProofUrl() for a fresh signed URL.
-   */
-  async uploadProof(file, orderId) {
-    const path = `${orderId}/${Date.now()}-${file.name}`;
-    const storedPath = await uploadPrivate(BUCKETS.PAYMENT_PROOFS, path, file);
-    return { path: storedPath, uploadedAt: new Date().toISOString() };
-  },
-
-  /** Resolves a stored proof-of-payment path to a temporary viewable URL (1 hour). Only admins can successfully call this — enforced by storage RLS. */
-  async getProofUrl(path) {
-    return getSignedUrl(BUCKETS.PAYMENT_PROOFS, path, 3600);
-  },
-
-  async getBankDetails() {
-    return BANK_DETAILS;
-  },
 
   calculateCommission(amount) {
     return calcCommission(amount);
   },
 
-  // Payouts require production PayFast to be live (deferred pending
-  // domain/CIPC/business registration — see project notes). Rather than
-  // fabricate figures, this returns an explicit "not available yet" marker
-  // the UI shows as a real empty state. Wire this to a genuine payout
-  // ledger once PayFast payments are actually flowing.
   async getVendorPayouts(_vendorId) {
     return { comingSoon: true };
   },

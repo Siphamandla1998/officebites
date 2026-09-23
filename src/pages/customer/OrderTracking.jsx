@@ -12,7 +12,8 @@ import { ORDER_STATUS } from "../../utils/constants";
 // PayFast's ITN webhook confirms payment server-side, asynchronously — it
 // usually lands within a couple of seconds of the browser returning here,
 // but there's no guarantee of order. Poll briefly rather than trusting the
-// ?payfast=return redirect itself as proof of payment.
+// Never treat the ?payfast=return browser redirect as payment confirmation.
+// Payment is confirmed only after the verified PayFast ITN updates the order server-side.
 const CONFIRM_POLL_MS = 2500;
 const CONFIRM_POLL_ATTEMPTS = 12; // ~30s
 
@@ -53,7 +54,7 @@ function PayfastReturnBanner({ order, payfastState, onConfirmed, onClearParam })
           <p className="text-sm font-semibold text-ink">Payment cancelled</p>
           <p className="text-xs text-ink-muted mt-0.5">
             You left PayFast before completing payment. Your order ({order.ticketNumber}) is still
-            waiting — you can retry with PayFast or pay by manual EFT instead.
+            waiting —  you can retry the payment securely through PayFast.
           </p>
           <button
             onClick={() => navigate(`/payment/${order.id}`, { replace: true })}
@@ -89,7 +90,7 @@ function PayfastReturnBanner({ order, payfastState, onConfirmed, onClearParam })
               onClick={() => navigate(`/payment/${order.id}`, { replace: true })}
               className="btn-outline mt-3 !py-2 !text-xs"
             >
-              View payment options
+              Retry payment
             </button>
           )}
         </div>
