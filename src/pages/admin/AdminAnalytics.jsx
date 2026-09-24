@@ -1,171 +1,188 @@
-import { FiTrendingUp } from "react-icons/fi";
+import {
+  FiTrendingUp,
+  FiDollarSign,
+  FiShoppingBag,
+  FiCreditCard,
+} from "react-icons/fi";
 import LineChart from "../../components/charts/LineChart";
 import BarChart from "../../components/charts/BarChart";
+import StatCard from "../../components/ui/StatCard";
+import EmptyState from "../../components/ui/EmptyState";
 import { useAsync } from "../../hooks/useAsync";
 import { adminService } from "../../services/adminService";
-import { vendorService } from "../../services/vendorService";
-import { foodService } from "../../services/foodService";
+import { formatCurrency } from "../../utils/formatters";
 
 export default function AdminAnalytics() {
   const {
-    data: revenue,
-    loading: revenueLoading,
+    data: analytics,
+    loading,
   } = useAsync(
-    () => adminService.getRevenueReport(),
+    () => adminService.getPlatformAnalytics(28),
     []
   );
 
   const {
-    data: vendors,
-    loading: vendorsLoading,
+    data: categories = [],
+    loading: categoriesLoading,
   } = useAsync(
-    () => vendorService.getVendors({}),
+    () => adminService.getCategoryDemand(28),
     []
   );
 
-  const {
-    data: meals,
-    loading: mealsLoading,
-  } = useAsync(
-    () => foodService.getMeals(),
-    []
-  );
-
-
-  const topVendors = (vendors || [])
-    .slice()
-    .sort(
-      (a, b) =>
-        ((b.rating || 0) * (b.reviewCount || 0)) -
-        ((a.rating || 0) * (a.reviewCount || 0))
-    )
-    .slice(0, 5)
-    .map((vendor) => ({
+  const topVendors =
+    analytics?.topVendors?.map((vendor) => ({
       name: vendor.name,
-      score: Math.round(
-        (vendor.rating || 0) * (vendor.reviewCount || 0)
-      ),
-    }));
-
-
-  const categoryCounts = (meals || []).reduce((acc, meal) => {
-    const category = meal.category || "Other";
-
-    acc[category] = (acc[category] || 0) + 1;
-
-    return acc;
-  }, {});
-
+      gmv: vendor.gmv,
+    })) || [];
 
   return (
     <div className="flex flex-col gap-5">
-
-      {/* Header */}
       <div>
         <h1 className="page-title">
           Analytics
         </h1>
 
         <p className="text-sm text-ink-muted">
-          Platform-wide performance trends.
+          Real marketplace performance from the last
+          28 days.
         </p>
       </div>
 
+      {loading ? (
+        <div className="skeleton h-24" />
+      ) : (
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
+          <StatCard
+            label="GMV"
+            value={formatCurrency(
+              analytics?.gmv || 0
+            )}
+            icon={FiShoppingBag}
+          />
 
-      {/* Revenue */}
+          <StatCard
+            label="Gross commission"
+            value={formatCurrency(
+              analytics?.grossCommission || 0
+            )}
+            icon={FiDollarSign}
+            trend="17% marketplace rate"
+          />
+
+          <StatCard
+            label="PayFast fees"
+            value={formatCurrency(
+              analytics?.processorFees || 0
+            )}
+            icon={FiCreditCard}
+          />
+
+          <StatCard
+            label="Net marketplace revenue"
+            value={formatCurrency(
+              analytics?.netMarketplaceRevenue || 0
+            )}
+            icon={FiTrendingUp}
+          />
+        </div>
+      )}
+
       <div className="card p-5">
-        <h3 className="section-title mb-4">
-          Commission revenue trend
+        <h3 className="section-title mb-1">
+          Marketplace GMV
         </h3>
 
-        {revenueLoading ? (
+        <p className="text-xs text-ink-muted mb-4">
+          Confirmed marketplace sales by week.
+        </p>
+
+        {loading ? (
           <div className="skeleton h-36" />
+        ) : !analytics?.weekly?.length ? (
+          <EmptyState
+            title="Not enough sales data yet"
+            description="Weekly GMV will appear as real PayFast-confirmed orders are processed."
+          />
         ) : (
           <LineChart
-            data={revenue || []}
+            data={analytics.weekly}
             xKey="week"
-            yKey="commission"
+            yKey="gmv"
           />
         )}
       </div>
 
-
-      {/* Vendors */}
       <div className="card p-5">
-        <h3 className="section-title mb-4">
-          Top performing vendors
+        <h3 className="section-title mb-1">
+          Top vendors by GMV
         </h3>
 
-        {vendorsLoading ? (
+        <p className="text-xs text-ink-muted mb-4">
+          Based on actual marketplace sales, not
+          ratings or menu size.
+        </p>
+
+        {loading ? (
           <div className="skeleton h-36" />
         ) : topVendors.length === 0 ? (
-          <p className="text-sm text-ink-muted">
-            No approved vendors yet.
-          </p>
+          <EmptyState
+            title="No vendor sales yet"
+            description="Vendor rankings will appear after confirmed orders."
+          />
         ) : (
           <BarChart
             data={topVendors}
             xKey="name"
-            yKey="score"
-            formatValue={(value) => `${value} pts`}
+            yKey="gmv"
+            formatValue={formatCurrency}
           />
         )}
       </div>
 
-
-      {/* Categories */}
       <div className="card p-5">
-
-        <h3 className="section-title mb-4 flex items-center gap-2">
+        <h3 className="section-title mb-1 flex items-center gap-2">
           <FiTrendingUp
             size={15}
             className="text-nude-600"
           />
-
           Category demand
         </h3>
 
+        <p className="text-xs text-ink-muted mb-4">
+          What customers actually bought during the
+          last 28 days.
+        </p>
 
-        {mealsLoading ? (
+        {categoriesLoading ? (
           <div className="skeleton h-20" />
-
-        ) : Object.keys(categoryCounts).length === 0 ? (
-
-          <p className="text-sm text-ink-muted">
-            No meals listed yet.
-          </p>
-
+        ) : categories.length === 0 ? (
+          <EmptyState
+            title="No category demand yet"
+            description="Demand will be calculated from completed marketplace purchases."
+          />
         ) : (
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            {categories.map((item) => (
+              <div
+                key={item.category}
+                className="rounded-xl bg-nude-50 p-3"
+              >
+                <p className="text-xs text-ink-muted">
+                  {item.category}
+                </p>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <p className="text-lg font-bold text-ink mt-1">
+                  {item.units} sold
+                </p>
 
-            {Object.entries(categoryCounts).map(
-              ([category, count]) => (
-
-                <div
-                  key={category}
-                  className="rounded-xl bg-nude-50 p-3"
-                >
-
-                  <p className="text-xs text-ink-muted">
-                    {category}
-                  </p>
-
-                  <p className="text-lg font-bold text-ink">
-                    {count} meals
-                  </p>
-
-                </div>
-
-              )
-            )}
-
+                <p className="text-xs text-ink-muted mt-1">
+                  {formatCurrency(item.revenue)} GMV
+                </p>
+              </div>
+            ))}
           </div>
-
         )}
-
       </div>
-
     </div>
   );
 }

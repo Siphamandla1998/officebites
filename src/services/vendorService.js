@@ -145,6 +145,73 @@ export const vendorService = {
   },
 
 
+    /**
+   * Authoritative financial analytics for the vendor.
+   * Financial calculations are performed server-side.
+   */
+  async getVendorAnalytics(vendorId, days = 30) {
+    if (!vendorId) {
+      return {
+        orders: 0,
+        grossRevenue: 0,
+        platformCommission: 0,
+        vendorNet: 0,
+        averageOrderValue: 0,
+        completedOrders: 0,
+        cancelledOrders: 0,
+        periodFrom: null,
+        periodTo: null,
+      };
+    }
+
+    const { data, error } = await supabase.rpc(
+      "get_vendor_analytics",
+      {
+        p_vendor_id: vendorId,
+        p_days: days,
+      }
+    );
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    const result = data || {};
+
+    return {
+      orders: Number(result.orders || 0),
+
+      grossRevenue: Number(
+        result.grossRevenue || 0
+      ),
+
+      platformCommission: Number(
+        result.platformCommission || 0
+      ),
+
+      vendorNet: Number(
+        result.vendorNet || 0
+      ),
+
+      averageOrderValue: Number(
+        result.averageOrderValue || 0
+      ),
+
+      completedOrders: Number(
+        result.completedOrders || 0
+      ),
+
+      cancelledOrders: Number(
+        result.cancelledOrders || 0
+      ),
+
+      periodFrom:
+        result.periodFrom || null,
+
+      periodTo:
+        result.periodTo || null,
+    };
+  },
   /**
    * Real vendor dashboard stats, computed from the vendor's own orders
    * (order_suborders — RLS-scoped to current_vendor_id(), plus the
@@ -517,15 +584,6 @@ export const vendorService = {
     return {
       success: true,
     };
-  },
-
-  async approveVendor(vendorId) {
-    const { error } = await supabase
-      .from("vendors")
-      .update({ status: VENDOR_STATUS.APPROVED })
-      .eq("id", vendorId);
-    if (error) throw new Error(error.message);
-    return { success: true };
   },
 
   async rejectVendor(vendorId) {

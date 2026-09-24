@@ -410,8 +410,12 @@ export default function VendorChat() {
                   {activeConversation?.customerName || "Customer"}
                 </h2>
 
-                <p className="text-xs text-ink-muted truncate">
-                  OfficeBites customer
+                <p className="text-xs text-ink-muted">
+                  {activeConversation?.orderId
+                    ? `OfficeBites order · ${activeConversation.orderId
+                        .slice(0, 8)
+                        .toUpperCase()}`
+                    : "OfficeBites order conversation"}
                 </p>
               </div>
             </header>
@@ -490,7 +494,14 @@ export default function VendorChat() {
             </div>
 
             {/* Composer */}
-
+            <div className="mb-2 rounded-xl bg-nude-50 px-3 py-2">
+              <p className="text-[11px] leading-relaxed text-ink-muted">
+                Keep orders introduced through OfficeBites on
+                OfficeBites. Use this chat for preparation,
+                substitutions, availability, collection and other
+                fulfilment details.
+              </p>
+            </div>
             <div className="shrink-0 border-t border-nude-200 bg-paper p-3 md:p-4">
               <div className="flex items-end gap-2">
                 <textarea

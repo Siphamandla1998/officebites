@@ -47,6 +47,7 @@ import {
   AdminVendors,
   AdminCustomers,
   AdminChats,
+  AdminSupport,
   AdminAnalytics,
   AdminReports,
   HelpHome,
@@ -274,7 +275,12 @@ export default function AppRoutes() {
             path="chats"
             element={<AdminChats />}
           />
-
+          
+          <Route
+            path="support"
+            element={<AdminSupport />}
+          />
+          
           <Route
             path="analytics"
             element={<AdminAnalytics />}

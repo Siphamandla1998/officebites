@@ -76,7 +76,7 @@ export default function AdminOverview() {
             label="GMV this month"
             value={formatCurrency(stats.gmvThisMonth)}
             icon={FiDollarSign}
-            trend={`Commission ${formatCurrency(
+            trend={`17% gross commission ${formatCurrency(
               stats.commissionThisMonth
             )}`}
             trendUp

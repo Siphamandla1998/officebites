@@ -63,9 +63,11 @@ export default function VendorOrders() {
     if (!order.customerId || messaging) return;
     setMessaging(true);
     try {
-      const conversation = await chatService.startConversationAsVendor({
-        customerId: order.customerId,
-      });
+      const conversation =
+        await chatService.startConversationAsVendor({
+          customerId: order.customerId,
+          orderId: order.id,
+        });
       navigate(`/vendor/chat?conversation=${conversation.id}`);
     } catch (err) {
       showToast(err.message || "Couldn't start conversation", { type: "error" });

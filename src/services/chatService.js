@@ -13,6 +13,10 @@ const mapConversation = (conversation) => ({
   id: conversation.id,
   customerId: conversation.customer_id,
   vendorId: conversation.vendor_id,
+  orderId: conversation.order_id,
+  source: conversation.source || "officebites",
+  closedAt: conversation.closed_at,
+  retainUntil: conversation.retain_until,
   // Both come from joined tables — present when the query selected them
   // (see CONVERSATION_SELECT below), undefined otherwise. Falling back to
   // a neutral label in mapConversation rather than the page components
@@ -35,6 +39,10 @@ const CONVERSATION_SELECT = `
   id,
   customer_id,
   vendor_id,
+  order_id,
+  source,
+  closed_at,
+  retain_until,
   created_at,
   updated_at,
   profiles ( name ),
@@ -195,19 +203,23 @@ export const chatService = {
   // START CUSTOMER → VENDOR CONVERSATION
   // ==========================================
 
-  async startConversation({ vendorId }) {
-    if (!vendorId) {
-      throw new Error("Vendor ID is required.");
+  async startConversation({ vendorId, orderId }) {
+    if (!vendorId || !orderId) {
+      throw new Error(
+        "A vendor and OfficeBites order are required to start a conversation."
+      );
     }
 
     const user = await getCurrentUser();
 
-    const { data: existing, error: existingError } = await supabase
-      .from("conversations")
-      .select("*")
-      .eq("customer_id", user.id)
-      .eq("vendor_id", vendorId)
-      .maybeSingle();
+    const { data: existing, error: existingError } =
+      await supabase
+        .from("conversations")
+        .select(CONVERSATION_SELECT)
+        .eq("customer_id", user.id)
+        .eq("vendor_id", vendorId)
+        .eq("order_id", orderId)
+        .maybeSingle();
 
     if (existingError) {
       throw new Error(existingError.message);
@@ -222,8 +234,10 @@ export const chatService = {
       .insert({
         customer_id: user.id,
         vendor_id: vendorId,
+        order_id: orderId,
+        source: "officebites",
       })
-      .select("*")
+      .select(CONVERSATION_SELECT)
       .single();
 
     if (error) {
@@ -246,24 +260,34 @@ export const chatService = {
    * with this vendor, not merely skipped client-side, so it's not
    * bypassable by calling the service function directly.
    */
-  async startConversationAsVendor({ customerId }) {
-    if (!customerId) {
-      throw new Error("Customer ID is required.");
+  async startConversationAsVendor({
+    customerId,
+    orderId,
+  }) {
+    if (!customerId || !orderId) {
+      throw new Error(
+        "A customer and OfficeBites order are required to start a conversation."
+      );
     }
 
     const user = await getCurrentUser();
-    const vendorId = await getVendorIdForUser(user.id);
+    const vendorId =
+      await getVendorIdForUser(user.id);
 
     if (!vendorId) {
-      throw new Error("Current account is not linked to a vendor.");
+      throw new Error(
+        "Current account is not linked to a vendor."
+      );
     }
 
-    const { data: existing, error: existingError } = await supabase
-      .from("conversations")
-      .select("*")
-      .eq("customer_id", customerId)
-      .eq("vendor_id", vendorId)
-      .maybeSingle();
+    const { data: existing, error: existingError } =
+      await supabase
+        .from("conversations")
+        .select(CONVERSATION_SELECT)
+        .eq("customer_id", customerId)
+        .eq("vendor_id", vendorId)
+        .eq("order_id", orderId)
+        .maybeSingle();
 
     if (existingError) {
       throw new Error(existingError.message);
@@ -278,18 +302,22 @@ export const chatService = {
       .insert({
         customer_id: customerId,
         vendor_id: vendorId,
+        order_id: orderId,
+        source: "officebites",
       })
-      .select("*")
+      .select(CONVERSATION_SELECT)
       .single();
 
     if (error) {
-      // RLS denial (no matching order) surfaces as a generic Postgres
-      // permission error — translate it into something the vendor UI can
-      // actually explain, rather than a raw "new row violates row-level
-      // security policy" string.
-      if (error.code === "42501" || /row-level security/i.test(error.message)) {
-        throw new Error("You can only message a customer who has placed an order with you.");
+      if (
+        error.code === "42501" ||
+        /row-level security/i.test(error.message)
+      ) {
+        throw new Error(
+          "You can only message customers about an order placed with your business."
+        );
       }
+
       throw new Error(error.message);
     }
 

@@ -27,8 +27,21 @@ export function mapVendor(row) {
 
     featured: Boolean(row.featured),
 
-    subscriptionTier:
-      row.subscription_tier || "",
+    // Marketplace / Growth commercial model
+    plan: row.plan || "marketplace",
+
+    commissionRate: Number(
+      row.commission_rate ?? 0.17
+    ),
+
+    analyticsEnabled:
+      row.analytics_enabled ?? false,
+
+    recommendationsEnabled:
+      row.recommendations_enabled ?? false,
+
+    corporatePriorityEnabled:
+      row.corporate_priority_enabled ?? false,
 
     contactNumber:
       row.contact_number || "",
@@ -140,6 +153,9 @@ export function mapOrder(row) {
     Array.isArray(row.order_suborders)
       ? row.order_suborders.map(
           (subOrder) => ({
+            id:
+              subOrder.id || null,
+
             vendorId:
               subOrder.vendor_id,
 

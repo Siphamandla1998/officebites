@@ -118,7 +118,9 @@ export default function AdminVendors() {
       header:"Plan",
 
       render:(v)=>
-        v.subscriptionTier || "-"
+        <span className="capitalize">
+          {v.plan || "marketplace"}
+        </span>
     },
 
 

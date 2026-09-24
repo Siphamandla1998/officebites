@@ -42,6 +42,7 @@ export const AdminPayments = lazy(() => import("../pages/admin/AdminPayments"));
 export const AdminVendors = lazy(() => import("../pages/admin/AdminVendors"));
 export const AdminCustomers = lazy(() => import("../pages/admin/AdminCustomers"));
 export const AdminChats = lazy(() => import("../pages/admin/AdminChats"));
+export const AdminSupport = lazy(() => import("../pages/admin/AdminSupport"));
 export const AdminAnalytics = lazy(() => import("../pages/admin/AdminAnalytics"));
 export const AdminReports = lazy(() => import("../pages/admin/AdminReports"));
 

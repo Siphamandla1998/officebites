@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { FiMapPin, FiMessageCircle } from "react-icons/fi";
+import { useParams } from "react-router-dom";
+import { FiMapPin } from "react-icons/fi";
 import Navbar from "../../components/layout/Navbar";
 import FoodCard from "../../components/features/FoodCard";
 import Rating from "../../components/ui/Rating";
@@ -9,8 +9,6 @@ import { useAsync } from "../../hooks/useAsync";
 import { vendorService } from "../../services/vendorService";
 import { useCart } from "../../context/CartContext";
 import { useToast } from "../../context/ToastContext";
-import { useAuth } from "../../context/AuthContext";
-import { chatService } from "../../services/chatService";
 import { formatRelativeTime } from "../../utils/formatters";
 import { nextOrderableDate } from "../../utils/orderRules";
 
@@ -19,10 +17,8 @@ const TABS = ["Menu", "Reviews", "About"];
 export default function VendorProfile() {
   const { id } = useParams();
   const [tab, setTab] = useState("Menu");
-  const navigate = useNavigate();
   const { addItem } = useCart();
   const { showToast } = useToast();
-  const { user, isAuthenticated } = useAuth();
 
   const { data: vendor, loading: vendorLoading } = useAsync(() => vendorService.getVendorById(id), [id]);
   const { data: menu, loading: menuLoading } = useAsync(
@@ -39,20 +35,6 @@ export default function VendorProfile() {
     showToast(`Added ${meal.name} to cart`, { type: "success" });
   };
 
-  const handleChat = async () => {
-    if (!vendor) return;
-    if (!isAuthenticated) {
-      showToast("Sign in to message vendors", { type: "info" });
-      navigate("/login", { state: { from: { pathname: `/vendors/${vendor.id}` } } });
-      return;
-    }
-    const convo = await chatService.startConversation({
-      vendorId: vendor.id,
-      vendorName: vendor.name,
-      customerId: user.id,
-    });
-    navigate(`/chat/${convo.id}`);
-  };
 
   if (vendorLoading || !vendor) {
     return (
@@ -81,9 +63,6 @@ export default function VendorProfile() {
                 <Rating value={vendor.rating} count={vendor.reviewCount} />
               </div>
             </div>
-            <button onClick={handleChat} className="btn-icon" aria-label="Message vendor">
-              <FiMessageCircle size={16} />
-            </button>
           </div>
           <div className="flex items-center gap-1.5 text-xs text-ink-muted mt-3 pt-3 border-t border-line">
             <FiMapPin size={12} /> {vendor.building}

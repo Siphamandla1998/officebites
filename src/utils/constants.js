@@ -130,6 +130,7 @@ export const TICKET_STATUS_LABELS = {
 
 export const TICKET_PRIORITY = {
   LOW: "low",
-  MEDIUM: "medium",
+  NORMAL: "normal",
   HIGH: "high",
+  URGENT: "urgent",
 };

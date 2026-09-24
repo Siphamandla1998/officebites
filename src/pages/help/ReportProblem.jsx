@@ -33,7 +33,11 @@ function detectEnvironment() {
 export default function ReportProblem() {
   const { showToast } = useToast();
   const env = detectEnvironment();
-  const [form, setForm] = useState({ type: PROBLEM_TYPES[0], description: "", priority: TICKET_PRIORITY.MEDIUM });
+  const [form, setForm] = useState({
+    type: PROBLEM_TYPES[0],
+    description: "",
+    priority: TICKET_PRIORITY.NORMAL,
+  });
   const [errors, setErrors] = useState({});
   const [screenshot, setScreenshot] = useState(null);
   const [submitting, setSubmitting] = useState(false);
@@ -92,7 +96,7 @@ export default function ReportProblem() {
               onChange={update("priority")}
               options={[
                 { value: TICKET_PRIORITY.LOW, label: "Low" },
-                { value: TICKET_PRIORITY.MEDIUM, label: "Medium" },
+                { value: TICKET_PRIORITY.NORMAL, label: "Normal" },
                 { value: TICKET_PRIORITY.HIGH, label: "High" },
               ]}
             />
