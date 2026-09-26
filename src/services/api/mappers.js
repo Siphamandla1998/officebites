@@ -52,6 +52,16 @@ export function mapVendor(row) {
     deliveryRadius:
       row.delivery_radius || "",
 
+    latitude:
+      row.latitude === null || row.latitude === undefined
+        ? null
+        : Number(row.latitude),
+
+    longitude:
+      row.longitude === null || row.longitude === undefined
+        ? null
+        : Number(row.longitude),
+
     operatingHours:
       row.operating_hours || null,
 

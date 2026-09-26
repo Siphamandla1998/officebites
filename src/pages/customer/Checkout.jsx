@@ -138,13 +138,6 @@ export default function Checkout() {
                 error={errors.phone}
                 placeholder="So we can reach you about your order"
               />
-              <TextField
-                label="Email (optional)"
-                value={guestDetails.email}
-                onChange={updateGuest("email")}
-                error={errors.email}
-                placeholder="For your order confirmation"
-              />
             </div>
           </div>
         )}

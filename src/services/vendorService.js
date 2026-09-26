@@ -396,7 +396,48 @@ export const vendorService = {
   // =========================================================
   // CUSTOMER VENDOR FETCHING
   // =========================================================
+  async getNearbyVendors(
+    latitude,
+    longitude,
+    limit = 20
+  ) {
+    const lat = Number(latitude);
+    const lng = Number(longitude);
+    const maxResults = Number(limit);
 
+    if (
+      !Number.isFinite(lat) ||
+      !Number.isFinite(lng)
+    ) {
+      return [];
+    }
+
+    const { data, error } = await supabase.rpc(
+      "get_nearby_vendors",
+      {
+        p_latitude: lat,
+        p_longitude: lng,
+        p_limit:
+          Number.isFinite(maxResults) && maxResults > 0
+            ? Math.floor(maxResults)
+            : 20,
+      }
+    );
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return (data || []).map((row) => ({
+      ...mapVendor(row),
+
+      distanceKm:
+        row.distance_km === null ||
+        row.distance_km === undefined
+          ? null
+          : Number(row.distance_km),
+    }));
+  },
   async getVendors({
     category,
     building,
@@ -586,14 +627,6 @@ export const vendorService = {
     };
   },
 
-  async rejectVendor(vendorId) {
-    const { error } = await supabase
-      .from("vendors")
-      .update({ status: VENDOR_STATUS.REJECTED })
-      .eq("id", vendorId);
-    if (error) throw new Error(error.message);
-    return { success: true };
-  },
 
   async suspendVendor(vendorId) {
     const { error } = await supabase
@@ -867,6 +900,48 @@ export const vendorService = {
 
     if (updates.building !== undefined) {
       patch.building = updates.building;
+    }
+
+    if (updates.email !== undefined) {
+      patch.email = updates.email?.trim() || null;
+    }
+
+    if (updates.address !== undefined) {
+      patch.address = updates.address?.trim() || null;
+    }
+
+    if (updates.operatingHours !== undefined) {
+      patch.operating_hours = updates.operatingHours?.trim() || null;
+    }
+
+    if (updates.deliveryRadius !== undefined) {
+      const radius = Number(updates.deliveryRadius);
+
+      if (!Number.isFinite(radius) || radius <= 0) {
+        throw new Error("Delivery radius must be greater than 0 km.");
+      }
+
+      patch.delivery_radius = radius;
+    }
+
+    if (updates.latitude !== undefined) {
+      const latitude = Number(updates.latitude);
+
+      if (!Number.isFinite(latitude) || latitude < -90 || latitude > 90) {
+        throw new Error("Invalid business latitude.");
+      }
+
+      patch.latitude = latitude;
+    }
+
+    if (updates.longitude !== undefined) {
+      const longitude = Number(updates.longitude);
+
+      if (!Number.isFinite(longitude) || longitude < -180 || longitude > 180) {
+        throw new Error("Invalid business longitude.");
+      }
+
+      patch.longitude = longitude;
     }
 
     if (

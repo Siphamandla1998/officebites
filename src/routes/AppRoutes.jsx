@@ -68,8 +68,32 @@ import {
 
 function PageFallback() {
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <Spinner size={28} />
+    <div className="min-h-[60vh] ob-container py-6">
+      <div className="animate-pulse">
+        <div className="h-5 w-28 rounded-lg bg-nude-100 mb-6" />
+        <div className="h-11 w-full rounded-xl bg-nude-100 mb-5" />
+
+        <div className="flex gap-3 mb-7 overflow-hidden">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <div
+              key={index}
+              className="h-16 w-16 rounded-2xl bg-nude-100 shrink-0"
+            />
+          ))}
+        </div>
+
+        <div className="h-5 w-36 rounded-lg bg-nude-100 mb-3" />
+
+        <div className="grid grid-cols-2 gap-3.5">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <div key={index}>
+              <div className="h-36 rounded-2xl bg-nude-100" />
+              <div className="h-3 w-3/4 rounded bg-nude-100 mt-3" />
+              <div className="h-3 w-1/2 rounded bg-nude-100 mt-2" />
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
@@ -280,7 +304,7 @@ export default function AppRoutes() {
             path="support"
             element={<AdminSupport />}
           />
-          
+
           <Route
             path="analytics"
             element={<AdminAnalytics />}

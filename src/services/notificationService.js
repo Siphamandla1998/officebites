@@ -24,6 +24,8 @@ const mapNotification = (notification) => ({
   body: notification.body,
   read: notification.read ?? false,
   dismissed: notification.dismissed ?? false,
+  actionUrl: notification.action_url || null,
+  metadata: notification.metadata || {},
   createdAt: notification.created_at,
 });
 

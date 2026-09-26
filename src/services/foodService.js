@@ -32,13 +32,60 @@ export const CATEGORIES = [
 ];
 
 
-export const foodService = {
+const getNearbyVendorRows = async (
+  latitude,
+  longitude,
+  limit = 100
+) => {
+  const lat = Number(latitude);
+  const lng = Number(longitude);
 
+  if (
+    !Number.isFinite(lat) ||
+    !Number.isFinite(lng)
+  ) {
+    return null;
+  }
+
+  const { data, error } = await supabase.rpc(
+    "get_nearby_vendors",
+    {
+      p_latitude: lat,
+      p_longitude: lng,
+      p_limit: limit,
+    }
+  );
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return data || [];
+};
+
+
+const filterMealsForDate = (meals, forDate) => {
+  if (!forDate) {
+    return meals;
+  }
+
+  const weekday = new Date(forDate).getDay();
+
+  return meals.filter((meal) => {
+    if (!meal.availableDays) {
+      return true;
+    }
+
+    return meal.availableDays.includes(weekday);
+  });
+};
+
+
+export const foodService = {
 
   async getCategories() {
     return CATEGORIES;
   },
-
 
 
   async getMeals({
@@ -46,7 +93,27 @@ export const foodService = {
     category,
     search,
     forDate,
+    latitude,
+    longitude,
   } = {}) {
+
+    let nearbyRows = null;
+
+    if (
+      Number.isFinite(Number(latitude)) &&
+      Number.isFinite(Number(longitude))
+    ) {
+      nearbyRows = await getNearbyVendorRows(
+        latitude,
+        longitude
+      );
+
+      // Location was intentionally supplied but no configured
+      // vendor can serve this customer.
+      if (nearbyRows.length === 0) {
+        return [];
+      }
+    }
 
 
     let query = supabase
@@ -62,6 +129,17 @@ export const foodService = {
       .eq("vendors.status", "approved");
 
 
+    if (nearbyRows) {
+      const nearbyVendorIds = nearbyRows.map(
+        (row) => row.id
+      );
+
+      query = query.in(
+        "vendor_id",
+        nearbyVendorIds
+      );
+    }
+
 
     if (vendorId) {
       query = query.eq(
@@ -69,7 +147,6 @@ export const foodService = {
         vendorId
       );
     }
-
 
 
     if (category) {
@@ -80,24 +157,16 @@ export const foodService = {
     }
 
 
-
     if (search) {
-
       const q = `%${search}%`;
 
       query = query.or(
         `name.ilike.${q},description.ilike.${q},category.ilike.${q}`
       );
-
     }
 
 
-
-    const {
-      data,
-      error,
-    } = await query;
-
+    const { data, error } = await query;
 
 
     if (error) {
@@ -105,28 +174,43 @@ export const foodService = {
     }
 
 
+    const meals = filterMealsForDate(
+      (data || []).map(mapMeal),
+      forDate
+    );
 
-    return (
-      data || []
-    )
-      .map(mapMeal)
-      .filter((meal) => {
-        if (!forDate || !meal.availableDays) return true; // no schedule set = every day
-        const weekday = new Date(forDate).getDay();
-        return meal.availableDays.includes(weekday);
-      });
 
+    // Keep meals ordered according to vendor proximity.
+    if (nearbyRows) {
+      const distanceByVendor = new Map(
+        nearbyRows.map((row) => [
+          row.id,
+          Number(row.distance_km),
+        ])
+      );
+
+      return meals
+        .map((meal) => ({
+          ...meal,
+          distanceKm:
+            distanceByVendor.get(meal.vendorId) ?? null,
+        }))
+        .sort((a, b) => {
+          return (
+            (a.distanceKm ?? Infinity) -
+            (b.distanceKm ?? Infinity)
+          );
+        });
+    }
+
+
+    return meals;
   },
-
 
 
   async getMealById(id) {
 
-
-    const {
-      data,
-      error,
-    } = await supabase
+    const { data, error } = await supabase
       .from("meals")
       .select(`
         *,
@@ -135,12 +219,8 @@ export const foodService = {
           status
         )
       `)
-      .eq(
-        "id",
-        id
-      )
+      .eq("id", id)
       .maybeSingle();
-
 
 
     if (error) {
@@ -148,28 +228,42 @@ export const foodService = {
     }
 
 
-
     if (!data) {
-      throw new Error(
-        "Meal not found"
-      );
+      throw new Error("Meal not found");
     }
 
 
-
     return mapMeal(data);
-
   },
 
 
+  async getPopularMeals(
+    limit = 6,
+    {
+      forDate,
+      latitude,
+      longitude,
+    } = {}
+  ) {
 
-  async getPopularMeals(limit = 6, { forDate } = {}) {
+    // When location exists, use the same location-aware
+    // catalogue instead of recommending food the customer
+    // cannot actually order.
+    if (
+      Number.isFinite(Number(latitude)) &&
+      Number.isFinite(Number(longitude))
+    ) {
+      const nearbyMeals = await this.getMeals({
+        forDate,
+        latitude,
+        longitude,
+      });
+
+      return nearbyMeals.slice(0, limit);
+    }
 
 
-    const {
-      data,
-      error,
-    } = await supabase
+    const { data, error } = await supabase
       .from("meals")
       .select(`
         *,
@@ -178,16 +272,9 @@ export const foodService = {
           status
         )
       `)
-      .eq(
-        "vendors.status",
-        "approved"
-      )
-      .eq(
-        "available",
-        true
-      )
-      .limit(forDate ? limit * 3 : limit); // buffer — some may get filtered out below by day-schedule
-
+      .eq("vendors.status", "approved")
+      .eq("available", true)
+      .limit(forDate ? limit * 3 : limit);
 
 
     if (error) {
@@ -195,19 +282,10 @@ export const foodService = {
     }
 
 
-
-    return (
-      data || []
-    )
-      .map(mapMeal)
-      .filter((meal) => {
-        if (!forDate || !meal.availableDays) return true;
-        const weekday = new Date(forDate).getDay();
-        return meal.availableDays.includes(weekday);
-      })
-      .slice(0, limit);
-
+    return filterMealsForDate(
+      (data || []).map(mapMeal),
+      forDate
+    ).slice(0, limit);
   },
-
 
 };
