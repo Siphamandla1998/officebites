@@ -13,6 +13,10 @@ export const CategoryDetail = lazy(() => import("../pages/customer/CategoryDetai
 export const FoodSearch = lazy(() => import("../pages/customer/FoodSearch"));
 export const VendorListing = lazy(() => import("../pages/customer/VendorListing"));
 export const VendorProfile = lazy(() => import("../pages/customer/VendorProfile"));
+export const BecomeVendor = lazy(() =>
+  import("../pages/customer/BecomeVendor")
+);
+
 export const FoodDetails = lazy(() => import("../pages/customer/FoodDetails"));
 export const Checkout = lazy(() => import("../pages/customer/Checkout"));
 export const PaymentUpload = lazy(() => import("../pages/customer/PaymentUpload"));

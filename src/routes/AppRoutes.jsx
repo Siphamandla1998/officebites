@@ -9,8 +9,6 @@ import AdminLayout from "../layouts/AdminLayout";
 import AuthLayout from "../layouts/AuthLayout";
 import PublicLayout from "../layouts/PublicLayout";
 
-import Spinner from "../components/ui/Spinner";
-
 import {
   Login,
   Register,
@@ -29,6 +27,7 @@ import {
   TrackOrder,
   OrderHistory,
   Profile,
+  BecomeVendor,
   Favourites,
   ChatList,
   Reviews,
@@ -106,8 +105,14 @@ export default function AppRoutes() {
         <Route element={<AuthLayout />}>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route
+            path="/forgot-password"
+            element={<ForgotPassword />}
+          />
+          <Route
+            path="/reset-password"
+            element={<ResetPassword />}
+          />
         </Route>
 
         {/* Customer app */}
@@ -189,6 +194,16 @@ export default function AppRoutes() {
             element={<Notifications />}
           />
         </Route>
+
+        {/* Existing customer -> vendor application */}
+        <Route
+          path="/become-a-vendor"
+          element={
+            <ProtectedRoute allowedRoles={[ROLES.CUSTOMER]}>
+              <BecomeVendor />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Checkout and payment */}
         <Route element={<PublicLayout />}>
@@ -299,7 +314,7 @@ export default function AppRoutes() {
             path="chats"
             element={<AdminChats />}
           />
-          
+
           <Route
             path="support"
             element={<AdminSupport />}
