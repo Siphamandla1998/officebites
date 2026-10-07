@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { FiCreditCard } from "react-icons/fi";
 import Navbar from "../../components/layout/Navbar";
 import Spinner from "../../components/ui/Spinner";
@@ -8,23 +8,54 @@ import { orderService } from "../../services/orderService";
 import { paymentService } from "../../services/paymentService";
 import { useToast } from "../../context/ToastContext";
 import { formatCurrency } from "../../utils/formatters";
+import { ORDER_STATUS } from "../../utils/constants";
 import { getGuestOrderAccess } from "../../utils/guest";
 
 export default function PaymentUpload() {
   const { orderId } = useParams();
+  const navigate = useNavigate();
   const { showToast } = useToast();
   const [payfastLoading, setPayfastLoading] = useState(false);
 
-  const { data: order, loading } = useAsync(
+  const { data: order, loading, error, setData } = useAsync(
     () => orderService.getOrderById(orderId),
     [orderId]
   );
 
+  useEffect(() => {
+    let active = true;
+    const refresh = async () => {
+      setPayfastLoading(false);
+      try {
+        const fresh = await orderService.getOrderById(orderId);
+        if (active && fresh?.id) setData(fresh);
+      } catch { /* Actions recheck before starting payment. */ }
+    };
+    window.addEventListener("pageshow", refresh);
+    return () => {
+      active = false;
+      window.removeEventListener("pageshow", refresh);
+    };
+  }, [orderId, setData]);
+
   const handlePayfast = async () => {
+    if (payfastLoading) return;
     setPayfastLoading(true);
 
     try {
+      const fresh = await orderService.getOrderById(orderId);
+      if (!fresh?.id) throw new Error("Could not check this order. Please try again.");
+      setData(fresh);
+      if (fresh.status !== ORDER_STATUS.PENDING_PAYMENT) {
+        setPayfastLoading(false);
+        showToast("This order is no longer awaiting payment.", { type: "info" });
+        navigate(`/orders/${orderId}`, { replace: true });
+        return;
+      }
       const guestAccess = getGuestOrderAccess(orderId);
+      if (!fresh.customerId && !guestAccess?.contact) {
+        throw new Error("Verify your order code and phone number on Track Order before retrying payment.");
+      }
 
       const { processUrl, fields } =
         await paymentService.initiatePayfastPayment(
@@ -42,12 +73,35 @@ export default function PaymentUpload() {
     }
   };
 
-  if (loading || !order) {
+  if (loading) {
     return (
       <div>
         <Navbar showBack title="Payment" showCart={false} />
         <div className="ob-container pt-4">
           <div className="skeleton h-48" />
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !order?.id) {
+    return (
+      <div>
+        <Navbar showBack title="Payment" showCart={false} />
+        <p role="alert" className="ob-container pt-4 text-sm text-ink-muted">
+          Could not load this order. Please refresh or open it from your order history.
+        </p>
+      </div>
+    );
+  }
+
+  if (order.status !== ORDER_STATUS.PENDING_PAYMENT) {
+    return (
+      <div>
+        <Navbar showBack title="Payment" showCart={false} />
+        <div className="ob-container pt-4 flex flex-col gap-3">
+          <p className="text-sm text-ink-muted">This order is no longer awaiting payment.</p>
+          <button onClick={() => navigate(`/orders/${orderId}`)} className="btn-primary">View order status</button>
         </div>
       </div>
     );
@@ -87,9 +141,18 @@ export default function PaymentUpload() {
 
           <div className="rounded-xl bg-nude-50 px-3.5 py-3">
             <p className="text-xs text-ink-muted">
-              PayFast will confirm your payment automatically once it has been verified.
+              This payment is for your existing order {order.ticketNumber}.
+              If your bank already shows a debit, wait for confirmation or contact
+              support before making another payment.
             </p>
           </div>
+
+          <button
+            onClick={() => navigate(`/orders/${orderId}`)}
+            className="btn-outline w-full"
+          >
+            View order status
+          </button>
 
           <button
             onClick={handlePayfast}
