@@ -16,9 +16,9 @@
 // Any failed security check fails closed.
 
 import { createClient } from "jsr:@supabase/supabase-js@2";
+import { createHash } from "node:crypto";
 import {
   getPayfastConfig,
-  signatureFromEntries,
 } from "../_shared/payfast.ts";
 
 function textResponse(
@@ -31,65 +31,70 @@ function textResponse(
   );
 }
 
-async function isFromPayfast(
-  req: Request,
-  validHosts: string[],
-): Promise<boolean> {
-  const forwardedFor =
-    req.headers.get(
-      "x-forwarded-for",
-    );
+function payfastUrlencode(value: string): string {
+  return encodeURIComponent(value)
+    .replace(/[!'()*]/g, (ch) =>
+      "%" + ch.charCodeAt(0).toString(16).toUpperCase()
+    )
+    .replace(/%20/g, "+");
+}
 
+function ipv4ToInt(ip: string): number | null {
+  if (!/^\d{1,3}(\.\d{1,3}){3}$/.test(ip)) return null;
+  const parts = ip.split(".").map(Number);
+  if (parts.length !== 4 || parts.some((n) => !Number.isInteger(n) || n < 0 || n > 255)) return null;
+  return (((parts[0] * 256 + parts[1]) * 256 + parts[2]) * 256 + parts[3]) >>> 0;
+}
+
+function ipInCidr(ip: string, cidr: string): boolean {
+  const [network, bitsRaw] = cidr.split("/");
+  const bits = Number(bitsRaw);
+  const ipInt = ipv4ToInt(ip);
+  const netInt = ipv4ToInt(network);
+  if (ipInt === null || netInt === null || !Number.isInteger(bits) || bits < 0 || bits > 32) return false;
+  const mask = bits === 0 ? 0 : (0xffffffff << (32 - bits)) >>> 0;
+  return (ipInt & mask) === (netInt & mask);
+}
+
+async function isFromPayfast(req: Request, validHosts: string[]): Promise<boolean> {
   const sourceIp =
-    forwardedFor
-      ?.split(",")[0]
-      ?.trim();
+    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    req.headers.get("cf-connecting-ip")?.trim() ||
+    req.headers.get("x-real-ip")?.trim();
 
   if (!sourceIp) {
-    console.error(
-      "payfast-notify: source IP unavailable",
-    );
-
+    console.error("payfast-notify: source IP unavailable");
     return false;
   }
+
+  // Existing deployment allowlist; verify proxy source headers and ranges
+  // against a real PayFast ITN before declaring end-to-end readiness.
+  const publishedCidrs = [
+    "197.97.145.144/28",
+    "41.74.179.192/27",
+    "102.216.36.0/28",
+    "102.216.36.128/28",
+    "144.126.193.139/32",
+  ];
+
+  if (publishedCidrs.some((cidr) => ipInCidr(sourceIp, cidr))) return true;
 
   try {
-    for (
-      const host of validHosts
-    ) {
-      const addresses =
-        await Deno.resolveDns(
-          host,
-          "A",
-        );
-
-      if (
-        addresses.includes(
-          sourceIp,
-        )
-      ) {
-        return true;
-      }
+    for (const host of validHosts) {
+      const addresses = await Deno.resolveDns(host, "A");
+      if (addresses.includes(sourceIp)) return true;
     }
   } catch (error) {
-    /*
-     * Fail closed.
-     *
-     * PayFast source validation is a security check. A DNS/runtime failure
-     * must not turn that check into an automatic success.
-     */
-    console.error(
-      "payfast-notify: DNS validation failed",
-      error,
-    );
-
-    return false;
+    console.error("payfast-notify: DNS source validation failed", error);
   }
-
   return false;
 }
 
 Deno.serve(async (req) => {
+  console.log("payfast-notify: request received", {
+    method: req.method,
+    contentType: req.headers.get("content-type"),
+  });
   if (req.method !== "POST") {
     return textResponse(
       "Method not allowed",
@@ -97,13 +102,23 @@ Deno.serve(async (req) => {
     );
   }
 
-  const rawBody =
-    await req.text();
+  try {
+  if (!req.headers.get("content-type")?.toLowerCase().startsWith("application/x-www-form-urlencoded")) {
+    return textResponse("Unsupported content type", 415);
+  }
+  const rawBody = await req.text();
+  if (rawBody.length > 65536) return textResponse("Payload too large", 413);
 
   const params =
     new URLSearchParams(
       rawBody,
     );
+
+  const seen = new Set<string>();
+  for (const [key] of params) {
+    if (seen.has(key)) return textResponse("Duplicate field", 400);
+    seen.add(key);
+  }
 
   const receivedSignature =
     params.get(
@@ -117,8 +132,13 @@ Deno.serve(async (req) => {
     );
   }
 
-  const config =
-    getPayfastConfig();
+  const config = getPayfastConfig();
+  if (params.get("merchant_id") !== config.merchantId) {
+    return textResponse("Merchant mismatch", 400);
+  }
+  if (!/^[a-f0-9]{32}$/.test(receivedSignature)) {
+    return textResponse("Invalid signature format", 400);
+  }
 
   /*
    * URLSearchParams preserves the submitted field order.
@@ -136,7 +156,7 @@ Deno.serve(async (req) => {
     if (
       key === "signature"
     ) {
-      continue;
+      break;
     }
 
     entries.push([
@@ -145,11 +165,19 @@ Deno.serve(async (req) => {
     ]);
   }
 
-  const expectedSignature =
-    signatureFromEntries(
-      entries,
-      config.passphrase,
-    );
+  const pfParamString = entries
+    .map(([key, value]) => `${key}=${payfastUrlencode(value)}`)
+    .join("&");
+
+  const signedParamString = config.passphrase
+    ? `${pfParamString}&passphrase=${payfastUrlencode(config.passphrase)}`
+    : pfParamString;
+
+  const expectedSignature = createHash("md5")
+    .update(signedParamString)
+    .digest("hex");
+
+  const validationParamString = pfParamString;
 
   if (
     expectedSignature !==
@@ -194,16 +222,22 @@ Deno.serve(async (req) => {
         config.validateUrl,
         {
           method: "POST",
+          redirect: "error",
+          signal: AbortSignal.timeout(15000),
 
           headers: {
             "Content-Type":
               "application/x-www-form-urlencoded",
           },
 
-          body: rawBody,
+          body: validationParamString,
         },
       );
 
+    if (!response.ok) {
+      console.error("payfast-notify: validation HTTP failure", response.status);
+      return textResponse("Validation temporarily unavailable", 503);
+    }
     const validationResult =
       (
         await response.text()
@@ -224,6 +258,7 @@ Deno.serve(async (req) => {
       "payfast-notify: server confirmation request failed",
       error,
     );
+    return textResponse("Validation temporarily unavailable", 503);
   }
 
   if (!validateOk) {
@@ -275,10 +310,10 @@ Deno.serve(async (req) => {
     );
   }
 
-  const amountGross =
-    Number.parseFloat(
-      amountGrossRaw,
-    );
+  if (!/^\d+(\.\d{1,2})?$/.test(amountGrossRaw)) {
+    return textResponse("Invalid amount", 400);
+  }
+  const amountGross = Number(amountGrossRaw);
 
   if (
     !Number.isFinite(
@@ -338,10 +373,8 @@ Deno.serve(async (req) => {
       .maybeSingle();
 
     if (lookupError) {
-      console.error(
-        "payfast-notify: ticket lookup failed",
-        lookupError,
-      );
+      console.error("payfast-notify: ticket lookup failed", lookupError.code);
+      return textResponse("Order lookup temporarily unavailable", 503);
     }
 
     resolvedOrderId =
@@ -361,6 +394,14 @@ Deno.serve(async (req) => {
       "Unknown order",
       400,
     );
+  }
+
+  // Bind both submitted identifiers to the same authoritative order.
+  const { data: paymentOrder, error: paymentLookupError } = await admin
+    .from("orders").select("id,ticket_number").eq("id", resolvedOrderId).maybeSingle();
+  if (paymentLookupError) return textResponse("Order lookup temporarily unavailable", 503);
+  if (!paymentOrder || (mPaymentId && paymentOrder.ticket_number !== mPaymentId)) {
+    return textResponse("Order reference mismatch", 400);
   }
 
   const {
@@ -398,8 +439,8 @@ Deno.serve(async (req) => {
     );
 
     return textResponse(
-      "Rejected",
-      400,
+      "Payment confirmation failed",
+      500,
     );
   }
 
@@ -411,7 +452,9 @@ Deno.serve(async (req) => {
 
       pfPaymentId,
 
-      result,
+      applied: result?.applied ?? null,
+      duplicate: result?.duplicate ?? null,
+      status: result?.order?.status ?? null,
     },
   );
 
@@ -424,4 +467,8 @@ Deno.serve(async (req) => {
     "OK",
     200,
   );
+  } catch (error) {
+    console.error("payfast-notify: unexpected failure", error instanceof Error ? error.name : "unknown");
+    return textResponse("Notification temporarily unavailable", 500);
+  }
 });
