@@ -32,7 +32,7 @@ export default function VendorRevenue() {
     <div className="flex flex-col gap-6">
       <div>
         <h1 className="text-xl font-bold text-ink">Revenue</h1>
-        <p className="text-sm text-ink-muted mt-0.5">OfficeBites takes a 15% commission on vendor sales.</p>
+        <p className="text-sm text-ink-muted mt-0.5">OfficeBites takes a 17% commission on vendor sales.</p>
       </div>
 
       {statsLoading ? (
