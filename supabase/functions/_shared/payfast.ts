@@ -41,6 +41,14 @@ export function getPayfastConfig(): PayfastConfig {
   };
 }
 
+function payfastEncode(value: string): string {
+  return encodeURIComponent(value)
+    .replace(/[!'()*]/g, (character) =>
+      `%${character.charCodeAt(0).toString(16).toUpperCase()}`
+    )
+    .replace(/%20/g, "+");
+}
+
 export function signatureFromEntries(
   entries: [string, string][],
   passphrase: string,
@@ -49,18 +57,12 @@ export function signatureFromEntries(
 
   for (const [key, value] of entries) {
     if (value === undefined || value === null || value === "") continue;
-
-    parts.push(
-      `${key}=${encodeURIComponent(value.toString().trim()).replace(/%20/g, "+")}`,
-    );
+    parts.push(`${key}=${payfastEncode(String(value).trim())}`);
   }
-
-  let paramString = parts.join("&");
 
   if (passphrase) {
-    paramString +=
-      `&passphrase=${encodeURIComponent(passphrase.trim()).replace(/%20/g, "+")}`;
+    parts.push(`passphrase=${payfastEncode(passphrase.trim())}`);
   }
 
-  return createHash("md5").update(paramString).digest("hex");
+  return createHash("md5").update(parts.join("&")).digest("hex");
 }
