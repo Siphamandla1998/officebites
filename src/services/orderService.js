@@ -1,104 +1,8 @@
+import { financialService } from './financialService';
 import { supabase } from "./api/supabaseClient";
+import { getOrderCustomerNames } from "./customerNameService";
 import { mapOrder, ORDER_SELECT } from "./api/mappers";
-import {
-  splitCartByVendor,
-  generateTicketNumber,
-} from "../utils/orderRules";
-import {
-  ORDER_STATUS,
-  PAYMENT_STATUS,
-  VENDOR_ORDER_FLOW,
-} from "../utils/constants";
-import { notificationService } from "./notificationService";
-
-/**
- * True if `from` -> `to` is the single next step
- * in the vendor order pipeline.
- */
-function isValidTransition(from, to) {
-  const fromIndex = VENDOR_ORDER_FLOW.indexOf(from);
-  const toIndex = VENDOR_ORDER_FLOW.indexOf(to);
-
-  if (fromIndex === -1 || toIndex === -1) {
-    return false;
-  }
-
-  return toIndex === fromIndex + 1;
-}
-
-async function fetchFullOrder(orderId) {
-  const { data, error } = await supabase
-    .from("orders")
-    .select(ORDER_SELECT)
-    .eq("id", orderId)
-    .single();
-
-  if (error) {
-    throw { message: error.message };
-  }
-
-  return mapOrder(data);
-}
-
-/**
- * Create a notification directly for a specific user.
- *
- * This is important for admin actions such as payment verification:
- * the admin is the current signed-in user, but the notification
- * needs to go to the customer or vendor involved in the order.
- */
-async function createNotificationForUser({
-  userId,
-  type = "general",
-  title,
-  body,
-}) {
-  if (!userId) {
-    return null;
-  }
-
-  const { data, error } = await supabase
-    .from("notifications")
-    .insert({
-      user_id: userId,
-      type,
-      title,
-      body,
-      read: false,
-      dismissed: false,
-    })
-    .select()
-    .single();
-
-  if (error) {
-    throw { message: error.message };
-  }
-
-  return data;
-}
-
-/**
- * Get vendor owner profile(s) for the vendors attached to an order.
- */
-async function getVendorOwnerIds(vendorIds = []) {
-  if (!vendorIds.length) {
-    return [];
-  }
-
-  const uniqueVendorIds = [...new Set(vendorIds)];
-
-  const { data, error } = await supabase
-    .from("profiles")
-    .select("id, vendor_id, role")
-    .in("vendor_id", uniqueVendorIds)
-    .eq("role", "vendor");
-
-  if (error) {
-    throw { message: error.message };
-  }
-
-  return data || [];
-}
+import { getGuestOrderAccess } from "../utils/guest";
 
 export const orderService = {
   // ===============================
@@ -122,43 +26,68 @@ export const orderService = {
   },
 
   /**
-   * Used for guest order history. Guest orders are no longer readable
-   * through the base table (see the guest-order-security migration), so
-   * this goes through the batch RPC instead — it can only ever return rows
-   * matching ids the caller already supplied, never a full table scan.
+   * Guest order history.
+   *
+   * Guest orders are not retrieved by UUID alone.
+   * Each saved order must have its ticket number and original
+   * checkout contact, which are verified by the database RPC.
    */
-  async getOrdersByIds(ids = []) {
-    if (ids.length === 0) {
+  async getGuestOrdersHistory(guestOrders = []) {
+    if (!Array.isArray(guestOrders) || guestOrders.length === 0) {
       return [];
     }
 
-    const { data, error } = await supabase.rpc("get_guest_orders_json", { p_ids: ids });
+    const results = await Promise.all(
+      guestOrders.map(async (guestOrder) => {
+        const ticketNumber = guestOrder?.ticketNumber;
+        const contact = guestOrder?.contact;
 
-    if (error) {
-      throw { message: error.message };
-    }
+        if (!ticketNumber || !contact) {
+          return null;
+        }
 
-    return (data || []).map(mapOrder);
+        try {
+          return await orderService.trackGuestOrder(
+            ticketNumber,
+            contact
+          );
+        } catch (error) {
+          console.error(
+            "getGuestOrdersHistory: couldn't retrieve guest order",
+            error
+          );
+          return null;
+        }
+      })
+    );
+
+    return results.filter(Boolean);
   },
 
   /**
-   * A signed-in customer/vendor/admin still reads `orders` directly (RLS
-   * scopes them to their own rows). A guest order is no longer visible
-   * through the base table at all, so if there's no signed-in user — or the
-   * direct read comes back empty — fall back to the id-scoped guest RPC.
-   * Either path can only ever return the ONE order matching `id`.
-   */
-  /**
-   * Cross-device guest order tracking — ticket code + the contact the guest
-   * originally gave at checkout, the "order code + mobile number" second
-   * factor. Requires both to match; there's no way to enumerate orders
-   * through this, only to confirm one you already believe is yours.
+   * Cross-device guest order tracking.
+   *
+   * Requires:
+   *   1. Ticket number
+   *   2. Original guest phone number
+   *
+   * Both are checked server-side by the SECURITY DEFINER RPC.
    */
   async trackGuestOrder(ticketNumber, contact) {
-    const { data, error } = await supabase.rpc("get_guest_order_by_ticket_json", {
-      p_ticket_number: ticketNumber,
-      p_contact: contact,
-    });
+    const cleanTicketNumber = ticketNumber?.trim();
+    const cleanContact = contact?.trim();
+
+    if (!cleanTicketNumber || !cleanContact) {
+      return null;
+    }
+
+    const { data, error } = await supabase.rpc(
+      "get_guest_order_by_ticket_json",
+      {
+        p_ticket_number: cleanTicketNumber,
+        p_contact: cleanContact,
+      }
+    );
 
     if (error) {
       throw { message: error.message };
@@ -167,6 +96,15 @@ export const orderService = {
     return data ? mapOrder(data) : null;
   },
 
+  /**
+   * Get a single order.
+   *
+   * Authenticated users first use the normal orders table,
+   * protected by RLS.
+   *
+   * Guest orders are only retrieved when this device has
+   * the order ticket number and original checkout contact.
+   */
   async getOrderById(id) {
     const { data: authData } = await supabase.auth.getUser();
 
@@ -181,18 +119,29 @@ export const orderService = {
         throw { message: error.message };
       }
 
-      if (data) return mapOrder(data);
+      if (data) {
+        return mapOrder(data);
+      }
     }
 
-    const { data: guestData, error: guestError } = await supabase.rpc("get_guest_order_json", {
-      p_order_id: id,
-    });
+    const guestAccess = getGuestOrderAccess(id);
 
-    if (guestError) {
-      throw { message: guestError.message };
+    if (!guestAccess?.ticketNumber || !guestAccess?.contact) {
+      return null;
     }
 
-    return mapOrder(guestData);
+    const order = await orderService.trackGuestOrder(
+      guestAccess.ticketNumber,
+      guestAccess.contact
+    );
+
+    // The saved local order ID and the order returned by the
+    // secure ticket/contact lookup must refer to the same order.
+    if (!order || order.id !== id) {
+      return null;
+    }
+
+    return order;
   },
 
   // ===============================
@@ -200,15 +149,15 @@ export const orderService = {
   // ===============================
 
   /**
-   * One checkout creates one customer-facing order,
-   * internally split by vendor.
+   * Creates an order through the database SECURITY DEFINER RPC.
    *
-   * The order's id and ticket_number are generated here (client-side, with a
-   * CSPRNG for the ticket) rather than read back via `.select()` after
-   * insert: guest orders are no longer selectable through the base `orders`
-   * table policy at all (see the guest-order-security migration), so an
-   * `.insert().select()` would return nothing for a guest. Since we already
-   * know every value we're inserting, there's nothing to read back.
+   * Do not create orders using separate browser-side inserts into:
+   *   orders
+   *   order_suborders
+   *   order_items
+   *
+   * create_order_from_cart() is the secure checkout boundary.
+   * Pricing and availability are verified server-side.
    */
   async createOrder({
     customerId,
@@ -219,126 +168,44 @@ export const orderService = {
     deliveryLocation,
     cartItems,
   }) {
-    const groups = splitCartByVendor(cartItems);
+    if (!Array.isArray(cartItems) || cartItems.length === 0) {
+      throw {
+        message: "Your cart is empty",
+      };
+    }
 
-    const total = groups.reduce(
-      (sum, group) =>
-        sum +
-        group.items.reduce(
-          (subtotal, item) =>
-            subtotal + item.price * item.qty,
-          0
-        ),
-      0
+    const rpcItems = cartItems.map((item) => ({
+      mealId: item.mealId,
+      qty: item.qty,
+    }));
+
+    const { data, error } = await supabase.rpc(
+      "create_order_from_cart",
+      {
+        p_customer_id: customerId || null,
+        p_guest_name: customerId ? null : customerName,
+        p_guest_contact: customerId ? null : guestContact,
+        p_guest_email: customerId ? null : guestEmail || null,
+        p_delivery_date: deliveryDate,
+        p_delivery_location: deliveryLocation || null,
+        p_items: rpcItems,
+      }
     );
 
-    const orderId = crypto.randomUUID();
-    const ticketNumber = generateTicketNumber();
-
-    const { error: orderError } = await supabase
-      .from("orders")
-      .insert({
-        id: orderId,
-        ticket_number: ticketNumber,
-        customer_id: customerId || null,
-        guest_name: customerId ? null : customerName,
-        guest_contact: customerId ? null : guestContact,
-        guest_email: customerId ? null : guestEmail || null,
-        delivery_date: deliveryDate,
-        delivery_location: deliveryLocation || null,
-        status: ORDER_STATUS.PENDING_PAYMENT,
-        total,
-      });
-
-    if (orderError) {
-      throw { message: orderError.message };
-    }
-
-    const orderRow = { id: orderId };
-
-    const { data: suborderRows, error: suborderError } =
-      await supabase
-        .from("order_suborders")
-        .insert(
-          groups.map((group) => ({
-            order_id: orderRow.id,
-            vendor_id: group.vendorId,
-            status: ORDER_STATUS.PENDING_PAYMENT,
-            payment_status: PAYMENT_STATUS.UNPAID,
-            subtotal: group.items.reduce(
-              (sum, item) =>
-                sum + item.price * item.qty,
-              0
-            ),
-          }))
-        )
-        .select();
-
-    if (suborderError) {
-      throw { message: suborderError.message };
-    }
-
-    const itemRows = groups.flatMap((group) => {
-      const suborder = suborderRows.find(
-        (row) => row.vendor_id === group.vendorId
-      );
-
-      return group.items.map((item) => ({
-        suborder_id: suborder.id,
-        meal_id: item.mealId,
-        meal_name: item.name,
-        qty: item.qty,
-        price: item.price,
-      }));
-    });
-
-    const { error: itemsError } = await supabase
-      .from("order_items")
-      .insert(itemRows);
-
-    if (itemsError) {
-      throw { message: itemsError.message };
-    }
-
-    return this.getOrderById(orderId);
-  },
-
-  // ===============================
-  // PAYMENT
-  // ===============================
-
-  /**
-   * This previously did two raw `.update()` calls against `orders` and
-   * `order_suborders`. Both tables only ever had an admin-only UPDATE
-   * policy, so — for every guest and every logged-in customer — those
-   * updates silently affected 0 rows (Postgres RLS drops non-matching rows
-   * rather than erroring), while the calling code saw no error and told the
-   * customer their payment was submitted. The order was never actually
-   * marked payment_submitted, so it never reached the admin verification
-   * queue. Fixed by routing through submit_payment_proof(), a narrow
-   * SECURITY DEFINER function that verifies the caller owns this specific
-   * order before making the same two updates itself.
-   */
-  async attachPaymentProof(orderId, proofPath) {
-    const { data, error } = await supabase.rpc("submit_payment_proof", {
-      p_order_id: orderId,
-      p_proof_path: proofPath,
-    });
-
     if (error) {
-      throw { message: error.message };
+      throw {
+        message: error.message,
+      };
     }
 
-    const updated = mapOrder(data);
+    if (!data) {
+      throw {
+        message:
+          "Order creation succeeded but no order was returned.",
+      };
+    }
 
-    // Notify the customer.
-    await notificationService.addNotification({
-      type: "payment_submitted",
-      title: "Payment submitted",
-      body: `Your proof of payment for ${updated.ticketNumber} was received and is being reviewed by OfficeBites.`,
-    });
-
-    return updated;
+    return mapOrder(data);
   },
 
   // ===============================
@@ -351,7 +218,10 @@ export const orderService = {
       .select(ORDER_SELECT);
 
     if (date) {
-      query = query.eq("delivery_date", date);
+      query = query.eq(
+        "delivery_date",
+        date
+      );
     }
 
     const { data, error } = await query;
@@ -360,6 +230,7 @@ export const orderService = {
       throw { message: error.message };
     }
 
+    const names = await getOrderCustomerNames((data || []).map((row) => row.id));
     return (data || [])
       .map(mapOrder)
       .filter((order) =>
@@ -370,6 +241,7 @@ export const orderService = {
       )
       .map((order) => ({
         ...order,
+        customerName: names.get(order.id) || order.customerName,
         subOrder: order.subOrders.find(
           (subOrder) =>
             subOrder.vendorId === vendorId
@@ -378,94 +250,41 @@ export const orderService = {
   },
 
   /**
-   * Moves a sub-order exactly one step forward:
+   * Moves a sub-order exactly one step forward.
    *
-   * Confirmed -> Accepted -> Preparing ->
-   * Ready -> Collected -> Completed
+   * The database RPC remains the source of truth for:
+   *   - vendor ownership
+   *   - valid status transitions
+   *   - notifications
    */
   async updateSubOrderStatus(
     orderId,
     vendorId,
     nextStatus
   ) {
-    const {
-      data: current,
-      error: fetchError,
-    } = await supabase
-      .from("order_suborders")
-      .select("status")
-      .eq("order_id", orderId)
-      .eq("vendor_id", vendorId)
-      .single();
-
-    if (fetchError) {
+    if (!vendorId) {
       throw {
-        message: "Order not found",
-        status: 404,
-      };
-    }
-
-    if (
-      !isValidTransition(
-        current.status,
-        nextStatus
-      )
-    ) {
-      throw {
-        message: `Can't move from "${current.status}" to "${nextStatus}" — only the next step in the pipeline is allowed.`,
+        message: "Missing vendor context",
         status: 400,
       };
     }
 
-    const { error } = await supabase
-      .from("order_suborders")
-      .update({
-        status: nextStatus,
-      })
-      .eq("order_id", orderId)
-      .eq("vendor_id", vendorId);
+    const { data, error } = await supabase.rpc(
+      "update_suborder_status_and_notify",
+      {
+        p_order_id: orderId,
+        p_next_status: nextStatus,
+      }
+    );
 
     if (error) {
-      throw { message: error.message };
+      throw {
+        message: error.message,
+        status: 400,
+      };
     }
 
-    const {
-      data: allSubs,
-      error: allSubsError,
-    } = await supabase
-      .from("order_suborders")
-      .select("status")
-      .eq("order_id", orderId);
-
-    if (allSubsError) {
-      throw { message: allSubsError.message };
-    }
-
-    if (
-      allSubs?.length &&
-      allSubs.every(
-        (subOrder) =>
-          subOrder.status === nextStatus
-      )
-    ) {
-      const { error: parentError } =
-        await supabase
-          .from("orders")
-          .update({
-            status: nextStatus,
-          })
-          .eq("id", orderId);
-
-      if (parentError) {
-        throw {
-          message: parentError.message,
-        };
-      }
-    }
-
-    return {
-      success: true,
-    };
+    return data;
   },
 
   async updateSubOrderNotes(
@@ -509,113 +328,20 @@ export const orderService = {
     return (data || []).map(mapOrder);
   },
 
-  async getOrdersPendingPaymentReview() {
-    const { data, error } = await supabase
-      .from("orders")
-      .select(ORDER_SELECT)
-      .eq(
-        "status",
-        ORDER_STATUS.PAYMENT_SUBMITTED
-      )
-      .order("created_at", {
-        ascending: true,
-      });
-
-    if (error) {
-      throw { message: error.message };
+  /**
+   * PayFast-confirmed orders.
+   *
+   * Payment confirmation itself never happens in the browser.
+   * The PayFast ITN -> Edge Function -> database confirmation
+   * pipeline is responsible for changing the order status.
+   */
+  async getRecentPayments(limit = 10) {
+    const report = await financialService.report({ period: 'all' });
+    const orders = new Map();
+    for (const row of report.rows) {
+      const entry = orders.get(row.order_id) || { id: row.order_id, ticketNumber: row.ticket_number, customerName: 'Paid business sale', createdAt: row.financial_date + 'T12:00:00+02:00', status: row.status, total: 0 };
+      entry.total += Number(row.gross); orders.set(row.order_id, entry);
     }
-
-    return (data || []).map(mapOrder);
-  },
-
-  // ===============================
-  // VERIFY PAYMENT
-  // ===============================
-
-  async verifyPayment(orderId, approve = true) {
-    const newStatus = approve
-      ? ORDER_STATUS.CONFIRMED
-      : ORDER_STATUS.CANCELLED;
-
-    const { error } = await supabase
-      .from("orders")
-      .update({
-        status: newStatus,
-      })
-      .eq("id", orderId);
-
-    if (error) {
-      throw { message: error.message };
-    }
-
-    const { error: subError } =
-      await supabase
-        .from("order_suborders")
-        .update({
-          status: newStatus,
-          payment_status: approve
-            ? PAYMENT_STATUS.PAID
-            : PAYMENT_STATUS.UNPAID,
-        })
-        .eq("order_id", orderId);
-
-    if (subError) {
-      throw { message: subError.message };
-    }
-
-    const updated = await fetchFullOrder(
-      orderId
-    );
-
-    // ---------------------------------
-    // CUSTOMER NOTIFICATION
-    // ---------------------------------
-
-    if (updated.customerId) {
-      await createNotificationForUser({
-        userId: updated.customerId,
-        type: approve
-          ? "payment_verified"
-          : "payment_rejected",
-        title: approve
-          ? "Payment verified"
-          : "Payment rejected",
-        body: approve
-          ? `Your payment for ${updated.ticketNumber} has been verified — your order is confirmed.`
-          : `We couldn't verify the payment for ${updated.ticketNumber}. Please contact support or upload valid proof.`,
-      });
-    }
-
-    // ---------------------------------
-    // VENDOR NOTIFICATIONS
-    // ---------------------------------
-
-    if (approve) {
-      const vendorIds =
-        updated.subOrders
-          ?.map(
-            (subOrder) =>
-              subOrder.vendorId
-          )
-          .filter(Boolean) || [];
-
-      const vendorProfiles =
-        await getVendorOwnerIds(
-          vendorIds
-        );
-
-      for (const vendorProfile of vendorProfiles) {
-        await createNotificationForUser({
-          userId: vendorProfile.id,
-          type: "new_order",
-          title: "New order received",
-          body: `Order ${updated.ticketNumber} has been confirmed and is ready for you to prepare.`,
-        });
-      }
-    }
-
-    return {
-      success: true,
-    };
+    return [...orders.values()].sort((a,b) => b.createdAt.localeCompare(a.createdAt)).slice(0,limit);
   },
 };

@@ -6,9 +6,9 @@ import { useCart } from "../../context/CartContext";
 import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../context/ToastContext";
 import { orderService } from "../../services/orderService";
-import { splitCartByVendor, nextOrderableDate } from "../../utils/orderRules";
+import { splitCartByVendor, nextOrderableDate, deliveryDateKey, isOrderingOpen } from "../../utils/orderRules";
 import { formatCurrency, formatDate } from "../../utils/formatters";
-import { addGuestOrderId } from "../../utils/guest";
+import { addGuestOrder } from "../../utils/guest";
 import Spinner from "../../components/ui/Spinner";
 import EmptyState from "../../components/ui/EmptyState";
 import { FiShoppingBag, FiUser } from "react-icons/fi";
@@ -19,7 +19,10 @@ export default function Checkout() {
   const { showToast } = useToast();
   const navigate = useNavigate();
   const [submitting, setSubmitting] = useState(false);
-  const [guestDetails, setGuestDetails] = useState({ name: "", phone: "", email: "" });
+  const [guestDetails, setGuestDetails] = useState({
+    name: "",
+    phone: "",
+  });
   const [deliveryLocation, setDeliveryLocation] = useState("");
   const [errors, setErrors] = useState({});
 
@@ -42,6 +45,11 @@ export default function Checkout() {
   };
 
   const handlePlaceOrder = async () => {
+    if (submitting) return;
+    if (!isOrderingOpen(deliveryDate)) {
+      showToast("The ordering cutoff has passed. Please review the updated delivery date before ordering.", { type: "info" });
+      return;
+    }
     if (!validateGuest()) {
       showToast("Please fill in your details before ordering", { type: "error" });
       return;
@@ -52,15 +60,28 @@ export default function Checkout() {
         customerId: isAuthenticated ? user.id : null,
         customerName: isAuthenticated ? user.name : guestDetails.name,
         guestContact: isAuthenticated ? null : guestDetails.phone.trim(),
-        guestEmail: isAuthenticated ? null : guestDetails.email.trim() || null,
-        deliveryDate: deliveryDate.toISOString().slice(0, 10),
+        guestEmail: null,
+        deliveryDate: deliveryDateKey(deliveryDate),
         deliveryLocation: deliveryLocation.trim(),
         cartItems: items,
       });
-      if (!isAuthenticated) addGuestOrderId(order.id);
+      if (!isAuthenticated) {
+        addGuestOrder({
+          id: order.id,
+          ticketNumber: order.ticketNumber,
+          contact: guestDetails.phone.trim(),
+        });
+      }
+
       clearCart();
-      showToast("Order created — upload proof of payment to confirm", { type: "success" });
+
+      showToast(
+        "Order created — continue to PayFast to complete payment",
+        { type: "success" }
+      );
+
       navigate(`/payment/${order.id}`);
+
     } catch (err) {
       showToast(err.message || "Couldn't place order", { type: "error" });
     } finally {
@@ -87,7 +108,7 @@ export default function Checkout() {
   }
 
   return (
-    <div className="pb-32">
+    <div className="pb-[calc(8rem+env(safe-area-inset-bottom))]">
       <Navbar showBack title="Checkout" showCart={false} />
       <div className="ob-container pt-4 flex flex-col gap-5">
         {!isAuthenticated && (
@@ -121,13 +142,6 @@ export default function Checkout() {
                 onChange={updateGuest("phone")}
                 error={errors.phone}
                 placeholder="So we can reach you about your order"
-              />
-              <TextField
-                label="Email (optional)"
-                value={guestDetails.email}
-                onChange={updateGuest("email")}
-                error={errors.email}
-                placeholder="For your order confirmation"
               />
             </div>
           </div>
@@ -171,7 +185,7 @@ export default function Checkout() {
         ))}
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 mx-auto w-full max-w-app bg-paper-raised border-t border-line p-4 shadow-nav flex flex-col gap-3">
+      <div className="fixed bottom-0 left-0 right-0 mx-auto w-full max-w-app bg-paper-raised border-t border-line px-4 pt-4 pb-[calc(1rem+env(safe-area-inset-bottom))] shadow-nav flex flex-col gap-3">
         <div className="flex justify-between text-sm">
           <span className="text-ink-muted">Total</span>
           <span className="font-bold text-ink text-base">{formatCurrency(subtotal)}</span>

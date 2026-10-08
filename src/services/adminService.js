@@ -1,14 +1,20 @@
 import { supabase } from "./api/supabaseClient";
-import { orderService } from "./orderService";
-import { vendorService } from "./vendorService";
-import { calcCommission } from "../utils/orderRules";
-import { ORDER_STATUS, VENDOR_STATUS, ROLES } from "../utils/constants";
+import { ROLES } from "../utils/constants";
+
+import { financialService } from './financialService';
 
 export const adminService = {
   async getCustomers() {
-    const { data, error } = await supabase.from("profiles").select("*").eq("role", ROLES.CUSTOMER);
-    if (error) throw { message: error.message };
-    return (data || []).map((row) => ({
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("role", ROLES.CUSTOMER);
+
+    if (error) {
+      throw { message: error.message };
+    }
+
+    return (data || []).filter(row => !row.deleted_at).map((row) => ({
       id: row.id,
       name: row.name,
       email: row.email,
@@ -18,52 +24,27 @@ export const adminService = {
     }));
   },
 
-  // Suspension here means "flagged in our system" — actually blocking sign-in
-  // requires the Supabase service-role key (admin.updateUserById), which must
-  // run server-side (an Edge Function), never in this client-side bundle.
-  // This just marks the profile row for now; wire the Edge Function before
-  // relying on this to actually lock an account out.
   async suspendCustomer(id) {
-    const { error } = await supabase.from("profiles").update({ suspended: true }).eq("id", id);
-    if (error) throw { message: error.message };
+    const { error } = await supabase
+      .from("profiles")
+      .update({ suspended: true })
+      .eq("id", id);
+
+    if (error) {
+      throw { message: error.message };
+    }
+
     return { success: true };
   },
 
-  /** Live platform snapshot, computed from the current order/vendor dataset rather than fixed numbers. */
+  async getPlatformAnalytics(period = 'month') {
+    const report = await financialService.report({ period });
+    return { ...report, ...report.totals };
+  },
+  async getCategoryDemand(period = 'month') { return (await financialService.report({period})).categories; },
   async getPlatformStats() {
-    const [orders, approvedVendors, pendingVendors, customers] = await Promise.all([
-      orderService.getAllOrders(),
-      vendorService.getVendors({}),
-      vendorService.getVendors({ status: VENDOR_STATUS.PENDING }),
-      this.getCustomers(),
-    ]);
-
-    const today = new Date().toDateString();
-    const ordersToday = orders.filter((o) => new Date(o.createdAt).toDateString() === today).length;
-
-    const monthAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
-    const gmvThisMonth = orders
-      .filter((o) => o.status !== ORDER_STATUS.CANCELLED && new Date(o.createdAt).getTime() >= monthAgo)
-      .reduce((sum, o) => sum + o.total, 0);
-    const { commission: commissionThisMonth } = calcCommission(gmvThisMonth);
-
-    return {
-      totalCustomers: customers.length,
-      totalVendors: approvedVendors.length,
-      pendingVendors: pendingVendors.length,
-      ordersToday,
-      gmvThisMonth,
-      commissionThisMonth,
-    };
+    const a = await this.getPlatformAnalytics('month');
+    return {totalCustomers:a.customers,totalVendors:a.activeVendors,pendingVendors:a.pendingVendors,ordersToday:a.ordersToday,gmvThisMonth:a.gmv,commissionThisMonth:a.grossCommission,processorFees:a.processorFees,netMarketplaceRevenue:a.netMarketplaceRevenue,unresolvedCommission:a.unresolvedCommission};
   },
-
-  // Historical GMV/commission-by-week chart — no real weekly rollup exists
-  // yet, so this returns no data rather than a fabricated trend (admins are
-  // managing real money; a fake-but-plausible-looking chart here would be
-  // actively misleading, not just an empty state). Replace with a real
-  // Postgres view (e.g. a weekly GMV rollup) once there's enough order
-  // history for it to be meaningful.
-  async getRevenueReport() {
-    return [];
-  },
+  async getRevenueReport() { return (await this.getPlatformAnalytics('month')).weekly; },
 };

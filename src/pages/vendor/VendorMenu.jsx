@@ -1,3 +1,4 @@
+import RequestError from '../../components/ui/RequestError';
 import { useState } from "react";
 
 import {
@@ -24,7 +25,7 @@ import EmptyState from "../../components/ui/EmptyState";
 
 
 const PLACEHOLDER_IMAGE =
-  "/placeholder-food.png";
+  "/placeholder-food.svg";
 
 
 
@@ -48,7 +49,7 @@ const {
 data:menu = [],
 
 loading,
-
+error,
 refetch,
 
 }
@@ -485,7 +486,8 @@ type:"error"
 
 
 
-return (
+if (error) return <RequestError error={error} onRetry={refetch} />;
+  return (
 
 <div className="space-y-5">
 

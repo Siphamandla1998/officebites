@@ -8,17 +8,19 @@ import { foodService } from "../../services/foodService";
 import { useCart } from "../../context/CartContext";
 import { useToast } from "../../context/ToastContext";
 import { formatCurrency } from "../../utils/formatters";
+import { useFavourites } from "../../context/FavouriteContext";
 
 export default function FoodDetails() {
   const { id } = useParams();
   const [qty, setQty] = useState(1);
-  const [fav, setFav] = useState(false);
+  const { ids, toggleFavourite } = useFavourites();
+  const fav = ids.includes(id);
   const { addItem } = useCart();
   const { showToast } = useToast();
 
-  const { data: meal, loading } = useAsync(() => foodService.getMealById(id), [id]);
+  const { data: meal, loading, error } = useAsync(() => foodService.getMealById(id), [id], null);
 
-  if (loading || !meal) {
+  if (loading) {
     return (
       <div>
         <Navbar showBack />
@@ -27,29 +29,26 @@ export default function FoodDetails() {
     );
   }
 
+  if (error || !meal?.id) {
+    return <div><Navbar showBack /><p role="alert" className="ob-container pt-4">This meal is unavailable. Please browse the menu again.</p></div>;
+  }
+
   const handleAdd = () => {
-  console.log("FOOD DETAILS → ADD TO CART", {
-    mealId: meal?.id,
-    mealName: meal?.name,
-    mealPrice: meal?.price,
-    vendorId: meal?.vendorId,
-    qty,
-  });
+    addItem(meal, qty);
 
-  addItem(meal, qty);
-
-  showToast(`Added ${qty} × ${meal.name} to cart`, {
-    type: "success",
-  });
-};
+    showToast(`Added ${qty} × ${meal.name} to cart`, {
+      type: "success",
+    });
+  };
 
   return (
-    <div className="pb-28">
+    <div className="pb-[calc(7rem+env(safe-area-inset-bottom))]">
       <Navbar showBack transparent />
       <div className="-mt-16 relative">
         <img src={meal.image} alt={meal.name} className="h-64 w-full object-cover" />
         <button
-          onClick={() => setFav((f) => !f)}
+          onClick={() => toggleFavourite(meal)}
+          aria-label={fav ? "Remove favourite" : "Save favourite"}
           className="absolute top-20 right-5 h-10 w-10 rounded-full bg-paper-raised/90 backdrop-blur flex items-center justify-center shadow-card"
         >
           <FiHeart size={17} className={fav ? "fill-danger text-danger" : "text-ink-soft"} />
@@ -92,7 +91,7 @@ export default function FoodDetails() {
         </div>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 mx-auto w-full max-w-app bg-paper-raised border-t border-line p-4 shadow-nav">
+      <div className="fixed bottom-0 left-0 right-0 mx-auto w-full max-w-app bg-paper-raised border-t border-line px-4 pt-4 pb-[calc(1rem+env(safe-area-inset-bottom))] shadow-nav">
         <button onClick={handleAdd} className="btn-primary w-full">
           Add to cart · {formatCurrency(meal.price * qty)}
         </button>

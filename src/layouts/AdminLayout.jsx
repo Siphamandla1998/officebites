@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
-import { FiGrid, FiUsers, FiShoppingBag, FiBarChart2, FiFileText, FiMenu, FiCreditCard, FiMessageCircle } from "react-icons/fi";
+import { FiGrid, FiUsers, FiShoppingBag, FiBarChart2, FiFileText, FiMenu, FiCreditCard, FiMessageCircle, FiHeadphones } from "react-icons/fi";
 import Sidebar from "../components/layout/Sidebar";
 
 const TABS = [
@@ -9,6 +9,7 @@ const TABS = [
   { to: "/admin/vendors", icon: FiShoppingBag, label: "Vendors" },
   { to: "/admin/customers", icon: FiUsers, label: "Customers" },
   { to: "/admin/chats", icon: FiMessageCircle, label: "Chats" },
+  { to: "/admin/support", icon: FiHeadphones, label: "Support" },
   { to: "/admin/analytics", icon: FiBarChart2, label: "Analytics" },
   { to: "/admin/reports", icon: FiFileText, label: "Reports" },
 ];
@@ -30,7 +31,7 @@ export default function AdminLayout() {
             </div>
           </div>
         </header>
-        <main className="p-5 lg:p-8 max-w-6xl mx-auto">
+        <main className="px-5 pt-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] lg:px-8 lg:pt-8 lg:pb-[calc(2rem+env(safe-area-inset-bottom))] max-w-6xl mx-auto">
           <Outlet />
         </main>
       </div>

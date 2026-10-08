@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
+import RequestError from '../../components/ui/RequestError';
 import { FiFileText, FiSend } from "react-icons/fi";
 import Navbar from "../../components/layout/Navbar";
 import Filters from "../../components/ui/Filters";
@@ -11,18 +12,24 @@ import { supportService } from "../../services/supportService";
 import { useToast } from "../../context/ToastContext";
 import { useAuth } from "../../context/AuthContext";
 import { formatDate, formatTime } from "../../utils/formatters";
-import { TICKET_STATUS, TICKET_STATUS_LABELS } from "../../utils/constants";
+const SUPPORT_STATUS_LABELS = { open: "Open", waiting_customer: "Waiting for you", in_progress: "In progress", resolved: "Resolved", closed: "Closed" };
 
 export default function SupportTickets() {
   const { showToast } = useToast();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
+  const account = useRef(user?.id);
+  account.current = user?.id;
   const [filter, setFilter] = useState("all");
-  const [selected, setSelected] = useState(null);
+  const [selectedState, setSelectedState] = useState(null);
+  const selected = selectedState?.uid === user?.id ? selectedState.ticket : null;
+  const setSelected = value => setSelectedState(current => ({ uid: user?.id, ticket: typeof value === 'function' ? value(current?.uid === user?.id ? current.ticket : null) : value }));
   const [reply, setReply] = useState("");
-  const { data: tickets, loading, refetch } = useAsync(
+  const [sending, setSending] = useState(false);
+  const { data: tickets, loading, error, refetch } = useAsync(
     () => (isAuthenticated ? supportService.getTickets() : Promise.resolve([])),
-    [isAuthenticated]
+    [isAuthenticated, user?.id]
   );
+  useEffect(() => { setSelectedState(null); setReply(''); setSending(false); }, [user?.id]);
 
   if (!isAuthenticated) {
     return (
@@ -30,7 +37,7 @@ export default function SupportTickets() {
         <Navbar showBack title="My Tickets" showCart={false} />
         <SignInRequired
           title="Sign in to view your tickets"
-          description="Ticket history is tied to your account, so it needs you to be signed in. Guest submissions get a ticket number by email instead."
+          description="Sign in to contact support and view your ticket history."
         />
       </div>
     );
@@ -39,13 +46,22 @@ export default function SupportTickets() {
   const filtered = (tickets || []).filter((t) => filter === "all" || t.status === filter);
 
   const sendReply = async () => {
-    if (!reply.trim() || !selected) return;
-    await supportService.replyToTicket(selected.id, reply);
-    showToast("Reply sent", { type: "success" });
-    setReply("");
-    const updated = await supportService.getTicketById(selected.id);
-    setSelected(updated);
-    refetch();
+    const uid = user?.id;
+    const ticketId = selected?.id;
+    if (!reply.trim() || !selected || sending || ['resolved','closed'].includes(selected.status)) return;
+    setSending(true);
+    try {
+      await supportService.replyToTicket(selected.id, reply);
+      if (account.current !== uid) return;
+      showToast("Reply sent", { type: "success" });
+      setReply("");
+      const updated = await supportService.getTicketById(selected.id);
+      if (account.current !== uid) return;
+      setSelected(current => current?.id === ticketId ? updated : current);
+      await refetch();
+    } catch (error) {
+      if (account.current === uid) showToast(error.message || "Could not send your reply.", { type: "error" });
+    } finally { if (account.current === uid) setSending(false); }
   };
 
   return (
@@ -53,14 +69,14 @@ export default function SupportTickets() {
       <Navbar showBack title="My Tickets" showCart={false} />
       <div className="ob-container pt-4 flex flex-col gap-4">
         <Filters
-          options={[TICKET_STATUS.OPEN, TICKET_STATUS.PENDING, TICKET_STATUS.RESOLVED]}
+          options={Object.keys(SUPPORT_STATUS_LABELS)}
           active={filter}
           onChange={setFilter}
           allLabel="All tickets"
-          labels={TICKET_STATUS_LABELS}
+          labels={SUPPORT_STATUS_LABELS}
         />
 
-        {loading ? (
+        {error ? <RequestError error={error} onRetry={refetch} /> : loading ? (
           Array.from({ length: 2 }).map((_, i) => <div key={i} className="skeleton h-20" />)
         ) : filtered.length === 0 ? (
           <EmptyState icon={<FiFileText size={20} />} title="No tickets here" description="Tickets you raise will show up here." />
@@ -108,9 +124,11 @@ export default function SupportTickets() {
                 </div>
               ))}
             </div>
-            {selected.status !== TICKET_STATUS.RESOLVED && (
+            {!["resolved", "closed"].includes(selected.status) && (
               <div className="flex items-center gap-2 pt-2 border-t border-line">
                 <input
+                  disabled={sending}
+                  maxLength={5000}
                   value={reply}
                   onChange={(e) => setReply(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && sendReply()}
@@ -118,7 +136,7 @@ export default function SupportTickets() {
                   className="input flex-1"
                   aria-label="Reply to ticket"
                 />
-                <button onClick={sendReply} className="btn-icon !bg-ink !text-paper !border-ink" aria-label="Send reply">
+                <button disabled={sending || !reply.trim()} onClick={sendReply} className="btn-icon !bg-ink !text-paper !border-ink" aria-label="Send reply">
                   <FiSend size={15} />
                 </button>
               </div>

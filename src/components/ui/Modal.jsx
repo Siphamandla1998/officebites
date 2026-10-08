@@ -27,8 +27,12 @@ export default function Modal({ open, onClose, title, children, footer }) {
             <FiX size={18} />
           </button>
         </div>
-        <div className="px-5 pb-5 overflow-y-auto">{children}</div>
-        {footer && <div className="px-5 py-4 border-t border-line shrink-0">{footer}</div>}
+        <div className="px-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] overflow-y-auto">{children}</div>
+        {footer && (
+          <div className="px-5 pt-4 pb-[calc(1rem+env(safe-area-inset-bottom))] border-t border-line shrink-0">
+            {footer}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -5,15 +5,19 @@ import { supportService } from "../../services/supportService";
 
 export default function GuideDetail() {
   const { id } = useParams();
-  const { data: guide, loading } = useAsync(() => supportService.getGuideById(id), [id]);
+  const { data: guide, loading, error } = useAsync(() => supportService.getGuideById(id), [id], null);
 
-  if (loading || !guide) {
+  if (loading) {
     return (
       <div>
         <Navbar showBack showCart={false} />
         <div className="ob-container pt-4"><div className="skeleton h-48" /></div>
       </div>
     );
+  }
+
+  if (error || !guide?.id) {
+    return <div><Navbar showBack showCart={false} /><p role="alert" className="ob-container pt-4">This guide is unavailable.</p></div>;
   }
 
   return (

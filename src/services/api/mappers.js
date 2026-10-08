@@ -1,5 +1,5 @@
-// Converts Supabase snake_case rows into the camelCase shapes
-// used throughout OfficeBites.
+// Converts Supabase snake_case rows into the camelCase
+// shapes used throughout OfficeBites.
 
 export function mapVendor(row) {
   if (!row) return null;
@@ -10,36 +10,58 @@ export function mapVendor(row) {
 
     name: row.name || "",
     tagline: row.tagline || "",
-
     category: row.category || "",
 
     rating: Number(row.rating || 0),
     reviewCount: Number(row.review_count || 0),
 
-    prepTimeMins: Number(row.prep_time_mins || 0),
+    prepTimeMins: Number(
+      row.prep_time_mins || 0
+    ),
 
     coverImage: row.cover_image || "",
     logo: row.logo || "",
 
     building: row.building || "",
     status: row.status || "",
+    archivedAt: row.archived_at || null,
 
     featured: Boolean(row.featured),
 
-    subscriptionTier:
-      row.subscription_tier || "",
+    // Marketplace / Growth commercial model
+    plan: row.plan || "marketplace",
+
+    commissionRate: Number(
+      row.commission_rate ?? 0.17
+    ),
+
+    analyticsEnabled:
+      row.analytics_enabled ?? false,
+
+    recommendationsEnabled:
+      row.recommendations_enabled ?? false,
+
+    corporatePriorityEnabled:
+      row.corporate_orders_enabled ?? false,
 
     contactNumber:
       row.contact_number || "",
 
-    email:
-      row.email || "",
-
-    address:
-      row.address || "",
+    email: row.email || "",
+    address: row.address || "",
 
     deliveryRadius:
       row.delivery_radius || "",
+
+    latitude:
+      row.latitude === null || row.latitude === undefined
+        ? null
+        : Number(row.latitude),
+
+    longitude:
+      row.longitude === null || row.longitude === undefined
+        ? null
+        : Number(row.longitude),
 
     operatingHours:
       row.operating_hours || null,
@@ -49,12 +71,10 @@ export function mapVendor(row) {
   };
 }
 
-
 export function mapMeal(row) {
   if (!row) return null;
 
   return {
-
     id: row.id,
 
     vendorId:
@@ -65,18 +85,15 @@ export function mapMeal(row) {
       row.vendor_name ||
       "Unknown Vendor",
 
-    name:
-      row.name || "",
-
-    description:
-      row.description || "",
+    name: row.name || "",
+    description: row.description || "",
 
     price:
       Number(row.price || 0),
 
     image:
       row.image ||
-      "/placeholder-food.png",
+      "/placeholder-food.svg",
 
     category:
       row.category || "Meals",
@@ -90,31 +107,33 @@ export function mapMeal(row) {
       row.available ?? true,
 
     availableDays:
-      Array.isArray(row.available_days) && row.available_days.length > 0
+      Array.isArray(row.available_days) &&
+      row.available_days.length > 0
         ? row.available_days
-        : null, // null = every day
+        : null,
 
     featured:
       row.featured ?? false,
 
     preparationTime:
-      Number(row.preparation_time || 0),
+      Number(
+        row.preparation_time || 0
+      ),
 
     rating:
       Number(row.rating || 0),
 
     reviewCount:
-      Number(row.review_count || 0),
+      Number(
+        row.review_count || 0
+      ),
   };
 }
-
-
 
 export function mapReview(row) {
   if (!row) return null;
 
   return {
-
     id: row.id,
 
     vendorId:
@@ -135,68 +154,75 @@ export function mapReview(row) {
 
     createdAt:
       row.created_at || null,
-
   };
 }
-
-
 
 export function mapOrder(row) {
   if (!row) return null;
 
-
   const subOrders =
     Array.isArray(row.order_suborders)
-      ? row.order_suborders.map((so)=>({
+      ? row.order_suborders.map(
+          (subOrder) => ({
+            id:
+              subOrder.id || null,
 
-          vendorId:
-            so.vendor_id,
+            vendorId:
+              subOrder.vendor_id,
 
-          vendorName:
-            so.vendors?.name || "",
+            vendorName:
+              subOrder.vendors?.name ||
+              "",
 
-          status:
-            so.status || "",
+            status:
+              subOrder.status || "",
 
-          paymentStatus:
-            so.payment_status || "",
+            paymentStatus:
+              subOrder.payment_status ||
+              "",
 
-          subtotal:
-            Number(so.subtotal || 0),
+            subtotal:
+              Number(
+                subOrder.subtotal || 0
+              ),
 
-          collectionTime:
-            so.collection_time || "",
+            collectionTime:
+              subOrder.collection_time ||
+              "",
 
-          notes:
-            so.notes || "",
+            notes:
+              subOrder.notes || "",
 
+            items:
+              Array.isArray(
+                subOrder.order_items
+              )
+                ? subOrder.order_items.map(
+                    (item) => ({
+                      mealId:
+                        item.meal_id,
 
-          items:
-            Array.isArray(so.order_items)
-            ? so.order_items.map((item)=>({
+                      name:
+                        item.meal_name ||
+                        "",
 
-                mealId:
-                  item.meal_id,
+                      qty:
+                        Number(
+                          item.qty || 0
+                        ),
 
-                name:
-                  item.meal_name || "",
-
-                qty:
-                  Number(item.qty || 0),
-
-                price:
-                  Number(item.price || 0),
-
-              }))
-            : [],
-
-        }))
+                      price:
+                        Number(
+                          item.price || 0
+                        ),
+                    })
+                  )
+                : [],
+          })
+        )
       : [];
 
-
-
   return {
-
     id:
       row.id,
 
@@ -229,50 +255,17 @@ export function mapOrder(row) {
     createdAt:
       row.created_at || null,
 
-
     subOrders,
-
 
     total:
       Number(row.total || 0),
 
+    isTest: row.is_test ?? false,
 
-    paymentProof:
-      row.payment_proof_url || null,
-
+    paymentMethod:
+      row.payment_method || "payfast",
   };
 }
 
-
-
-export const ORDER_SELECT = `
-id,
-ticket_number,
-customer_id,
-guest_name,
-guest_contact,
-guest_email,
-delivery_date,
-delivery_location,
-status,
-total,
-payment_proof_url,
-created_at,
-profiles ( name ),
-order_suborders (
-  id,
-  vendor_id,
-  status,
-  payment_status,
-  subtotal,
-  collection_time,
-  notes,
-  vendors ( name ),
-  order_items (
-    meal_id,
-    meal_name,
-    qty,
-    price
-  )
-)
-`;
+// Wildcards keep existing live contracts compatible until the additive migration lands.
+export const ORDER_SELECT = `*, profiles(name), order_suborders(*, vendors(name), order_items(*))`;

@@ -1,34 +1,29 @@
+import RequestError from '../../components/ui/RequestError';
 import { FiHeart } from "react-icons/fi";
 import Navbar from "../../components/layout/Navbar";
 import FoodCard from "../../components/features/FoodCard";
 import EmptyState from "../../components/ui/EmptyState";
 import { useAsync } from "../../hooks/useAsync";
 import { foodService } from "../../services/foodService";
-import { useAuth } from "../../context/AuthContext";
+import { useFavourites } from "../../context/FavouriteContext";
 import { useCart } from "../../context/CartContext";
 import { useToast } from "../../context/ToastContext";
-import { useState } from "react";
 
 export default function Favourites() {
-  const { user } = useAuth();
+  const { ids: favIds, toggleFavourite: toggleFav, loading: favouritesLoading } = useFavourites();
   const { addItem } = useCart();
   const { showToast } = useToast();
-  const [favIds, setFavIds] = useState(user?.favouriteMealIds || []);
-  const { data: meals, loading } = useAsync(() => foodService.getMeals(), []);
+  const { data: meals, loading, error, refetch } = useAsync(() => foodService.getMeals(), []);
 
   const favourites = (meals || []).filter((m) => favIds.includes(m.id));
 
-  const toggleFav = (meal) => {
-    setFavIds((prev) =>
-      prev.includes(meal.id) ? prev.filter((id) => id !== meal.id) : [...prev, meal.id]
-    );
-  };
 
+  if (error) return <RequestError error={error} onRetry={refetch} />;
   return (
     <div>
       <Navbar showBack title="Favourites" showCart={false} />
       <div className="ob-container pt-4 pb-8">
-        {loading ? (
+        {loading || favouritesLoading ? (
           <div className="grid grid-cols-2 gap-3.5">
             {Array.from({ length: 4 }).map((_, i) => <div key={i} className="skeleton h-52" />)}
           </div>

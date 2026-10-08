@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import TextField from "../../components/forms/TextField";
+import Spinner from "../../components/ui/Spinner";
 
 const ROLE_HOME = {
   customer: "/",
@@ -33,7 +35,9 @@ export default function Login() {
       });
 
       if (!loggedInUser) {
-        throw new Error("Login succeeded but your user profile could not be loaded.");
+        throw new Error(
+          "Login succeeded but your user profile could not be loaded."
+        );
       }
 
       const role = String(loggedInUser.role || "").toLowerCase();
@@ -44,23 +48,8 @@ export default function Login() {
         );
       }
 
-      console.log("[OfficeBites] Login successful:", {
-        id: loggedInUser.id,
-        name: loggedInUser.name,
-        role: loggedInUser.role,
-        vendorId: loggedInUser.vendorId,
-      });
-
-      /*
-       * Always use the authenticated user's role as the source
-       * of truth for the destination.
-       */
       let destination = ROLE_HOME[role] || "/";
 
-      /*
-       * Do not allow a vendor/admin to be redirected back into
-       * the customer application because of an old saved route.
-       */
       if (role === "vendor") {
         destination = "/vendor";
       } else if (role === "admin") {
@@ -97,14 +86,19 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-8">
-      <div className="w-full max-w-md">
+    <div className="min-h-[100dvh] flex flex-col items-center justify-center px-6 py-10 pt-[calc(env(safe-area-inset-top)+2.5rem)] pb-[calc(env(safe-area-inset-bottom)+2.5rem)]">
+      <div className="w-full max-w-sm">
+
+        {/* Brand */}
+      
+
+        {/* Login form */}
         <form
           onSubmit={handleSubmit}
-          className="card p-6 space-y-5"
+          className="card p-6 flex flex-col gap-5"
         >
           <div className="text-center">
-            <h1 className="text-2xl font-semibold text-ink">
+            <h1 className="text-xl font-semibold text-ink">
               Welcome back
             </h1>
 
@@ -113,6 +107,7 @@ export default function Login() {
             </p>
           </div>
 
+          {/* Error */}
           {error && (
             <div
               role="alert"
@@ -122,56 +117,45 @@ export default function Login() {
             </div>
           )}
 
-          <div>
-            <label
-              htmlFor="login-email"
-              className="block text-sm font-medium text-ink mb-1"
-            >
-              Email
-            </label>
+          {/* Email */}
+          <TextField
+            label="Email"
+            type="email"
+            placeholder="you@company.com"
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+            autoComplete="email"
+            required
+          />
 
-            <input
-              id="login-email"
-              name="email"
-              type="email"
-              placeholder="you@company.com"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              autoComplete="email"
-              required
-              className="w-full rounded-lg border border-gray-300 px-3 py-2.5 outline-none focus:border-gray-500"
-            />
-          </div>
+          {/* Password */}
+          <TextField
+            label="Password"
+            type="password"
+            placeholder="••••••••"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+            autoComplete="current-password"
+            required
+          />
 
-          <div>
-            <label
-              htmlFor="login-password"
-              className="block text-sm font-medium text-ink mb-1"
-            >
-              Password
-            </label>
-
-            <input
-              id="login-password"
-              name="password"
-              type="password"
-              placeholder="••••••••"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              autoComplete="current-password"
-              required
-              className="w-full rounded-lg border border-gray-300 px-3 py-2.5 outline-none focus:border-gray-500"
-            />
-          </div>
-
+          {/* Submit */}
           <button
             type="submit"
             disabled={submitting}
             className="btn-primary w-full flex items-center justify-center gap-2 disabled:opacity-60"
           >
-            {submitting ? "Signing in..." : "Sign in"}
+            {submitting ? (
+              <Spinner
+                size={16}
+                className="!border-paper/30 !border-t-paper"
+              />
+            ) : (
+              "Sign in"
+            )}
           </button>
 
+          {/* Forgot password */}
           <div className="text-center text-sm">
             <Link
               to="/forgot-password"
@@ -181,6 +165,7 @@ export default function Login() {
             </Link>
           </div>
 
+          {/* Register */}
           <div className="text-center text-sm text-ink-muted">
             <span>New to OfficeBites? </span>
 
@@ -192,6 +177,7 @@ export default function Login() {
             </Link>
           </div>
 
+          {/* Guest */}
           <div className="text-center text-sm">
             <Link
               to="/"

@@ -1,4 +1,5 @@
 import { supabase } from "./api/supabaseClient";
+import { getOrderCustomerNames } from "./customerNameService";
 
 const mapMessage = (message) => ({
   id: message.id,
@@ -13,10 +14,54 @@ const mapConversation = (conversation) => ({
   id: conversation.id,
   customerId: conversation.customer_id,
   vendorId: conversation.vendor_id,
+  orderId: conversation.order_id,
+  source: conversation.source || "officebites",
+  closedAt: conversation.closed_at,
+  retainUntil: conversation.retain_until,
+  // Both come from joined tables — present when the query selected them
+  // (see CONVERSATION_SELECT below), undefined otherwise. Falling back to
+  // a neutral label in mapConversation rather than the page components
+  // means every caller gets a real display name without duplicating the
+  // "Guest" / "Vendor" fallback in five different UI files.
+  customerName: conversation.profiles?.name || "Guest",
+  vendorName: conversation.vendors?.name || "Vendor",
   createdAt: conversation.created_at,
   updatedAt: conversation.updated_at,
-  messages: (conversation.messages || []).map(mapMessage),
+  messages: (conversation.messages || []).map(mapMessage).sort((a, b) => new Date(a.time) - new Date(b.time)),
 });
+
+async function mapConversationsWithNames(rows) {
+  const names = await getOrderCustomerNames(rows.map((row) => row.order_id));
+  return rows.map((row) => ({ ...mapConversation(row), customerName: names.get(row.order_id) || row.profiles?.name || "Guest" }));
+}
+
+// Used by getConversations/getConversation (customer + vendor side) so both
+// participants' names resolve the same way getAllConversationsForAdmin()
+// already did — this was previously missing here, which is the root cause
+// of chat threads showing no name for the other participant even though
+// both sides are logged in: mapConversation had nothing to read a name
+// from, because these two queries never joined profiles/vendors at all.
+const CONVERSATION_SELECT = `
+  id,
+  customer_id,
+  vendor_id,
+  order_id,
+  source,
+  closed_at,
+  retain_until,
+  created_at,
+  updated_at,
+  profiles ( name ),
+  vendors ( name ),
+  messages (
+    id,
+    conversation_id,
+    sender_id,
+    text,
+    read,
+    created_at
+  )
+`;
 
 const getCurrentUser = async () => {
   const {
@@ -111,21 +156,7 @@ export const chatService = {
 
     let query = supabase
       .from("conversations")
-      .select(`
-        id,
-        customer_id,
-        vendor_id,
-        created_at,
-        updated_at,
-        messages (
-          id,
-          conversation_id,
-          sender_id,
-          text,
-          read,
-          created_at
-        )
-      `)
+      .select(CONVERSATION_SELECT)
       .order("updated_at", {
         ascending: false,
       });
@@ -142,7 +173,7 @@ export const chatService = {
       throw new Error(error.message);
     }
 
-    return (data || []).map(mapConversation);
+    return mapConversationsWithNames(data || []);
   },
 
   async getConversation(id) {
@@ -156,21 +187,7 @@ export const chatService = {
 
     let query = supabase
       .from("conversations")
-      .select(`
-        id,
-        customer_id,
-        vendor_id,
-        created_at,
-        updated_at,
-        messages (
-          id,
-          conversation_id,
-          sender_id,
-          text,
-          read,
-          created_at
-        )
-      `)
+      .select(CONVERSATION_SELECT)
       .eq("id", id);
 
     if (vendorId) {
@@ -185,33 +202,37 @@ export const chatService = {
       throw new Error(error.message);
     }
 
-    return data ? mapConversation(data) : null;
+    return data ? (await mapConversationsWithNames([data]))[0] : null;
   },
 
   // ==========================================
   // START CUSTOMER → VENDOR CONVERSATION
   // ==========================================
 
-  async startConversation({ vendorId }) {
-    if (!vendorId) {
-      throw new Error("Vendor ID is required.");
+  async startConversation({ vendorId, orderId }) {
+    if (!vendorId || !orderId) {
+      throw new Error(
+        "A vendor and OfficeBites order are required to start a conversation."
+      );
     }
 
     const user = await getCurrentUser();
 
-    const { data: existing, error: existingError } = await supabase
-      .from("conversations")
-      .select("*")
-      .eq("customer_id", user.id)
-      .eq("vendor_id", vendorId)
-      .maybeSingle();
+    const { data: existing, error: existingError } =
+      await supabase
+        .from("conversations")
+        .select(CONVERSATION_SELECT)
+        .eq("customer_id", user.id)
+        .eq("vendor_id", vendorId)
+        .eq("order_id", orderId)
+        .maybeSingle();
 
     if (existingError) {
       throw new Error(existingError.message);
     }
 
     if (existing) {
-      return mapConversation(existing);
+      return (await mapConversationsWithNames([existing]))[0];
     }
 
     const { data, error } = await supabase
@@ -219,15 +240,94 @@ export const chatService = {
       .insert({
         customer_id: user.id,
         vendor_id: vendorId,
+        order_id: orderId,
+        source: "officebites",
       })
-      .select("*")
+      .select(CONVERSATION_SELECT)
       .single();
 
     if (error) {
       throw new Error(error.message);
     }
 
-    return mapConversation(data);
+    return (await mapConversationsWithNames([data]))[0];
+  },
+
+  // ==========================================
+  // START VENDOR → CUSTOMER CONVERSATION
+  // ==========================================
+
+  /**
+   * A vendor may only message a customer who has actually placed an order
+   * involving them — never an arbitrary customer. That relationship check
+   * is enforced at the database level (see the
+   * conversations_insert_vendor_with_order policy, migration 0016): this
+   * insert will itself be rejected by RLS if the customer has no order
+   * with this vendor, not merely skipped client-side, so it's not
+   * bypassable by calling the service function directly.
+   */
+  async startConversationAsVendor({
+    customerId,
+    orderId,
+  }) {
+    if (!customerId || !orderId) {
+      throw new Error(
+        "A customer and OfficeBites order are required to start a conversation."
+      );
+    }
+
+    const user = await getCurrentUser();
+    const vendorId =
+      await getVendorIdForUser(user.id);
+
+    if (!vendorId) {
+      throw new Error(
+        "Current account is not linked to a vendor."
+      );
+    }
+
+    const { data: existing, error: existingError } =
+      await supabase
+        .from("conversations")
+        .select(CONVERSATION_SELECT)
+        .eq("customer_id", customerId)
+        .eq("vendor_id", vendorId)
+        .eq("order_id", orderId)
+        .maybeSingle();
+
+    if (existingError) {
+      throw new Error(existingError.message);
+    }
+
+    if (existing) {
+      return (await mapConversationsWithNames([existing]))[0];
+    }
+
+    const { data, error } = await supabase
+      .from("conversations")
+      .insert({
+        customer_id: customerId,
+        vendor_id: vendorId,
+        order_id: orderId,
+        source: "officebites",
+      })
+      .select(CONVERSATION_SELECT)
+      .single();
+
+    if (error) {
+      if (
+        error.code === "42501" ||
+        /row-level security/i.test(error.message)
+      ) {
+        throw new Error(
+          "You can only message customers about an order placed with your business."
+        );
+      }
+
+      throw new Error(error.message);
+    }
+
+    return (await mapConversationsWithNames([data]))[0];
   },
 
   // ==========================================

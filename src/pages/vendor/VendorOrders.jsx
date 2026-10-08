@@ -1,11 +1,14 @@
+import RequestError from '../../components/ui/RequestError';
 import { useState } from "react";
-import { FiEye } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
+import { FiEye, FiMessageCircle } from "react-icons/fi";
 import Filters from "../../components/ui/Filters";
 import Table from "../../components/ui/Table";
 import StatusBadge from "../../components/ui/StatusBadge";
 import Modal from "../../components/ui/Modal";
 import { useAsync } from "../../hooks/useAsync";
 import { orderService } from "../../services/orderService";
+import { chatService } from "../../services/chatService";
 import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../context/ToastContext";
 import { formatCurrency, formatDate, formatTime } from "../../utils/formatters";
@@ -17,7 +20,8 @@ import {
 } from "../../utils/constants";
 
 /** The single valid next status for a vendor order, or null if it's terminal/cancelled. */
-function nextStatusFor(status) {
+function nextStatusFor(status, paymentStatus) {
+  if (paymentStatus !== "paid") return null;
   const i = VENDOR_ORDER_FLOW.indexOf(status);
   if (i === -1 || i === VENDOR_ORDER_FLOW.length - 1) return null;
   return VENDOR_ORDER_FLOW[i + 1];
@@ -26,9 +30,11 @@ function nextStatusFor(status) {
 export default function VendorOrders() {
   const { user } = useAuth();
   const { showToast } = useToast();
+  const navigate = useNavigate();
   const [filter, setFilter] = useState("all");
   const [selected, setSelected] = useState(null);
-  const { data: orders, loading, refetch } = useAsync(
+  const [messaging, setMessaging] = useState(false);
+  const { data: orders, loading, error, refetch } = useAsync(
     () => orderService.getOrdersForVendor(user.vendorId),
     [user.vendorId]
   );
@@ -36,7 +42,7 @@ export default function VendorOrders() {
   const filtered = (orders || []).filter((o) => filter === "all" || o.subOrder.status === filter);
 
   const advance = async (order) => {
-    const next = nextStatusFor(order.subOrder.status);
+    const next = nextStatusFor(order.subOrder.status, order.subOrder.paymentStatus);
     if (!next) return;
     try {
       await orderService.updateSubOrderStatus(order.id, user.vendorId, next);
@@ -47,6 +53,28 @@ export default function VendorOrders() {
       }
     } catch (err) {
       showToast(err.message || "Couldn't update order", { type: "error" });
+    }
+  };
+
+  // Guest orders have no customerId — there's no account to attach a
+  // conversation to, so messaging isn't offered for them at all (matches
+  // conversations.customer_id being NOT NULL and the order-relationship
+  // RLS check in migration 0016, which needs a real customer_id to match
+  // against).
+  const messageCustomer = async (order) => {
+    if (!order.customerId || messaging) return;
+    setMessaging(true);
+    try {
+      const conversation =
+        await chatService.startConversationAsVendor({
+          customerId: order.customerId,
+          orderId: order.id,
+        });
+      navigate(`/vendor/chat?conversation=${conversation.id}`);
+    } catch (err) {
+      showToast(err.message || "Couldn't start conversation", { type: "error" });
+    } finally {
+      setMessaging(false);
     }
   };
 
@@ -61,7 +89,7 @@ export default function VendorOrders() {
       key: "action",
       header: "",
       render: (o) => {
-        const next = nextStatusFor(o.subOrder.status);
+        const next = nextStatusFor(o.subOrder.status, o.subOrder.paymentStatus);
         return (
           <div className="flex items-center gap-2">
             <button onClick={() => setSelected(o)} className="btn-icon !h-8 !w-8" aria-label="View order">
@@ -80,8 +108,9 @@ export default function VendorOrders() {
     },
   ];
 
-  const selectedNext = selected ? nextStatusFor(selected.subOrder.status) : null;
+  const selectedNext = selected ? nextStatusFor(selected.subOrder.status, selected.subOrder.paymentStatus) : null;
 
+  if (error) return <RequestError error={error} onRetry={refetch} />;
   return (
     <div className="flex flex-col gap-5">
       <div>
@@ -112,12 +141,24 @@ export default function VendorOrders() {
         onClose={() => setSelected(null)}
         title={selected?.ticketNumber}
         footer={
-          selected &&
-          selectedNext &&
-          selected.subOrder.status !== ORDER_STATUS.CANCELLED && (
-            <button onClick={() => advance(selected)} className="btn-primary w-full">
-              {VENDOR_ORDER_ACTION_LABELS[selectedNext]}
-            </button>
+          selected && (
+            <div className="flex flex-col gap-2">
+              {selectedNext && selected.subOrder.status !== ORDER_STATUS.CANCELLED && (
+                <button onClick={() => advance(selected)} className="btn-primary w-full">
+                  {VENDOR_ORDER_ACTION_LABELS[selectedNext]}
+                </button>
+              )}
+              {selected.customerId && (
+                <button
+                  onClick={() => messageCustomer(selected)}
+                  disabled={messaging}
+                  className="btn-secondary w-full flex items-center justify-center gap-2"
+                >
+                  <FiMessageCircle size={14} />
+                  Message customer
+                </button>
+              )}
+            </div>
           )
         }
       >

@@ -1,103 +1,43 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
-import { FiCheck, FiClock, FiXCircle } from "react-icons/fi";
+import { FiCheck, FiClock } from "react-icons/fi";
 import Navbar from "../../components/layout/Navbar";
 import StatusBadge from "../../components/ui/StatusBadge";
-import Spinner from "../../components/ui/Spinner";
 import { useAsync } from "../../hooks/useAsync";
 import { orderService } from "../../services/orderService";
 import { formatCurrency, formatDate } from "../../utils/formatters";
 import { ORDER_STATUS } from "../../utils/constants";
+import RequestError from '../../components/ui/RequestError';
 
-// PayFast's ITN webhook confirms payment server-side, asynchronously — it
-// usually lands within a couple of seconds of the browser returning here,
-// but there's no guarantee of order. Poll briefly rather than trusting the
-// ?payfast=return redirect itself as proof of payment.
-const CONFIRM_POLL_MS = 2500;
-const CONFIRM_POLL_ATTEMPTS = 12; // ~30s
-
-/**
- * Handles the two states a customer can land in after being redirected back
- * from PayFast: `payfast=return` (they completed the PayFast form; we're
- * waiting on the server-side ITN to actually confirm it) and
- * `payfast=cancel` (they backed out of PayFast before paying). Neither one
- * means the order is confirmed — only confirm_payfast_payment() does that.
- */
-function PayfastReturnBanner({ order, payfastState, onConfirmed, onClearParam }) {
-  const navigate = useNavigate();
-  const [attempts, setAttempts] = useState(0);
-  const stillPending = order.status === ORDER_STATUS.PENDING_PAYMENT;
-
-  useEffect(() => {
-    if (payfastState !== "return" || !stillPending) return;
-    if (attempts >= CONFIRM_POLL_ATTEMPTS) return;
-    const timer = setTimeout(async () => {
-      const fresh = await onConfirmed();
-      if (fresh?.status !== ORDER_STATUS.PENDING_PAYMENT) return;
-      setAttempts((a) => a + 1);
-    }, CONFIRM_POLL_MS);
-    return () => clearTimeout(timer);
-  }, [payfastState, stillPending, attempts, onConfirmed]);
-
-  // Payment resolved (confirmed, or cancelled but order already moved on) —
-  // drop the query param so a refresh doesn't re-trigger this banner/polling.
-  useEffect(() => {
-    if (payfastState && !stillPending) onClearParam();
-  }, [payfastState, stillPending, onClearParam]);
-
-  if (payfastState === "cancel" && stillPending) {
-    return (
-      <div className="card p-4 flex items-start gap-3 border-l-4 border-l-red-400">
-        <FiXCircle className="text-red-500 shrink-0 mt-0.5" size={18} />
-        <div className="flex-1">
-          <p className="text-sm font-semibold text-ink">Payment cancelled</p>
-          <p className="text-xs text-ink-muted mt-0.5">
-            You left PayFast before completing payment. Your order ({order.ticketNumber}) is still
-            waiting — you can retry with PayFast or pay by manual EFT instead.
-          </p>
-          <button
-            onClick={() => navigate(`/payment/${order.id}`, { replace: true })}
-            className="btn-primary mt-3 !py-2 !text-xs"
-          >
-            Retry payment
+// Recovery is based on the stored order state, including browser Back returns
+// where PayFast never adds a return/cancel query parameter.
+function PaymentRecovery({ order, payfastState, onRefresh, onPayment, refreshing, refreshError }) {
+  if (order.status !== ORDER_STATUS.PENDING_PAYMENT) return null;
+  const returned = payfastState === "return";
+  return (
+    <div className="card p-4 flex items-start gap-3 border-l-4 border-l-nude-400">
+      <FiClock className="text-nude-600 shrink-0 mt-0.5" size={18} />
+      <div className="flex-1">
+        <p className="text-sm font-semibold text-ink">
+          {returned ? "Payment confirmation pending" : "Payment still required"}
+        </p>
+        <p className="text-xs text-ink-muted mt-1">
+          OfficeBites has not received payment confirmation for {order.ticketNumber}.
+          If your bank shows a debit, wait for confirmation or contact support before paying again.
+          If you did not complete payment, reopen the payment options for this order.
+        </p>
+        {refreshError && <p role="alert" className="text-xs text-red-600 mt-2">{refreshError}</p>}
+        <div className="flex flex-wrap gap-2 mt-3">
+          <button onClick={onPayment} disabled={refreshing} className="btn-primary !py-2 !text-xs">
+            {returned ? "View payment options" : "Retry payment"}
+          </button>
+          <button onClick={onRefresh} disabled={refreshing} className="btn-outline !py-2 !text-xs">
+            {refreshing ? "Checking…" : "Refresh payment status"}
           </button>
         </div>
       </div>
-    );
-  }
-
-  if (payfastState === "return" && stillPending) {
-    const timedOut = attempts >= CONFIRM_POLL_ATTEMPTS;
-    return (
-      <div className="card p-4 flex items-start gap-3 border-l-4 border-l-nude-400">
-        {timedOut ? (
-          <FiClock className="text-nude-600 shrink-0 mt-0.5" size={18} />
-        ) : (
-          <Spinner size={16} className="shrink-0 mt-0.5" />
-        )}
-        <div className="flex-1">
-          <p className="text-sm font-semibold text-ink">
-            {timedOut ? "Still confirming your payment" : "Confirming your payment…"}
-          </p>
-          <p className="text-xs text-ink-muted mt-0.5">
-            {timedOut
-              ? "PayFast is taking longer than usual to confirm. We'll update this page automatically once it's through — no need to pay again."
-              : "PayFast has your payment — we're just waiting for their confirmation to reach us. This is usually instant."}
-          </p>
-          {timedOut && (
-            <button
-              onClick={() => navigate(`/payment/${order.id}`, { replace: true })}
-              className="btn-outline mt-3 !py-2 !text-xs"
-            >
-              View payment options
-            </button>
-          )}
-        </div>
-      </div>
-    );
-  }
-
-  return null;
+    </div>
+  );
 }
 
 const TIMELINE = [
@@ -165,29 +105,77 @@ function SubOrderTimeline({ subOrder }) {
 
 export default function OrderTracking() {
   const { orderId } = useParams();
-  const { data: order, loading, setData } = useAsync(
+  const navigate = useNavigate();
+  const { data: order, loading, error, refetch, setData } = useAsync(
     () => orderService.getOrderById(orderId),
     [orderId]
   );
   const [searchParams, setSearchParams] = useSearchParams();
-  const payfastState = searchParams.get("payfast"); // "return" | "cancel" | null
-  const clearedParam = useRef(false);
+  const payfastState = searchParams.get("payfast");
+  const [refreshing, setRefreshing] = useState(false);
+  const [refreshError, setRefreshError] = useState("");
 
-  const handleConfirmed = async () => {
+  const refreshOrder = useCallback(async () => {
     const fresh = await orderService.getOrderById(orderId);
+    if (!fresh?.id) throw new Error("Order unavailable. Please try again.");
     setData(fresh);
     return fresh;
+  }, [orderId, setData]);
+
+  const checkPayment = async (openOptions = false) => {
+    if (refreshing) return;
+    setRefreshing(true);
+    setRefreshError("");
+    try {
+      const fresh = await refreshOrder();
+      if (openOptions && fresh.status === ORDER_STATUS.PENDING_PAYMENT) {
+        navigate(`/payment/${orderId}`);
+      }
+    } catch (err) {
+      setRefreshError(err.message || "Could not check payment status. Please try again.");
+    } finally {
+      setRefreshing(false);
+    }
   };
 
-  const clearPayfastParam = () => {
-    if (clearedParam.current) return;
-    clearedParam.current = true;
+  // Refresh payment and fulfilment until the order reaches a terminal state.
+  useEffect(() => {
+    if (!order?.id || [ORDER_STATUS.COMPLETED, ORDER_STATUS.CANCELLED].includes(order.status)) return;
+    let active = true;
+    let running = false;
+    const refresh = async () => {
+      if (running || document.visibilityState === "hidden") return;
+      running = true;
+      try {
+        const fresh = await orderService.getOrderById(orderId);
+        if (active && fresh?.id) setData(fresh);
+      } catch {
+        // A transient background failure must not erase the loaded order.
+      } finally {
+        running = false;
+      }
+    };
+    const timer = setInterval(refresh, 10000);
+    window.addEventListener("focus", refresh);
+    window.addEventListener("pageshow", refresh);
+    document.addEventListener("visibilitychange", refresh);
+    return () => {
+      active = false;
+      clearInterval(timer);
+      window.removeEventListener("focus", refresh);
+      window.removeEventListener("pageshow", refresh);
+      document.removeEventListener("visibilitychange", refresh);
+    };
+  }, [orderId, order?.id, order?.status, setData]);
+
+  useEffect(() => {
+    if (!payfastState || !order?.id || order.status === ORDER_STATUS.PENDING_PAYMENT) return;
     const next = new URLSearchParams(searchParams);
     next.delete("payfast");
     setSearchParams(next, { replace: true });
-  };
+  }, [payfastState, order?.id, order?.status, searchParams, setSearchParams]);
 
-  if (loading || !order) {
+  if (loading) {
     return (
       <div>
         <Navbar showBack title="Order" showCart={false} />
@@ -196,18 +184,30 @@ export default function OrderTracking() {
     );
   }
 
+  if (error || !order?.id) {
+    return (
+      <div>
+        <Navbar showBack title="Order" showCart={false} />
+        <p role="alert" className="ob-container pt-4 text-sm text-ink-muted">
+          Could not load this order. Please refresh or open it from your order history.
+        </p>
+        <RequestError error={error || new Error('Order unavailable')} onRetry={refetch} />
+      </div>
+    );
+  }
+
   return (
     <div className="pb-8">
       <Navbar showBack title={order.ticketNumber} showCart={false} />
       <div className="ob-container pt-4 flex flex-col gap-4">
-        {payfastState && (
-          <PayfastReturnBanner
-            order={order}
-            payfastState={payfastState}
-            onConfirmed={handleConfirmed}
-            onClearParam={clearPayfastParam}
-          />
-        )}
+        <PaymentRecovery
+          order={order}
+          payfastState={payfastState}
+          onRefresh={() => checkPayment()}
+          onPayment={() => checkPayment(true)}
+          refreshing={refreshing}
+          refreshError={refreshError}
+        />
         <p className="text-xs text-ink-muted">Delivery date: {formatDate(order.deliveryDate)}</p>
         {order.subOrders.map((so) => (
           <SubOrderTimeline key={so.vendorId} subOrder={so} />

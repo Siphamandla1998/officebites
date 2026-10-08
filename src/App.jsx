@@ -1,27 +1,31 @@
 import { BrowserRouter } from "react-router-dom";
 
+import AppRoutes from "./routes/AppRoutes";
+import ErrorBoundary from "./components/ErrorBoundary";
+
 import { AuthProvider } from "./context/AuthContext";
 import { CartProvider } from "./context/CartContext";
 import { ToastProvider } from "./context/ToastContext";
-import { UIProvider } from "./context/UIContext";
-
-import AppRoutes from "./routes/AppRoutes";
-import OfflineBanner from "./components/layout/OfflineBanner";
-import ErrorBoundary from "./components/ErrorBoundary";
+import { LocationProvider } from "./context/LocationContext";
+import { NotificationProvider } from "./context/NotificationContext";
+import { FavouriteProvider } from "./context/FavouriteContext";
 
 export default function App() {
   return (
     <ErrorBoundary>
       <BrowserRouter>
         <AuthProvider>
-          <UIProvider>
-            <ToastProvider>
-              <CartProvider>
-                <OfflineBanner />
-                <AppRoutes />
-              </CartProvider>
-            </ToastProvider>
-          </UIProvider>
+          <LocationProvider>
+            <CartProvider>
+              <ToastProvider>
+                <FavouriteProvider>
+                  <NotificationProvider>
+                    <AppRoutes />
+                  </NotificationProvider>
+                </FavouriteProvider>
+              </ToastProvider>
+            </CartProvider>
+          </LocationProvider>
         </AuthProvider>
       </BrowserRouter>
     </ErrorBoundary>

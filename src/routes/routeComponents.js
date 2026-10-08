@@ -13,6 +13,10 @@ export const CategoryDetail = lazy(() => import("../pages/customer/CategoryDetai
 export const FoodSearch = lazy(() => import("../pages/customer/FoodSearch"));
 export const VendorListing = lazy(() => import("../pages/customer/VendorListing"));
 export const VendorProfile = lazy(() => import("../pages/customer/VendorProfile"));
+export const BecomeVendor = lazy(() =>
+  import("../pages/customer/BecomeVendor")
+);
+
 export const FoodDetails = lazy(() => import("../pages/customer/FoodDetails"));
 export const Checkout = lazy(() => import("../pages/customer/Checkout"));
 export const PaymentUpload = lazy(() => import("../pages/customer/PaymentUpload"));
@@ -42,6 +46,7 @@ export const AdminPayments = lazy(() => import("../pages/admin/AdminPayments"));
 export const AdminVendors = lazy(() => import("../pages/admin/AdminVendors"));
 export const AdminCustomers = lazy(() => import("../pages/admin/AdminCustomers"));
 export const AdminChats = lazy(() => import("../pages/admin/AdminChats"));
+export const AdminSupport = lazy(() => import("../pages/admin/AdminSupport"));
 export const AdminAnalytics = lazy(() => import("../pages/admin/AdminAnalytics"));
 export const AdminReports = lazy(() => import("../pages/admin/AdminReports"));
 

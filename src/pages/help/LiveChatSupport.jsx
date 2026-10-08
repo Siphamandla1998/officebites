@@ -1,102 +1,167 @@
-import { useState, useEffect, useRef } from "react";
-import { FiSend } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
+import {
+  FiMessageSquare,
+  FiFileText,
+  FiHelpCircle,
+  FiShoppingBag,
+  FiArrowRight,
+  FiClock,
+} from "react-icons/fi";
+
 import Navbar from "../../components/layout/Navbar";
-import Avatar from "../../components/ui/Avatar";
-import { chatService } from "../../services/chatService";
-import { supportService } from "../../services/supportService";
-import { formatTime } from "../../utils/formatters";
 
 export default function LiveChatSupport() {
-  const [messages, setMessages] = useState([]);
-  const [text, setText] = useState("");
-  const [typing, setTyping] = useState(false);
-  const bottomRef = useRef(null);
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    supportService.getSupportConversation().then((convo) => setMessages(convo.messages));
-  }, []);
-
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages.length, typing]);
-
-  const send = async (overrideText) => {
-    const value = overrideText ?? text;
-    if (!value.trim()) return;
-    const message = await supportService.sendSupportMessage(value);
-    setMessages((prev) => [...prev, { ...message, status: "sent" }]);
-    setText("");
-
-    setTyping(true);
-    const reply = await supportService.sendSupportAgentReply();
-    setTyping(false);
-    setMessages((prev) => [...prev, reply]);
-  };
+  const options = [
+    {
+      icon: FiShoppingBag,
+      title: "Order issue",
+      description:
+        "For preparation, substitutions, availability or collection questions, use the chat linked to your OfficeBites order.",
+      action: "View my orders",
+      onClick: () => navigate("/orders"),
+    },
+    {
+      icon: FiMessageSquare,
+      title: "Contact OfficeBites Support",
+      description:
+        "Create a support ticket for payment, account, platform or other issues that need help from the OfficeBites team.",
+      action: "Create support ticket",
+      onClick: () => navigate("/help/contact"),
+    },
+    {
+      icon: FiFileText,
+      title: "My support tickets",
+      description:
+        "Track your support requests and continue conversations with the OfficeBites team.",
+      action: "View tickets",
+      onClick: () => navigate("/help/tickets"),
+    },
+    {
+      icon: FiHelpCircle,
+      title: "Help Centre",
+      description:
+        "Find answers to common questions about orders, payments, accounts and using OfficeBites.",
+      action: "Browse help",
+      onClick: () => navigate("/help"),
+    },
+  ];
 
   return (
-    <div className="flex flex-col h-screen">
-      <Navbar showBack title="Live Chat" showCart={false} />
-      <div className="ob-container flex items-center gap-2.5 py-3 border-b border-line">
-        <Avatar name="Zanele" size={36} />
-        <div>
-          <p className="text-sm font-semibold text-ink">Zanele · OfficeBites Support</p>
-          <p className="text-xs text-success flex items-center gap-1">
-            <span className="h-1.5 w-1.5 rounded-full bg-success" /> Online now
-          </p>
-        </div>
-      </div>
+    <div className="min-h-screen bg-paper">
+      <Navbar
+        showBack
+        title="OfficeBites Support"
+        showCart={false}
+      />
 
-      <div className="flex-1 overflow-y-auto ob-container py-4 flex flex-col gap-2.5">
-        {messages.map((m) => (
-          <div key={m.id} className={`flex ${m.sender === "user" ? "justify-end" : "justify-start"}`}>
-            <div
-              className={`max-w-[75%] rounded-2xl px-3.5 py-2.5 text-sm ${
-                m.sender === "user" ? "bg-ink text-paper rounded-br-sm" : "bg-nude-100 text-ink rounded-bl-sm"
-              }`}
-            >
-              {m.text}
-              <p className={`text-[10px] mt-1 flex items-center gap-1 ${m.sender === "user" ? "text-paper/50 justify-end" : "text-ink-muted"}`}>
-                {formatTime(m.time)}
-                {m.sender === "user" && m.status === "sent" && <span>· Sent</span>}
+      <main className="ob-container py-6 pb-24">
+        <section className="mx-auto max-w-2xl">
+          <div className="rounded-3xl border border-line bg-white p-5 sm:p-6">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-nude-100 text-ink">
+              <FiMessageSquare size={20} />
+            </div>
+
+            <h1 className="mt-4 text-xl font-semibold text-ink">
+              How can we help?
+            </h1>
+
+            <p className="mt-2 text-sm leading-6 text-ink-soft">
+              Choose the support option that best matches what
+              you need help with.
+            </p>
+
+            <div className="mt-4 flex items-start gap-2 rounded-2xl bg-nude-50 p-3.5">
+              <FiClock
+                size={16}
+                className="mt-0.5 shrink-0 text-ink-muted"
+              />
+
+              <p className="text-xs leading-5 text-ink-soft">
+                Live agent chat is not currently available.
+                Support requests are handled through OfficeBites
+                support tickets so your issue and responses stay
+                recorded in one place.
               </p>
             </div>
           </div>
-        ))}
-        {typing && (
-          <div className="flex justify-start">
-            <div className="bg-nude-100 text-ink-muted rounded-2xl rounded-bl-sm px-3.5 py-2.5 text-xs italic">
-              Zanele is typing…
+
+          <div className="mt-4 space-y-3">
+            {options.map(
+              ({
+                icon: Icon,
+                title,
+                description,
+                action,
+                onClick,
+              }) => (
+                <button
+                  key={title}
+                  type="button"
+                  onClick={onClick}
+                  className="group w-full rounded-2xl border border-line bg-white p-4 text-left transition hover:border-nude-400"
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-nude-100 text-ink">
+                      <Icon size={18} />
+                    </div>
+
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-semibold text-ink">
+                        {title}
+                      </p>
+
+                      <p className="mt-1 text-xs leading-5 text-ink-soft">
+                        {description}
+                      </p>
+
+                      <div className="mt-3 flex items-center gap-1.5 text-xs font-medium text-ink">
+                        <span>{action}</span>
+
+                        <FiArrowRight
+                          size={13}
+                          className="transition-transform group-hover:translate-x-0.5"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </button>
+              )
+            )}
+          </div>
+
+          <div className="mt-5 rounded-2xl border border-line bg-nude-50 p-4">
+            <p className="text-sm font-semibold text-ink">
+              Which support option should I use?
+            </p>
+
+            <div className="mt-3 space-y-2 text-xs leading-5 text-ink-soft">
+              <p>
+                <strong className="text-ink">
+                  Vendor/order fulfilment:
+                </strong>{" "}
+                use the chat attached to your order.
+              </p>
+
+              <p>
+                <strong className="text-ink">
+                  Payment or platform problem:
+                </strong>{" "}
+                create an OfficeBites support ticket.
+              </p>
+
+              <p>
+                <strong className="text-ink">
+                  General question:
+                </strong>{" "}
+                check the Help Centre first, then create a ticket
+                if you still need assistance.
+              </p>
             </div>
           </div>
-        )}
-        <div ref={bottomRef} />
-      </div>
-
-      <div className="ob-container pb-2 flex gap-2 overflow-x-auto no-scrollbar">
-        {chatService.getQuickReplies().map((q) => (
-          <button
-            key={q}
-            onClick={() => send(q)}
-            className="shrink-0 rounded-full border border-line px-3.5 py-1.5 text-xs text-ink-soft hover:border-nude-400"
-          >
-            {q}
-          </button>
-        ))}
-      </div>
-
-      <div className="ob-container pb-4 pt-2 flex items-center gap-2 border-t border-line">
-        <input
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && send()}
-          placeholder="Type a message..."
-          className="input flex-1"
-          aria-label="Type a message to support"
-        />
-        <button onClick={() => send()} className="btn-icon !bg-ink !text-paper !border-ink" aria-label="Send message">
-          <FiSend size={15} />
-        </button>
-      </div>
+        </section>
+      </main>
     </div>
   );
 }

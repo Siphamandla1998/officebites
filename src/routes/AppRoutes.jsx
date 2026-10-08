@@ -9,8 +9,6 @@ import AdminLayout from "../layouts/AdminLayout";
 import AuthLayout from "../layouts/AuthLayout";
 import PublicLayout from "../layouts/PublicLayout";
 
-import Spinner from "../components/ui/Spinner";
-
 import {
   Login,
   Register,
@@ -29,6 +27,7 @@ import {
   TrackOrder,
   OrderHistory,
   Profile,
+  BecomeVendor,
   Favourites,
   ChatList,
   Reviews,
@@ -47,6 +46,7 @@ import {
   AdminVendors,
   AdminCustomers,
   AdminChats,
+  AdminSupport,
   AdminAnalytics,
   AdminReports,
   HelpHome,
@@ -67,8 +67,32 @@ import {
 
 function PageFallback() {
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <Spinner size={28} />
+    <div className="min-h-[60vh] ob-container py-6">
+      <div className="animate-pulse">
+        <div className="h-5 w-28 rounded-lg bg-nude-100 mb-6" />
+        <div className="h-11 w-full rounded-xl bg-nude-100 mb-5" />
+
+        <div className="flex gap-3 mb-7 overflow-hidden">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <div
+              key={index}
+              className="h-16 w-16 rounded-2xl bg-nude-100 shrink-0"
+            />
+          ))}
+        </div>
+
+        <div className="h-5 w-36 rounded-lg bg-nude-100 mb-3" />
+
+        <div className="grid grid-cols-2 gap-3.5">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <div key={index}>
+              <div className="h-36 rounded-2xl bg-nude-100" />
+              <div className="h-3 w-3/4 rounded bg-nude-100 mt-3" />
+              <div className="h-3 w-1/2 rounded bg-nude-100 mt-2" />
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
@@ -81,8 +105,14 @@ export default function AppRoutes() {
         <Route element={<AuthLayout />}>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route
+            path="/forgot-password"
+            element={<ForgotPassword />}
+          />
+          <Route
+            path="/reset-password"
+            element={<ResetPassword />}
+          />
         </Route>
 
         {/* Customer app */}
@@ -164,6 +194,16 @@ export default function AppRoutes() {
             element={<Notifications />}
           />
         </Route>
+
+        {/* Existing customer -> vendor application */}
+        <Route
+          path="/become-a-vendor"
+          element={
+            <ProtectedRoute allowedRoles={[ROLES.CUSTOMER]}>
+              <BecomeVendor />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Checkout and payment */}
         <Route element={<PublicLayout />}>
@@ -273,6 +313,11 @@ export default function AppRoutes() {
           <Route
             path="chats"
             element={<AdminChats />}
+          />
+
+          <Route
+            path="support"
+            element={<AdminSupport />}
           />
 
           <Route

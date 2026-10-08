@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import {
   FiArrowLeft,
   FiMessageCircle,
@@ -11,13 +12,20 @@ import { chatService } from "../../services/chatService";
 import { useAuth } from "../../context/AuthContext";
 import EmptyState from "../../components/ui/EmptyState";
 import { formatTime } from "../../utils/formatters";
+import { useLiveRefresh } from "../../hooks/useLiveRefresh";
+import { useToast } from "../../context/ToastContext";
+import { createRequestScope } from '../../utils/requestScope';
+import RequestError from '../../components/ui/RequestError';
 
 export default function VendorChat() {
   const { user } = useAuth();
+  const { showToast } = useToast();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const {
     data: conversations = [],
     loading,
+    error,
     refetch,
   } = useAsync(
     () => chatService.getConversations(),
@@ -31,6 +39,19 @@ export default function VendorChat() {
   const [sending, setSending] = useState(false);
 
   const bottomRef = useRef(null);
+  const scope = useRef(createRequestScope());
+  scope.current.set(`${user?.id}:${activeId}`);
+  useEffect(() => () => scope.current.invalidate(), []);
+  useEffect(() => { setActiveId(null); setMessages([]); setText(''); setSending(false); }, [user?.id]);
+  useLiveRefresh(async () => {
+    const isCurrent = scope.current.capture();
+    const list = await refetch({ silent: true });
+    if (isCurrent() && activeId && Array.isArray(list)) {
+      const current = list.find((conversation) => conversation.id === activeId);
+      setMessages(current?.messages || []);
+      await chatService.markConversationRead(activeId);
+    }
+  }, `vendor:${user?.id}`);
 
   const activeConversation = conversations.find(
     (conversation) => conversation.id === activeId
@@ -43,11 +64,17 @@ export default function VendorChat() {
   }, [messages.length]);
 
   const openConversation = async (id) => {
+    scope.current.set(`${user?.id}:${id}`);
+    const isCurrent = scope.current.begin();
     try {
       setActiveId(id);
+      setMessages([]);
+      setText('');
+      setSending(false);
 
       const conversation =
         await chatService.getConversation(id);
+      if (!isCurrent()) return;
 
       if (!conversation) {
         setMessages([]);
@@ -57,26 +84,41 @@ export default function VendorChat() {
       setMessages(conversation.messages || []);
 
       await chatService.markConversationRead(id);
-
-      await refetch();
+      if (isCurrent()) await refetch({ silent: true });
     } catch (error) {
       console.error(
         "Unable to open conversation:",
         error
       );
+      if (isCurrent()) showToast(error.message || 'Could not open this conversation. Please try again.', { type: 'error' });
     }
   };
 
+  // Deep-link support: VendorOrders.jsx's "Message customer" button
+  // navigates here with ?conversation=<id> after creating/finding the
+  // conversation, rather than duplicating this list-and-open logic there.
+  useEffect(() => {
+    const target = searchParams.get("conversation");
+    if (!target || target === activeId) return;
+    openConversation(target);
+    const next = new URLSearchParams(searchParams);
+    next.delete("conversation");
+    setSearchParams(next, { replace: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
+
   const closeConversation = () => {
+    scope.current.set(`${user?.id}:null`);
     setActiveId(null);
     setMessages([]);
     setText("");
   };
 
   const send = async () => {
+    const isCurrent = scope.current.capture();
     const message = text.trim();
 
-    if (!message || !activeId || sending) {
+    if (!message || !activeId || sending || activeConversation?.closedAt) {
       return;
     }
 
@@ -87,6 +129,7 @@ export default function VendorChat() {
         activeId,
         message
       );
+      if (!isCurrent()) return;
 
       setText("");
 
@@ -94,17 +137,18 @@ export default function VendorChat() {
         await chatService.getConversation(
           activeId
         );
-
+      if (!isCurrent()) return;
       setMessages(updated?.messages || []);
 
-      await refetch();
+      await refetch({ silent: true });
     } catch (error) {
       console.error(
         "Unable to send message:",
         error
       );
+      if (isCurrent()) showToast(error.message || "Could not send your message. Please try again.", { type: "error" });
     } finally {
-      setSending(false);
+      if (isCurrent()) setSending(false);
     }
   };
 
@@ -144,6 +188,7 @@ export default function VendorChat() {
     ).length;
   };
 
+  if (error) return <RequestError error={error} onRetry={refetch} />;
   if (loading) {
     return (
       <div className="p-4 md:p-6">
@@ -290,7 +335,7 @@ export default function VendorChat() {
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center justify-between gap-2">
                         <span className="font-medium text-sm text-ink">
-                          Customer
+                          {conversation.customerName}
                         </span>
 
                         {lastMessage && (
@@ -392,11 +437,15 @@ export default function VendorChat() {
 
               <div className="min-w-0">
                 <h2 className="font-semibold text-sm">
-                  Customer
+                  {activeConversation?.customerName || "Customer"}
                 </h2>
 
-                <p className="text-xs text-ink-muted truncate">
-                  OfficeBites customer
+                <p className="text-xs text-ink-muted">
+                  {activeConversation?.orderId
+                    ? `OfficeBites order · ${activeConversation.orderId
+                        .slice(0, 8)
+                        .toUpperCase()}`
+                    : "OfficeBites order conversation"}
                 </p>
               </div>
             </header>
@@ -475,7 +524,14 @@ export default function VendorChat() {
             </div>
 
             {/* Composer */}
-
+            <div className="mb-2 rounded-xl bg-nude-50 px-3 py-2">
+              <p className="text-[11px] leading-relaxed text-ink-muted">
+                Keep orders introduced through OfficeBites on
+                OfficeBites. Use this chat for preparation,
+                substitutions, availability, collection and other
+                fulfilment details.
+              </p>
+            </div>
             <div className="shrink-0 border-t border-nude-200 bg-paper p-3 md:p-4">
               <div className="flex items-end gap-2">
                 <textarea
@@ -486,7 +542,7 @@ export default function VendorChat() {
                   onKeyDown={handleKeyDown}
                   placeholder="Write a message..."
                   rows={1}
-                  disabled={sending}
+                  disabled={sending || Boolean(activeConversation?.closedAt)}
                   className="
                     input
                     flex-1
@@ -501,7 +557,7 @@ export default function VendorChat() {
                   onClick={send}
                   disabled={
                     !text.trim() ||
-                    sending
+                    sending || Boolean(activeConversation?.closedAt)
                   }
                   className="
                     h-11
