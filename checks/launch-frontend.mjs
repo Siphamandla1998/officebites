@@ -94,7 +94,7 @@ await financeCtx.rpc('admin_set_fee_policy',{});checks++;
 await assert.rejects(financeCtx.rpc('get_financial_report',{}),/no result/i);checks++;
 rpcResult={error:{code:'PGRST202',message:'missing'}};await assert.rejects(financeCtx.rpc('get_financial_report',{}),/not installed/i);checks++;
 // Evaluate the actual Workbox URL predicate, including real Supabase URL shapes.
-const config=fs.readFileSync('vite.config.js','utf8');const predicate=config.match(/urlPattern: (.*),\n/)[1];const origin='https://officebites.co.za';const match=vm.runInNewContext('('+predicate+')',{self:{location:{origin}}});
+const config=fs.readFileSync('vite.config.js','utf8').replaceAll('\r\n','\n');const predicate=config.match(/urlPattern: (.*),\n/)[1];const origin='https://officebites.co.za';const match=vm.runInNewContext('('+predicate+')',{self:{location:{origin}}});
 assert.equal(match({request:{destination:'image'},url:new URL(origin+'/icons/icon-192.png')}),true);checks++;
 for(const path of ['https://gfzhdkitdyqftealgqfi.supabase.co/rest/v1/orders','https://gfzhdkitdyqftealgqfi.supabase.co/storage/v1/object/sign/support-attachments/private?token=fixture',origin+'/attachments/private.png',origin+'/icons/photo.png?token=fixture']) {assert.equal(match({request:{destination:'image'},url:new URL(path)}),false);checks++;}
 console.log(`${checks} frontend/service/handler checks passed in ${process.env.TZ || 'system timezone'} (stubs, not browser verification).`);
