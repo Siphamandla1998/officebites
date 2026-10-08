@@ -4,6 +4,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import { supabase } from "../services/api/supabaseClient";
@@ -59,26 +60,45 @@ export function NotificationProvider({ children }) {
   const { user, isAuthenticated } = useAuth();
   const { showToast } = useToast();
 
-  const [notifications, setNotifications] = useState([]);
+  const [notificationState, setNotificationState] = useState({ uid: null, items: [] });
+  const [failure, setFailure] = useState(null);
+  const notifications = useMemo(() => notificationState.uid === user?.id ? notificationState.items : [], [notificationState, user?.id]);
+  const setNotifications = useCallback(value => setNotificationState(current => ({
+    uid: user?.id,
+    items: typeof value === 'function' ? value(current.uid === user?.id ? current.items : []) : value,
+  })), [user?.id]);
   const [loading, setLoading] = useState(false);
+  const currentUser = useRef(user?.id);
+  const request = useRef(0);
+  const inFlight = useRef(new Map());
+  if (currentUser.current !== user?.id) request.current++;
+  currentUser.current = user?.id;
 
   const refresh = useCallback(async () => {
+    const uid = user?.id;
+    if (inFlight.current.get(uid) === request.current) return;
+    const attempt = ++request.current;
     if (!isAuthenticated || !user?.id) {
       setNotifications([]);
+      setLoading(false);
       return;
     }
 
+    inFlight.current.set(uid, attempt);
+    setFailure(null);
     setLoading(true);
 
     try {
       const data = await notificationService.getNotifications();
-      setNotifications(data);
+      if (currentUser.current === uid && request.current === attempt) setNotifications(data);
     } catch (error) {
       console.error("Failed to load notifications:", error);
+      if (currentUser.current === uid && request.current === attempt) setFailure({ uid, error });
     } finally {
-      setLoading(false);
+      if (inFlight.current.get(uid) === attempt) inFlight.current.delete(uid);
+      if (currentUser.current === uid && request.current === attempt) setLoading(false);
     }
-  }, [isAuthenticated, user?.id]);
+  }, [isAuthenticated, user?.id, setNotifications]);
 
   useEffect(() => {
     refresh();
@@ -94,13 +114,25 @@ export function NotificationProvider({ children }) {
       .on(
         "postgres_changes",
         {
-          event: "INSERT",
+          event: "*",
           schema: "public",
           table: "notifications",
           filter: `user_id=eq.${user.id}`,
         },
         (payload) => {
+          if (currentUser.current !== user.id) return;
+          if (payload.eventType === "DELETE") {
+            setNotifications((current) => current.filter((item) => item.id !== payload.old.id));
+            return;
+          }
           const incoming = mapNotification(payload.new);
+
+          if (payload.eventType !== "INSERT") {
+            setNotifications((current) => incoming.dismissed
+              ? current.filter((item) => item.id !== incoming.id)
+              : current.map((item) => item.id === incoming.id ? incoming : item));
+            return;
+          }
 
           if (incoming.dismissed) {
             return;
@@ -131,6 +163,7 @@ export function NotificationProvider({ children }) {
         }
       )
       .subscribe((status) => {
+        if (status === "SUBSCRIBED") refresh();
         if (import.meta.env.DEV) {
           console.debug("Notification realtime:", status);
         }
@@ -139,25 +172,43 @@ export function NotificationProvider({ children }) {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [isAuthenticated, user?.id, showToast]);
+  }, [isAuthenticated, user?.id, showToast, refresh, setNotifications]);
+
+  useEffect(() => {
+    if (!isAuthenticated || !user?.id) return undefined;
+    const update = () => { if (document.visibilityState !== "hidden") refresh(); };
+    const timer = setInterval(update, 30000);
+    window.addEventListener("focus", update);
+    document.addEventListener("visibilitychange", update);
+    return () => {
+      clearInterval(timer);
+      window.removeEventListener("focus", update);
+      document.removeEventListener("visibilitychange", update);
+    };
+  }, [isAuthenticated, user?.id, refresh]);
 
   const markAsRead = useCallback(async (id) => {
+    const uid = user?.id;
     await notificationService.markAsRead(id);
+    if (currentUser.current !== uid) return false;
 
     setNotifications((current) =>
       current.map((item) =>
         item.id === id ? { ...item, read: true } : item
       )
     );
-  }, []);
+    return true;
+  }, [user?.id, setNotifications]);
 
   const dismiss = useCallback(async (id) => {
+    const uid = user?.id;
     await notificationService.dismiss(id);
+    if (currentUser.current !== uid) return;
 
     setNotifications((current) =>
       current.filter((item) => item.id !== id)
     );
-  }, []);
+  }, [user?.id, setNotifications]);
 
   const unreadCount = useMemo(
     () =>
@@ -171,6 +222,7 @@ export function NotificationProvider({ children }) {
   const value = useMemo(
     () => ({
       notifications,
+      error: failure?.uid === user?.id ? failure.error : null,
       unreadCount,
       loading,
       refresh,
@@ -179,6 +231,8 @@ export function NotificationProvider({ children }) {
     }),
     [
       notifications,
+      failure,
+      user?.id,
       unreadCount,
       loading,
       refresh,

@@ -1,4 +1,6 @@
-import { useMemo, useState } from "react";
+import RequestError from '../../components/ui/RequestError';
+import { useState } from "react";
+import { useDeliveryDate } from '../../hooks/useDeliveryDate';
 import { Link, useNavigate } from "react-router-dom";
 
 import {
@@ -23,7 +25,6 @@ import { useToast } from "../../context/ToastContext";
 import { useLocation } from "../../context/LocationContext";
 
 import {
-  nextOrderableDate,
   isPastTodaysCutoff,
 } from "../../utils/orderRules";
 
@@ -58,11 +59,11 @@ export default function Home() {
     clearLocation,
   } = useLocation();
 
-  const nextDelivery = useMemo(() => nextOrderableDate(), []);
+  const nextDelivery = useDeliveryDate();
 
   const {
     data: upcomingMeals = [],
-    loading: upcomingLoading,
+    loading: upcomingLoading, error: upcomingError, refetch: retryUpcoming,
   } = useAsync(
     () =>
       foodService.getMeals({
@@ -75,7 +76,7 @@ export default function Home() {
 
   const {
     data: catalogueMeals = [],
-    loading: catalogueLoading,
+    loading: catalogueLoading, error: catalogueError, refetch: retryCatalogue,
   } = useAsync(
     () =>
       foodService.getPopularMeals(6, {
@@ -123,6 +124,7 @@ export default function Home() {
     month: "short",
   });
 
+  if (upcomingError || catalogueError) return <RequestError error={upcomingError || catalogueError} onRetry={() => { retryUpcoming(); retryCatalogue(); }} />;
   return (
     <div className="app-safe-top">
       {/* =====================================================

@@ -11,7 +11,10 @@ import {
 } from "./api/mappers";
 
 import { VENDOR_STATUS, ORDER_STATUS } from "../utils/constants";
+import { financialService } from './financialService';
+import { inPeriod, sastDateKey, calendarDate } from '../utils/reportingDates';
 import { orderService } from "./orderService";
+import { catalogueSearchFilter, deliveryWeekday } from "../utils/catalogueFilters";
 
 const DEFAULT_MEAL_IMAGE =
   "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&q=80";
@@ -81,317 +84,38 @@ export const vendorService = {
    * numbers — a meal with zero sales in the period is simply absent from
    * the result, and a vendor with no sales at all gets an empty array.
    */
-  async getPopularMealsForVendor(vendorId, period = "all") {
-    if (!vendorId) return [];
-
-    const [orders, menu] = await Promise.all([
-      orderService.getOrdersForVendor(vendorId),
-      this.getVendorMenu(vendorId),
-    ]);
-
-    if (orders.length === 0) return [];
-
-    const now = Date.now();
-    const startOfDay = new Date().setHours(0, 0, 0, 0);
-    const windowStart =
-      period === "today"
-        ? startOfDay
-        : period === "week"
-          ? now - 7 * 24 * 60 * 60 * 1000
-          : period === "month"
-            ? now - 30 * 24 * 60 * 60 * 1000
-            : null; // "all" — no lower bound
-
-    const REVENUE_STATUSES = new Set([
-      ORDER_STATUS.CONFIRMED,
-      ORDER_STATUS.ACCEPTED,
-      ORDER_STATUS.PREPARING,
-      ORDER_STATUS.READY,
-      ORDER_STATUS.COLLECTED,
-      ORDER_STATUS.COMPLETED,
-    ]);
-
-    const salesByMealId = new Map(); // mealId -> { salesCount, revenue }
-
-    for (const order of orders) {
-      const sub = order.subOrder;
-      if (!sub || !REVENUE_STATUSES.has(sub.status)) continue;
-
-      const createdAt = order.createdAt ? new Date(order.createdAt).getTime() : null;
-      if (windowStart !== null && (createdAt === null || createdAt < windowStart)) continue;
-
-      for (const item of sub.items) {
-        const entry = salesByMealId.get(item.mealId) || { salesCount: 0, revenue: 0 };
-        entry.salesCount += item.qty;
-        entry.revenue += item.qty * item.price;
-        salesByMealId.set(item.mealId, entry);
-      }
-    }
-
-    const totalUnits = Array.from(salesByMealId.values()).reduce((sum, e) => sum + e.salesCount, 0);
-
-    return menu
-      .filter((meal) => salesByMealId.has(meal.id))
-      .map((meal) => {
-        const { salesCount, revenue } = salesByMealId.get(meal.id);
-        return {
-          meal,
-          salesCount,
-          revenue,
-          popularityPct: totalUnits > 0 ? Math.round((salesCount / totalUnits) * 100) : 0,
-        };
-      })
-      .sort((a, b) => b.salesCount - a.salesCount);
+  async getPopularMealsForVendor(vendorId, period = 'all') {
+    const report = await financialService.report({ vendorId, period });
+    const total = report.meals.reduce((sum, row) => sum + Number(row.units), 0);
+    return report.meals.map(row => ({ meal: { id: row.meal_key, name: row.name, image: '/placeholder-food.svg' }, salesCount: Number(row.units), revenue: Number(row.revenue), popularityPct: total ? Math.round(Number(row.units) / total * 100) : 0 }));
   },
-
-
-    /**
-   * Authoritative financial analytics for the vendor.
-   * Financial calculations are performed server-side.
-   */
-  async getVendorAnalytics(vendorId, days = 30) {
-    if (!vendorId) {
-      return {
-        orders: 0,
-        grossRevenue: 0,
-        platformCommission: 0,
-        vendorNet: 0,
-        averageOrderValue: 0,
-        completedOrders: 0,
-        cancelledOrders: 0,
-        periodFrom: null,
-        periodTo: null,
-      };
-    }
-
-    const { data, error } = await supabase.rpc(
-      "get_vendor_analytics",
-      {
-        p_vendor_id: vendorId,
-        p_days: days,
-      }
-    );
-
-    if (error) {
-      throw new Error(error.message);
-    }
-
-    const result = data || {};
-
-    return {
-      orders: Number(result.orders || 0),
-
-      grossRevenue: Number(
-        result.grossRevenue || 0
-      ),
-
-      platformCommission: Number(
-        result.platformCommission || 0
-      ),
-
-      vendorNet: Number(
-        result.vendorNet || 0
-      ),
-
-      averageOrderValue: Number(
-        result.averageOrderValue || 0
-      ),
-
-      completedOrders: Number(
-        result.completedOrders || 0
-      ),
-
-      cancelledOrders: Number(
-        result.cancelledOrders || 0
-      ),
-
-      periodFrom:
-        result.periodFrom || null,
-
-      periodTo:
-        result.periodTo || null,
-    };
+  async getVendorAnalytics(vendorId, period = 'month') {
+    const report = await financialService.report({ vendorId, period });
+    return { ...report.totals, orders: report.totals.suborders, grossRevenue: report.totals.gmv, platformCommission: report.totals.grossCommission, vendorNet: report.totals.vendorEarnings, periodFrom: report.from, periodTo: report.to };
   },
-  /**
-   * Real vendor dashboard stats, computed from the vendor's own orders
-   * (order_suborders — RLS-scoped to current_vendor_id(), plus the
-   * orders_select_vendor fix that makes the parent order data visible at
-   * all — see the vendor-order-visibility migration). No fabricated
-   * numbers: a brand-new vendor with no orders gets all-zero/null values,
-   * which is the honest state, not an error.
-   */
   async getDashboardStats(vendorId) {
-    const empty = {
-      todaysOrders: 0,
-      pendingOrders: 0,
-      confirmedOrders: 0,
-      preparingOrders: 0,
-      readyOrders: 0,
-      deliveredOrders: 0,
-      cancelledOrders: 0,
-      totalOrders: 0,
-      todaysRevenue: 0,
-      weeklyRevenue: 0,
-      monthlyRevenue: 0,
-      averageOrderValue: 0,
-      mostPopularMeal: null,
-      bestSellingCategory: null,
-      revenueChart: [],
-    };
-
-    if (!vendorId) return empty;
-
-    const [orders, menu] = await Promise.all([
-      orderService.getOrdersForVendor(vendorId),
-      this.getVendorMenu(vendorId),
-    ]);
-
-    if (orders.length === 0) return empty;
-
-    const categoryByMealId = new Map(menu.map((m) => [m.id, m.category]));
-
-    const startOfDay = (d) => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
-    const today = startOfDay(new Date());
-    const weekAgo = today - 6 * 24 * 60 * 60 * 1000; // last 7 days inclusive of today
-    const monthAgo = today - 29 * 24 * 60 * 60 * 1000; // last 30 days inclusive of today
-
-    // Only statuses where payment has actually been confirmed count as
-    // revenue — pending_payment/payment_submitted are not yet real money,
-    // cancelled never was.
-    const REVENUE_STATUSES = new Set([
-      ORDER_STATUS.CONFIRMED,
-      ORDER_STATUS.ACCEPTED,
-      ORDER_STATUS.PREPARING,
-      ORDER_STATUS.READY,
-      ORDER_STATUS.COLLECTED,
-      ORDER_STATUS.COMPLETED,
-    ]);
-
-    let todaysOrders = 0;
-    let pendingOrders = 0;
-    let confirmedOrders = 0;
-    let preparingOrders = 0;
-    let readyOrders = 0;
-    let deliveredOrders = 0;
-    let cancelledOrders = 0;
-
-    let todaysRevenue = 0;
-    let weeklyRevenue = 0;
-    let monthlyRevenue = 0;
-    let monthlyRevenueOrderCount = 0;
-
-    const revenueByDay = new Map(); // 'YYYY-MM-DD' -> number, seeded below
-    for (let i = 6; i >= 0; i--) {
-      const d = new Date(today - i * 24 * 60 * 60 * 1000);
-      revenueByDay.set(d.toISOString().slice(0, 10), 0);
+    const [report, allOrders] = await Promise.all([financialService.report({ vendorId, period: 'all' }), orderService.getOrdersForVendor(vendorId)]);
+    const orders = allOrders.filter(order => !order.isTest);
+    const sum = period => report.rows.filter(row => inPeriod(row.financial_date + 'T12:00:00+02:00', period)).reduce((n, row) => n + Number(row.gross), 0);
+    const month = report.rows.filter(row => inPeriod(row.financial_date + 'T12:00:00+02:00', 'month'));
+    const unresolvedCommission = month.filter(row => row.commission == null).length;
+    const monthlyCommission = unresolvedCommission ? null : month.reduce((n, row) => n + Number(row.commission), 0);
+    const revenueChart = [];
+    for(let i = 6; i >= 0; i--) {
+      const day = new Date(sastDateKey() + 'T12:00:00Z'); day.setUTCDate(day.getUTCDate() - i);
+      const key = day.toISOString().slice(0, 10);
+      revenueChart.push({ date: key, day: calendarDate(key).toLocaleDateString('en-ZA', {weekday: 'short'}), revenue: report.rows.filter(row => row.financial_date === key).reduce((n,row) => n + Number(row.gross),0) });
     }
-
-    const qtyByMealId = new Map();
-    const qtyByCategory = new Map();
-
-    for (const order of orders) {
-      const sub = order.subOrder;
-      if (!sub) continue;
-
-      const createdAt = order.createdAt ? new Date(order.createdAt).getTime() : null;
-      const dayStart = createdAt !== null ? startOfDay(new Date(createdAt)) : null;
-      const isRevenue = REVENUE_STATUSES.has(sub.status);
-
-      switch (sub.status) {
-        case ORDER_STATUS.PENDING_PAYMENT:
-        case ORDER_STATUS.PAYMENT_SUBMITTED:
-          pendingOrders += 1;
-          break;
-        case ORDER_STATUS.CONFIRMED:
-          confirmedOrders += 1;
-          break;
-        case ORDER_STATUS.ACCEPTED:
-        case ORDER_STATUS.PREPARING:
-          preparingOrders += 1;
-          break;
-        case ORDER_STATUS.READY:
-          readyOrders += 1;
-          break;
-        case ORDER_STATUS.COLLECTED:
-        case ORDER_STATUS.COMPLETED:
-          deliveredOrders += 1;
-          break;
-        case ORDER_STATUS.CANCELLED:
-          cancelledOrders += 1;
-          break;
-        default:
-          break;
-      }
-
-      if (dayStart === today) todaysOrders += 1;
-
-      if (isRevenue) {
-        if (dayStart === today) todaysRevenue += sub.subtotal;
-        if (dayStart !== null && dayStart >= weekAgo) weeklyRevenue += sub.subtotal;
-        if (dayStart !== null && dayStart >= monthAgo) {
-          monthlyRevenue += sub.subtotal;
-          monthlyRevenueOrderCount += 1;
-        }
-        if (dayStart !== null && dayStart >= weekAgo) {
-          const key = new Date(dayStart).toISOString().slice(0, 10);
-          if (revenueByDay.has(key)) {
-            revenueByDay.set(key, revenueByDay.get(key) + sub.subtotal);
-          }
-        }
-
-        for (const item of sub.items) {
-          qtyByMealId.set(item.mealId, (qtyByMealId.get(item.mealId) || 0) + item.qty);
-          const category = categoryByMealId.get(item.mealId);
-          if (category) {
-            qtyByCategory.set(category, (qtyByCategory.get(category) || 0) + item.qty);
-          }
-        }
-      }
-    }
-
-    let mostPopularMeal = null;
-    let topQty = 0;
-    for (const [mealId, qty] of qtyByMealId.entries()) {
-      if (qty > topQty) {
-        topQty = qty;
-        const meal = menu.find((m) => m.id === mealId);
-        mostPopularMeal = meal ? { name: meal.name } : null;
-      }
-    }
-
-    let bestSellingCategory = null;
-    let topCategoryQty = 0;
-    for (const [category, qty] of qtyByCategory.entries()) {
-      if (qty > topCategoryQty) {
-        topCategoryQty = qty;
-        bestSellingCategory = category;
-      }
-    }
-
-    const revenueChart = Array.from(revenueByDay.entries()).map(([dateKey, revenue]) => ({
-      day: new Date(dateKey).toLocaleDateString(undefined, { weekday: "short" }),
-      revenue,
-    }));
-
-    return {
-      todaysOrders,
-      pendingOrders,
-      confirmedOrders,
-      preparingOrders,
-      readyOrders,
-      deliveredOrders,
-      cancelledOrders,
-      totalOrders: orders.length,
-      todaysRevenue,
-      weeklyRevenue,
-      monthlyRevenue,
-      averageOrderValue: monthlyRevenueOrderCount > 0 ? monthlyRevenue / monthlyRevenueOrderCount : 0,
-      mostPopularMeal,
-      bestSellingCategory,
-      revenueChart,
-    };
+    const count = statuses => orders.filter(order => statuses.includes(order.subOrder?.status)).length;
+    return { todaysOrders: orders.filter(order => sastDateKey(order.createdAt) === sastDateKey()).length,
+      pendingOrders: count([ORDER_STATUS.PENDING_PAYMENT, ORDER_STATUS.PAYMENT_SUBMITTED]), confirmedOrders: count([ORDER_STATUS.CONFIRMED]),
+      preparingOrders: count([ORDER_STATUS.ACCEPTED, ORDER_STATUS.PREPARING]), readyOrders: count([ORDER_STATUS.READY]),
+      deliveredOrders: count([ORDER_STATUS.COLLECTED, ORDER_STATUS.COMPLETED]), cancelledOrders: count([ORDER_STATUS.CANCELLED]), totalOrders: orders.length,
+      todaysRevenue: sum('today'), weeklyRevenue: sum('week'), monthlyRevenue: sum('month'), monthlyCommission,
+      monthlyVendorEarnings: monthlyCommission == null ? null : sum('month') - monthlyCommission, unresolvedCommission,
+      averageOrderValue: month.length ? sum('month') / month.length : 0,
+      mostPopularMeal: report.meals[0] ? { name: report.meals[0].name } : null, bestSellingCategory: report.categories[0]?.category || null, revenueChart };
   },
-
 
   // =========================================================
   // CUSTOMER VENDOR FETCHING
@@ -448,9 +172,9 @@ export const vendorService = {
       .from("vendors")
       .select("*");
 
-    if (status) {
+    if (status && status !== "all") {
       query = query.eq("status", status);
-    } else {
+    } else if (status !== "all") {
       query = query.eq(
         "status",
         VENDOR_STATUS.APPROVED
@@ -466,9 +190,7 @@ export const vendorService = {
     }
 
     if (search) {
-      query = query.or(
-        `name.ilike.%${search}%,category.ilike.%${search}%`
-      );
+      query = query.or(catalogueSearchFilter(["name", "category"], search));
     }
 
     const { data, error } = await query;
@@ -546,7 +268,7 @@ export const vendorService = {
       .map(mapMeal)
       .filter((meal) => {
         if (!forDate || !meal.availableDays) return true;
-        const weekday = new Date(forDate).getDay();
+        const weekday = deliveryWeekday(forDate);
         return meal.availableDays.includes(weekday);
       });
   },

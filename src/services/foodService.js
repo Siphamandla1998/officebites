@@ -1,5 +1,6 @@
 import { supabase } from "./api/supabaseClient";
 import { mapMeal } from "./api/mappers";
+import { catalogueSearchFilter, deliveryWeekday } from "../utils/catalogueFilters";
 
 
 // Fixed menu categories
@@ -69,7 +70,7 @@ const filterMealsForDate = (meals, forDate) => {
     return meals;
   }
 
-  const weekday = new Date(forDate).getDay();
+  const weekday = deliveryWeekday(forDate);
 
   return meals.filter((meal) => {
     if (!meal.availableDays) {
@@ -158,11 +159,7 @@ export const foodService = {
 
 
     if (search) {
-      const q = `%${search}%`;
-
-      query = query.or(
-        `name.ilike.${q},description.ilike.${q},category.ilike.${q}`
-      );
+      query = query.or(catalogueSearchFilter(["name", "description", "category"], search));
     }
 
 

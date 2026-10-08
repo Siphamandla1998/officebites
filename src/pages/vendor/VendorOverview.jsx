@@ -1,3 +1,5 @@
+import RequestError from '../../components/ui/RequestError';
+import { sastDateKey } from '../../utils/reportingDates';
 import {
   FiClock,
   FiCheckCircle,
@@ -24,7 +26,7 @@ export default function VendorOverview() {
 
   const {
     data: orders,
-    loading: ordersLoading,
+    loading: ordersLoading, error: ordersError, refetch: retryOrders,
   } = useAsync(
     () =>
       vendorId
@@ -35,7 +37,7 @@ export default function VendorOverview() {
 
   const {
     data: stats,
-    loading: statsLoading,
+    loading: statsLoading, error: statsError, refetch: retryStats,
   } = useAsync(
     () =>
       vendorId
@@ -67,11 +69,11 @@ export default function VendorOverview() {
 
 
   const todaysList = (orders || []).filter((o) => {
-    const today = new Date().toDateString();
-    return new Date(o.createdAt).toDateString() === today;
+    return !o.isTest && sastDateKey(o.createdAt) === sastDateKey();
   });
 
 
+  if (ordersError || statsError) return <RequestError error={ordersError || statsError} onRetry={() => { retryOrders(); retryStats(); }} />;
   return (
     <div className="space-y-8">
 

@@ -393,149 +393,36 @@ async function uploadAttachment(
   );
 }
 
-async function createTicket({
-  name,
-  email,
-  contact,
-  subject,
-  category,
-  message,
-  priority = "normal",
-  orderId = null,
-  meta = {},
-  attachment = null,
-}) {
-  const user =
-    await requireCurrentUser();
-
-  const requester =
-    await getRequesterDetails(user);
-
-  const attachmentPath =
-    await uploadAttachment(
-      attachment,
-      user.id
-    );
-
-  const cleanMessage =
-    String(message || "").trim();
-
-  if (!cleanMessage) {
-    throw new Error(
-      "Please describe how OfficeBites can help."
-    );
+async function createTicket({ name, email, contact, subject, category, message,
+  priority = "normal", orderId = null, meta = {}, attachment = null }) {
+  const cleanMessage = String(message || "").trim();
+  const cleanSubject = String(subject || "").trim();
+  if (!cleanMessage || cleanMessage.length > 5000) throw new Error("Message must be between 1 and 5000 characters.");
+  if (!cleanSubject || cleanSubject.length > 200) throw new Error("Subject must be between 1 and 200 characters.");
+  const user = await requireCurrentUser();
+  const requester = await getRequesterDetails(user);
+  const attachmentPath = await uploadAttachment(attachment, user.id);
+  const { data, error } = await supabase.rpc("create_support_ticket", {
+    p_subject: cleanSubject,
+    p_category: normalizeCategory(category),
+    p_body: cleanMessage,
+    p_requester_name: String(name || requester.name || "Customer").trim(),
+    p_requester_email: String(email || requester.email || "").trim() || null,
+    p_requester_contact: String(contact || "").trim() || null,
+    p_order_id: orderId || null,
+    p_meta: { ...(meta && typeof meta === "object" && !Array.isArray(meta) ? meta : {}), requestedPriority: normalizePriority(priority) },
+    p_attachment_path: attachmentPath,
+  });
+  if (error) {
+    // Only remove our new upload after a definite SQL rejection. A network
+    // failure can follow a committed request, so retain that attachment.
+    if (attachmentPath && /^(22|23|42|P0)/.test(error.code || "")) {
+      const cleanup = await supabase.storage.from(BUCKETS.SUPPORT_ATTACHMENTS).remove([attachmentPath]);
+      if (cleanup.error) console.error("Could not remove failed support upload:", cleanup.error.message);
+    }
+    throw new Error(error.message);
   }
-
-  const cleanSubject =
-    String(subject || "").trim();
-
-  if (!cleanSubject) {
-    throw new Error(
-      "Please provide a subject."
-    );
-  }
-
-  // The database trigger controls:
-  // - requester_id
-  // - ticket_number
-  // - initial status
-  // - initial priority
-  // - assignment
-  // - response timestamps
-  //
-  // We still send requester_id because the RLS INSERT policy
-  // requires it to match auth.uid(). The trigger then
-  // independently normalizes it server-side.
-  const {
-    data: ticketRow,
-    error: ticketError,
-  } = await supabase
-    .from("support_tickets")
-    .insert({
-      requester_id:
-        user.id,
-
-      requester_name:
-        String(
-          name ||
-          requester.name ||
-          "Customer"
-        ).trim(),
-
-      requester_email:
-        String(
-          email ||
-          requester.email ||
-          ""
-        ).trim() || null,
-
-      requester_contact:
-        String(contact || "").trim() ||
-        null,
-
-      subject:
-        cleanSubject,
-
-      category:
-        normalizeCategory(category),
-
-      priority:
-        normalizePriority(priority),
-
-      order_id:
-        orderId ||
-        null,
-
-      meta:
-        meta &&
-        typeof meta === "object"
-          ? meta
-          : {},
-
-      attachment_url:
-        attachmentPath,
-    })
-    .select("id, ticket_number")
-    .single();
-
-  if (ticketError) {
-    throw new Error(
-      ticketError.message
-    );
-  }
-
-  const {
-    error: messageError,
-  } = await supabase
-    .from(
-      "support_ticket_messages"
-    )
-    .insert({
-      ticket_id:
-        ticketRow.id,
-
-      sender_id:
-        user.id,
-
-      sender_role:
-        "customer",
-
-      body:
-        cleanMessage,
-
-      internal:
-        false,
-    });
-
-  if (messageError) {
-    throw new Error(
-      messageError.message
-    );
-  }
-
-  return supportService.getTicketById(
-    ticketRow.id
-  );
+  return mapTicket(data);
 }
 
 export const supportService = {
@@ -967,43 +854,17 @@ export const supportService = {
     const user =
       await getCurrentUser();
 
-    const {
-      data,
-      error,
-    } = await supabase
-      .from("feedback")
-      .insert({
-        user_id:
-          user?.id || null,
+    const cleanComment = String(comment || "").trim();
+    if (!Number.isInteger(rating) || rating < 1 || rating > 5) throw new Error("Choose a rating from 1 to 5.");
+    if (cleanComment.length > 5000) throw new Error("Feedback must be no longer than 5000 characters.");
+    const id = crypto.randomUUID();
+    // Guest rows are insert-only; requesting a SELECT here would fail RLS.
+    const { error } = await supabase.from("feedback").insert({
+      id, user_id: user?.id || null, rating, comment: cleanComment,
+      recommend: typeof recommend === "boolean" ? recommend : null,
+    });
+    if (error) throw new Error(error.message);
+    return { id, rating, comment: cleanComment, recommend };
 
-        rating,
-        comment,
-        recommend,
-      })
-      .select()
-      .single();
-
-    if (error) {
-      throw new Error(
-        error.message
-      );
-    }
-
-    return {
-      id:
-        data.id,
-
-      rating:
-        data.rating,
-
-      comment:
-        data.comment,
-
-      recommend:
-        data.recommend,
-
-      createdAt:
-        data.created_at,
-    };
   },
 };

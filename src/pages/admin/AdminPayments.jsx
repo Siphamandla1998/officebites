@@ -1,3 +1,4 @@
+import RequestError from '../../components/ui/RequestError';
 import { FiCreditCard } from "react-icons/fi";
 import EmptyState from "../../components/ui/EmptyState";
 import StatusBadge from "../../components/ui/StatusBadge";
@@ -11,12 +12,13 @@ import {
 export default function AdminPayments() {
   const {
     data: payments = [],
-    loading,
+    loading, error, refetch,
   } = useAsync(
     () => orderService.getRecentPayments(20),
     []
   );
 
+  if (error) return <RequestError error={error} onRetry={refetch} />;
   return (
     <div className="flex flex-col gap-6">
       <div>

@@ -1,4 +1,5 @@
 import { supabase } from "./api/supabaseClient";
+import { getOrderCustomerNames } from "./customerNameService";
 
 const mapMessage = (message) => ({
   id: message.id,
@@ -26,8 +27,13 @@ const mapConversation = (conversation) => ({
   vendorName: conversation.vendors?.name || "Vendor",
   createdAt: conversation.created_at,
   updatedAt: conversation.updated_at,
-  messages: (conversation.messages || []).map(mapMessage),
+  messages: (conversation.messages || []).map(mapMessage).sort((a, b) => new Date(a.time) - new Date(b.time)),
 });
+
+async function mapConversationsWithNames(rows) {
+  const names = await getOrderCustomerNames(rows.map((row) => row.order_id));
+  return rows.map((row) => ({ ...mapConversation(row), customerName: names.get(row.order_id) || row.profiles?.name || "Guest" }));
+}
 
 // Used by getConversations/getConversation (customer + vendor side) so both
 // participants' names resolve the same way getAllConversationsForAdmin()
@@ -167,7 +173,7 @@ export const chatService = {
       throw new Error(error.message);
     }
 
-    return (data || []).map(mapConversation);
+    return mapConversationsWithNames(data || []);
   },
 
   async getConversation(id) {
@@ -196,7 +202,7 @@ export const chatService = {
       throw new Error(error.message);
     }
 
-    return data ? mapConversation(data) : null;
+    return data ? (await mapConversationsWithNames([data]))[0] : null;
   },
 
   // ==========================================
@@ -226,7 +232,7 @@ export const chatService = {
     }
 
     if (existing) {
-      return mapConversation(existing);
+      return (await mapConversationsWithNames([existing]))[0];
     }
 
     const { data, error } = await supabase
@@ -244,7 +250,7 @@ export const chatService = {
       throw new Error(error.message);
     }
 
-    return mapConversation(data);
+    return (await mapConversationsWithNames([data]))[0];
   },
 
   // ==========================================
@@ -294,7 +300,7 @@ export const chatService = {
     }
 
     if (existing) {
-      return mapConversation(existing);
+      return (await mapConversationsWithNames([existing]))[0];
     }
 
     const { data, error } = await supabase
@@ -321,7 +327,7 @@ export const chatService = {
       throw new Error(error.message);
     }
 
-    return mapConversation(data);
+    return (await mapConversationsWithNames([data]))[0];
   },
 
   // ==========================================

@@ -3,15 +3,19 @@ import Avatar from "../../components/ui/Avatar";
 import { useAsync } from "../../hooks/useAsync";
 import { adminService } from "../../services/adminService";
 import { useToast } from "../../context/ToastContext";
+import AccountRemoval from '../../components/features/AccountRemoval';
+import RequestError from '../../components/ui/RequestError';
 
 export default function AdminCustomers() {
   const { showToast } = useToast();
-  const { data: customers, loading, refetch } = useAsync(() => adminService.getCustomers(), []);
+  const { data: customers, loading, error, refetch } = useAsync(() => adminService.getCustomers(), []);
 
   const suspend = async (c) => {
-    await adminService.suspendCustomer(c.id);
-    showToast(`${c.name} suspended`, { type: "info" });
-    refetch();
+    try {
+      await adminService.suspendCustomer(c.id);
+      showToast(`${c.name} suspended`, { type: "info" });
+      refetch();
+    } catch (error) { showToast(error.message || 'Suspension failed; retry.', { type: 'error' }); }
   };
 
   const columns = [
@@ -33,14 +37,13 @@ export default function AdminCustomers() {
     {
       key: "actions",
       header: "",
-      render: (c) =>
-        c.suspended ? (
+      render: (c) => <div className="flex gap-2">{c.suspended ? (
           <span className="text-xs text-danger font-medium">Suspended</span>
         ) : (
           <button onClick={() => suspend(c)} className="btn-outline !px-3 !py-1.5 text-xs !text-danger !border-danger/30">
             Suspend
           </button>
-        ),
+        )}<AccountRemoval kind="customer" id={c.id} onRemoved={refetch} /></div>,
     },
   ];
 
@@ -50,7 +53,7 @@ export default function AdminCustomers() {
         <h1 className="text-xl font-bold text-ink">Customers</h1>
         <p className="text-sm text-ink-muted mt-0.5">View and manage customer accounts.</p>
       </div>
-      {loading ? <div className="skeleton h-64" /> : <Table columns={columns} data={customers} />}
+      {error ? <RequestError error={error} onRetry={refetch} /> : loading ? <div className="skeleton h-64" /> : <Table columns={columns} data={customers} />}
     </div>
   );
 }

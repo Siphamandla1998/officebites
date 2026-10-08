@@ -1,11 +1,13 @@
 import { CURRENCY } from "./constants";
+import { calendarDate } from './reportingDates';
 
 export function formatCurrency(amount = 0) {
+  if (amount === null || !Number.isFinite(Number(amount))) return "Unresolved";
   return `${CURRENCY}${Number(amount).toFixed(2)}`;
 }
 
 export function formatDate(date, opts = {}) {
-  const d = typeof date === "string" ? new Date(date) : date;
+  const d = calendarDate(date);
   return d.toLocaleDateString("en-ZA", {
     weekday: "short",
     day: "numeric",

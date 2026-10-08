@@ -69,8 +69,8 @@ export const paymentService = {
     form.submit();
   },
 
-  calculateCommission(amount) {
-    return calcCommission(amount);
+  calculateCommission(amount, rate) {
+    return calcCommission(amount, rate);
   },
 
   async getVendorPayouts(_vendorId) {

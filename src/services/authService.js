@@ -13,6 +13,7 @@ async function fetchProfile(userId) {
     .single();
 
   if (error) throw error;
+  if (data.suspended) throw new Error("Your OfficeBites account is suspended. Please contact support.");
 
   return {
     id: data.id,
@@ -184,9 +185,10 @@ export const authService = {
    */
   onAuthStateChange(callback) {
     const { data } =
-      supabase.auth.onAuthStateChange((_event, session) =>
-        callback(session)
-      );
+      supabase.auth.onAuthStateChange((_event, session) => {
+        // Supabase API calls must run after its auth callback releases the lock.
+        setTimeout(() => callback(session), 0);
+      });
 
     return () => data.subscription.unsubscribe();
   },

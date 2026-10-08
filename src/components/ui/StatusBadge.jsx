@@ -1,6 +1,9 @@
 import { ORDER_STATUS, ORDER_STATUS_LABELS, VENDOR_STATUS, TICKET_STATUS, TICKET_STATUS_LABELS } from "../../utils/constants";
 
 const STYLES = {
+  waiting_customer: "bg-warning/10 text-warning",
+  in_progress: "bg-info/10 text-info",
+  closed: "bg-ink/5 text-ink-soft",
   [ORDER_STATUS.PENDING_PAYMENT]: "bg-nude-100 text-nude-700",
   [ORDER_STATUS.PAYMENT_SUBMITTED]: "bg-info/10 text-info",
   [ORDER_STATUS.CONFIRMED]: "bg-success/10 text-success",
@@ -20,6 +23,9 @@ const STYLES = {
 };
 
 const LABELS = {
+  waiting_customer: "Waiting for customer",
+  in_progress: "In progress",
+  closed: "Closed",
   ...ORDER_STATUS_LABELS,
   ...TICKET_STATUS_LABELS,
   [VENDOR_STATUS.PENDING]: "Pending review",

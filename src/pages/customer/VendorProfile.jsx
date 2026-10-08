@@ -46,7 +46,7 @@ export default function VendorProfile() {
     loading: vendorLoading,
   } = useAsync(
     () => vendorService.getVendorById(id),
-    [id]
+    [id], null
   );
 
   const {
@@ -185,7 +185,7 @@ export default function VendorProfile() {
     }, 0);
   };
 
-  if (vendorLoading || !vendor) {
+  if (vendorLoading) {
     return (
       <div>
         <Navbar showBack />
@@ -197,6 +197,8 @@ export default function VendorProfile() {
       </div>
     );
   }
+
+  if (!vendor?.id) return <div><Navbar showBack /><p role="alert" className="ob-container pt-4">This vendor is unavailable.</p></div>;
 
   const locationLabel =
     vendor.address ||

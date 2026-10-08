@@ -1,109 +1,50 @@
-import {
-  useState,
-  useEffect,
-  useCallback,
-  useRef,
-} from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 
-
-/**
- * Runs async service calls safely.
- * Always keeps data as an array/object fallback instead of null.
- */
-export function useAsync(asyncFn, deps = []) {
-
-  const [data, setData] = useState([]);
+// Lists default to []; callers requesting one record pass null explicitly.
+export function useAsync(asyncFn, deps = [], initialData = []) {
+  const [data, setData] = useState(initialData);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
   const mounted = useRef(true);
+  const request = useRef(0);
+  const initial = useRef(initialData);
+  const scope = useRef({ deps, generation: 0 });
+  if (deps.length !== scope.current.deps.length || deps.some((v, i) => !Object.is(v, scope.current.deps[i]))) {
+    scope.current = { deps: [...deps], generation: scope.current.generation + 1 };
+    request.current++;
+  }
+  const generation = scope.current.generation;
+  const [resultScope, setResultScope] = useState(generation);
 
-
-
-  const run = useCallback(async () => {
-
-    setLoading(true);
+  const run = useCallback(async (options = {}) => {
+    if (generation !== scope.current.generation) return;
+    const current = ++request.current;
+    const silent = options?.silent === true;
+    if (!silent) setLoading(true);
     setError(null);
-
-
     try {
-
       const result = await asyncFn();
-
-
-      if (!mounted.current) return;
-
-
-      // Prevent null data breaking React rendering
-      setData(
-        result ?? []
-      );
-
-
+      if (!mounted.current || current !== request.current || generation !== scope.current.generation) return;
+      setData(result ?? initial.current);
+      setResultScope(generation);
+      return result;
     } catch (err) {
-
-
-      if (!mounted.current) return;
-
-
-      console.error(
-        "useAsync error:",
-        err
-      );
-
-
+      if (!mounted.current || current !== request.current || generation !== scope.current.generation) return;
+      console.error("useAsync error:", err);
       setError(err);
-
-
-      // Keep UI alive
-      setData([]);
-
-
+      setResultScope(generation);
+      if (!silent) setData(initial.current);
     } finally {
-
-
-      if (mounted.current) {
-        setLoading(false);
-      }
-
-
+      if (mounted.current && current === request.current) setLoading(false);
     }
-
-
   }, deps);
 
-
-
   useEffect(() => {
-
     mounted.current = true;
-
     run();
-
-
-    return () => {
-
-      mounted.current = false;
-
-    };
-
-
+    return () => { mounted.current = false; };
   }, [run]);
 
-
-
-  return {
-
-    data,
-
-    loading,
-
-    error,
-
-    refetch: run,
-
-    setData,
-
-  };
-
+  const sameScope = resultScope === generation;
+  return { data: sameScope ? data : initial.current, loading: sameScope ? loading : true, error: sameScope ? error : null, refetch: run, setData };
 }

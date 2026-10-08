@@ -14,3 +14,6 @@ pnpm-debug.log*
 
 .DS_Store
 Thumbs.db
+
+# Local review evidence containing production record data
+checks/fixtures/audit-order-review.json

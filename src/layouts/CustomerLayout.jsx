@@ -7,6 +7,8 @@ import { ROLES } from "../utils/constants";
 
 export default function CustomerLayout() {
   const { user, loading } = useAuth();
+  const { pathname } = useLocation();
+  const hasPurchaseBar = /^\/food\/[^/]+$/.test(pathname) && pathname !== "/food/search" || pathname === "/checkout";
 
   if (loading) {
     return (
@@ -27,7 +29,7 @@ export default function CustomerLayout() {
   return (
     <main className="app-shell pb-[calc(6rem+env(safe-area-inset-bottom))]">
       <Outlet />
-      <BottomNav />
+      {!hasPurchaseBar && <BottomNav />}
       <CartDrawer />
     </main>
   );

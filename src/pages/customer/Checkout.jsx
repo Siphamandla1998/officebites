@@ -6,7 +6,7 @@ import { useCart } from "../../context/CartContext";
 import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../context/ToastContext";
 import { orderService } from "../../services/orderService";
-import { splitCartByVendor, nextOrderableDate } from "../../utils/orderRules";
+import { splitCartByVendor, nextOrderableDate, deliveryDateKey, isOrderingOpen } from "../../utils/orderRules";
 import { formatCurrency, formatDate } from "../../utils/formatters";
 import { addGuestOrder } from "../../utils/guest";
 import Spinner from "../../components/ui/Spinner";
@@ -45,6 +45,11 @@ export default function Checkout() {
   };
 
   const handlePlaceOrder = async () => {
+    if (submitting) return;
+    if (!isOrderingOpen(deliveryDate)) {
+      showToast("The ordering cutoff has passed. Please review the updated delivery date before ordering.", { type: "info" });
+      return;
+    }
     if (!validateGuest()) {
       showToast("Please fill in your details before ordering", { type: "error" });
       return;
@@ -56,7 +61,7 @@ export default function Checkout() {
         customerName: isAuthenticated ? user.name : guestDetails.name,
         guestContact: isAuthenticated ? null : guestDetails.phone.trim(),
         guestEmail: null,
-        deliveryDate: deliveryDate.toISOString().slice(0, 10),
+        deliveryDate: deliveryDateKey(deliveryDate),
         deliveryLocation: deliveryLocation.trim(),
         cartItems: items,
       });

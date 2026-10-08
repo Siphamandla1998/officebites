@@ -1,6 +1,7 @@
+import { financialService } from './financialService';
 import { supabase } from "./api/supabaseClient";
+import { getOrderCustomerNames } from "./customerNameService";
 import { mapOrder, ORDER_SELECT } from "./api/mappers";
-import { ORDER_STATUS } from "../utils/constants";
 import { getGuestOrderAccess } from "../utils/guest";
 
 export const orderService = {
@@ -229,6 +230,7 @@ export const orderService = {
       throw { message: error.message };
     }
 
+    const names = await getOrderCustomerNames((data || []).map((row) => row.id));
     return (data || [])
       .map(mapOrder)
       .filter((order) =>
@@ -239,6 +241,7 @@ export const orderService = {
       )
       .map((order) => ({
         ...order,
+        customerName: names.get(order.id) || order.customerName,
         subOrder: order.subOrders.find(
           (subOrder) =>
             subOrder.vendorId === vendorId
@@ -333,27 +336,12 @@ export const orderService = {
    * pipeline is responsible for changing the order status.
    */
   async getRecentPayments(limit = 10) {
-    const { data, error } = await supabase
-      .from("orders")
-      .select(ORDER_SELECT)
-      .eq("payment_method", "payfast")
-      .in("status", [
-        ORDER_STATUS.CONFIRMED,
-        ORDER_STATUS.ACCEPTED,
-        ORDER_STATUS.PREPARING,
-        ORDER_STATUS.READY,
-        ORDER_STATUS.COLLECTED,
-        ORDER_STATUS.COMPLETED,
-      ])
-      .order("created_at", {
-        ascending: false,
-      })
-      .limit(limit);
-
-    if (error) {
-      throw { message: error.message };
+    const report = await financialService.report({ period: 'all' });
+    const orders = new Map();
+    for (const row of report.rows) {
+      const entry = orders.get(row.order_id) || { id: row.order_id, ticketNumber: row.ticket_number, customerName: 'Paid business sale', createdAt: row.financial_date + 'T12:00:00+02:00', status: row.status, total: 0 };
+      entry.total += Number(row.gross); orders.set(row.order_id, entry);
     }
-
-    return (data || []).map(mapOrder);
+    return [...orders.values()].sort((a,b) => b.createdAt.localeCompare(a.createdAt)).slice(0,limit);
   },
 };

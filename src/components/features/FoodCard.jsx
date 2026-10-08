@@ -2,8 +2,9 @@ import { FiPlus, FiHeart } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import { formatCurrency } from "../../utils/formatters";
 import Rating from "../ui/Rating";
+import { useFavourites } from "../../context/FavouriteContext";
 
-const PLACEHOLDER_IMAGE = "/placeholder-food.png";
+const PLACEHOLDER_IMAGE = "/placeholder-food.svg";
 
 export default function FoodCard({
   meal,
@@ -12,6 +13,9 @@ export default function FoodCard({
   onToggleFavourite,
   layout = "grid",
 }) {
+  const favourites = useFavourites();
+  isFavourite = isFavourite ?? favourites.ids.includes(meal?.id);
+  onToggleFavourite = onToggleFavourite ?? favourites.toggleFavourite;
   if (!meal) return null;
 
   if (layout === "row") {

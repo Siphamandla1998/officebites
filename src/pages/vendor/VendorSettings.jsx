@@ -31,7 +31,7 @@ export default function VendorSettings() {
     refetch,
   } = useAsync(
     () => vendorService.getVendorById(user.vendorId),
-    [user.vendorId]
+    [user.vendorId], null
   );
 
   const [form, setForm] = useState(null);
@@ -196,6 +196,8 @@ export default function VendorSettings() {
       setSaving(false);
     }
   };
+
+  if (!loading && !vendor?.id) return <p role="alert">Your vendor profile could not be loaded. Please refresh.</p>;
 
   if (loading || !form) {
     return (

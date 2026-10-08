@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import Rating from "../ui/Rating";
 
-const PLACEHOLDER_IMAGE = "/placeholder-food.png";
+const PLACEHOLDER_IMAGE = "/placeholder-food.svg";
 
 export default function VendorCard({
   vendor,

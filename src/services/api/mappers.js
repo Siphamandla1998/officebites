@@ -24,6 +24,7 @@ export function mapVendor(row) {
 
     building: row.building || "",
     status: row.status || "",
+    archivedAt: row.archived_at || null,
 
     featured: Boolean(row.featured),
 
@@ -41,7 +42,7 @@ export function mapVendor(row) {
       row.recommendations_enabled ?? false,
 
     corporatePriorityEnabled:
-      row.corporate_priority_enabled ?? false,
+      row.corporate_orders_enabled ?? false,
 
     contactNumber:
       row.contact_number || "",
@@ -92,7 +93,7 @@ export function mapMeal(row) {
 
     image:
       row.image ||
-      "/placeholder-food.png",
+      "/placeholder-food.svg",
 
     category:
       row.category || "Meals",
@@ -259,39 +260,12 @@ export function mapOrder(row) {
     total:
       Number(row.total || 0),
 
+    isTest: row.is_test ?? false,
+
     paymentMethod:
       row.payment_method || "payfast",
   };
 }
 
-export const ORDER_SELECT = `
-id,
-ticket_number,
-customer_id,
-guest_name,
-guest_contact,
-guest_email,
-delivery_date,
-delivery_location,
-status,
-total,
-payment_method,
-created_at,
-profiles ( name ),
-order_suborders (
-  id,
-  vendor_id,
-  status,
-  payment_status,
-  subtotal,
-  collection_time,
-  notes,
-  vendors ( name ),
-  order_items (
-    meal_id,
-    meal_name,
-    qty,
-    price
-  )
-)
-`;
+// Wildcards keep existing live contracts compatible until the additive migration lands.
+export const ORDER_SELECT = `*, profiles(name), order_suborders(*, vendors(name), order_items(*))`;

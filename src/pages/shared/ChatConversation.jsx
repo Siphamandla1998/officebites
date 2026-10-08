@@ -7,25 +7,36 @@ import { useAsync } from "../../hooks/useAsync";
 import { chatService } from "../../services/chatService";
 import { useAuth } from "../../context/AuthContext";
 import { formatTime } from "../../utils/formatters";
+import { useLiveRefresh } from "../../hooks/useLiveRefresh";
+import { useToast } from "../../context/ToastContext";
+import { createRequestScope } from '../../utils/requestScope';
+import RequestError from '../../components/ui/RequestError';
 
 export default function ChatConversation() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { showToast } = useToast();
 
   const {
     data: conversation,
     loading,
+    error,
     refetch,
   } = useAsync(
     () => chatService.getConversation(id),
-    [id]
+    [id, user?.id], null
   );
+  useLiveRefresh(() => refetch({ silent: true }), `${user?.id}:${id}`, `conversation_id=eq.${id}`);
 
   const [text, setText] = useState("");
   const [sending, setSending] = useState(false);
 
   const bottomRef = useRef(null);
+  const scope = useRef(createRequestScope());
+  scope.current.set(`${user?.id}:${id}`);
+  useEffect(() => { setText(''); setSending(false); }, [user?.id, id]);
+  useEffect(() => () => scope.current.invalidate(), []);
 
   useEffect(() => {
     if (!conversation) return;
@@ -38,9 +49,10 @@ export default function ChatConversation() {
   }, [conversation, id]);
 
   const send = async () => {
+    const isCurrent = scope.current.capture();
     const messageText = text.trim();
 
-    if (!messageText || sending) {
+    if (!messageText || sending || !conversation?.id || conversation.closedAt) {
       return;
     }
 
@@ -51,14 +63,14 @@ export default function ChatConversation() {
         id,
         messageText
       );
-
+      if (!isCurrent()) return;
       setText("");
 
       await refetch();
     } catch (error) {
-      console.error("Failed to send message:", error);
+      if (isCurrent()) showToast(error.message || "Could not send your message. Please try again.", { type: "error" });
     } finally {
-      setSending(false);
+      if (isCurrent()) setSending(false);
     }
   };
 
@@ -69,6 +81,7 @@ export default function ChatConversation() {
     }
   };
 
+  if (error) return <RequestError error={error} onRetry={refetch} />;
   if (loading) {
     return (
       <div className="min-h-screen bg-paper">
@@ -81,7 +94,7 @@ export default function ChatConversation() {
     );
   }
 
-  if (!conversation) {
+  if (!conversation?.id) {
     return (
       <div className="min-h-screen bg-paper">
         <Navbar />
@@ -186,12 +199,12 @@ export default function ChatConversation() {
               onKeyDown={handleKeyDown}
               placeholder="Type a message..."
               className="input flex-1"
-              disabled={sending}
+              disabled={sending || Boolean(conversation.closedAt)}
             />
 
             <button
               onClick={send}
-              disabled={!text.trim() || sending}
+              disabled={!text.trim() || sending || Boolean(conversation.closedAt)}
               className="btn-primary flex items-center gap-2"
             >
               <FiSend />

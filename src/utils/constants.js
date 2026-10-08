@@ -91,8 +91,8 @@ export const VENDOR_STATUS = {
 // ===============================
 
 // Percentage OfficeBites keeps from vendor sales
-// Example: R100 meal order = R15 commission
-export const COMMISSION_RATE = 0.15;
+// Example: R100 meal order = R17 commission
+export const COMMISSION_RATE = 0.17;
 
 
 // Payment gateway / transaction processing fee

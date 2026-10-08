@@ -11,6 +11,11 @@ const CartContext = createContext(null);
 
 const STORAGE_KEY = "ob_cart";
 
+function wholeQuantity(value) {
+  const number = Number(value);
+  return Number.isFinite(number) ? Math.max(1, Math.floor(number)) : 1;
+}
+
 function sanitiseStoredCart(value) {
   if (!Array.isArray(value)) return [];
 
@@ -25,7 +30,7 @@ function sanitiseStoredCart(value) {
     .map((item) => ({
       ...item,
       price: Number(item.price),
-      qty: Math.max(1, Number(item.qty) || 1),
+      qty: wholeQuantity(item.qty),
     }));
 }
 
@@ -67,7 +72,7 @@ export function CartProvider({ children }) {
       return;
     }
 
-    const amount = Math.max(1, Number(qty) || 1);
+    const amount = wholeQuantity(qty);
 
     setItems((current) => {
       const existing = current.find(

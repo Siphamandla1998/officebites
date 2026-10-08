@@ -28,24 +28,14 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ["**/*.{js,css,html,svg,png,ico,woff2}"],
-        // Cache menu/vendor data (mock "API" JSON-like calls resolve from bundle,
-        // but real API calls once wired will hit this runtime cache) so browsing
-        // still works offline. Navigation falls back to the app shell.
+        // Offline support is the public app shell/assets only. Supabase data,
+        // Auth, signed URLs and private attachments always require the network.
         runtimeCaching: [
           {
-            urlPattern: ({ url }) => url.pathname.startsWith("/api"),
-            handler: "NetworkFirst",
-            options: {
-              cacheName: "officebites-api-cache",
-              expiration: { maxEntries: 100, maxAgeSeconds: 60 * 60 * 24 }, // 1 day
-              cacheableResponse: { statuses: [0, 200] },
-            },
-          },
-          {
-            urlPattern: ({ request }) => request.destination === "image",
+            urlPattern: ({ request, url }) => request.destination === "image" && url.origin === self.location.origin && !url.search && /^\/(assets\/|icons\/|placeholder-food\.svg$|favicon\.svg$)/.test(url.pathname),
             handler: "CacheFirst",
             options: {
-              cacheName: "officebites-image-cache",
+              cacheName: "officebites-public-image-v2",
               expiration: { maxEntries: 120, maxAgeSeconds: 60 * 60 * 24 * 14 }, // 14 days
             },
           },
@@ -53,7 +43,7 @@ export default defineConfig({
         navigateFallback: "/index.html",
       },
       devOptions: {
-        enabled: true,
+        enabled: false,
       },
     }),
   ],

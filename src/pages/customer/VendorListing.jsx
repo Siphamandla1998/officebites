@@ -1,3 +1,4 @@
+import RequestError from '../../components/ui/RequestError';
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import Navbar from "../../components/layout/Navbar";
@@ -18,6 +19,8 @@ export default function VendorListing() {
   const [category, setCategory] = useState("all");
 
   const debouncedQuery = useDebounce(query, 300);
+  const { data: allVendors = [], error: categoryError, refetch: retryCategories } = useAsync(() => vendorService.getVendors(), []);
+  const categories = [...new Set(allVendors.map((vendor) => vendor.category).filter(Boolean))];
 
   const {
     latitude,
@@ -31,7 +34,7 @@ export default function VendorListing() {
 
   const {
     data: vendors = [],
-    loading,
+    loading, error, refetch,
   } = useAsync(
     async () => {
       const filters = {
@@ -102,6 +105,7 @@ export default function VendorListing() {
     await requestLocation();
   };
 
+  if (error || categoryError) return <RequestError error={error || categoryError} onRetry={() => { refetch(); retryCategories(); }} />;
   return (
     <div>
       <Navbar />
@@ -180,7 +184,8 @@ export default function VendorListing() {
         />
 
         <Filters
-          value={category}
+          active={category}
+          options={categories}
           onChange={setCategory}
         />
 

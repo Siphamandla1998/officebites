@@ -4,29 +4,36 @@ import { ORDER_CUTOFF_HOUR, COMMISSION_RATE } from "./constants";
  * Orders for a given delivery date close at 19:00 the previous day.
  * Returns true if ordering is still open for `deliveryDate`.
  */
-export function isOrderingOpen(deliveryDate = new Date()) {
-  const now = new Date();
-  const cutoff = new Date(deliveryDate);
-  cutoff.setDate(cutoff.getDate() - 1);
-  cutoff.setHours(ORDER_CUTOFF_HOUR, 0, 0, 0);
-  return now.getTime() < cutoff.getTime();
+export function deliveryDateKey(value) {
+  if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value)) return value;
+  const date = new Date(value);
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 }
 
-export function nextOrderableDate() {
-  const now = new Date();
-  const todayCutoff = new Date();
-  todayCutoff.setHours(ORDER_CUTOFF_HOUR, 0, 0, 0);
-  const target = new Date();
-  // If we're past today's 19:00 cutoff for "tomorrow", push to the day after.
-  target.setDate(target.getDate() + (now > todayCutoff ? 2 : 1));
-  return target;
+function sastParts(now) {
+  return Object.fromEntries(new Intl.DateTimeFormat("en-ZA", {
+    timeZone: "Africa/Johannesburg", year: "numeric", month: "2-digit",
+    day: "2-digit", hour: "2-digit", hourCycle: "h23",
+  }).formatToParts(now).filter((part) => part.type !== "literal").map((part) => [part.type, Number(part.value)]));
+}
+
+export function isOrderingOpen(deliveryDate = new Date(), now = new Date()) {
+  const [year, month, day] = deliveryDateKey(deliveryDate).split("-").map(Number);
+  // SAST is UTC+2 and has no daylight-saving changes.
+  const cutoff = Date.UTC(year, month - 1, day - 1, ORDER_CUTOFF_HOUR - 2);
+  return now.getTime() < cutoff;
+}
+
+export function nextOrderableDate(now = new Date()) {
+  const parts = sastParts(now);
+  const target = new Date(Date.UTC(parts.year, parts.month - 1, parts.day + (parts.hour >= ORDER_CUTOFF_HOUR ? 2 : 1)));
+  // Represent this calendar date locally for existing date labels/day filters.
+  return new Date(target.getUTCFullYear(), target.getUTCMonth(), target.getUTCDate(), 12);
 }
 
 /** True once today's cutoff for ordering "for tomorrow" has passed. */
-export function isPastTodaysCutoff() {
-  const todayCutoff = new Date();
-  todayCutoff.setHours(ORDER_CUTOFF_HOUR, 0, 0, 0);
-  return new Date() > todayCutoff;
+export function isPastTodaysCutoff(now = new Date()) {
+  return sastParts(now).hour >= ORDER_CUTOFF_HOUR;
 }
 
 /** Split a single multi-vendor cart into per-vendor sub-orders (business rule). */
@@ -41,8 +48,8 @@ export function splitCartByVendor(cartItems) {
   return Object.values(byVendor);
 }
 
-export function calcCommission(amount) {
-  const commission = +(amount * COMMISSION_RATE).toFixed(2);
+export function calcCommission(amount, rate = COMMISSION_RATE) {
+  const commission = +(amount * rate).toFixed(2);
   return { commission, vendorPayout: +(amount - commission).toFixed(2) };
 }
 

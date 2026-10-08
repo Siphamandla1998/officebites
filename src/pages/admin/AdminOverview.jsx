@@ -1,3 +1,4 @@
+import RequestError from '../../components/ui/RequestError';
 import { Link } from "react-router-dom";
 import {
   FiUsers,
@@ -19,24 +20,25 @@ import {
 } from "../../utils/formatters";
 
 export default function AdminOverview() {
-  const { data: stats, loading } = useAsync(
+  const { data: stats, loading, error, refetch } = useAsync(
     () => adminService.getPlatformStats(),
     []
   );
 
-  const { data: revenue, loading: revLoading } = useAsync(
+  const { data: revenue, loading: revLoading, error: revError, refetch: retryRevenue } = useAsync(
     () => adminService.getRevenueReport(),
     []
   );
 
   const {
     data: recentPayments = [],
-    loading: paymentsLoading,
+    loading: paymentsLoading, error: paymentsError, refetch: retryPayments,
   } = useAsync(
     () => orderService.getRecentPayments(8),
     []
   );
 
+  if (error || revError || paymentsError) return <RequestError error={error || revError || paymentsError} onRetry={() => { refetch(); retryRevenue(); retryPayments(); }} />;
   return (
     <div className="flex flex-col gap-6">
       <div>
@@ -76,7 +78,7 @@ export default function AdminOverview() {
             label="GMV this month"
             value={formatCurrency(stats.gmvThisMonth)}
             icon={FiDollarSign}
-            trend={`17% gross commission ${formatCurrency(
+            trend={`Gross commission ${formatCurrency(
               stats.commissionThisMonth
             )}`}
             trendUp
@@ -86,7 +88,7 @@ export default function AdminOverview() {
 
       <div className="card p-5">
         <h3 className="section-title mb-4">
-          GMV & commission (last 4 weeks)
+          GMV (this SAST calendar month)
         </h3>
 
         {revLoading ? (

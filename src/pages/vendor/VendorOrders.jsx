@@ -1,3 +1,4 @@
+import RequestError from '../../components/ui/RequestError';
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FiEye, FiMessageCircle } from "react-icons/fi";
@@ -19,7 +20,8 @@ import {
 } from "../../utils/constants";
 
 /** The single valid next status for a vendor order, or null if it's terminal/cancelled. */
-function nextStatusFor(status) {
+function nextStatusFor(status, paymentStatus) {
+  if (paymentStatus !== "paid") return null;
   const i = VENDOR_ORDER_FLOW.indexOf(status);
   if (i === -1 || i === VENDOR_ORDER_FLOW.length - 1) return null;
   return VENDOR_ORDER_FLOW[i + 1];
@@ -32,7 +34,7 @@ export default function VendorOrders() {
   const [filter, setFilter] = useState("all");
   const [selected, setSelected] = useState(null);
   const [messaging, setMessaging] = useState(false);
-  const { data: orders, loading, refetch } = useAsync(
+  const { data: orders, loading, error, refetch } = useAsync(
     () => orderService.getOrdersForVendor(user.vendorId),
     [user.vendorId]
   );
@@ -40,7 +42,7 @@ export default function VendorOrders() {
   const filtered = (orders || []).filter((o) => filter === "all" || o.subOrder.status === filter);
 
   const advance = async (order) => {
-    const next = nextStatusFor(order.subOrder.status);
+    const next = nextStatusFor(order.subOrder.status, order.subOrder.paymentStatus);
     if (!next) return;
     try {
       await orderService.updateSubOrderStatus(order.id, user.vendorId, next);
@@ -87,7 +89,7 @@ export default function VendorOrders() {
       key: "action",
       header: "",
       render: (o) => {
-        const next = nextStatusFor(o.subOrder.status);
+        const next = nextStatusFor(o.subOrder.status, o.subOrder.paymentStatus);
         return (
           <div className="flex items-center gap-2">
             <button onClick={() => setSelected(o)} className="btn-icon !h-8 !w-8" aria-label="View order">
@@ -106,8 +108,9 @@ export default function VendorOrders() {
     },
   ];
 
-  const selectedNext = selected ? nextStatusFor(selected.subOrder.status) : null;
+  const selectedNext = selected ? nextStatusFor(selected.subOrder.status, selected.subOrder.paymentStatus) : null;
 
+  if (error) return <RequestError error={error} onRetry={refetch} />;
   return (
     <div className="flex flex-col gap-5">
       <div>

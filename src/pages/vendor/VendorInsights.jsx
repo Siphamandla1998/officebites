@@ -1,3 +1,4 @@
+import RequestError from '../../components/ui/RequestError';
 import { useState } from "react";
 import {
   FiTrendingUp,
@@ -29,12 +30,7 @@ const PERIOD_LABELS = {
   all: "All time",
 };
 
-const ANALYTICS_DAYS = {
-  today: 1,
-  week: 7,
-  month: 30,
-  all: 365,
-};
+
 
 function MetricCard({
   icon,
@@ -77,18 +73,18 @@ export default function VendorInsights() {
 
   const {
     data: vendor,
-    loading: vendorLoading,
+    loading: vendorLoading, error: vendorError, refetch: retryVendor,
   } = useAsync(
     () =>
       vendorService.getVendorById(
         user.vendorId
       ),
-    [user.vendorId]
+    [user.vendorId], null
   );
 
   const {
     data: ranked,
-    loading: mealsLoading,
+    loading: mealsLoading, error: mealsError, refetch: retryMeals,
   } = useAsync(
     () =>
       vendorService.getPopularMealsForVendor(
@@ -103,7 +99,7 @@ export default function VendorInsights() {
 
   const {
     data: analytics,
-    loading: analyticsLoading,
+    loading: analyticsLoading, error: analyticsError, refetch: retryAnalytics,
   } = useAsync(
     () => {
       if (!analyticsEnabled) {
@@ -112,7 +108,7 @@ export default function VendorInsights() {
 
       return vendorService.getVendorAnalytics(
         user.vendorId,
-        ANALYTICS_DAYS[period]
+        period
       );
     },
     [
@@ -125,6 +121,8 @@ export default function VendorInsights() {
   const withSales = (ranked || []).filter(
     (result) => result.salesCount > 0
   );
+
+  if (vendorError || mealsError || analyticsError) return <RequestError error={vendorError || mealsError || analyticsError} onRetry={() => { retryVendor(); retryMeals(); retryAnalytics(); }} />;
 
   if (vendorLoading) {
     return (
@@ -246,9 +244,9 @@ export default function VendorInsights() {
                   icon={
                     <FiTrendingUp size={16} />
                   }
-                  label="Estimated vendor net"
+                  label="Vendor earnings before fees"
                   value={formatCurrency(
-                    analytics?.vendorNet || 0
+                    analytics?.vendorNet
                   )}
                   description="Gross sales less OfficeBites marketplace commission."
                 />
@@ -264,25 +262,19 @@ export default function VendorInsights() {
 
                   <p className="text-lg font-bold text-ink mt-1">
                     {formatCurrency(
-                      analytics?.platformCommission ||
-                        0
+                      analytics?.platformCommission
                     )}
                   </p>
                 </div>
 
                 <span className="rounded-full bg-nude-100 px-2.5 py-1 text-[10px] font-medium text-nude-700">
-                  {Math.round(
-                    (vendor?.commissionRate ||
-                      0.17) * 100
-                  )}
+                  {Number(((vendor?.commissionRate ?? 0.17) * 100).toFixed(2))}
                   %
                 </span>
               </div>
 
               <p className="text-[11px] text-ink-muted mt-2">
-                Your applicable marketplace
-                commission rate is stored against your
-                vendor account.
+                The displayed rate applies to future paid transitions. Historical totals use snapshots, which may differ. All periods use SAST calendar dates.
               </p>
             </div>
           </>

@@ -1,3 +1,4 @@
+import RequestError from '../../components/ui/RequestError';
 import {
   FiTrendingUp,
   FiDollarSign,
@@ -15,17 +16,17 @@ import { formatCurrency } from "../../utils/formatters";
 export default function AdminAnalytics() {
   const {
     data: analytics,
-    loading,
+    loading, error, refetch,
   } = useAsync(
-    () => adminService.getPlatformAnalytics(28),
+    () => adminService.getPlatformAnalytics('month'),
     []
   );
 
   const {
     data: categories = [],
-    loading: categoriesLoading,
+    loading: categoriesLoading, error: categoriesError, refetch: retryCategories,
   } = useAsync(
-    () => adminService.getCategoryDemand(28),
+    () => adminService.getCategoryDemand('month'),
     []
   );
 
@@ -35,6 +36,7 @@ export default function AdminAnalytics() {
       gmv: vendor.gmv,
     })) || [];
 
+  if (error || categoriesError) return <RequestError error={error || categoriesError} onRetry={() => { refetch(); retryCategories(); }} />;
   return (
     <div className="flex flex-col gap-5">
       <div>
@@ -43,8 +45,7 @@ export default function AdminAnalytics() {
         </h1>
 
         <p className="text-sm text-ink-muted">
-          Real marketplace performance from the last
-          28 days.
+          Paid business performance this SAST calendar month.
         </p>
       </div>
 
@@ -63,10 +64,10 @@ export default function AdminAnalytics() {
           <StatCard
             label="Gross commission"
             value={formatCurrency(
-              analytics?.grossCommission || 0
+              analytics?.grossCommission
             )}
             icon={FiDollarSign}
-            trend="17% marketplace rate"
+            trend="Historical commission snapshots"
           />
 
           <StatCard
@@ -80,7 +81,7 @@ export default function AdminAnalytics() {
           <StatCard
             label="Net marketplace revenue"
             value={formatCurrency(
-              analytics?.netMarketplaceRevenue || 0
+              analytics?.netMarketplaceRevenue
             )}
             icon={FiTrendingUp}
           />
@@ -150,7 +151,7 @@ export default function AdminAnalytics() {
 
         <p className="text-xs text-ink-muted mb-4">
           What customers actually bought during the
-          last 28 days.
+          current SAST calendar month.
         </p>
 
         {categoriesLoading ? (

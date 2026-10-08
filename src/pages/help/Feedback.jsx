@@ -62,6 +62,7 @@ export default function Feedback() {
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               rows={4}
+              maxLength={5000}
             />
 
             <div>

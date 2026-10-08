@@ -1,3 +1,4 @@
+import RequestError from '../../components/ui/RequestError';
 import { Link } from "react-router-dom";
 import { FiMessageCircle } from "react-icons/fi";
 import Navbar from "../../components/layout/Navbar";
@@ -5,16 +6,18 @@ import Avatar from "../../components/ui/Avatar";
 import EmptyState from "../../components/ui/EmptyState";
 import SignInRequired from "../../components/features/SignInRequired";
 import { useAsync } from "../../hooks/useAsync";
+import { useLiveRefresh } from "../../hooks/useLiveRefresh";
 import { chatService } from "../../services/chatService";
 import { useAuth } from "../../context/AuthContext";
 import { formatRelativeTime } from "../../utils/formatters";
 
 export default function ChatList() {
   const { user, isAuthenticated } = useAuth();
-  const { data: conversations, loading } = useAsync(
+  const { data: conversations, loading, error, refetch } = useAsync(
     () => (isAuthenticated ? chatService.getConversations(user.id) : Promise.resolve([])),
     [isAuthenticated, user?.id]
   );
+  useLiveRefresh(() => refetch({ silent: true }), isAuthenticated ? `customer:${user.id}` : null);
 
   if (!isAuthenticated) {
     return (
@@ -28,6 +31,7 @@ export default function ChatList() {
     );
   }
 
+  if (error) return <RequestError error={error} onRetry={refetch} />;
   return (
     <div>
       <Navbar showBack title="Messages" showCart={false} />

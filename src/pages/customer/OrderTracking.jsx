@@ -7,6 +7,7 @@ import { useAsync } from "../../hooks/useAsync";
 import { orderService } from "../../services/orderService";
 import { formatCurrency, formatDate } from "../../utils/formatters";
 import { ORDER_STATUS } from "../../utils/constants";
+import RequestError from '../../components/ui/RequestError';
 
 // Recovery is based on the stored order state, including browser Back returns
 // where PayFast never adds a return/cancel query parameter.
@@ -105,7 +106,7 @@ function SubOrderTimeline({ subOrder }) {
 export default function OrderTracking() {
   const { orderId } = useParams();
   const navigate = useNavigate();
-  const { data: order, loading, error, setData } = useAsync(
+  const { data: order, loading, error, refetch, setData } = useAsync(
     () => orderService.getOrderById(orderId),
     [orderId]
   );
@@ -137,9 +138,9 @@ export default function OrderTracking() {
     }
   };
 
-  // Keep awaiting-payment orders fresh even without PayFast URL parameters.
+  // Refresh payment and fulfilment until the order reaches a terminal state.
   useEffect(() => {
-    if (!order?.id || ![ORDER_STATUS.PENDING_PAYMENT, ORDER_STATUS.PAYMENT_SUBMITTED].includes(order.status)) return;
+    if (!order?.id || [ORDER_STATUS.COMPLETED, ORDER_STATUS.CANCELLED].includes(order.status)) return;
     let active = true;
     let running = false;
     const refresh = async () => {
@@ -190,6 +191,7 @@ export default function OrderTracking() {
         <p role="alert" className="ob-container pt-4 text-sm text-ink-muted">
           Could not load this order. Please refresh or open it from your order history.
         </p>
+        <RequestError error={error || new Error('Order unavailable')} onRetry={refetch} />
       </div>
     );
   }

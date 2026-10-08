@@ -1,4 +1,6 @@
 import { useState } from "react";
+import AccountRemoval from '../../components/features/AccountRemoval';
+import RequestError from '../../components/ui/RequestError';
 import Filters from "../../components/ui/Filters";
 import Table from "../../components/ui/Table";
 import StatusBadge from "../../components/ui/StatusBadge";
@@ -22,13 +24,14 @@ export default function AdminVendors() {
   const {
     data: vendors = [],
     loading,
+    error,
     refetch,
   } = useAsync(
     () =>
       vendorService.getVendors({
         status:
           filter === "all"
-            ? undefined
+            ? "all"
             : filter,
       }),
     [filter]
@@ -145,6 +148,7 @@ export default function AdminVendors() {
       render:(v)=>(
 
         <div className="flex gap-2">
+          {v.archivedAt ? <span className="text-xs">Archived; financial history retained</span> : <AccountRemoval kind="vendor" id={v.id} onRemoved={refetch} />}
 
 
           {
@@ -205,7 +209,7 @@ export default function AdminVendors() {
             )
           }
           {
-            v.status === VENDOR_STATUS.SUSPENDED && (
+            v.status === VENDOR_STATUS.SUSPENDED && !v.archivedAt && (
               <button
                 onClick={() =>
                   act(
@@ -294,7 +298,7 @@ export default function AdminVendors() {
       <div className="mt-5">
 
         {
-          loading ? (
+          error ? <RequestError error={error} onRetry={refetch} /> : loading ? (
 
             <div className="text-sm text-ink-muted">
               Loading vendors...

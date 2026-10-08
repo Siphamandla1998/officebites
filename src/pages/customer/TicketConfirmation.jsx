@@ -7,15 +7,19 @@ import { orderService } from "../../services/orderService";
 export default function TicketConfirmation() {
   const { orderId } = useParams();
   const navigate = useNavigate();
-  const { data: order, loading } = useAsync(() => orderService.getOrderById(orderId), [orderId]);
+  const { data: order, loading, error } = useAsync(() => orderService.getOrderById(orderId), [orderId], null);
 
-  if (loading || !order) {
+  if (loading) {
     return (
       <div>
         <Navbar showBack title="Your ticket" showCart={false} />
         <div className="ob-container pt-4"><div className="skeleton h-96" /></div>
       </div>
     );
+  }
+
+  if (error || !order?.id) {
+    return <div><Navbar showBack title="Your ticket" showCart={false} /><p role="alert" className="ob-container pt-4">This order could not be found. Open your order history or verify your order code and phone number.</p></div>;
   }
 
   return (

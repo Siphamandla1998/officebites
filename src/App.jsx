@@ -8,6 +8,7 @@ import { CartProvider } from "./context/CartContext";
 import { ToastProvider } from "./context/ToastContext";
 import { LocationProvider } from "./context/LocationContext";
 import { NotificationProvider } from "./context/NotificationContext";
+import { FavouriteProvider } from "./context/FavouriteContext";
 
 export default function App() {
   return (
@@ -17,9 +18,11 @@ export default function App() {
           <LocationProvider>
             <CartProvider>
               <ToastProvider>
-                <NotificationProvider>
-                  <AppRoutes />
-                </NotificationProvider>
+                <FavouriteProvider>
+                  <NotificationProvider>
+                    <AppRoutes />
+                  </NotificationProvider>
+                </FavouriteProvider>
               </ToastProvider>
             </CartProvider>
           </LocationProvider>

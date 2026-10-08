@@ -8,23 +8,29 @@ import { foodService } from "../../services/foodService";
 import { useCart } from "../../context/CartContext";
 import { useToast } from "../../context/ToastContext";
 import { formatCurrency } from "../../utils/formatters";
+import { useFavourites } from "../../context/FavouriteContext";
 
 export default function FoodDetails() {
   const { id } = useParams();
   const [qty, setQty] = useState(1);
-  const [fav, setFav] = useState(false);
+  const { ids, toggleFavourite } = useFavourites();
+  const fav = ids.includes(id);
   const { addItem } = useCart();
   const { showToast } = useToast();
 
-  const { data: meal, loading } = useAsync(() => foodService.getMealById(id), [id]);
+  const { data: meal, loading, error } = useAsync(() => foodService.getMealById(id), [id], null);
 
-  if (loading || !meal) {
+  if (loading) {
     return (
       <div>
         <Navbar showBack />
         <div className="ob-container pt-4"><div className="skeleton h-64" /></div>
       </div>
     );
+  }
+
+  if (error || !meal?.id) {
+    return <div><Navbar showBack /><p role="alert" className="ob-container pt-4">This meal is unavailable. Please browse the menu again.</p></div>;
   }
 
   const handleAdd = () => {
@@ -41,7 +47,8 @@ export default function FoodDetails() {
       <div className="-mt-16 relative">
         <img src={meal.image} alt={meal.name} className="h-64 w-full object-cover" />
         <button
-          onClick={() => setFav((f) => !f)}
+          onClick={() => toggleFavourite(meal)}
+          aria-label={fav ? "Remove favourite" : "Save favourite"}
           className="absolute top-20 right-5 h-10 w-10 rounded-full bg-paper-raised/90 backdrop-blur flex items-center justify-center shadow-card"
         >
           <FiHeart size={17} className={fav ? "fill-danger text-danger" : "text-ink-soft"} />
