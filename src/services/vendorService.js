@@ -1,3 +1,4 @@
+import { coordinatePair } from "../utils/coordinates";
 import {
   supabase,
   uploadToBucket,
@@ -125,8 +126,9 @@ export const vendorService = {
     longitude,
     limit = 20
   ) {
-    const lat = Number(latitude);
-    const lng = Number(longitude);
+    const pair = coordinatePair(latitude, longitude);
+    const lat = pair?.latitude ?? NaN;
+    const lng = pair?.longitude ?? NaN;
     const maxResults = Number(limit);
 
     if (
@@ -646,24 +648,11 @@ export const vendorService = {
       patch.delivery_radius = radius;
     }
 
-    if (updates.latitude !== undefined) {
-      const latitude = Number(updates.latitude);
-
-      if (!Number.isFinite(latitude) || latitude < -90 || latitude > 90) {
-        throw new Error("Invalid business latitude.");
-      }
-
-      patch.latitude = latitude;
-    }
-
-    if (updates.longitude !== undefined) {
-      const longitude = Number(updates.longitude);
-
-      if (!Number.isFinite(longitude) || longitude < -180 || longitude > 180) {
-        throw new Error("Invalid business longitude.");
-      }
-
-      patch.longitude = longitude;
+    if ('latitude' in updates || 'longitude' in updates) {
+      const pair = coordinatePair(updates.latitude, updates.longitude);
+      if (!pair) throw new Error('Capture a valid business latitude and longitude before saving.');
+      patch.latitude = pair.latitude;
+      patch.longitude = pair.longitude;
     }
 
     if (

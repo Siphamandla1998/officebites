@@ -1,5 +1,7 @@
+import { useRequestGuard } from '../../hooks/useRequestGuard';
+import { useOperationalRefresh } from '../../hooks/useOperationalRefresh';
 import RequestError from '../../components/ui/RequestError';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FiEye, FiMessageCircle } from "react-icons/fi";
 import Filters from "../../components/ui/Filters";
@@ -29,30 +31,35 @@ function nextStatusFor(status, paymentStatus) {
 
 export default function VendorOrders() {
   const { user } = useAuth();
+  const requests = useRequestGuard(`${user?.id}:${user?.vendorId}`);
+  useEffect(() => { setMessaging(false); }, [user?.id, user?.vendorId]);
   const { showToast } = useToast();
   const navigate = useNavigate();
   const [filter, setFilter] = useState("all");
-  const [selected, setSelected] = useState(null);
+  const [selectedSnapshot, setSelected] = useState(null);
   const [messaging, setMessaging] = useState(false);
   const { data: orders, loading, error, refetch } = useAsync(
     () => orderService.getOrdersForVendor(user.vendorId),
-    [user.vendorId]
+    [user.id, user.vendorId]
   );
 
+  useOperationalRefresh(() => refetch({ silent: true }), `${user.id}:${user.vendorId}`);
   const filtered = (orders || []).filter((o) => filter === "all" || o.subOrder.status === filter);
 
   const advance = async (order) => {
     const next = nextStatusFor(order.subOrder.status, order.subOrder.paymentStatus);
     if (!next) return;
+    const current = requests.capture();
     try {
       await orderService.updateSubOrderStatus(order.id, user.vendorId, next);
+      if (!current()) return;
       showToast(`Marked as ${ORDER_STATUS_LABELS[next]}`, { type: "success" });
       refetch();
       if (selected?.id === order.id) {
         setSelected({ ...order, subOrder: { ...order.subOrder, status: next } });
       }
     } catch (err) {
-      showToast(err.message || "Couldn't update order", { type: "error" });
+      if (current()) showToast(err.message || "Couldn't update order", { type: "error" });
     }
   };
 
@@ -63,6 +70,7 @@ export default function VendorOrders() {
   // against).
   const messageCustomer = async (order) => {
     if (!order.customerId || messaging) return;
+    const current = requests.begin();
     setMessaging(true);
     try {
       const conversation =
@@ -70,11 +78,12 @@ export default function VendorOrders() {
           customerId: order.customerId,
           orderId: order.id,
         });
+      if (!current()) return;
       navigate(`/vendor/chat?conversation=${conversation.id}`);
     } catch (err) {
-      showToast(err.message || "Couldn't start conversation", { type: "error" });
+      if (current()) showToast(err.message || "Couldn't start conversation", { type: "error" });
     } finally {
-      setMessaging(false);
+      if (current()) setMessaging(false);
     }
   };
 
@@ -108,6 +117,7 @@ export default function VendorOrders() {
     },
   ];
 
+  const selected = selectedSnapshot ? orders?.find(order => order.id === selectedSnapshot.id) || null : null;
   const selectedNext = selected ? nextStatusFor(selected.subOrder.status, selected.subOrder.paymentStatus) : null;
 
   if (error) return <RequestError error={error} onRetry={refetch} />;
@@ -166,7 +176,7 @@ export default function VendorOrders() {
           <div className="flex flex-col gap-4">
             <div className="flex items-center justify-between">
               <StatusBadge status={selected.subOrder.status} />
-              <StatusBadge status={selected.subOrder.paymentStatus === "paid" ? "completed" : "payment_submitted"} />
+              <StatusBadge status={selected.subOrder.paymentStatus === "paid" ? "completed" : selected.subOrder.paymentStatus === "verifying" ? "payment_submitted" : "pending_payment"} />
             </div>
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div>

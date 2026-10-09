@@ -1,3 +1,5 @@
+import { financialRevision } from '../../utils/financialInvalidation';
+import { useFinancialRevision } from '../../hooks/useFinancialRevision';
 import { useState } from 'react';
 import { useAsync } from '../../hooks/useAsync';
 import { financialService, financialRpc } from '../../services/financialService';
@@ -9,10 +11,11 @@ import PayoutLedger from '../../components/features/PayoutLedger';
 
 const AUDIT_ORDER = 'ce050a2e-a430-4019-9a02-ce4c7664f485';
 export default function AdminReports() {
+  const revision = useFinancialRevision();
   const [from, setFrom] = useState(periodDates('month').from);
   const [to, setTo] = useState(sastDateKey());
-  const report = useAsync(() => financialService.report({ from, to }), [from, to], null);
-  const payouts = useAsync(() => financialService.payouts(), [], null);
+  const report = useAsync(() => financialService.report({ from, to }), [from, to, revision], null);
+  const payouts = useAsync(() => financialService.payouts(), [revision], null);
   const [preview, setPreview] = useState(null);
   const [retention, setRetention] = useState(null);
   const [days, setDays] = useState(30);
@@ -24,18 +27,21 @@ export default function AdminReports() {
     try { await fn(); } catch (e) { setFailure(e); } finally { setBusy(false); }
   }
   function exportSales() {
+    if (financialRevision() !== revision || report.loading || report.error || !report.data) return;
     const rows = report.data.rows.map(r => [r.financial_date,r.date_basis,r.order_id,r.ticket_number,r.suborder_id,r.vendor_id,r.vendor_name,r.status,r.gross,r.commission_rate ?? 'Unresolved',r.commission ?? 'Unresolved',r.processor_fee,r.vendor_earnings ?? 'Unresolved',report.data.feePolicy || 'Undecided']);
     const t = report.data.totals;
     rows.push(['TOTAL','','','','','','','',t.gmv,'',t.grossCommission ?? 'Unresolved',t.processorFees,t.vendorEarnings ?? 'Unresolved','']);
     downloadCsv(`officebites-sales-${from || 'all'}-${to || 'all'}.csv`, ['SAST financial date','Date basis','Order ID','Ticket','Suborder ID','Vendor ID','Vendor','Status','Gross sales ZAR','Commission rate','Commission ZAR','Processor fees ZAR','Vendor earnings before fees ZAR','Fee policy'], rows);
   }
   function exportPayouts() {
+    if (financialRevision() !== revision || payouts.loading || payouts.error || !payouts.data) return;
     const rows = payouts.data.payouts.filter(p => (!from || sastDateKey(p.created_at) >= from) && (!to || sastDateKey(p.created_at) <= to));
     const cells = rows.map(p => [p.id,p.vendor_id,sastDateKey(p.created_at),p.status,p.fee_policy,p.amount,p.reference || '',p.reconciled_at || '']);
     for (const status of ['allocated','paid','void']) cells.push([`TOTAL ${status}`,'','','','',rows.filter(p => p.status === status).reduce((s,p) => s + Number(p.amount),0),'','']);
     downloadCsv('officebites-payouts.csv', ['Payout ID','Vendor ID','SAST reservation date','Status','Fee policy','Amount ZAR','External reference or void reason','Reconciled timestamp'],cells);
   }
   function exportReconciliation() {
+    if (financialRevision() !== revision || report.loading || report.error || !report.data) return;
     downloadCsv('officebites-order-reconciliation.csv',['Order ID','Ticket','Recorded order total ZAR','All suborders gross ZAR','Eligible business gross ZAR','Recorded COMPLETE receipts ZAR','COMPLETE receipt count','Order minus suborders ZAR'],report.data.reconciliation.map(r => [r.order_id,r.ticket_number,r.recordedOrderTotal,r.allSuborderGross,r.eligibleBusinessGross,r.recordedCompletePayments,r.completePaymentCount,r.orderAmountDifference]));
   }
   const t = report.data?.totals;

@@ -1,3 +1,4 @@
+import { useFinancialRevision } from '../../hooks/useFinancialRevision';
 import { useRef, useState } from 'react';
 import { useAsync } from '../../hooks/useAsync';
 import { financialService } from '../../services/financialService';
@@ -5,7 +6,8 @@ import { formatCurrency, formatDate } from '../../utils/formatters';
 import RequestError from '../ui/RequestError';
 
 export default function PayoutLedger({ vendorId = null, admin = false }) {
-  const { data, loading, error, refetch } = useAsync(() => financialService.payouts(vendorId), [vendorId], null);
+  const revision = useFinancialRevision();
+  const { data, loading, error, refetch } = useAsync(() => financialService.payouts(vendorId), [vendorId, revision], null);
   const [policy, setPolicy] = useState('platform_absorbs');
   const [reason, setReason] = useState('');
   const [references, setReferences] = useState({});

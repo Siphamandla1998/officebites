@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { useRequestGuard } from '../../hooks/useRequestGuard';
+import { useEffect, useMemo, useState } from "react";
 import {
   useNavigate,
   useParams,
@@ -25,11 +26,13 @@ import { useToast } from "../../context/ToastContext";
 import { useAuth } from "../../context/AuthContext";
 
 import { formatRelativeTime } from "../../utils/formatters";
-import { nextOrderableDate } from "../../utils/orderRules";
+import { useDeliveryDate } from "../../hooks/useDeliveryDate";
+import RequestError from "../../components/ui/RequestError";
 
 const TABS = ["Menu", "Reviews", "About"];
 
 export default function VendorProfile() {
+  const deliveryDate = useDeliveryDate();
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -40,10 +43,12 @@ export default function VendorProfile() {
   const { addItem } = useCart();
   const { showToast } = useToast();
   const { user, isAuthenticated } = useAuth();
+  const requests = useRequestGuard(`${user?.id}:${id}`);
+  useEffect(() => { setOpeningChat(false); }, [id, user?.id]);
 
   const {
     data: vendor,
-    loading: vendorLoading,
+    loading: vendorLoading, error: vendorError, refetch: retryVendor,
   } = useAsync(
     () => vendorService.getVendorById(id),
     [id], null
@@ -51,18 +56,18 @@ export default function VendorProfile() {
 
   const {
     data: menu = [],
-    loading: menuLoading,
+    loading: menuLoading, error: menuError, refetch: retryMenu,
   } = useAsync(
     () =>
       vendorService.getVendorMenu(id, {
-        forDate: nextOrderableDate(),
+        forDate: deliveryDate,
       }),
-    [id]
+    [id, deliveryDate]
   );
 
   const {
     data: reviews = [],
-    loading: reviewsLoading,
+    loading: reviewsLoading, error: reviewsError, refetch: retryReviews,
   } = useAsync(
     () => vendorService.getVendorReviews(id),
     [id]
@@ -77,7 +82,7 @@ export default function VendorProfile() {
    */
   const {
     data: customerOrders = [],
-    loading: ordersLoading,
+    loading: ordersLoading, error: ordersError, refetch: retryOrders,
   } = useAsync(
     () =>
       isAuthenticated && user?.id
@@ -129,6 +134,7 @@ export default function VendorProfile() {
       return;
     }
 
+    if (ordersError) { showToast('Could not check messaging eligibility. Please retry.', { type: 'error' }); return; }
     if (!eligibleOrder) {
       showToast(
         "Messaging becomes available after you place an order with this vendor.",
@@ -144,6 +150,7 @@ export default function VendorProfile() {
       return;
     }
 
+    const current = requests.begin();
     try {
       setOpeningChat(true);
 
@@ -153,8 +160,10 @@ export default function VendorProfile() {
           orderId: eligibleOrder.id,
         });
 
+      if (!current()) return;
       navigate(`/chat/${conversation.id}`);
     } catch (error) {
+      if (!current()) return;
       console.error(
         "Couldn't open vendor conversation:",
         error
@@ -168,7 +177,7 @@ export default function VendorProfile() {
         }
       );
     } finally {
-      setOpeningChat(false);
+      if (current()) setOpeningChat(false);
     }
   };
 
@@ -185,6 +194,7 @@ export default function VendorProfile() {
     }, 0);
   };
 
+  if (vendorError) return <RequestError error={vendorError} onRetry={retryVendor} />;
   if (vendorLoading) {
     return (
       <div>
@@ -316,8 +326,9 @@ export default function VendorProfile() {
           </div>
 
           {/* Explain chat eligibility */}
+          {ordersError && <RequestError error={ordersError} onRetry={retryOrders} />}
           {isAuthenticated &&
-            !ordersLoading &&
+            !ordersError && !ordersLoading &&
             !eligibleOrder && (
               <p className="text-[11px] text-ink-muted text-center mt-2.5 leading-relaxed">
                 Messaging is available once you
@@ -355,7 +366,7 @@ export default function VendorProfile() {
       <div className="ob-container mt-4">
         {tab === "Menu" && (
           <div className="flex flex-col gap-3">
-            {menuLoading ? (
+            {menuError ? <RequestError error={menuError} onRetry={retryMenu} /> : menuLoading ? (
               Array.from({
                 length: 3,
               }).map((_, index) => (
@@ -390,7 +401,7 @@ export default function VendorProfile() {
 
         {tab === "Reviews" && (
           <div className="flex flex-col gap-4">
-            {reviewsLoading ? (
+            {reviewsError ? <RequestError error={reviewsError} onRetry={retryReviews} /> : reviewsLoading ? (
               <div className="skeleton h-20" />
             ) : reviews.length === 0 ? (
               <div className="card p-6 text-center">

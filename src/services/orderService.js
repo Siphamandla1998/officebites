@@ -37,6 +37,7 @@ export const orderService = {
       return [];
     }
 
+    const failures = [];
     const results = await Promise.all(
       guestOrders.map(async (guestOrder) => {
         const ticketNumber = guestOrder?.ticketNumber;
@@ -52,6 +53,7 @@ export const orderService = {
             contact
           );
         } catch (error) {
+          failures.push(error);
           console.error(
             "getGuestOrdersHistory: couldn't retrieve guest order",
             error
@@ -61,7 +63,13 @@ export const orderService = {
       })
     );
 
-    return results.filter(Boolean);
+    const orders = results.filter(Boolean);
+    if (failures.length) {
+      const error = new Error(`Could not retrieve ${failures.length} saved guest order(s). Please retry or use Track Order.`);
+      error.partialData = orders;
+      throw error;
+    }
+    return orders;
   },
 
   /**

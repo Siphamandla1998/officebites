@@ -1,3 +1,4 @@
+import { Fragment } from 'react';
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import Spinner from "../components/ui/Spinner";
@@ -22,5 +23,5 @@ export default function ProtectedRoute({ children, allowedRoles }) {
     return <Navigate to="/" replace />;
   }
 
-  return children;
+  return <Fragment key={user.id}>{children}</Fragment>;
 }

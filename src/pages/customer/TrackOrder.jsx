@@ -1,3 +1,4 @@
+import { useRequestGuard } from '../../hooks/useRequestGuard';
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FiSearch } from "react-icons/fi";
@@ -10,6 +11,7 @@ import { addGuestOrder } from "../../utils/guest";
 
 export default function TrackOrder() {
   const navigate = useNavigate();
+  const requests = useRequestGuard("guest-tracking");
   const { showToast } = useToast();
 
   const [ticketNumber, setTicketNumber] = useState("");
@@ -18,6 +20,8 @@ export default function TrackOrder() {
   const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async () => {
+    if (submitting) return;
+    const current = requests.begin();
     const next = {};
 
     if (!ticketNumber.trim()) {
@@ -47,6 +51,7 @@ export default function TrackOrder() {
           cleanContact
         );
 
+      if (!current()) return;
       if (!order) {
         showToast(
           "We couldn't find an order matching those details",
@@ -58,20 +63,22 @@ export default function TrackOrder() {
       // Store the secure lookup information locally so this
       // device can reopen the guest order later without relying
       // on the order UUID as proof of access.
-      addGuestOrder({
+      const persisted = addGuestOrder({
         id: order.id,
         ticketNumber: order.ticketNumber,
         contact: cleanContact,
       });
 
+      if (!persisted) showToast(`Order ${order.ticketNumber} verified for this tab. Save the code and use your checkout phone number to reopen it.`, { type: 'info' });
       navigate(`/orders/${order.id}`);
     } catch (err) {
+      if (!current()) return;
       showToast(
         err.message || "Couldn't look up that order",
         { type: "error" }
       );
     } finally {
-      setSubmitting(false);
+      if (current()) setSubmitting(false);
     }
   };
 

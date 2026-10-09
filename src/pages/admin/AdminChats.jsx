@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom';
+import RequestError from "../../components/ui/RequestError";
 import { useState } from "react";
 import {
   FiMessageCircle,
@@ -38,7 +40,7 @@ export default function AdminChats() {
 
   const {
     data: conversations = [],
-    loading,
+    loading, error,
     refetch,
   } = useAsync(
     () => chatService.getAllConversationsForAdmin(),
@@ -97,7 +99,7 @@ export default function AdminChats() {
 
       {/* Conversation list */}
 
-      {loading ? (
+      {error ? <RequestError error={error} onRetry={refetch} /> : loading ? (
         <div className="space-y-3">
           {Array.from({ length: 4 }).map((_, i) => (
             <div
@@ -233,6 +235,7 @@ export default function AdminChats() {
                 )}
               </p>
 
+              <p className="text-xs">Source: {selected.source || "Unknown"}</p>
               {selected.orderId && (
                 <div className="flex items-center gap-1.5 mt-2">
                   <FiShoppingBag
@@ -241,7 +244,7 @@ export default function AdminChats() {
                   />
 
                   <p className="text-xs text-ink-muted">
-                    Linked order:{" "}
+                    <Link className="underline" to={`/orders/${selected.orderId}`}>Open linked order</Link>{" "}
                     {shortOrderId(
                       selected.orderId
                     )}

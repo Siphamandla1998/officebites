@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import assert from 'node:assert/strict';
 import { pathToFileURL } from 'node:url';
 import path from 'node:path';
-const modulePath = process.env.PGLITE_MODULE;
+const modulePath = process.env.PGLITE_MODULE || 'node_modules/@electric-sql/pglite/dist/index.js';
 if (!modulePath) throw new Error('Set PGLITE_MODULE to an installed @electric-sql/pglite/dist/index.js; no live DB is used.');
 const { PGlite } = await import(pathToFileURL(path.resolve(modulePath)).href);
 const db = new PGlite();
@@ -191,6 +191,6 @@ try {
  await expectReject(`SELECT public.create_support_ticket('Fixture suspended','general','Fixture suspended body','Fixture','fixture@test.invalid','fixture')`,/active/i);
  await root();await db.exec(`UPDATE public.profiles SET suspended=true WHERE id='${id(1)}';`);await as(1);
  await expectReject(`SELECT public.admin_set_fee_policy('platform_absorbs','Suspended admin cannot change policy')`,/active/i);
- console.log(`${checks} isolated PostgreSQL migration/accounting/role checks passed.`);
+ console.log(`${checks} PGlite baseline migration/accounting/role checks passed (not native concurrency).`);
 } catch(error) { console.error('Isolated database check failed:',error.message); process.exitCode=1; }
 finally { await db.close(); }

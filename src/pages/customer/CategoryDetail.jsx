@@ -4,27 +4,29 @@ import FoodCard from "../../components/features/FoodCard";
 import EmptyState from "../../components/ui/EmptyState";
 import { useAsync } from "../../hooks/useAsync";
 import { foodService, CATEGORIES } from "../../services/foodService";
-import { nextOrderableDate } from "../../utils/orderRules";
+import { useDeliveryDate } from "../../hooks/useDeliveryDate";
+import RequestError from "../../components/ui/RequestError";
 import { useCart } from "../../context/CartContext";
 import { useToast } from "../../context/ToastContext";
 import { FiSearch } from "react-icons/fi";
 
 export default function CategoryDetail() {
+  const deliveryDate = useDeliveryDate();
   const { id } = useParams();
   const category = CATEGORIES.find((c) => c.id === id);
   const { addItem } = useCart();
   const { showToast } = useToast();
 
-  const { data: meals, loading } = useAsync(
-    () => foodService.getMeals({ category: category?.name, forDate: nextOrderableDate() }),
-    [category?.name]
+  const { data: meals, loading, error, refetch } = useAsync(
+    () => foodService.getMeals({ category: category?.name, forDate: deliveryDate }),
+    [category?.name, deliveryDate]
   );
 
   return (
     <div>
       <Navbar showBack title={category ? `${category.emoji} ${category.name}` : "Category"} />
       <div className="ob-container pt-4 pb-8">
-        {loading ? (
+        {error ? <RequestError error={error} onRetry={refetch} /> : loading ? (
           <div className="grid grid-cols-2 gap-3.5">
             {Array.from({ length: 4 }).map((_, i) => <div key={i} className="skeleton h-52" />)}
           </div>

@@ -1,3 +1,4 @@
+import { coordinatePair } from "../utils/coordinates";
 import { supabase } from "./api/supabaseClient";
 import { mapMeal } from "./api/mappers";
 import { catalogueSearchFilter, deliveryWeekday } from "../utils/catalogueFilters";
@@ -38,8 +39,9 @@ const getNearbyVendorRows = async (
   longitude,
   limit = 100
 ) => {
-  const lat = Number(latitude);
-  const lng = Number(longitude);
+  const pair = coordinatePair(latitude, longitude);
+  const lat = pair?.latitude ?? NaN;
+  const lng = pair?.longitude ?? NaN;
 
   if (
     !Number.isFinite(lat) ||
@@ -101,8 +103,7 @@ export const foodService = {
     let nearbyRows = null;
 
     if (
-      Number.isFinite(Number(latitude)) &&
-      Number.isFinite(Number(longitude))
+      coordinatePair(latitude, longitude)
     ) {
       nearbyRows = await getNearbyVendorRows(
         latitude,
@@ -247,8 +248,7 @@ export const foodService = {
     // catalogue instead of recommending food the customer
     // cannot actually order.
     if (
-      Number.isFinite(Number(latitude)) &&
-      Number.isFinite(Number(longitude))
+      coordinatePair(latitude, longitude)
     ) {
       const nearbyMeals = await this.getMeals({
         forDate,

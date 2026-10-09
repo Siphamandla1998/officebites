@@ -1,3 +1,4 @@
+import RequestError from "../../components/ui/RequestError";
 import {
   FiClock,
   FiSearch,
@@ -15,7 +16,7 @@ import { getGuestOrders } from "../../utils/guest";
 export default function OrderHistory() {
   const { user, isAuthenticated } = useAuth();
 
-  const { data: orders = [], loading } = useAsync(
+  const { data: orders = [], loading, error, refetch } = useAsync(
     () =>
       isAuthenticated
         ? orderService.getOrdersByCustomer(user.id)
@@ -75,6 +76,7 @@ export default function OrderHistory() {
           </>
         )}
 
+        {error && <RequestError error={error} onRetry={refetch} />}
         {loading ? (
           Array.from({ length: 3 }).map((_, i) => (
             <div
@@ -82,7 +84,7 @@ export default function OrderHistory() {
               className="skeleton h-24"
             />
           ))
-        ) : orders.length === 0 ? (
+        ) : orders.length === 0 && !error ? (
           <EmptyState
             icon={<FiClock size={20} />}
             title="No orders yet"
