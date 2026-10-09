@@ -1,3 +1,4 @@
+import { useOperationalRefresh } from '../../hooks/useOperationalRefresh';
 import RequestError from '../../components/ui/RequestError';
 import { sastDateKey } from '../../utils/reportingDates';
 import {
@@ -32,7 +33,7 @@ export default function VendorOverview() {
       vendorId
         ? orderService.getOrdersForVendor(vendorId)
         : Promise.resolve([]),
-    [vendorId]
+    [user?.id, vendorId]
   );
 
   const {
@@ -43,9 +44,11 @@ export default function VendorOverview() {
       vendorId
         ? vendorService.getDashboardStats(vendorId)
         : Promise.resolve(null),
-    [vendorId]
+    [user?.id, vendorId]
   );
 
+
+  useOperationalRefresh(() => Promise.all([retryOrders({ silent: true }), retryStats({ silent: true })]), vendorId ? `${user?.id}:${vendorId}` : null);
 
   // Prevent dashboard crashing if data is not ready
   const dashboardStats = stats || {

@@ -112,6 +112,7 @@ export const chatService = {
         id,
         customer_id,
         vendor_id,
+        order_id, source, closed_at, retain_until,
         created_at,
         updated_at,
         profiles ( name ),

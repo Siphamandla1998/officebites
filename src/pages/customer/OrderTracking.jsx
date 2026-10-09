@@ -1,3 +1,5 @@
+import { useAuth } from '../../context/AuthContext';
+import { useRequestGuard } from '../../hooks/useRequestGuard';
 import { useCallback, useEffect, useState } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { FiCheck, FiClock } from "react-icons/fi";
@@ -105,36 +107,42 @@ function SubOrderTimeline({ subOrder }) {
 
 export default function OrderTracking() {
   const { orderId } = useParams();
+  const { user } = useAuth();
+  const guard = useRequestGuard(`${user?.id || 'guest'}:${orderId}`);
   const navigate = useNavigate();
-  const { data: order, loading, error, refetch, setData } = useAsync(
+  const { data: order, loading, error, refetch } = useAsync(
     () => orderService.getOrderById(orderId),
-    [orderId]
+    [orderId, user?.id], null
   );
   const [searchParams, setSearchParams] = useSearchParams();
   const payfastState = searchParams.get("payfast");
   const [refreshing, setRefreshing] = useState(false);
   const [refreshError, setRefreshError] = useState("");
 
+  useEffect(() => { setRefreshing(false); setRefreshError(''); }, [orderId, user?.id]);
+
   const refreshOrder = useCallback(async () => {
-    const fresh = await orderService.getOrderById(orderId);
+    const fresh = await refetch({ silent: true, throwOnError: true });
+    if (!fresh) return null;
     if (!fresh?.id) throw new Error("Order unavailable. Please try again.");
-    setData(fresh);
     return fresh;
-  }, [orderId, setData]);
+  }, [refetch]);
 
   const checkPayment = async (openOptions = false) => {
     if (refreshing) return;
+    const current = guard.begin();
     setRefreshing(true);
     setRefreshError("");
     try {
       const fresh = await refreshOrder();
+      if (!current() || !fresh) return;
       if (openOptions && fresh.status === ORDER_STATUS.PENDING_PAYMENT) {
         navigate(`/payment/${orderId}`);
       }
     } catch (err) {
-      setRefreshError(err.message || "Could not check payment status. Please try again.");
+      if (current()) setRefreshError(err.message || "Could not check payment status. Please try again.");
     } finally {
-      setRefreshing(false);
+      if (current()) setRefreshing(false);
     }
   };
 
@@ -147,8 +155,7 @@ export default function OrderTracking() {
       if (running || document.visibilityState === "hidden") return;
       running = true;
       try {
-        const fresh = await orderService.getOrderById(orderId);
-        if (active && fresh?.id) setData(fresh);
+        if (active) await refetch({ silent: true });
       } catch {
         // A transient background failure must not erase the loaded order.
       } finally {
@@ -166,7 +173,7 @@ export default function OrderTracking() {
       window.removeEventListener("pageshow", refresh);
       document.removeEventListener("visibilitychange", refresh);
     };
-  }, [orderId, order?.id, order?.status, setData]);
+  }, [orderId, user?.id, order?.id, order?.status, refetch]);
 
   useEffect(() => {
     if (!payfastState || !order?.id || order.status === ORDER_STATUS.PENDING_PAYMENT) return;

@@ -55,6 +55,7 @@ function formatDateTime(value) {
   return new Intl.DateTimeFormat("en-ZA", {
     dateStyle: "medium",
     timeStyle: "short",
+    timeZone: "Africa/Johannesburg",
   }).format(date);
 }
 

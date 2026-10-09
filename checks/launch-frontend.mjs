@@ -1,5 +1,6 @@
+import { invalidateFinancialData, financialRevision } from '../src/utils/financialInvalidation.js';
 import { stripTypeScriptTypes } from 'node:module';
-﻿// Hook/service stubs exercise actual handlers; these are not browser tests.
+// Hook/service stubs exercise actual handlers; these are not browser tests.
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
@@ -28,7 +29,7 @@ await clearLegacyPrivateCaches();assert.deepEqual(deleted,['officebites-api-cach
 function harness(extra={}) {
   let cursor=0,slots=[],effects=[];
   const same=(a,b)=>a&&b&&a.length===b.length&&a.every((v,i)=>Object.is(v,b[i]));
-  const ctx={console:{error:()=>{},debug:()=>{}},...extra,
+  const ctx={invalidateFinancialData, financialRevision, console:{error:()=>{},debug:()=>{}},...extra,
     useState(initial){let i=cursor++;if(!slots[i])slots[i]={value:typeof initial==='function'?initial():initial};return[slots[i].value,v=>slots[i].value=typeof v==='function'?v(slots[i].value):v];},
     useRef(initial){let i=cursor++;return(slots[i]??={current:initial});},
     useCallback(cb,deps){let i=cursor++;if(!slots[i]||!same(slots[i].deps,deps))slots[i]={deps,cb};return slots[i].cb;},
@@ -89,7 +90,7 @@ edgeRole='admin';edgeSuspended=true;assert.equal((await endpoint(request(input,{
 edgeSuspended=false;assert.equal((await endpoint(request(input,{authorization:'Bearer fixture-token'}))).status,200);assert.equal(verifiedToken,'fixture-token');assert.equal(serviceCreated,0);checks++;
 assert.equal((await endpoint(request({...input,id:'invalid'},{authorization:'Bearer fixture-token'}))).status,400);checks++;
 // A successful void RPC may return null; errors must still propagate.
-let rpcResult={data:null};const financeCtx={supabase:{rpc:async()=>rpcResult},periodDates};vm.createContext(financeCtx);vm.runInContext(strip(fs.readFileSync('src/services/financialService.js','utf8'))+'\nthis.rpc=financialRpc;',financeCtx);
+let rpcResult={data:null};const financeCtx={invalidateFinancialData,financialRevision,supabase:{rpc:async()=>rpcResult},periodDates};vm.createContext(financeCtx);vm.runInContext(strip(fs.readFileSync('src/services/financialService.js','utf8'))+'\nthis.rpc=financialRpc;',financeCtx);
 await financeCtx.rpc('admin_set_fee_policy',{});checks++;
 await assert.rejects(financeCtx.rpc('get_financial_report',{}),/no result/i);checks++;
 rpcResult={error:{code:'PGRST202',message:'missing'}};await assert.rejects(financeCtx.rpc('get_financial_report',{}),/not installed/i);checks++;

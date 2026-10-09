@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../../components/layout/Navbar";
 import TextField from "../../components/forms/TextField";
@@ -6,9 +6,10 @@ import { useCart } from "../../context/CartContext";
 import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../context/ToastContext";
 import { orderService } from "../../services/orderService";
-import { splitCartByVendor, nextOrderableDate, deliveryDateKey, isOrderingOpen } from "../../utils/orderRules";
+import { splitCartByVendor, deliveryDateKey, isOrderingOpen } from "../../utils/orderRules";
 import { formatCurrency, formatDate } from "../../utils/formatters";
-import { addGuestOrder } from "../../utils/guest";
+import { useDeliveryDate } from "../../hooks/useDeliveryDate";
+import { addGuestOrder, getGuestOrderAccess } from "../../utils/guest";
 import Spinner from "../../components/ui/Spinner";
 import EmptyState from "../../components/ui/EmptyState";
 import { FiShoppingBag, FiUser } from "react-icons/fi";
@@ -18,6 +19,8 @@ export default function Checkout() {
   const { user, isAuthenticated } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
+  const creating = useRef(false);
+  const [createdOrder, setCreatedOrder] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [guestDetails, setGuestDetails] = useState({
     name: "",
@@ -27,7 +30,7 @@ export default function Checkout() {
   const [errors, setErrors] = useState({});
 
   const grouped = splitCartByVendor(items);
-  const deliveryDate = nextOrderableDate();
+  const deliveryDate = useDeliveryDate();
 
   const updateGuest = (key) => (e) => setGuestDetails((g) => ({ ...g, [key]: e.target.value }));
 
@@ -45,7 +48,7 @@ export default function Checkout() {
   };
 
   const handlePlaceOrder = async () => {
-    if (submitting) return;
+    if (creating.current || createdOrder) return;
     if (!isOrderingOpen(deliveryDate)) {
       showToast("The ordering cutoff has passed. Please review the updated delivery date before ordering.", { type: "info" });
       return;
@@ -54,6 +57,7 @@ export default function Checkout() {
       showToast("Please fill in your details before ordering", { type: "error" });
       return;
     }
+    creating.current = true;
     setSubmitting(true);
     try {
       const order = await orderService.createOrder({
@@ -65,12 +69,17 @@ export default function Checkout() {
         deliveryLocation: deliveryLocation.trim(),
         cartItems: items,
       });
+      setCreatedOrder(order);
       if (!isAuthenticated) {
-        addGuestOrder({
+        const persisted = addGuestOrder({
           id: order.id,
           ticketNumber: order.ticketNumber,
           contact: guestDetails.phone.trim(),
         });
+        if (!persisted) {
+          clearCart();
+          return;
+        }
       }
 
       clearCart();
@@ -85,10 +94,19 @@ export default function Checkout() {
     } catch (err) {
       showToast(err.message || "Couldn't place order", { type: "error" });
     } finally {
+      creating.current = false;
       setSubmitting(false);
     }
   };
 
+  if (createdOrder) {
+    return <div><Navbar showBack title="Order created" showCart={false} />
+      <div className="ob-container pt-4 flex flex-col gap-4">
+        <p>Your order code is <strong>{createdOrder.ticketNumber}</strong>.</p>
+        <p>Save this code. Use Track Order with the phone number you entered to recover your order after leaving this tab. Your browser may not retain these details.</p>
+        <button className="btn-primary" disabled={!isAuthenticated && !getGuestOrderAccess(createdOrder.id)} onClick={() => navigate(`/payment/${createdOrder.id}`)}>Continue to payment</button>
+      </div></div>;
+  }
   if (items.length === 0) {
     return (
       <div>

@@ -9,6 +9,7 @@ export function formatCurrency(amount = 0) {
 export function formatDate(date, opts = {}) {
   const d = calendarDate(date);
   return d.toLocaleDateString("en-ZA", {
+    ...(typeof date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(date) ? {} : { timeZone: "Africa/Johannesburg" }),
     weekday: "short",
     day: "numeric",
     month: "short",
@@ -18,7 +19,7 @@ export function formatDate(date, opts = {}) {
 
 export function formatTime(date) {
   const d = typeof date === "string" ? new Date(date) : date;
-  return d.toLocaleTimeString("en-ZA", { hour: "2-digit", minute: "2-digit" });
+  return d.toLocaleTimeString("en-ZA", { hour: "2-digit", minute: "2-digit", timeZone: "Africa/Johannesburg" });
 }
 
 export function formatRelativeTime(date) {

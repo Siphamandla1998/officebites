@@ -1,4 +1,3 @@
-import { financialService } from './financialService';
 import { supabase } from "./api/supabaseClient";
 import { getOrderCustomerNames } from "./customerNameService";
 import { mapOrder, ORDER_SELECT } from "./api/mappers";
@@ -37,6 +36,7 @@ export const orderService = {
       return [];
     }
 
+    const failures = [];
     const results = await Promise.all(
       guestOrders.map(async (guestOrder) => {
         const ticketNumber = guestOrder?.ticketNumber;
@@ -52,6 +52,7 @@ export const orderService = {
             contact
           );
         } catch (error) {
+          failures.push(error);
           console.error(
             "getGuestOrdersHistory: couldn't retrieve guest order",
             error
@@ -61,7 +62,13 @@ export const orderService = {
       })
     );
 
-    return results.filter(Boolean);
+    const orders = results.filter(Boolean);
+    if (failures.length) {
+      const error = new Error(`Could not retrieve ${failures.length} saved guest order(s). Please retry or use Track Order.`);
+      error.partialData = orders;
+      throw error;
+    }
+    return orders;
   },
 
   /**
@@ -336,12 +343,11 @@ export const orderService = {
    * pipeline is responsible for changing the order status.
    */
   async getRecentPayments(limit = 10) {
-    const report = await financialService.report({ period: 'all' });
-    const orders = new Map();
-    for (const row of report.rows) {
-      const entry = orders.get(row.order_id) || { id: row.order_id, ticketNumber: row.ticket_number, customerName: 'Paid business sale', createdAt: row.financial_date + 'T12:00:00+02:00', status: row.status, total: 0 };
-      entry.total += Number(row.gross); orders.set(row.order_id, entry);
-    }
-    return [...orders.values()].sort((a,b) => b.createdAt.localeCompare(a.createdAt)).slice(0,limit);
+    const { data, error } = await supabase.rpc('admin_recent_payments', { p_limit: limit });
+    if (error) throw new Error(error.message);
+    return (data || []).map(row => ({ id: row.id, orderId: row.order_id,
+      ticketNumber: row.ticket_number, paymentId: row.pf_payment_id,
+      createdAt: row.processed_at, total: Number(row.amount_gross), status: 'completed',
+      receiptLabel: 'Verified PayFast receipt', requiresReview: row.requires_review }));
   },
 };

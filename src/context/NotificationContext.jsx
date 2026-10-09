@@ -102,6 +102,8 @@ export function NotificationProvider({ children }) {
 
   useEffect(() => {
     refresh();
+    const requests = request;
+    return () => { requests.current++; };
   }, [refresh]);
 
   useEffect(() => {
@@ -222,7 +224,7 @@ export function NotificationProvider({ children }) {
   const value = useMemo(
     () => ({
       notifications,
-      error: failure?.uid === user?.id ? failure.error : null,
+      error: failure != null && failure.uid === user?.id ? failure.error : null,
       unreadCount,
       loading,
       refresh,

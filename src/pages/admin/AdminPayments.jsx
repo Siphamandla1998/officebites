@@ -28,7 +28,7 @@ export default function AdminPayments() {
 
         <p className="text-sm text-ink-muted mt-0.5">
           PayFast payments are confirmed automatically
-          after secure server-side verification.
+          after secure server-side verification. Times show when OfficeBites recorded the verified receipt (SAST). Test orders are excluded. Legacy sales without a receipt remain in financial reports.
         </p>
       </div>
 
@@ -49,11 +49,11 @@ export default function AdminPayments() {
             >
               <div className="min-w-0">
                 <p className="text-sm font-semibold text-ink">
-                  {order.ticketNumber}
+                  {order.ticketNumber}<span className="block text-xs">Receipt {order.paymentId}{order.requiresReview ? " · Account/fulfilment review required" : ""}</span>
                 </p>
 
                 <p className="text-xs text-ink-muted truncate">
-                  {order.customerName} ·{" "}
+                  {order.receiptLabel} ·{" "}
                   {formatRelativeTime(
                     order.createdAt
                   )}

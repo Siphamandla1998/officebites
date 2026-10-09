@@ -87,10 +87,20 @@ Deno.serve(async (req) => {
       });
       const { data, error } = await authClient.auth.getUser();
       if (!error) callerId = data?.user?.id || null;
+      else if (authHeader !== `Bearer ${anonKey}` && !authHeader.startsWith('Bearer sb_publishable_')) {
+        return jsonResponse(req, { error: 'Please sign in again or verify your guest order without an expired session.' }, 401);
+      }
     }
   }
 
-  const { data: order, error: orderError } = await admin
+  if (callerId) {
+    const { data: profile, error: profileError } = await admin.from('profiles')
+      .select('id,suspended,deleted_at').eq('id', callerId).maybeSingle();
+    if (profileError) return jsonResponse(req, { error: 'Could not verify account status' }, 503);
+    if (!profile || profile.suspended || profile.deleted_at) return jsonResponse(req, { error: 'Active account required' }, 403);
+  }
+
+  let { data: order, error: orderError } = await admin
     .from("orders")
     .select(
       "id,ticket_number,customer_id,guest_name,guest_contact,guest_email,status,total,delivery_location",
@@ -121,16 +131,14 @@ Deno.serve(async (req) => {
     );
   }
 
-  const { error: updateError } = await admin
-    .from("orders")
-    .update({ payment_method: "payfast" })
-    .eq("id", order.id);
+  // This RPC rechecks authority and vendor/customer lifecycle under DB locks.
+  const { data: preparedOrder, error: prepareError } = await admin.rpc('prepare_payfast_order', {
+    p_order_id: order.id, p_caller_id: callerId, p_guest_contact: guestContact || null,
+  });
+  if (prepareError) return jsonResponse(req, { error: prepareError.message || 'Could not prepare payment' }, prepareError.code === '42501' ? 403 : 409);
 
-  if (updateError) {
-    console.error("payfast-initiate: could not mark payment method", updateError);
-    return jsonResponse(req, { error: "Could not prepare order for payment" }, 500);
-  }
-
+  order = preparedOrder; // Sign the authoritative transaction snapshot.
+  if (!order) return jsonResponse(req, { error: 'Could not prepare payment' }, 503);
   const config = getPayfastConfig();
   const requestOrigin = normalizeOrigin(req.headers.get("Origin"));
   const returnOrigin =

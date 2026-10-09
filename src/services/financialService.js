@@ -1,3 +1,4 @@
+import { invalidateFinancialData, financialRevision } from '../utils/financialInvalidation';
 import { supabase } from './api/supabaseClient';
 import { periodDates } from '../utils/reportingDates';
 const pendingReports = new Map();
@@ -6,6 +7,10 @@ export async function financialRpc(name, args = {}) {
   const { data, error } = await supabase.rpc(name, args);
   if (error) throw new Error(error.code === 'PGRST202' ? 'Financial backend update is not installed. This screen cannot show reliable figures yet.' : error.message);
   if (data == null && !['admin_set_fee_policy','admin_reconcile_payout','admin_configure_retention'].includes(name)) throw new Error('Financial backend returned no result. Please retry.');
+  if (['admin_set_fee_policy','admin_allocate_payout','admin_reconcile_payout','admin_classify_test_order','admin_record_historical_commission'].includes(name)) {
+    pendingReports.clear();
+    invalidateFinancialData();
+  }
   return data;
 }
 
@@ -17,7 +22,7 @@ export const financialService = {
     if (error) throw error;
     const uid = data.session?.user?.id;
     if (!uid) throw new Error('Sign in to view financial reports.');
-    const key = JSON.stringify([uid, args]);
+    const key = JSON.stringify([uid, args, financialRevision()]);
     if (pendingReports.has(key)) return pendingReports.get(key);
     const request = financialRpc('get_financial_report', args);
     pendingReports.set(key, request);

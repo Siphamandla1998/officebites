@@ -14,6 +14,9 @@ export const adminService = {
       throw { message: error.message };
     }
 
+    const { data: counts, error: countError } = await supabase.rpc('admin_customer_favourite_counts');
+    if (countError) throw new Error(countError.message);
+    const favourites = new Map((counts || []).map(row => [row.profile_id, Number(row.favourite_count)]));
     return (data || []).filter(row => !row.deleted_at).map((row) => ({
       id: row.id,
       name: row.name,
@@ -21,6 +24,7 @@ export const adminService = {
       avatar: row.avatar_url,
       building: row.building,
       suspended: row.suspended || false,
+      favouriteCount: favourites.get(row.id) ?? 0,
     }));
   },
 

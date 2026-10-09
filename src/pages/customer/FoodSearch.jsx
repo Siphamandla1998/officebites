@@ -6,13 +6,15 @@ import EmptyState from "../../components/ui/EmptyState";
 import { useAsync } from "../../hooks/useAsync";
 import { useDebounce } from "../../hooks/useDebounce";
 import { foodService } from "../../services/foodService";
-import { nextOrderableDate } from "../../utils/orderRules";
+import { useDeliveryDate } from "../../hooks/useDeliveryDate";
+import RequestError from "../../components/ui/RequestError";
 import { useCart } from "../../context/CartContext";
 import { useToast } from "../../context/ToastContext";
 import { useLocation } from "../../context/LocationContext";
 import { FiMapPin, FiSearch } from "react-icons/fi";
 
 export default function FoodSearch() {
+  const deliveryDate = useDeliveryDate();
   const [params, setParams] = useSearchParams();
 
   const query = params.get("q") || "";
@@ -33,13 +35,13 @@ export default function FoodSearch() {
 
   const {
     data: meals = [],
-    loading,
+    loading, error, refetch,
   } = useAsync(
     () =>
       foodService.getMeals({
         search:
           debouncedQuery || undefined,
-        forDate: nextOrderableDate(),
+        forDate: deliveryDate,
         latitude:
           hasLocation
             ? latitude
@@ -50,7 +52,7 @@ export default function FoodSearch() {
             : undefined,
       }),
     [
-      debouncedQuery,
+      deliveryDate, debouncedQuery,
       hasLocation,
       latitude,
       longitude,
@@ -140,7 +142,7 @@ export default function FoodSearch() {
           </div>
         )}
 
-        {loading ? (
+        {error ? <RequestError error={error} onRetry={refetch} /> : loading ? (
           <div className="grid grid-cols-2 gap-3.5">
             {Array.from({ length: 4 }).map(
               (_, i) => (

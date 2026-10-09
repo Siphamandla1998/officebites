@@ -1,3 +1,6 @@
+import RequestError from '../../components/ui/RequestError';
+import { useAuth } from '../../context/AuthContext';
+import { useRequestGuard } from '../../hooks/useRequestGuard';
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { FiCreditCard } from "react-icons/fi";
@@ -13,39 +16,33 @@ import { getGuestOrderAccess } from "../../utils/guest";
 
 export default function PaymentUpload() {
   const { orderId } = useParams();
+  const { user } = useAuth();
+  const guard = useRequestGuard(`${user?.id || 'guest'}:${orderId}`);
   const navigate = useNavigate();
   const { showToast } = useToast();
   const [payfastLoading, setPayfastLoading] = useState(false);
 
-  const { data: order, loading, error, setData } = useAsync(
+  const { data: order, loading, error, refetch } = useAsync(
     () => orderService.getOrderById(orderId),
-    [orderId]
+    [orderId, user?.id], null
   );
 
   useEffect(() => {
-    let active = true;
-    const refresh = async () => {
-      setPayfastLoading(false);
-      try {
-        const fresh = await orderService.getOrderById(orderId);
-        if (active && fresh?.id) setData(fresh);
-      } catch { /* Actions recheck before starting payment. */ }
-    };
-    window.addEventListener("pageshow", refresh);
-    return () => {
-      active = false;
-      window.removeEventListener("pageshow", refresh);
-    };
-  }, [orderId, setData]);
+    setPayfastLoading(false);
+    const refresh = () => { guard.invalidate(); setPayfastLoading(false); void refetch({ silent: true }); };
+    window.addEventListener('pageshow', refresh);
+    return () => window.removeEventListener('pageshow', refresh);
+  }, [orderId, user?.id, refetch, guard]);
 
   const handlePayfast = async () => {
     if (payfastLoading) return;
+    const current = guard.begin();
     setPayfastLoading(true);
 
     try {
-      const fresh = await orderService.getOrderById(orderId);
+      const fresh = await refetch({ silent: true, throwOnError: true });
+      if (!current()) return;
       if (!fresh?.id) throw new Error("Could not check this order. Please try again.");
-      setData(fresh);
       if (fresh.status !== ORDER_STATUS.PENDING_PAYMENT) {
         setPayfastLoading(false);
         showToast("This order is no longer awaiting payment.", { type: "info" });
@@ -63,8 +60,10 @@ export default function PaymentUpload() {
           guestAccess?.contact || null
         );
 
+      if (!current()) return;
       paymentService.redirectToPayfast({ processUrl, fields });
     } catch (err) {
+      if (!current()) return;
       showToast(
         err.message || "Couldn't start PayFast payment",
         { type: "error" }
@@ -91,6 +90,7 @@ export default function PaymentUpload() {
         <p role="alert" className="ob-container pt-4 text-sm text-ink-muted">
           Could not load this order. Please refresh or open it from your order history.
         </p>
+        <RequestError error={error || new Error("Order unavailable")} onRetry={refetch} />
       </div>
     );
   }

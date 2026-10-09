@@ -307,12 +307,15 @@ const TICKET_SELECT = `
   )
 `;
 
-async function getCurrentUser() {
+async function getCurrentUser({ allowGuest = false } = {}) {
   const {
     data,
     error,
   } = await supabase.auth.getUser();
 
+  // Only the SDK's normal no-session condition permits anonymous feedback.
+  // Token, transport and server errors must still reach the caller.
+  if (allowGuest && error?.name === 'AuthSessionMissingError' && !data?.user) return null;
   if (error) {
     throw new Error(error.message);
   }
@@ -852,7 +855,7 @@ export const supportService = {
     recommend,
   }) {
     const user =
-      await getCurrentUser();
+      await getCurrentUser({ allowGuest: true });
 
     const cleanComment = String(comment || "").trim();
     if (!Number.isInteger(rating) || rating < 1 || rating > 5) throw new Error("Choose a rating from 1 to 5.");

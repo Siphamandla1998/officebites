@@ -140,11 +140,11 @@ export default function AdminOverview() {
               >
                 <div className="min-w-0">
                   <p className="text-sm font-medium text-ink truncate">
-                    {order.ticketNumber}
+                    {order.ticketNumber}<span className="block text-xs">Receipt {order.paymentId}{order.requiresReview ? " · Account/fulfilment review required" : ""}</span>
                   </p>
 
                   <p className="text-xs text-ink-muted truncate">
-                    {order.customerName} · PayFast
+                    {order.receiptLabel} · PayFast
                     {" · "}
                     {formatRelativeTime(order.createdAt)}
                   </p>

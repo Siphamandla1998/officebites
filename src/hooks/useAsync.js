@@ -8,6 +8,7 @@ export function useAsync(asyncFn, deps = [], initialData = []) {
   const mounted = useRef(true);
   const request = useRef(0);
   const initial = useRef(initialData);
+  const dataGeneration = useRef(0);
   const scope = useRef({ deps, generation: 0 });
   if (deps.length !== scope.current.deps.length || deps.some((v, i) => !Object.is(v, scope.current.deps[i]))) {
     scope.current = { deps: [...deps], generation: scope.current.generation + 1 };
@@ -25,6 +26,7 @@ export function useAsync(asyncFn, deps = [], initialData = []) {
     try {
       const result = await asyncFn();
       if (!mounted.current || current !== request.current || generation !== scope.current.generation) return;
+      dataGeneration.current = generation;
       setData(result ?? initial.current);
       setResultScope(generation);
       return result;
@@ -32,8 +34,10 @@ export function useAsync(asyncFn, deps = [], initialData = []) {
       if (!mounted.current || current !== request.current || generation !== scope.current.generation) return;
       console.error("useAsync error:", err);
       setError(err);
+      if (Array.isArray(err.partialData)) { setData(err.partialData); dataGeneration.current = generation; }
+      else if (dataGeneration.current !== generation) setData(initial.current);
       setResultScope(generation);
-      if (!silent) setData(initial.current);
+      if (options?.throwOnError) throw err;
     } finally {
       if (mounted.current && current === request.current) setLoading(false);
     }
@@ -45,6 +49,13 @@ export function useAsync(asyncFn, deps = [], initialData = []) {
     return () => { mounted.current = false; };
   }, [run]);
 
+  const setScopedData = useCallback(value => {
+    if (!mounted.current || generation !== scope.current.generation) return;
+    request.current++;
+    dataGeneration.current = generation;
+    setData(value);
+    setResultScope(generation);
+  }, [generation]);
   const sameScope = resultScope === generation;
-  return { data: sameScope ? data : initial.current, loading: sameScope ? loading : true, error: sameScope ? error : null, refetch: run, setData };
+  return { data: sameScope ? data : initial.current, loading: sameScope ? loading : true, error: sameScope ? error : null, refetch: run, setData: setScopedData };
 }

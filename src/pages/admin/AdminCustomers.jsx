@@ -33,7 +33,7 @@ export default function AdminCustomers() {
       ),
     },
     { key: "building", header: "Building", render: (c) => c.building || "—" },
-    { key: "favourites", header: "Favourites", render: (c) => c.favouriteMealIds?.length || 0 },
+    { key: "favourites", header: "Favourites", render: (c) => c.favouriteCount },
     {
       key: "actions",
       header: "",

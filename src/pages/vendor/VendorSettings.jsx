@@ -1,3 +1,4 @@
+import { coordinatePair } from "../../utils/coordinates";
 import { useEffect, useState } from "react";
 import {
   FiCheckCircle,
@@ -72,8 +73,7 @@ export default function VendorSettings() {
   };
 
   const hasCoordinates =
-    Number.isFinite(Number(form?.latitude)) &&
-    Number.isFinite(Number(form?.longitude));
+    Boolean(coordinatePair(form?.latitude, form?.longitude));
 
   const captureBusinessLocation = () => {
     if (!navigator.geolocation) {

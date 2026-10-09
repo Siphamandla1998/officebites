@@ -1,3 +1,4 @@
+import RequestError from "../../components/ui/RequestError";
 import { useState } from "react";
 import { FiHelpCircle, FiChevronDown } from "react-icons/fi";
 import Navbar from "../../components/layout/Navbar";
@@ -15,7 +16,7 @@ export default function FAQPage() {
   const [openId, setOpenId] = useState(null);
   const debouncedQuery = useDebounce(query, 250);
 
-  const { data: results, loading } = useAsync(
+  const { data: results, loading, error, refetch } = useAsync(
     () => supportService.searchFAQs({ query: debouncedQuery, category }),
     [debouncedQuery, category]
   );
@@ -29,7 +30,7 @@ export default function FAQPage() {
         <SearchBar value={query} onChange={setQuery} placeholder="Search FAQs..." />
         <Filters options={FAQ_CATEGORIES} active={category} onChange={setCategory} allLabel="All topics" />
 
-        {loading ? (
+        {error ? <RequestError error={error} onRetry={refetch} /> : loading ? (
           <div className="flex flex-col gap-2">
             {Array.from({ length: 4 }).map((_, i) => <div key={i} className="skeleton h-14" />)}
           </div>

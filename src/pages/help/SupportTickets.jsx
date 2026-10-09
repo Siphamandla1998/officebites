@@ -21,8 +21,8 @@ export default function SupportTickets() {
   account.current = user?.id;
   const [filter, setFilter] = useState("all");
   const [selectedState, setSelectedState] = useState(null);
-  const selected = selectedState?.uid === user?.id ? selectedState.ticket : null;
-  const setSelected = value => setSelectedState(current => ({ uid: user?.id, ticket: typeof value === 'function' ? value(current?.uid === user?.id ? current.ticket : null) : value }));
+  const selected = selectedState != null && selectedState.uid === user?.id ? selectedState.ticket : null;
+  const setSelected = value => setSelectedState(current => ({ uid: user?.id, ticket: typeof value === 'function' ? value(current != null && current.uid === user?.id ? current.ticket : null) : value }));
   const [reply, setReply] = useState("");
   const [sending, setSending] = useState(false);
   const { data: tickets, loading, error, refetch } = useAsync(

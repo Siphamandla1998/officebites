@@ -1,3 +1,5 @@
+import { ORDER_STATUS } from '../../utils/constants';
+import { useAuth } from '../../context/AuthContext';
 import { useParams, useNavigate } from "react-router-dom";
 import Navbar from "../../components/layout/Navbar";
 import TicketCard from "../../components/features/TicketCard";
@@ -6,8 +8,9 @@ import { orderService } from "../../services/orderService";
 
 export default function TicketConfirmation() {
   const { orderId } = useParams();
+  const { user } = useAuth();
   const navigate = useNavigate();
-  const { data: order, loading, error } = useAsync(() => orderService.getOrderById(orderId), [orderId], null);
+  const { data: order, loading, error } = useAsync(() => orderService.getOrderById(orderId), [orderId, user?.id], null);
 
   if (loading) {
     return (
@@ -28,7 +31,11 @@ export default function TicketConfirmation() {
       <div className="ob-container pt-4 flex flex-col gap-5">
         <TicketCard order={order} />
         <p className="text-xs text-ink-muted text-center px-4">
-          OfficeBites is verifying your payment. You'll get a notification the moment it's confirmed.
+          {order.status === ORDER_STATUS.PENDING_PAYMENT ? 'Payment is still required. If your bank shows a debit, wait for confirmation or contact support before paying again.'
+            : order.status === ORDER_STATUS.CANCELLED ? 'This order has been cancelled. Contact support if a payment needs review.'
+            : order.status === ORDER_STATUS.COMPLETED ? 'Your order is complete. Thank you for ordering with OfficeBites.'
+            : order.status === ORDER_STATUS.PAYMENT_SUBMITTED ? 'Your payment is awaiting verification.'
+            : 'Your payment is confirmed. Track your order for fulfilment updates.'}
         </p>
         {!order.customerId && (
           <p className="text-xs text-ink-muted text-center px-4">

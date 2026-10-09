@@ -17,3 +17,9 @@ Thumbs.db
 
 # Local review evidence containing production record data
 checks/fixtures/audit-order-review.json
+
+# Local regression artifacts
+test-results/
+playwright-report/
+
+supabase/.temp/
