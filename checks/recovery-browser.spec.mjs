@@ -189,6 +189,7 @@ test('vendor proposes origin; admin approval and mode selection are separate',as
  await expect(page.getByRole('button',{name:'Approve location',exact:true})).toHaveCount(0);
  await page.evaluate(u=>fixture.setUser(u),{...user('ADMIN'),role:'admin'});
  await page.evaluate(()=>fixture.navigate('/admin/payments'));
+ await page.getByText('Delivery policy and vendor origins',{exact:true}).click();
  await page.getByRole('button',{name:/Synthetic vendor · pending/}).click();
  await page.getByLabel('Decision reason').fill('Synthetic reviewed premises');
  await page.getByRole('button',{name:'Approve location',exact:true}).click();

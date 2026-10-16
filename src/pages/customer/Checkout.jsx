@@ -2,6 +2,7 @@ import { useRequestGuard } from '../../hooks/useRequestGuard';
 import { validateMobile } from '../../utils/mobile';
 import { checkoutService } from '../../services/checkoutService';
 import { useAsync } from '../../hooks/useAsync';
+import { useOperationalRefresh } from '../../hooks/useOperationalRefresh';
 import { useLocation } from '../../context/LocationContext';
 import RequestError from '../../components/ui/RequestError';
 import { useEffect, useRef, useState } from "react";
@@ -37,6 +38,9 @@ export default function Checkout() {
   const [deliveryLocation, setDeliveryLocation] = useState("");
   const [errors, setErrors] = useState({});
   const { data: deliveryConfig, error: deliveryError, loading: deliveryLoading, refetch: reloadDelivery } = useAsync(checkoutService.deliverySettings, [], null);
+  const gateways = useAsync(checkoutService.gateways, [], []);
+  useOperationalRefresh(() => gateways.refetch({ silent: true }), 'checkout-gateways', 30000);
+  const paymentAvailable = gateways.data?.some(g => ['payfast', 'ozow'].includes(g.provider) && g.enabled && g.ready && !g.maintenance);
   const geo = useLocation();
   const [quote, setQuote] = useState(null);
   const [quoting, setQuoting] = useState(false);
@@ -83,6 +87,7 @@ export default function Checkout() {
   const handlePlaceOrder = async () => {
     if (creating.current || createdOrder) return;
     if (deliveryLoading || deliveryError) return;
+    if (gateways.loading || gateways.error || !paymentAvailable) return;
     if (deliveryConfig?.enabled && (!usableQuote?.id || usableQuote.expiresAt <= Date.now())) {
       showToast('Calculate and review delivery before ordering.', { type: 'info' }); return;
     }
@@ -125,7 +130,7 @@ export default function Checkout() {
       clearCart();
 
       showToast(
-        "Order created — continue to PayFast to complete payment",
+        "Order created — continue to payment options",
         { type: "success" }
       );
 
@@ -256,11 +261,13 @@ export default function Checkout() {
       </div>
 
       <div className="fixed bottom-0 left-0 right-0 mx-auto w-full max-w-app bg-paper-raised border-t border-line px-4 pt-4 pb-[calc(1rem+env(safe-area-inset-bottom))] shadow-nav flex flex-col gap-3">
+        <RequestError error={gateways.error} onRetry={gateways.refetch} />
+        {!gateways.loading && !gateways.error && !paymentAvailable && <p role="status" className="text-sm">Payments are temporarily unavailable. Your cart is saved. Please try again later.</p>}
         <div className="flex justify-between text-sm">
           <span className="text-ink-muted">Total</span>
           <span className="font-bold text-ink text-base">{deliveryConfig?.enabled && !usableQuote ? 'Calculate delivery first' : formatCurrency(subtotal + (deliveryConfig?.enabled ? Number(usableQuote?.fee || 0) : 0))}</span>
         </div>
-        <button onClick={handlePlaceOrder} className="btn-primary w-full" disabled={submitting || deliveryLoading || !!deliveryError || (deliveryConfig?.enabled && !usableQuote?.id)}>
+        <button onClick={handlePlaceOrder} className="btn-primary w-full" disabled={submitting || gateways.loading || !!gateways.error || !paymentAvailable || deliveryLoading || !!deliveryError || (deliveryConfig?.enabled && !usableQuote?.id)}>
           {submitting ? <Spinner size={16} className="!border-paper/30 !border-t-paper" /> : "Place order"}
         </button>
       </div>

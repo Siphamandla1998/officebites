@@ -50,6 +50,7 @@ export default function CommercialWorkspace() {
     <p className="card p-4">Acquisition charging and the new standard-fee ledger remain disabled pending approved terms, tax treatment and verified settlement/refund integration. Existing financial snapshots remain authoritative. No advertising or subscription billing is activated here.</p>
     {notice && <p role="status" className="card p-3">{notice}</p>}
     <p><Link className="underline" to="/vendor-agreement">Vendor agreement</Link> · <Link className="underline" to="/vendor-fees">Vendor fees</Link></p>
+    <details open={!data?.admin} className="space-y-4"><summary className="font-semibold cursor-pointer">Commercial statements and fee reference</summary>
     <CommercialStatement userId={user?.id}/>
     <section className="card p-4 space-y-2"><h2 className="font-semibold">Acquisition statement</h2>
       <p>{ledger.length} ledger charges · acquisition fees R{ledger.reduce((n,r)=>n+Number(r.amount),0).toFixed(2)} · refund credits R{credits.toFixed(2)}</p>
@@ -58,6 +59,7 @@ export default function CommercialWorkspace() {
       <button className="btn-secondary" onClick={exportLedger}>Download acquisition CSV</button>
       <button className="btn-secondary" onClick={() => downloadCsv('corporate-refund-credits.csv',['Entry','Provider','Provider event','Refunded subtotal','Acquisition credit','Confirmed at'],(data?.adjustments || []).map(r=>[r.entry_id,r.provider,r.provider_event_id,r.refunded_subtotal,r.acquisition_credit,r.confirmed_at]))}>Download refund credits CSV</button>
     </section>
+    </details>
     <section className="space-y-3"><h2 className="text-lg font-semibold">Agreements</h2>
       {!data?.agreements?.length && <p>No corporate agreements.</p>}
       {data?.agreements?.map(a => <article className="card p-4 space-y-2" key={a.id}>
@@ -77,6 +79,7 @@ export default function CommercialWorkspace() {
       setBusy(true);setNotice('');try { await commercialService.acceptLegal(user.vendorId,consent);setNotice('Acceptance recorded; accepted versions are retained below.');await refetch(); }catch(e){setNotice(e.message);}finally{setBusy(false);}
     }}>Record acceptance of current documents</button></section>}
     {data?.admin && <>
+      <details className="space-y-4"><summary className="font-semibold cursor-pointer">Legal documents and business disclosures</summary>
       <BusinessEditor initial={data.business} save={act} busy={busy} />
       <form className="card p-4 space-y-3" onSubmit={e=>{e.preventDefault();act('document',document);}}><h2 className="font-semibold">Add immutable document draft</h2>
         <label className="block">Document<select value={document.kind} onChange={e=>setDocument({...document,kind:e.target.value})}>{['terms','privacy','refund-policy','vendor-agreement','vendor-fees'].map(k=><option key={k}>{k}</option>)}</select></label>
@@ -92,6 +95,8 @@ export default function CommercialWorkspace() {
         <button className="btn-secondary" disabled={busy} onClick={()=>act('onboarding',{enabled:false})}>Disable new agreement enforcement</button>
       </section>
       <form className="card p-4 space-y-3" onSubmit={e=>{e.preventDefault();act('approve_document',approval);}}><h2 className="font-semibold">Publish reviewed legal document</h2><p>Requires complete disclosures and a legal approval reference. Publication cannot replace legal review.</p><Fields names={['id','approvalReference']} value={approval} change={setApproval}/><button className="btn-secondary" disabled={busy}>Approve publication</button></form>
+      </details>
+      <details className="space-y-4"><summary className="font-semibold cursor-pointer">Corporate accounts and agreement administration</summary>
       <form className="card p-4 space-y-3" onSubmit={e=>{e.preventDefault();act('account',account);}}><h2 className="font-semibold">Corporate account</h2>
         <Fields names={['name','internal_identifier','contact_name','contact_email','contact_phone','location','estimated_employees','secured_at','notes']} value={account} change={setAccount}/>
         <select aria-label="Corporate status" value={account.status} onChange={e=>setAccount({...account,status:e.target.value})}>{['draft','active','suspended','closed'].map(s=><option key={s}>{s}</option>)}</select><button className="btn-primary" disabled={busy}>Save corporate account</button>
@@ -99,6 +104,7 @@ export default function CommercialWorkspace() {
       </form>
       <form className="card p-4 space-y-3" onSubmit={e=>{e.preventDefault();act('membership',member);}}><h2 className="font-semibold">Verify workplace membership</h2><p>Use explicit verified evidence. Email domain or a campaign code alone is insufficient.</p><Fields names={['account_id','customer_id','evidence']} value={member} change={setMember}/><button className="btn-secondary" disabled={busy}>Record verified membership</button><button className="btn-secondary" type="button" disabled={busy} onClick={()=>act('revoke_membership',member)}>Revoke membership</button></form>
       <form className="card p-4 space-y-3" onSubmit={e=>{e.preventDefault();act('offer',offer);}}><h2 className="font-semibold">Offer separate corporate agreement</h2><Fields names={['account_id','vendor_id','document_id','starts_at','ends_at']} value={offer} change={setOffer}/><p>ISO timestamps required. Empty end date defaults to 12 weeks. Rates are locked to the progressive schedule. No automatic activation.</p><button className="btn-secondary" disabled={busy}>Offer for explicit vendor acceptance</button></form>
+      </details>
     </>}
   </div>;
 }

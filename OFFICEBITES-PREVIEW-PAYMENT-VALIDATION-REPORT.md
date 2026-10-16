@@ -65,9 +65,41 @@ Verified branch alias: **https://officebites-git-feat-legal-vendor-da31dd-sp24tg
 
 Necessary staging-only follow-up: added only the verified exact branch alias to _shared/payment-origins.ts and extended checks/payment-cors.mjs. **32 assertions passed**, including return/cancel URLs and exclusion from production. Deno frozen check passed. Deployed **staging payfast-initiate v20 ACTIVE**, retaining verify_jwt=false and identical index/signature source. All three deployed files match local after line-ending normalization. Actual OPTIONS from the branch alias now returns a matching Allow-Origin. No POST/preparation/provider request was made. Unknown/immutable Preview origins remain unapproved; use the verified branch alias for payment UI checks. No wildcard origins or production functions were changed.
 
-The CORS follow-up is committed/pushed separately after review; its resulting frontend deployment and final hosted browser results are recorded below after completion. The admin gateway code is unchanged by this Edge-origin follow-up. Do not treat the initial immutable URL as proof of the follow-up HEAD.
+The CORS follow-up was committed and pushed as **40974072a5899c96a2e422b175c3f214b9f56b01** (`fix: allow staging payments from verified feature preview`). Its final frontend deployment is **dpl_DGdhEnAsXG22FgmcUZcgGcArUrzW**, **READY**, Preview target, source Git, exact pushed branch HEAD. Immutable URL: **https://officebites-bh01fqzcj-sp24tg-6983s-projects.vercel.app/**. Vercel build logs confirm deployment completion. The verified branch alias above resolves to this final deployment and is the accepted payment CORS/return origin. The initial 6400b23 deployment remains historical evidence only.
 
 OAuth/confirmation/password-reset redirect allowlists cannot be read or edited with the connected Supabase tools. The app currently uses password login (no signInWithOAuth call); reset email requests use the current origin/reset-password. Exact branch-origin/reset-password allowance and confirmation email delivery need dashboard verification before those email-based flows can be claimed. No Auth setting or redirect secret was changed.
+
+## Final deployed Preview browser results
+
+Fresh Microsoft Edge mobile context (390 x 844), no saved credentials. Production Supabase requests and hosted mutation endpoints were blocked by the test harness. Pages were fetched from the verified final branch alias, not the older preview. Actual response host was only eyhmarmekioovcjibcbr.supabase.co.
+
+| Journey/check | Result | Evidence and limit |
+| --- | --- | --- |
+| /login | Passed, signed-out rendering | HTTP 200, visible password form; no credentials submitted |
+| Signed-out refresh | Passed | Login form remains visible after actual page reload; not authenticated persistence |
+| /food/search | Passed, public render/read | HTTP 200, actual staging meals GET 200; no overflow on inspected viewport |
+| /checkout | Passed, empty-cart/read only | HTTP 200, empty-cart UI; focused follow-up read of get_delivery_settings returned 200 and enabled=false |
+| /terms | Passed | HTTP 200, actual staging get_legal_portal 200 and unpublished notice; no legal version activated |
+| /admin/payments and /vendor/orders | Passed, signed-out protection only | HTTP 200 app routing redirects to /login and displays password form; authenticated screens not tested here |
+| Deployed bundle isolation | Passed | Compiled Supabase client contains staging URL/public publishable key, no live project URL; no values recorded |
+| Latest frontend repair inclusion | Passed, static evidence | Deployed admin chunk contains Gateway settings saved and reloaded; Vercel SHA equals final pushed HEAD |
+| PayFast branch-origin CORS | Passed | Actual OPTIONS returns matching Allow-Origin after staging v20; no initiation |
+| Customer login and authenticated refresh/history | Blocked for assistant on new Preview | User's earlier manual login pass retained; no designated session/credentials available to automation |
+| Admin PayFast ON/OFF/re-enable and persistence | Passed in synthetic browser/native permission checks; hosted UI untested | Final local browser suite proves independent save/refresh/error behaviour; staging setting was not persistently toggled |
+| Ozow ON/OFF, provider redirect, supported return/cancel | Blocked for hosted provider test | Ozow remains not-ready/disabled; mocked browser/adapter tests are not actual provider success |
+| Guest/member order submission and state transitions | Passed in native rollback, genuine browser blocked | Synthetic service-confirmed paid state remains distinct from sequential vendor fulfilment completion; no actual gateway evidence |
+| Cancel/return/retry UI and status consistency | Passed in local browser regressions; hosted signed-in flow untested | Modal race fixed; return does not confirm payment; unknown/partial/paid states cannot trigger whole-order retry |
+| Mobile navigation/render | Partial | Six signed-out routes render at mobile viewport without horizontal overflow; no physical-device or installed-PWA update test |
+
+Hosted smoke setup failures are retained: first script inspected only the entry chunk and could not find a lazy admin asset; corrected inspection uses the service-worker precache manifest. The second script completed all route/configuration assertions but its over-restrictive mutation filter blocked the read-only get_delivery_settings POST. This is **not counted as a full smoke-run pass**. A separately focused checkout test allowed that documented read RPC and passed (200, enforcement false, no blocked writes). Neither setup failure demonstrates an application permission/payment bug; individual passed assertions and the limits above are the evidence.
+
+## Final safety and working-tree state
+
+Production officebites.co.za still resolves to **dpl_9mWoxNCL9NqX7DHKAUy7NCfBWGnt**, and the latest Production deployment ID is unchanged. Remote main remains **4c4835db62b7db4c7a725c92d7a6294ca523fa57**. No production Supabase query/write/deployment, production Vercel setting, alias or payment secret was changed. No migration was applied. Staging's only persistent backend change is the necessary PayFast v20 exact-origin allowance.
+
+Final staging reads confirm PayFast enabled/ready as before, Ozow disabled/not ready, corporate/standard/onboarding flags false, delivery and retention false, and zero retained synthetic legal/repair Auth accounts. No provider initiation, customer order/message, refund/payout or deletion occurred.
+
+All application/Edge/check changes are committed and pushed in the two SHAs above. The working tree was clean after the second push. This postdeployment report update is intentionally retained locally and uncommitted so the recorded final verification describes the exact deployed HEAD; no extra deployment is triggered by recording the results. Ignored local audit/browser artifacts are preserved and excluded from Git. Final git diff --check passes.
 
 ## Files reviewed for the development commit
 

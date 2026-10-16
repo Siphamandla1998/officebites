@@ -34,7 +34,9 @@ export default function CheckoutControls() {
       <label>Public notice <input className="input" name="notice" maxLength={500} defaultValue={g.notice} /></label>
       <button className="btn-outline" disabled={busy}>Save gateway settings</button>
     </form>)}
-    {delivery.data && <form className="border-t pt-3 flex flex-col gap-3" onSubmit={event => { event.preventDefault(); void save(() => checkoutService.saveHub(draft || delivery.data, reason)); }}>
+    <details className="border-t pt-3">
+    <summary className="font-semibold cursor-pointer">Delivery policy and vendor origins</summary>
+    {delivery.data && <form className="pt-3 flex flex-col gap-3" onSubmit={event => { event.preventDefault(); void save(() => checkoutService.saveHub(draft || delivery.data, reason)); }}>
       <h3 className="font-semibold">Delivery policy</h3>
       <p>CENTRAL is the default for every vendor. Delivery costs the standard fee once per checkout if any vendor requires a paid-zone delivery. The operational hub pin still requires verification.</p>
       <a href={`https://www.google.com/maps?q=${encodeURIComponent(`${(draft || delivery.data).latitude},${(draft || delivery.data).longitude}`)}`} target="_blank" rel="noreferrer">Review central hub map pin</a>
@@ -49,5 +51,6 @@ export default function CheckoutControls() {
       <button className="btn-outline" disabled={busy}>Save confirmed delivery policy</button>
     </form>}
     <DeliveryOriginQueue />
+    </details>
   </section>;
 }

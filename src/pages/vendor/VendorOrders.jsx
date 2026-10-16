@@ -176,7 +176,7 @@ export default function VendorOrders() {
           <div className="flex flex-col gap-4">
             <div className="flex items-center justify-between">
               <StatusBadge status={selected.subOrder.status} />
-              <StatusBadge status={selected.subOrder.paymentStatus === "paid" ? "completed" : selected.subOrder.paymentStatus === "verifying" ? "payment_submitted" : "pending_payment"} />
+              <span className="flex items-center gap-2 text-xs">Payment <StatusBadge status={selected.subOrder.paymentStatus === "paid" ? "paid" : selected.subOrder.paymentStatus === "verifying" ? "payment_submitted" : selected.subOrder.paymentStatus === "unpaid" ? "pending_payment" : "status_review"} /></span>
             </div>
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div>

@@ -222,6 +222,7 @@ export default function PaymentUpload() {
             )}
           </button>
           <button className="btn-outline w-full" disabled={payfastLoading || cancelling} onClick={() => setCancelOpen(true)}>Cancel payment</button>
+          {!gateways.loading && !gateways.error && !ozowAvailable && <p className="text-sm text-ink-muted" role="status">Ozow is currently unavailable. It will appear as a payment option once checkout is enabled.</p>}
           {ozowAvailable && <button className="btn-primary w-full" disabled={payfastLoading || cancelling || gateways.loading || !!gateways.error} onClick={handleOzow}>Pay {formatCurrency(order.total)} with Ozow</button>}
           <Modal open={cancelOpen} onClose={() => { if (!cancelling) setCancelOpen(false); }} title="Cancel payment?">
             <p>Returning to your order leaves it available for payment. Confirming cancellation cancels an unpaid order only if no provider payment may be processing. A verified payment is never cancelled or refunded here.</p>

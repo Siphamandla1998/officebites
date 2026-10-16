@@ -6,7 +6,7 @@ async function rpc(name, args, legacyValue) {
   return data;
 }
 export const checkoutService = {
-  gateways: () => rpc('get_payment_gateways', {}, [{ provider: 'payfast', enabled: true, ready: true, maintenance: false, notice: '' }]),
+  gateways: () => rpc('get_payment_gateways', {}),
   deliverySettings: () => rpc('get_delivery_settings', {}, { enabled: false }),
   quote: (location, items, guestContact) => rpc('quote_delivery', {
     p_destination: { ...location, capturedAt: new Date(location.capturedAt).toISOString() },

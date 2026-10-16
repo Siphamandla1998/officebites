@@ -71,9 +71,9 @@ export default function AdminAnalytics() {
           />
 
           <StatCard
-            label="PayFast fees"
+            label="Payment processor fees"
             value={formatCurrency(
-              analytics?.processorFees || 0
+              analytics?.processorFees
             )}
             icon={FiCreditCard}
           />
@@ -102,7 +102,7 @@ export default function AdminAnalytics() {
         ) : !analytics?.weekly?.length ? (
           <EmptyState
             title="Not enough sales data yet"
-            description="Weekly GMV will appear as real PayFast-confirmed orders are processed."
+            description="Weekly GMV will appear as provider-confirmed orders are processed."
           />
         ) : (
           <LineChart

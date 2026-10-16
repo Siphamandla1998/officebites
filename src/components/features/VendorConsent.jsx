@@ -18,7 +18,12 @@ export default function VendorConsent({ onChange }) {
   const documents = Object.fromEntries(Object.entries(data?.documents || {}).map(([k, v]) => [k, v.id]));
   const ready = data?.businessReady && ['vendor-agreement','vendor-fees','privacy','refund-policy'].every(k => documents[k]);
   return <fieldset className="card p-4 space-y-3"><legend className="font-semibold">Vendor agreement</legend>
-    <p className="text-sm"><Link className="underline" to="/vendor-agreement">Agreement</Link> · <Link className="underline" to="/vendor-fees">Fee schedule</Link> · <Link className="underline" to="/privacy">Privacy</Link> · <Link className="underline" to="/refund-policy">Refunds</Link></p>
+    <p className="text-sm"><Link className="underline" to="/privacy">Privacy</Link> · <Link className="underline" to="/refund-policy">Refunds</Link></p>
+    {['vendor-agreement', 'vendor-fees'].map(kind => data?.documents?.[kind] && <details key={kind}>
+      <summary className="cursor-pointer underline">{kind === 'vendor-agreement' ? 'Review vendor agreement' : 'Review vendor fee schedule'}</summary>
+      <p>{data.documents[kind].title} · {data.documents[kind].version}</p>
+      <div className="whitespace-pre-wrap break-words text-sm">{data.documents[kind].content}</div>
+    </details>)}
     {loading && <p role="status">Loading agreement requirements…</p>}
     {error && <p role="alert">Agreement requirements unavailable. <button type="button" onClick={() => refetch()}>Retry</button></p>}
     {!ready && !loading && !error && <p>Approved documents and disclosures are pending. No acceptance of unpublished terms will be recorded. The new agreement programme remains disabled.</p>}

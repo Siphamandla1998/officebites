@@ -21,7 +21,6 @@ export default function AdminPayments() {
 
   return (
     <div className="flex flex-col gap-6">
-      <CheckoutControls />
       <div>
         <h1 className="text-xl font-bold text-ink">
           Payments
@@ -32,6 +31,8 @@ export default function AdminPayments() {
           Paid is a payment status, separate from vendor acceptance and fulfilment.
         </p>
       </div>
+
+      <CheckoutControls />
 
       {error ? <RequestError error={error} onRetry={refetch} /> : loading ? (
         <div className="skeleton h-64" />

@@ -334,7 +334,8 @@ export default function AppRoutes() {
 
         {/* Help and support */}
         <Route element={<PublicLayout />}>
-          {['terms','privacy','refund-policy','vendor-agreement','vendor-fees'].map(kind => <Route key={kind} path={`/${kind}`} element={<LegalDocument kind={kind} />} />)}
+          {['terms','privacy','refund-policy'].map(kind => <Route key={kind} path={`/${kind}`} element={<LegalDocument kind={kind} />} />)}
+          {['vendor-agreement','vendor-fees'].map(kind => <Route key={kind} path={`/${kind}`} element={<ProtectedRoute allowedRoles={[ROLES.VENDOR, ROLES.ADMIN]}><LegalDocument kind={kind} /></ProtectedRoute>} />)}
           <Route
             path="/help"
             element={<HelpHome />}

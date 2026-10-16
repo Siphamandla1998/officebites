@@ -36,7 +36,7 @@ export default function VendorLayout() {
         </header>
         <main className="px-5 pt-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] lg:px-8 lg:pt-8 lg:pb-[calc(2rem+env(safe-area-inset-bottom))] max-w-6xl mx-auto">
           <Outlet />
-          <LegalLinks />
+          <LegalLinks commercial />
         </main>
       </div>
     </div>
