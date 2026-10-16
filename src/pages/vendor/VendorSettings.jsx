@@ -164,6 +164,8 @@ export default function VendorSettings() {
         ...form,
         deliveryRadius: radius,
       };
+      // Existing contact values are not normalized or rejected during unrelated edits.
+      if (form.contactNumber === (vendor.contactNumber || '')) delete updates.contactNumber;
 
       if (logoFile) {
         updates.logoFile = logoFile;

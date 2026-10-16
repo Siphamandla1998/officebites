@@ -1,4 +1,5 @@
 import RequestError from '../../components/ui/RequestError';
+import CheckoutControls from '../../components/features/CheckoutControls';
 import { FiCreditCard } from "react-icons/fi";
 import EmptyState from "../../components/ui/EmptyState";
 import StatusBadge from "../../components/ui/StatusBadge";
@@ -21,6 +22,7 @@ export default function AdminPayments() {
   if (error) return <RequestError error={error} onRetry={refetch} />;
   return (
     <div className="flex flex-col gap-6">
+      <CheckoutControls />
       <div>
         <h1 className="text-xl font-bold text-ink">
           Payments

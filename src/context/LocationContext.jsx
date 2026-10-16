@@ -2,24 +2,31 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
+  useRef,
   useMemo,
   useState,
 } from "react";
+import { validatePosition } from '../utils/delivery';
 
 const LocationContext = createContext(null);
 
 const GEO_OPTIONS = {
-  enableHighAccuracy: false,
-  timeout: 10000,
-  maximumAge: 5 * 60 * 1000,
+  enableHighAccuracy: true,
+  timeout: 15000,
+  maximumAge: 0,
 };
 
 export function LocationProvider({ children }) {
+  const generation = useRef(0);
+  useEffect(() => () => { generation.current++; }, []);
   const [location, setLocation] = useState(null);
   const [status, setStatus] = useState("idle");
   const [error, setError] = useState(null);
 
-  const requestLocation = useCallback(() => {
+  const requestLocation = useCallback((options = {}) => {
+    const request = ++generation.current;
+    setLocation(null);
     if (!navigator.geolocation) {
       const message =
         "Location services are not supported by this browser.";
@@ -36,20 +43,19 @@ export function LocationProvider({ children }) {
     return new Promise((resolve) => {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          const nextLocation = {
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-            accuracy: position.coords.accuracy,
-            capturedAt: Date.now(),
-          };
-
-          setLocation(nextLocation);
-          setStatus("ready");
-
-          resolve(nextLocation);
+          if (generation.current !== request) return resolve(null);
+          try {
+            const nextLocation = validatePosition(position, options);
+            setLocation(nextLocation);
+            setStatus('ready');
+            resolve(nextLocation);
+          } catch (failure) {
+            setStatus('inaccurate'); setError(failure.message); resolve(null);
+          }
         },
 
         (geoError) => {
+          if (generation.current !== request) return resolve(null);
           let message =
             "We couldn't determine your current location.";
 
@@ -75,12 +81,14 @@ export function LocationProvider({ children }) {
           resolve(null);
         },
 
-        GEO_OPTIONS
+        { ...GEO_OPTIONS, enableHighAccuracy: options.enableHighAccuracy ?? true,
+          timeout: Math.min(30000, Math.max(1000, options.timeout || 15000)) }
       );
     });
   }, []);
 
   const clearLocation = useCallback(() => {
+    generation.current++;
     setLocation(null);
     setStatus("idle");
     setError(null);

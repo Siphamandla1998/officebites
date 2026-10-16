@@ -1,0 +1,41 @@
+import { useState } from 'react';
+import { useAsync } from '../../hooks/useAsync';
+import { checkoutService } from '../../services/checkoutService';
+import RequestError from '../ui/RequestError';
+
+export default function CheckoutControls() {
+  const gateways = useAsync(checkoutService.gateways, [], []);
+  const delivery = useAsync(checkoutService.deliverySettings, [], null);
+  const [busy, setBusy] = useState(false), [error, setError] = useState(null);
+  const [draft, setDraft] = useState(null);
+  async function save(action) {
+    if (busy) return;
+    setBusy(true); setError(null);
+    try { await action(); await gateways.refetch({ throwOnError: true }); await delivery.refetch({ throwOnError: true }); setDraft(null); }
+    catch (failure) { setError(failure); } finally { setBusy(false); }
+  }
+  return <section className="card p-4 flex flex-col gap-4">
+    <h2 className="section-title">Checkout controls</h2>
+    <RequestError error={error || gateways.error || delivery.error} onRetry={() => { setError(null); gateways.refetch(); delivery.refetch(); }} />
+    <p>Disabling new payments does not disable webhooks or change confirmed payments. Ozow cannot be enabled until server readiness is verified; secrets are never entered here.</p>
+    {gateways.data?.map(g => <form className="border-t pt-3 flex flex-col gap-2" key={`${g.provider}:${g.updated_at}`} onSubmit={event => {
+      event.preventDefault(); const form = new FormData(event.currentTarget);
+      void save(() => checkoutService.saveGateway(g.provider, form.has('enabled'), form.has('maintenance'), String(form.get('notice') || '')));
+    }}>
+      <strong>{g.provider === 'payfast' ? 'PayFast' : 'Ozow'}</strong>
+      <p>Configuration gate: {g.ready ? 'Available' : 'Not verified'} · Updated: {g.updated_at ? new Date(g.updated_at).toLocaleString() : 'Backend installation pending'}</p>
+      <label><input type="checkbox" name="enabled" defaultChecked={g.enabled} disabled={!g.ready || busy} /> Enabled for new payments</label>
+      <label><input type="checkbox" name="maintenance" defaultChecked={g.maintenance} disabled={busy} /> Maintenance</label>
+      <label>Public notice <input className="input" name="notice" maxLength={500} defaultValue={g.notice} /></label>
+      <button className="btn-outline" disabled={busy}>Save gateway settings</button>
+    </form>)}
+    {delivery.data && <form className="border-t pt-3 flex flex-col gap-3" onSubmit={event => { event.preventDefault(); void save(() => checkoutService.saveDelivery(draft || delivery.data)); }}>
+      <h3 className="font-semibold">Delivery policy</h3>
+      <p>Owner-confirmed Eduvos centre is prefilled. Confirm both radii and the paid-zone fee before enabling. Saving invalidates existing quotes.</p>
+      {['latitude','longitude','free_radius_km','max_radius_km','paid_fee'].map(key => <label key={key}>{({latitude:'Origin latitude',longitude:'Origin longitude',free_radius_km:'Free radius (km)',max_radius_km:'Maximum distance (km)',paid_fee:'Paid-zone fee (ZAR)'})[key]}
+        <input className="input" type="number" step="any" required value={(draft || delivery.data)[key] ?? ''} onChange={event => setDraft({ ...(draft || delivery.data), [key]: event.target.value })} /></label>)}
+      <label><input type="checkbox" checked={Boolean((draft || delivery.data).enabled)} onChange={event => setDraft({ ...(draft || delivery.data), enabled: event.target.checked })} /> Enforce delivery quotes</label>
+      <button className="btn-outline" disabled={busy}>Save confirmed delivery policy</button>
+    </form>}
+  </section>;
+}

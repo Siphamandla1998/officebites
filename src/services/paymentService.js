@@ -2,6 +2,15 @@ import { supabase } from "./api/supabaseClient";
 import { calcCommission } from "../utils/orderRules";
 
 export const paymentService = {
+  async cancelUnpaidOrder(orderId, guestAccess = null) {
+    const { data, error } = await supabase.rpc('cancel_unpaid_order', {
+      p_order_id: orderId,
+      p_ticket_number: guestAccess?.ticketNumber || null,
+      p_guest_contact: guestAccess?.contact || null,
+    });
+    if (error) throw new Error(error.message || 'Cancellation failed. Refresh the order before retrying.');
+    return data;
+  },
   /**
    * Starts a PayFast payment using the server-side Edge Function.
    *

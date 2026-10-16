@@ -90,48 +90,17 @@ Deno.serve(async (req) => {
     }
   }
 
-  const { data: order, error: orderError } = await admin
-    .from("orders")
-    .select(
-      "id,ticket_number,customer_id,guest_name,guest_contact,guest_email,status,total,delivery_location",
-    )
-    .eq("id", orderId)
-    .maybeSingle();
+  let config;
+  try { config = getPayfastConfig(); }
+  catch { return jsonResponse(req, { error: 'Payment service is not configured' }, 503); }
 
-  if (orderError || !order) {
-    return jsonResponse(req, { error: "Order not found" }, 404);
-  }
+  // Server RPC serializes payment preparation against customer cancellation,
+  // verifies ownership/guest proof, fulfilment and administrator gateway controls.
+  const { data: order, error: preparationError } = await admin.rpc('prepare_payfast_order', {
+    p_order_id: orderId, p_caller_id: callerId, p_guest_contact: guestContact || null,
+  });
+  if (preparationError || !order) return jsonResponse(req, { error: preparationError?.message || 'Could not prepare order for payment' }, 409);
 
-  if (order.customer_id) {
-    if (!callerId || callerId !== order.customer_id) {
-      return jsonResponse(req, { error: "Not authorized for this order" }, 403);
-    }
-  } else {
-    const storedContact = String(order.guest_contact || "").trim();
-    if (!guestContact || !storedContact || guestContact !== storedContact) {
-      return jsonResponse(req, { error: "Guest order verification failed" }, 403);
-    }
-  }
-
-  if (order.status !== "pending_payment") {
-    return jsonResponse(
-      req,
-      { error: `This order is not awaiting payment (current status: ${order.status})` },
-      409,
-    );
-  }
-
-  const { error: updateError } = await admin
-    .from("orders")
-    .update({ payment_method: "payfast" })
-    .eq("id", order.id);
-
-  if (updateError) {
-    console.error("payfast-initiate: could not mark payment method", updateError);
-    return jsonResponse(req, { error: "Could not prepare order for payment" }, 500);
-  }
-
-  const config = getPayfastConfig();
   const requestOrigin = normalizeOrigin(req.headers.get("Origin"));
   const returnOrigin =
     requestOrigin && ALLOWED_ORIGINS.includes(requestOrigin)

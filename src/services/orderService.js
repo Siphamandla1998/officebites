@@ -175,6 +175,7 @@ export const orderService = {
     deliveryDate,
     deliveryLocation,
     cartItems,
+    quoteId,
   }) {
     if (!Array.isArray(cartItems) || cartItems.length === 0) {
       throw {
@@ -188,7 +189,7 @@ export const orderService = {
     }));
 
     const { data, error } = await supabase.rpc(
-      "create_order_from_cart",
+      quoteId ? "create_order_with_delivery" : "create_order_from_cart",
       {
         p_customer_id: customerId || null,
         p_guest_name: customerId ? null : customerName,
@@ -197,6 +198,7 @@ export const orderService = {
         p_delivery_date: deliveryDate,
         p_delivery_location: deliveryLocation || null,
         p_items: rpcItems,
+        ...(quoteId ? { p_quote_id: quoteId } : {}),
       }
     );
 

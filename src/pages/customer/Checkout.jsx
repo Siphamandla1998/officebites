@@ -1,4 +1,9 @@
 import { useRequestGuard } from '../../hooks/useRequestGuard';
+import { validateMobile } from '../../utils/mobile';
+import { checkoutService } from '../../services/checkoutService';
+import { useAsync } from '../../hooks/useAsync';
+import { useLocation } from '../../context/LocationContext';
+import RequestError from '../../components/ui/RequestError';
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../../components/layout/Navbar";
@@ -31,6 +36,29 @@ export default function Checkout() {
   });
   const [deliveryLocation, setDeliveryLocation] = useState("");
   const [errors, setErrors] = useState({});
+  const { data: deliveryConfig, error: deliveryError, loading: deliveryLoading, refetch: reloadDelivery } = useAsync(checkoutService.deliverySettings, [], null);
+  const geo = useLocation();
+  const [quote, setQuote] = useState(null);
+  const [quoting, setQuoting] = useState(false);
+  const quoteLock = useRef(false);
+  const cartKey = JSON.stringify(items.map(item => ({ mealId: item.mealId, qty: item.qty })));
+  const quoteScope = `${user?.id || guestDetails.phone}:${cartKey}`;
+  const currentQuoteScope = useRef(quoteScope);
+  currentQuoteScope.current = quoteScope;
+  const usableQuote = quote?.scope === quoteScope ? quote : null;
+  const requestQuote = async () => {
+    if (quoteLock.current || !validateGuest()) return;
+    quoteLock.current = true; setQuoting(true); setQuote(null);
+    const scope = quoteScope;
+    const current = requests.capture();
+    try {
+      const location = await geo.requestLocation();
+      if (!location || !current() || currentQuoteScope.current !== scope) return;
+      const result = await checkoutService.quote(location, items, isAuthenticated ? null : validateMobile(guestDetails.phone).value);
+      if (current() && currentQuoteScope.current === scope) setQuote({ ...result, scope, expiresAt: Date.now() + result.expiresInSeconds * 1000 });
+    } catch (failure) { if (current()) showToast(failure.message, { type: 'error' }); }
+    finally { quoteLock.current = false; if (current()) setQuoting(false); }
+  };
 
   const grouped = splitCartByVendor(items);
   const deliveryDate = useDeliveryDate();
@@ -45,13 +73,18 @@ export default function Checkout() {
       return Object.keys(next).length === 0;
     }
     if (!guestDetails.name.trim()) next.name = "Enter your name so vendors know who's collecting";
-    if (!guestDetails.phone.trim()) next.phone = "Enter a mobile number we can reach you on";
+    const mobile = validateMobile(guestDetails.phone);
+    if (!mobile.valid) next.phone = mobile.message;
     setErrors(next);
     return Object.keys(next).length === 0;
   };
 
   const handlePlaceOrder = async () => {
     if (creating.current || createdOrder) return;
+    if (deliveryLoading || deliveryError) return;
+    if (deliveryConfig?.enabled && (!usableQuote?.id || usableQuote.expiresAt <= Date.now())) {
+      showToast('Calculate and review delivery before ordering.', { type: 'info' }); return;
+    }
     if (!isOrderingOpen(deliveryDate)) {
       showToast("The ordering cutoff has passed. Please review the updated delivery date before ordering.", { type: "info" });
       return;
@@ -67,18 +100,19 @@ export default function Checkout() {
       const order = await orderService.createOrder({
         customerId: isAuthenticated ? user.id : null,
         customerName: isAuthenticated ? user.name : guestDetails.name,
-        guestContact: isAuthenticated ? null : guestDetails.phone.trim(),
+        guestContact: isAuthenticated ? null : validateMobile(guestDetails.phone).value,
         guestEmail: null,
         deliveryDate: deliveryDateKey(deliveryDate),
         deliveryLocation: deliveryLocation.trim(),
         cartItems: items,
+        quoteId: deliveryConfig?.enabled ? usableQuote.id : null,
       });
       // Preserve the completed guest order even if navigation changed while
       // the server was creating it. Only current-scope UI/cart effects follow.
       const persisted = isAuthenticated || addGuestOrder({
         id: order.id,
         ticketNumber: order.ticketNumber,
-        contact: guestDetails.phone.trim(),
+        contact: validateMobile(guestDetails.phone).value,
       });
       if (!current()) return;
       setCreatedOrder(order);
@@ -135,6 +169,13 @@ export default function Checkout() {
     <div className="pb-[calc(8rem+env(safe-area-inset-bottom))]">
       <Navbar showBack title="Checkout" showCart={false} />
       <div className="ob-container pt-4 flex flex-col gap-5">
+        <RequestError error={deliveryError} onRetry={reloadDelivery} />
+        {deliveryConfig?.enabled && <section className="card p-4 flex flex-col gap-3">
+          <p>Delivery is calculated from the configured Eduvos origin to your device location, including each vendor’s delivery radius. Your typed address is a delivery instruction, not proof of distance.</p>
+          <button className="btn-outline" disabled={quoting} onClick={requestQuote}>{quoting ? 'Checking delivery…' : 'Use my location and calculate delivery'}</button>
+          {geo.error && <p role="alert">{geo.error} Retry location. If location is unavailable, contact support before ordering; no delivery fee is guessed.</p>}
+          {usableQuote?.id && <p>{Number(usableQuote.distanceKm).toFixed(2)} km · Delivery {formatCurrency(usableQuote.fee)} · Total {formatCurrency(subtotal + Number(usableQuote.fee))}. Quote valid for five minutes.</p>}
+        </section>}
         {!isAuthenticated && (
           <div className="card p-4">
             <div className="flex items-center gap-2 mb-3">
@@ -162,6 +203,10 @@ export default function Checkout() {
               />
               <TextField
                 label="Mobile number"
+                type="tel"
+                inputMode="tel"
+                autoComplete="tel-national"
+                maxLength={24}
                 value={guestDetails.phone}
                 onChange={updateGuest("phone")}
                 error={errors.phone}
@@ -212,9 +257,9 @@ export default function Checkout() {
       <div className="fixed bottom-0 left-0 right-0 mx-auto w-full max-w-app bg-paper-raised border-t border-line px-4 pt-4 pb-[calc(1rem+env(safe-area-inset-bottom))] shadow-nav flex flex-col gap-3">
         <div className="flex justify-between text-sm">
           <span className="text-ink-muted">Total</span>
-          <span className="font-bold text-ink text-base">{formatCurrency(subtotal)}</span>
+          <span className="font-bold text-ink text-base">{deliveryConfig?.enabled && !usableQuote ? 'Calculate delivery first' : formatCurrency(subtotal + (deliveryConfig?.enabled ? Number(usableQuote?.fee || 0) : 0))}</span>
         </div>
-        <button onClick={handlePlaceOrder} className="btn-primary w-full" disabled={submitting}>
+        <button onClick={handlePlaceOrder} className="btn-primary w-full" disabled={submitting || deliveryLoading || !!deliveryError || (deliveryConfig?.enabled && !usableQuote?.id)}>
           {submitting ? <Spinner size={16} className="!border-paper/30 !border-t-paper" /> : "Place order"}
         </button>
       </div>

@@ -248,6 +248,8 @@ export function mapOrder(row) {
 
     deliveryLocation:
       row.delivery_location || null,
+    deliveryFee: Number(row.delivery_fee || 0),
+    deliveryDistanceKm: row.delivery_distance_km ?? null,
 
     status:
       row.status || "",

@@ -1,4 +1,5 @@
 import { coordinatePair } from "../utils/coordinates";
+import { validateMobile } from '../utils/mobile';
 import {
   supabase,
   uploadToBucket,
@@ -660,6 +661,11 @@ export const vendorService = {
     ) {
       patch.contact_number =
         updates.contactNumber;
+      if (updates.contactNumber?.trim()) {
+        const contact = validateMobile(updates.contactNumber, 'international');
+        if (!contact.valid) throw new Error(contact.message);
+        patch.contact_number = contact.value;
+      }
     }
 
     if (updates.logoFile) {

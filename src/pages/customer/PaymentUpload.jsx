@@ -1,7 +1,9 @@
 import RequestError from '../../components/ui/RequestError';
 import { useAuth } from '../../context/AuthContext';
 import { useRequestGuard } from '../../hooks/useRequestGuard';
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import Modal from '../../components/ui/Modal';
+import { checkoutService } from '../../services/checkoutService';
 import { useNavigate, useParams } from "react-router-dom";
 import { FiCreditCard } from "react-icons/fi";
 import Navbar from "../../components/layout/Navbar";
@@ -21,6 +23,11 @@ export default function PaymentUpload() {
   const navigate = useNavigate();
   const { showToast } = useToast();
   const [payfastLoading, setPayfastLoading] = useState(false);
+  const actionLock = useRef(false);
+  const [cancelOpen, setCancelOpen] = useState(false);
+  const [cancelling, setCancelling] = useState(false);
+  const gateways = useAsync(checkoutService.gateways, [], []);
+  const payfastAvailable = gateways.data?.some(g => g.provider === 'payfast' && g.enabled && g.ready && !g.maintenance);
 
   const { data: order, loading, error, refetch } = useAsync(
     () => orderService.getOrderById(orderId),
@@ -35,7 +42,8 @@ export default function PaymentUpload() {
   }, [orderId, user?.id, refetch, guard]);
 
   const handlePayfast = async () => {
-    if (payfastLoading) return;
+    if (payfastLoading || actionLock.current || gateways.loading || gateways.error || !payfastAvailable) return;
+    actionLock.current = true;
     const current = guard.begin();
     setPayfastLoading(true);
 
@@ -69,6 +77,27 @@ export default function PaymentUpload() {
         { type: "error" }
       );
       setPayfastLoading(false);
+    } finally {
+      actionLock.current = false;
+    }
+  };
+
+  const cancelPayment = async () => {
+    if (actionLock.current) return;
+    actionLock.current = true;
+    const current = guard.begin();
+    setCancelling(true);
+    try {
+      await paymentService.cancelUnpaidOrder(orderId, getGuestOrderAccess(orderId));
+      if (!current()) return;
+      setCancelOpen(false);
+      showToast('Unpaid order cancelled. No payment was reversed.', { type: 'info' });
+      navigate(`/orders/${orderId}`, { replace: true });
+    } catch (failure) {
+      if (current()) showToast(failure.message || 'Cancellation was not confirmed. Refresh the order before retrying.', { type: 'error' });
+    } finally {
+      actionLock.current = false;
+      if (current()) { setCancelling(false); void refetch({ silent: true }); }
     }
   };
 
@@ -123,6 +152,8 @@ export default function PaymentUpload() {
         </div>
 
         <div className="card p-4 flex flex-col gap-3">
+          <RequestError error={gateways.error} onRetry={gateways.refetch} />
+          {gateways.data?.map(g => <div key={g.provider}>{g.notice && <p>{g.notice}</p>}{g.provider === 'payfast' && !payfastAvailable && <p>PayFast is temporarily unavailable. Your order remains available for later payment.</p>}</div>)}
           <div className="h-9 w-9 rounded-lg bg-nude-100 text-nude-700 flex items-center justify-center">
             <FiCreditCard size={16} />
           </div>
@@ -151,13 +182,13 @@ export default function PaymentUpload() {
             onClick={() => navigate(`/orders/${orderId}`)}
             className="btn-outline w-full"
           >
-            View order status
+            Return to order
           </button>
 
           <button
             onClick={handlePayfast}
             className="btn-primary w-full"
-            disabled={payfastLoading}
+            disabled={payfastLoading || cancelling || gateways.loading || !!gateways.error || !payfastAvailable}
           >
             {payfastLoading ? (
               <Spinner
@@ -168,6 +199,15 @@ export default function PaymentUpload() {
               `Pay ${formatCurrency(order.total)} with PayFast`
             )}
           </button>
+          <button className="btn-outline w-full" disabled={payfastLoading || cancelling} onClick={() => setCancelOpen(true)}>Cancel payment</button>
+          <Modal open={cancelOpen} onClose={() => { if (!cancelling) setCancelOpen(false); }} title="Cancel payment?">
+            <p>Returning to your order leaves it available for payment. Confirming cancellation cancels an unpaid order only if no provider payment may be processing. A verified payment is never cancelled or refunded here.</p>
+            <p>If you already opened PayFast or your bank shows a debit, return to your order and contact support for reconciliation. Leaving this page does not cancel a bank payment.</p>
+            <div className="flex flex-col gap-3 mt-4">
+              <button className="btn-outline" disabled={cancelling} onClick={() => navigate(`/orders/${orderId}`)}>Return to order without cancelling</button>
+              <button className="btn-primary" disabled={cancelling} onClick={cancelPayment}>{cancelling ? 'Checking payment…' : 'Confirm cancel unpaid order'}</button>
+            </div>
+          </Modal>
         </div>
       </div>
     </div>
