@@ -1,4 +1,5 @@
 import { coordinatePair } from "../../utils/coordinates";
+import { validatePosition } from '../../utils/delivery';
 import { useEffect, useState } from "react";
 import {
   FiCheckCircle,
@@ -87,7 +88,10 @@ export default function VendorSettings() {
     setLocating(true);
 
     navigator.geolocation.getCurrentPosition(
-      ({ coords }) => {
+      (position) => {
+        let coords;
+        try { coords = validatePosition(position); }
+        catch (failure) { setLocating(false); showToast(failure.message, { type: 'error' }); return; }
         setForm((current) => ({
           ...current,
           latitude: coords.latitude,

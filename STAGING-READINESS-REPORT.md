@@ -21,3 +21,20 @@ An ignored `.env.staging.local` contains ONLY staging's project URL and enabled 
 Locked dependency installation passed (442 packages). Existing local regression suite passed on current main. Initial lint/build attempts overlapped the still-running npm install and could not find tools; after installation, lint/build passed. Deno's default local npm resolution conflicted with the unpinned JSR SDK; isolated `--node-modules-dir=none --no-lock` checking avoids modifying application dependencies. See TEST-RESULTS.md for final results.
 
 Remaining blockers: Ozow merchant One API staging access/client/site/scope/signing secret and webhook registration; complete owner delivery policy (coordinate supplied, “10 KM” alone does not define both radii/fee); hosted disposable Auth/Storage tests; native concurrent confirmation/cancellation testing; PWA upgrade/mobile permission testing. Delivery enforcement and Ozow remain disabled by default. No staging or production readiness is claimed from mocked or PGlite results.
+
+## Reviewed staging application
+
+Only the new feature migrations were applied transactionally to staging:
+
+| Source file | Installed history version |
+| --- | --- |
+| 20261016074256_checkout_recovery_mobile_delivery_gateways.sql | 20261016080056 |
+| 20261016081336_booking_mobile_validation.sql | 20261016081551 |
+
+The second migration fixes explicit international-mode SQL regex escaping found by an additional booking contact test and protects new/changed event_booking_requests.contact_phone values. The already-applied first migration is preserved verbatim; it is not replayed. Definitions, RLS, RPC grants and Data API availability were checked. Private settings/attempt/quote tables have RLS and no public grants; privileged functions check active administrator identity. Ozow is disabled/unready, delivery enforcement disabled, retention disabled. PayFast retains the existing enabled path; its ready flag is a compatibility gate, not evidence of merchant approval or a successful payment.
+
+Twelve native staging assertions passed inside an explicit rollback transaction, using only synthetic Auth rows, profiles, vendors, meals, orders and SQL payment confirmations. These exercised Auth database registration triggers, guest proof, cancellation/issued/paid cases, commission snapshots, authoritative delivery fees and reconciliation. No provider API transaction was initiated. A fixture concatenation typo was corrected before the passing run. Final inspection found zero remaining synthetic test Auth rows. This is not GoTrue sign-up/email, real SDK login, hosted webhook delivery or native concurrent-session testing.
+
+Staging HTTP: public gateway/delivery RPCs returned 200; an unproved cancellation and anonymous admin update returned 401. Public preview Vercel URL configuration and local staging mode both reference staging. The reviewed PayFast initiation source is committed but NOT redeployed to staging; deployed v18 already uses the now-updated preparation RPC. No Ozow endpoints were deployed.
+
+Security advisors: four informational RLS-without-policy findings correspond to intentionally inaccessible private tables. Callable SECURITY DEFINER APIs remain warnings and require their explicit body checks/ACLs; leaked-password protection remains disabled. Performance advisors previously reported 24 unused-index informational findings; no automatic index deletion or unrelated settings changes were made. Remediation references: https://supabase.com/docs/guides/database/database-linter and https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection.

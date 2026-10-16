@@ -1,0 +1,47 @@
+-- Synthetic native staging regression. Always rolled back; no provider calls or permanent accounts/orders.
+BEGIN;
+DO $qa$ DECLARE admin_id uuid:=gen_random_uuid(); customer_id uuid:=gen_random_uuid(); vendor_user uuid:=gen_random_uuid(); vendor_id uuid; meal_id uuid:=gen_random_uuid(); o jsonb; pending jsonb; paid jsonb; q jsonb; report jsonb; items jsonb; n integer:=0; failed boolean; failure text; BEGIN
+ BEGIN
+ PERFORM set_config('request.jwt.claim.role','service_role',true);PERFORM set_config('request.jwt.claim.sub','',true);
+ INSERT INTO auth.users(id,email,raw_user_meta_data) VALUES(admin_id,'checkout-qa-'||admin_id||'@example.invalid','{"role":"customer","name":"Synthetic checkout admin"}'),(customer_id,'checkout-qa-'||customer_id||'@example.invalid','{"role":"customer","name":"Synthetic checkout customer"}'),(vendor_user,'checkout-qa-'||vendor_user||'@example.invalid','{"role":"vendor","name":"Synthetic checkout vendor","business_name":"Synthetic checkout vendor","business_category":"Meals"}');
+ IF NOT EXISTS(SELECT 1 FROM public.profiles WHERE id=customer_id AND role='customer') THEN RAISE EXCEPTION 'Customer registration trigger failed'; END IF;n:=n+1;
+ SELECT p.vendor_id INTO STRICT vendor_id FROM public.profiles p WHERE p.id=vendor_user AND p.role='vendor';
+ IF vendor_id IS NULL THEN RAISE EXCEPTION 'Vendor registration trigger failed'; END IF;n:=n+1;
+ UPDATE public.profiles SET role='admin' WHERE id=admin_id;
+ UPDATE public.vendors SET status='approved',latitude=-29.721180,longitude=31.071621,delivery_radius=100 WHERE id=vendor_id;
+ INSERT INTO public.meals(id,vendor_id,name,category,price,available,available_days) VALUES(meal_id,vendor_id,'Synthetic checkout meal','Meals',100,true,NULL);
+ items:=jsonb_build_array(jsonb_build_object('mealId',meal_id,'qty',1));
+ PERFORM set_config('request.jwt.claim.role','anon',true);EXECUTE 'SET LOCAL ROLE anon';
+ o:=public.create_order_from_cart(NULL,'Synthetic guest','0821234567',NULL,current_date+7,'Synthetic staging destination',items);n:=n+1;
+ failed:=false;BEGIN PERFORM public.cancel_unpaid_order((o->>'id')::uuid,o->>'ticket_number','0810000000');EXCEPTION WHEN OTHERS THEN failed:=true;END;
+ IF NOT failed THEN RAISE EXCEPTION 'Wrong guest proof accepted'; END IF;n:=n+1;
+ o:=public.cancel_unpaid_order((o->>'id')::uuid,o->>'ticket_number','0821234567');IF o->>'status'<>'cancelled' THEN RAISE EXCEPTION 'Cancellation failed'; END IF;n:=n+1;
+ pending:=public.create_order_from_cart(NULL,'Synthetic guest','0821234567',NULL,current_date+7,'Synthetic staging destination',items);
+ EXECUTE 'RESET ROLE';PERFORM set_config('request.jwt.claim.role','service_role',true);
+ PERFORM public.prepare_payfast_order((pending->>'id')::uuid,NULL,'0821234567');
+ EXECUTE 'SET LOCAL ROLE anon';PERFORM set_config('request.jwt.claim.role','anon',true);
+ failed:=false;BEGIN PERFORM public.cancel_unpaid_order((pending->>'id')::uuid,pending->>'ticket_number','0821234567');EXCEPTION WHEN OTHERS THEN failed:=true;END;
+ IF NOT failed THEN RAISE EXCEPTION 'Issued attempt was cancelled'; END IF;n:=n+1;
+ EXECUTE 'RESET ROLE';PERFORM set_config('request.jwt.claim.role','service_role',true);
+ PERFORM public.confirm_payfast_payment((pending->>'id')::uuid,'SYNTHETIC-'||(pending->>'id'),pending->>'ticket_number',100,'COMPLETE','{"amount_fee":"-2.30"}');
+ IF NOT EXISTS(SELECT 1 FROM public.order_suborders WHERE order_id=(pending->>'id')::uuid AND commission_amount=17) THEN RAISE EXCEPTION 'Commission snapshot mismatch';END IF;n:=n+1;
+ EXECUTE 'SET LOCAL ROLE anon';PERFORM set_config('request.jwt.claim.role','anon',true);
+ failed:=false;BEGIN PERFORM public.cancel_unpaid_order((pending->>'id')::uuid,pending->>'ticket_number','0821234567');EXCEPTION WHEN OTHERS THEN failed:=true;END;
+ IF NOT failed THEN RAISE EXCEPTION 'Paid order cancellation accepted';END IF;n:=n+1;
+ EXECUTE 'RESET ROLE';PERFORM set_config('request.jwt.claim.sub',admin_id::text,true);PERFORM set_config('request.jwt.claim.role','authenticated',true);EXECUTE 'SET LOCAL ROLE authenticated';
+ PERFORM public.admin_update_delivery_settings(true,-29.721180,31.071621,1,2,15);n:=n+1;
+ EXECUTE 'RESET ROLE';PERFORM set_config('request.jwt.claim.sub','',true);PERFORM set_config('request.jwt.claim.role','anon',true);EXECUTE 'SET LOCAL ROLE anon';
+ q:=public.quote_delivery(jsonb_build_object('latitude',-29.721180+1.1/6371.0088*180/pi(),'longitude',31.071621,'accuracy',10,'capturedAt',clock_timestamp()),items,'0821234567');
+ IF (q->>'fee')::numeric<>15 THEN RAISE EXCEPTION 'Quoted fee mismatch';END IF;n:=n+1;
+ paid:=public.create_order_with_delivery(NULL,'Synthetic guest','0821234567',NULL,current_date+7,'Synthetic staging destination',items,(q->>'id')::uuid);
+ IF (paid->>'total')::numeric<>115 THEN RAISE EXCEPTION 'Authoritative total mismatch';END IF;n:=n+1;
+ EXECUTE 'RESET ROLE';PERFORM set_config('request.jwt.claim.role','service_role',true);
+ PERFORM public.confirm_payfast_payment((paid->>'id')::uuid,'SYNTHETIC-'||(paid->>'id'),paid->>'ticket_number',115,'COMPLETE','{"amount_fee":"-3.12"}');
+ PERFORM set_config('request.jwt.claim.sub',admin_id::text,true);PERFORM set_config('request.jwt.claim.role','authenticated',true);EXECUTE 'SET LOCAL ROLE authenticated';
+ report:=public.get_financial_report(NULL,NULL,NULL);
+ IF NOT EXISTS(SELECT 1 FROM jsonb_array_elements(report->'reconciliation') r WHERE r->>'order_id'=paid->>'id' AND (r->>'orderAmountDifference')::numeric=0 AND (r->>'deliveryFee')::numeric=15) THEN RAISE EXCEPTION 'Fee reconciliation mismatch';END IF;n:=n+1;
+ EXCEPTION WHEN OTHERS THEN GET STACKED DIAGNOSTICS failure=MESSAGE_TEXT; END;
+ EXECUTE 'RESET ROLE';PERFORM set_config('officebites.qa_result',jsonb_build_object('assertions',n,'passed',failure IS NULL,'failure',failure,'fixtures','synthetic; outer transaction rolls back')::text,true);
+END $qa$;
+SELECT current_setting('officebites.qa_result')::jsonb native_staging_result;
+ROLLBACK;

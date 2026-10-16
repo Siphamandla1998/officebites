@@ -4,6 +4,7 @@ import { useRequestGuard } from '../../hooks/useRequestGuard';
 import { useEffect, useRef, useState } from "react";
 import Modal from '../../components/ui/Modal';
 import { checkoutService } from '../../services/checkoutService';
+import { useOperationalRefresh } from '../../hooks/useOperationalRefresh';
 import { useNavigate, useParams } from "react-router-dom";
 import { FiCreditCard } from "react-icons/fi";
 import Navbar from "../../components/layout/Navbar";
@@ -27,6 +28,7 @@ export default function PaymentUpload() {
   const [cancelOpen, setCancelOpen] = useState(false);
   const [cancelling, setCancelling] = useState(false);
   const gateways = useAsync(checkoutService.gateways, [], []);
+  useOperationalRefresh(() => gateways.refetch({ silent: true }), 'payment-gateways', 30000);
   const payfastAvailable = gateways.data?.some(g => g.provider === 'payfast' && g.enabled && g.ready && !g.maintenance);
 
   const { data: order, loading, error, refetch } = useAsync(
@@ -36,14 +38,15 @@ export default function PaymentUpload() {
 
   useEffect(() => {
     setPayfastLoading(false);
-    const refresh = () => { guard.invalidate(); setPayfastLoading(false); void refetch({ silent: true }); };
+    setCancelling(false); setCancelOpen(false); actionLock.current = false;
+    const refresh = () => { guard.invalidate(); actionLock.current = false; setPayfastLoading(false); setCancelling(false); setCancelOpen(false); void refetch({ silent: true }); };
     window.addEventListener('pageshow', refresh);
     return () => window.removeEventListener('pageshow', refresh);
   }, [orderId, user?.id, refetch, guard]);
 
   const handlePayfast = async () => {
     if (payfastLoading || actionLock.current || gateways.loading || gateways.error || !payfastAvailable) return;
-    actionLock.current = true;
+    const lock = Symbol(); actionLock.current = lock;
     const current = guard.begin();
     setPayfastLoading(true);
 
@@ -78,13 +81,13 @@ export default function PaymentUpload() {
       );
       setPayfastLoading(false);
     } finally {
-      actionLock.current = false;
+      if (actionLock.current === lock) actionLock.current = false;
     }
   };
 
   const cancelPayment = async () => {
     if (actionLock.current) return;
-    actionLock.current = true;
+    const lock = Symbol(); actionLock.current = lock;
     const current = guard.begin();
     setCancelling(true);
     try {
@@ -96,7 +99,7 @@ export default function PaymentUpload() {
     } catch (failure) {
       if (current()) showToast(failure.message || 'Cancellation was not confirmed. Refresh the order before retrying.', { type: 'error' });
     } finally {
-      actionLock.current = false;
+      if (actionLock.current === lock) actionLock.current = false;
       if (current()) { setCancelling(false); void refetch({ silent: true }); }
     }
   };

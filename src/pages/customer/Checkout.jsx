@@ -46,9 +46,10 @@ export default function Checkout() {
   const currentQuoteScope = useRef(quoteScope);
   currentQuoteScope.current = quoteScope;
   const usableQuote = quote?.scope === quoteScope ? quote : null;
+  useEffect(() => { setQuote(null); setQuoting(false); quoteLock.current = false; }, [quoteScope]);
   const requestQuote = async () => {
     if (quoteLock.current || !validateGuest()) return;
-    quoteLock.current = true; setQuoting(true); setQuote(null);
+    const lock = Symbol(); quoteLock.current = lock; setQuoting(true); setQuote(null);
     const scope = quoteScope;
     const current = requests.capture();
     try {
@@ -57,7 +58,7 @@ export default function Checkout() {
       const result = await checkoutService.quote(location, items, isAuthenticated ? null : validateMobile(guestDetails.phone).value);
       if (current() && currentQuoteScope.current === scope) setQuote({ ...result, scope, expiresAt: Date.now() + result.expiresInSeconds * 1000 });
     } catch (failure) { if (current()) showToast(failure.message, { type: 'error' }); }
-    finally { quoteLock.current = false; if (current()) setQuoting(false); }
+    finally { if (quoteLock.current === lock) { quoteLock.current = false; if (current()) setQuoting(false); } }
   };
 
   const grouped = splitCartByVendor(items);

@@ -42,7 +42,7 @@ export default function AdminReports() {
   }
   function exportReconciliation() {
     if (financialRevision() !== revision || report.loading || report.error || !report.data) return;
-    downloadCsv('officebites-order-reconciliation.csv',['Order ID','Ticket','Recorded order total ZAR','All suborders gross ZAR','Eligible business gross ZAR','Recorded COMPLETE receipts ZAR','COMPLETE receipt count','Order minus suborders ZAR'],report.data.reconciliation.map(r => [r.order_id,r.ticket_number,r.recordedOrderTotal,r.allSuborderGross,r.eligibleBusinessGross,r.recordedCompletePayments,r.completePaymentCount,r.orderAmountDifference]));
+    downloadCsv('officebites-order-reconciliation.csv',['Order ID','Ticket','Recorded order total ZAR','All suborders gross ZAR','Delivery fee ZAR','Eligible business gross ZAR','Recorded COMPLETE receipts ZAR','COMPLETE receipt count','Order minus suborders and delivery ZAR'],report.data.reconciliation.map(r => [r.order_id,r.ticket_number,r.recordedOrderTotal,r.allSuborderGross,r.deliveryFee ?? 0,r.eligibleBusinessGross,r.recordedCompletePayments,r.completePaymentCount,r.orderAmountDifference]));
   }
   const t = report.data?.totals;
   return <div className="flex flex-col gap-6">

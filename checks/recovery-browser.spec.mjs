@@ -61,7 +61,7 @@ for (const storageError of ['SecurityError','QuotaExceededError']) test(`success
   await page.addInitScript(() => localStorage.setItem('ob_cart', JSON.stringify([{mealId:'fixture-meal',vendorId:'fixture-vendor',vendorName:'Fixture',name:'Lunch',price:100,qty:1}])));
   await open(page, '/checkout');
   await page.getByLabel('Your name').fill('Synthetic guest');
-  await page.getByLabel('Mobile number').fill('fixture-contact');
+  await page.getByLabel('Mobile number').fill('0821234567');
   await page.getByLabel('Where should we deliver?').fill('Synthetic office');
   await page.evaluate(name => { Storage.prototype.setItem = function(){ throw new DOMException('Blocked',name); }; }, storageError);
   await page.getByRole('button',{name:'Place order',exact:true}).click();
@@ -111,7 +111,7 @@ for (const leave of ['route', 'account']) test(`checkout response cannot affect 
   await page.addInitScript(() => localStorage.setItem('ob_cart', JSON.stringify([{mealId:'fixture-meal',vendorId:'fixture-vendor',vendorName:'Fixture',name:'Lunch',price:100,qty:1}])));
   await open(page, '/checkout');
   await page.getByLabel('Your name').fill('Synthetic guest');
-  await page.getByLabel('Mobile number').fill('fixture-contact');
+  await page.getByLabel('Mobile number').fill('0821234567');
   await page.getByLabel('Where should we deliver?').fill('Synthetic office');
   await page.evaluate(() => fixture.deferCreate = true);
   await page.getByRole('button', {name:'Place order',exact:true}).click();
@@ -123,7 +123,7 @@ for (const leave of ['route', 'account']) test(`checkout response cannot affect 
   await expect(page).not.toHaveURL(/payment/);
   expect(await page.evaluate(() => fixture.creates)).toBe(1);
   expect(await page.evaluate(() => JSON.parse(localStorage.getItem('ob_cart')).length)).toBe(1);
-  expect(await page.evaluate(() => fixture.guestAccess('CREATED')?.contact)).toBe('fixture-contact');
+  expect(await page.evaluate(() => fixture.guestAccess('CREATED')?.contact)).toBe('0821234567');
 });
 
 test('protected financial state resets between admin accounts', async ({page}) => {

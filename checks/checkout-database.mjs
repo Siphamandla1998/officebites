@@ -45,6 +45,12 @@ try {
 
  for(const f of JSON.parse(fs.readFileSync(new URL('./fixtures/checkout-prerequisites.json',import.meta.url)))) await db.exec(f.definition);
  await db.exec(fs.readFileSync('supabase/migrations/20261016074256_checkout_recovery_mobile_delivery_gateways.sql','utf8'));
+ await db.exec("INSERT INTO public.event_booking_requests(id,business_name,contact_name,contact_phone,event_type,event_date,guest_count,location) VALUES('00000000-0000-4000-8000-000000000099','Synthetic','Synthetic','legacy-contact','meeting',current_date+7,10,'Synthetic')");
+ await db.exec(fs.readFileSync('supabase/migrations/20261016081336_booking_mobile_validation.sql','utf8'));
+ await db.exec("UPDATE public.event_booking_requests SET notes='Unrelated edit preserves historical contact' WHERE id='00000000-0000-4000-8000-000000000099'");checks++;
+ await expectReject("UPDATE public.event_booking_requests SET contact_phone='bad' WHERE id='00000000-0000-4000-8000-000000000099'",/mobile/i);
+ await db.exec("UPDATE public.event_booking_requests SET contact_phone='+14155552671' WHERE id='00000000-0000-4000-8000-000000000099'");checks++;
+ for(const value of ['+14155552671','+27821234567','0821234567']) { assert.equal((await db.query('SELECT public.valid_sa_mobile($1, $2) ok',[value,'international'])).rows[0].ok,true);checks++; }
  const scalar=async sql=>(await db.query(sql)).rows[0];
  const id=n=>'00000000-0000-4000-8000-'+String(n).padStart(12,'0');
  const root=()=>db.exec("RESET ROLE; SELECT set_config('request.jwt.claim.sub','',false),set_config('request.jwt.claim.role','service_role',false);");
