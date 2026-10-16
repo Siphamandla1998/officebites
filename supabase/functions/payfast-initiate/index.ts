@@ -1,5 +1,6 @@
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { getPayfastConfig, signatureFromEntries } from "../_shared/payfast.ts";
+import { stagingPaymentOrigins } from '../_shared/payment-origins.ts';
 
 function normalizeOrigin(value: string | null | undefined) {
   return String(value || "").trim().replace(/\/+$/, "");
@@ -14,7 +15,8 @@ const ALLOWED_ORIGINS = (
 )
   .split(",")
   .map(normalizeOrigin)
-  .filter(Boolean);
+  .filter(Boolean)
+  .concat(stagingPaymentOrigins(Deno.env.get('SUPABASE_URL')));
 
 function corsHeadersFor(req: Request) {
   const requestOrigin = normalizeOrigin(req.headers.get("Origin"));
@@ -87,7 +89,19 @@ Deno.serve(async (req) => {
       });
       const { data, error } = await authClient.auth.getUser();
       if (!error) callerId = data?.user?.id || null;
+      else if (authHeader !== `Bearer ${anonKey}` && !authHeader.startsWith('Bearer sb_publishable_')) {
+        return jsonResponse(req, { error: 'Please sign in again or verify your guest order without an expired session.' }, 401);
+      }
     }
+  }
+
+  // Preserve the deployed staging account-state guard when reconciling this
+  // local preparation wrapper with the existing function.
+  if (callerId) {
+    const { data: profile, error: profileError } = await admin.from('profiles')
+      .select('id,suspended,deleted_at').eq('id', callerId).maybeSingle();
+    if (profileError) return jsonResponse(req, { error: 'Could not verify account status' }, 503);
+    if (!profile || profile.suspended || profile.deleted_at) return jsonResponse(req, { error: 'Active account required' }, 403);
   }
 
   let config;

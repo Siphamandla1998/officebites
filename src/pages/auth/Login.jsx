@@ -74,7 +74,7 @@ export default function Login() {
         state: {},
       });
     } catch (loginError) {
-      console.error("[OfficeBites] Login failed:", loginError);
+      console.error("[OfficeBites] Login failed:", { code: loginError?.code || 'AUTH_UNAVAILABLE' });
 
       setError(
         loginError?.message ||

@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { FiChevronRight } from "react-icons/fi";
 import { formatCurrency, formatDate } from "../../utils/formatters";
 import StatusBadge from "../ui/StatusBadge";
+import { displayOrderStatus } from '../../utils/orderState';
 
 export default function OrderCard({ order }) {
   return (
@@ -15,7 +16,7 @@ export default function OrderCard({ order }) {
               : order.subOrders[0]?.vendorName}
           </p>
         </div>
-        <StatusBadge status={order.status} />
+        <StatusBadge status={displayOrderStatus(order)} />
       </div>
       <div className="flex items-center justify-between pt-2 border-t border-line">
         <span className="text-xs text-ink-muted">{formatDate(order.deliveryDate)}</span>

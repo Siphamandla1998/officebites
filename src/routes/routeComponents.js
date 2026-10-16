@@ -63,5 +63,7 @@ export const Terms = lazy(() => import("../pages/help/Terms"));
 export const Privacy = lazy(() => import("../pages/help/Privacy"));
 export const RefundPolicy = lazy(() => import("../pages/help/RefundPolicy"));
 export const BusinessHours = lazy(() => import("../pages/help/BusinessHours"));
+export const LegalDocument = lazy(() => import('../pages/help/LegalDocument'));
+export const CommercialWorkspace = lazy(() => import('../pages/shared/CommercialWorkspace'));
 
 export const NotFound = lazy(() => import("../pages/shared/NotFound"));

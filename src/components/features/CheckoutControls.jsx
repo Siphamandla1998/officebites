@@ -10,19 +10,22 @@ export default function CheckoutControls() {
   const [busy, setBusy] = useState(false), [error, setError] = useState(null);
   const [draft, setDraft] = useState(null);
   const [reason, setReason] = useState('');
-  async function save(action) {
+  const [confirmation, setConfirmation] = useState('');
+  async function save(action, message = 'Delivery policy saved and reloaded.') {
     if (busy) return;
-    setBusy(true); setError(null);
-    try { await action(); await gateways.refetch({ throwOnError: true }); await delivery.refetch({ throwOnError: true }); setDraft(null); }
+    setBusy(true); setError(null); setConfirmation('');
+    try { await action(); await gateways.refetch({ throwOnError: true }); await delivery.refetch({ throwOnError: true }); setDraft(null); setConfirmation(message); }
     catch (failure) { setError(failure); } finally { setBusy(false); }
   }
   return <section className="card p-4 flex flex-col gap-4">
     <h2 className="section-title">Checkout controls</h2>
+    {confirmation && <p role="status">{confirmation}</p>}
     <RequestError error={error || gateways.error || delivery.error} onRetry={() => { setError(null); gateways.refetch(); delivery.refetch(); }} />
     <p>Disabling new payments does not disable webhooks or change confirmed payments. Ozow cannot be enabled until server readiness is verified; secrets are never entered here.</p>
-    {gateways.data?.map(g => <form className="border-t pt-3 flex flex-col gap-2" key={`${g.provider}:${g.updated_at}`} onSubmit={event => {
+    <p>Manual EFT is unavailable; manual proof uploads cannot confirm payment.</p>
+    {gateways.data?.map(g => <form aria-label={`${g.provider === 'payfast' ? 'PayFast' : 'Ozow'} gateway settings`} className="border-t pt-3 flex flex-col gap-2" key={`${g.provider}:${g.updated_at}`} onSubmit={event => {
       event.preventDefault(); const form = new FormData(event.currentTarget);
-      void save(() => checkoutService.saveGateway(g.provider, form.has('enabled'), form.has('maintenance'), String(form.get('notice') || '')));
+      void save(() => checkoutService.saveGateway(g.provider, form.has('enabled'), form.has('maintenance'), String(form.get('notice') || '')), 'Gateway settings saved and reloaded.');
     }}>
       <strong>{g.provider === 'payfast' ? 'PayFast' : 'Ozow'}</strong>
       <p>Configuration gate: {g.ready ? 'Available' : 'Not verified'} · Updated: {g.updated_at ? new Date(g.updated_at).toLocaleString() : 'Backend installation pending'}</p>

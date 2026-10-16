@@ -1,5 +1,6 @@
 import { Outlet, Navigate, useLocation } from "react-router-dom";
 import BottomNav from "../components/layout/BottomNav";
+import LegalLinks from '../components/layout/LegalLinks';
 import CartDrawer from "../components/features/CartDrawer";
 import Spinner from "../components/ui/Spinner";
 import { useAuth } from "../context/AuthContext";
@@ -29,6 +30,7 @@ export default function CustomerLayout() {
   return (
     <main className="app-shell pb-[calc(6rem+env(safe-area-inset-bottom))]">
       <Outlet />
+      <LegalLinks />
       {!hasPurchaseBar && <BottomNav />}
       <CartDrawer />
     </main>

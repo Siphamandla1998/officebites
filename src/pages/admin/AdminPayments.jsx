@@ -7,7 +7,7 @@ import { useAsync } from "../../hooks/useAsync";
 import { orderService } from "../../services/orderService";
 import {
   formatCurrency,
-  formatRelativeTime,
+  formatDate,
 } from "../../utils/formatters";
 
 export default function AdminPayments() {
@@ -19,7 +19,6 @@ export default function AdminPayments() {
     []
   );
 
-  if (error) return <RequestError error={error} onRetry={refetch} />;
   return (
     <div className="flex flex-col gap-6">
       <CheckoutControls />
@@ -29,18 +28,18 @@ export default function AdminPayments() {
         </h1>
 
         <p className="text-sm text-ink-muted mt-0.5">
-          PayFast payments are confirmed automatically
-          after secure server-side verification.
+          Provider payments are confirmed after secure server-side verification.
+          Paid is a payment status, separate from vendor acceptance and fulfilment.
         </p>
       </div>
 
-      {loading ? (
+      {error ? <RequestError error={error} onRetry={refetch} /> : loading ? (
         <div className="skeleton h-64" />
       ) : payments.length === 0 ? (
         <EmptyState
           icon={<FiCreditCard size={20} />}
           title="No confirmed payments yet"
-          description="Successfully verified PayFast payments will appear here automatically."
+          description="Reconciled provider payments will appear here automatically. Unresolved sales remain in financial reports."
         />
       ) : (
         <div className="card overflow-hidden">
@@ -56,9 +55,7 @@ export default function AdminPayments() {
 
                 <p className="text-xs text-ink-muted truncate">
                   {order.customerName} ·{" "}
-                  {formatRelativeTime(
-                    order.createdAt
-                  )}
+                  {formatDate(order.financialDate)}
                 </p>
               </div>
 

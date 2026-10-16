@@ -16,7 +16,7 @@ import { adminService } from "../../services/adminService";
 import { orderService } from "../../services/orderService";
 import {
   formatCurrency,
-  formatRelativeTime,
+  formatDate,
 } from "../../utils/formatters";
 
 export default function AdminOverview() {
@@ -106,12 +106,11 @@ export default function AdminOverview() {
         <div className="flex items-center justify-between mb-4">
           <div>
             <h3 className="section-title">
-              Recent PayFast payments
+              Recent verified payments
             </h3>
 
             <p className="text-xs text-ink-muted mt-0.5">
-              Payments shown here have been confirmed
-              automatically through PayFast.
+              Payment evidence is verified server-side. Paid does not mean the order is fulfilled.
             </p>
           </div>
 
@@ -129,7 +128,7 @@ export default function AdminOverview() {
           <EmptyState
             icon={<FiCreditCard size={18} />}
             title="No confirmed payments yet"
-            description="Verified PayFast payments will appear here automatically."
+            description="Reconciled provider payments will appear here automatically. Unresolved sales remain in financial reports."
           />
         ) : (
           <div className="flex flex-col divide-y divide-line">
@@ -144,9 +143,9 @@ export default function AdminOverview() {
                   </p>
 
                   <p className="text-xs text-ink-muted truncate">
-                    {order.customerName} · PayFast
+                    {order.customerName}
                     {" · "}
-                    {formatRelativeTime(order.createdAt)}
+                    {formatDate(order.financialDate)}
                   </p>
                 </div>
 

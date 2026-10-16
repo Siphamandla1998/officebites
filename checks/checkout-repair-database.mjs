@@ -1,0 +1,51 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+export async function verifyCheckoutRepair(db) {
+ let checks=0;
+ const id=n=>'00000000-0000-4000-8000-'+String(n).padStart(12,'0');
+ const scalar=async(sql,args)=>(await db.query(sql,args)).rows[0];
+ const root=()=>db.exec("RESET ROLE; SELECT set_config('request.jwt.claim.sub','',false),set_config('request.jwt.claim.role','service_role',false)");
+ const as=async n=>{await root();await db.exec(`SELECT set_config('request.jwt.claim.sub','${n?id(n):''}',false),set_config('request.jwt.claim.role','${n?'authenticated':'anon'}',false); SET ROLE ${n?'authenticated':'anon'}`);};
+ const reject=async(sql,pattern)=>{let e;try{await db.exec(sql);}catch(error){e=error;}assert.ok(e,'Expected rejection: '+sql);assert.match(e.message,pattern);checks++;};
+ await root();
+ const snapshots=(await db.query('SELECT id,commission_amount,commission_rate_snapshot,paid_at,delivery_snapshot FROM public.order_suborders ORDER BY id')).rows;
+ await db.exec(fs.readFileSync('checks/fixtures/checkout-repair-prerequisites.sql','utf8'));
+ // The older baseline fixture has only private role helpers. Reconstruct the
+ // equivalent order policy/missing grant here; native tests use actual staging.
+ await db.exec(`CREATE OR REPLACE FUNCTION public.vendor_can_see_order(p_order_id uuid) RETURNS boolean LANGUAGE sql STABLE SECURITY DEFINER SET search_path='' AS $$ SELECT EXISTS(SELECT 1 FROM public.order_suborders so WHERE so.order_id=p_order_id AND so.vendor_id=private.current_vendor_id()) $$;
+ DROP POLICY IF EXISTS orders_customer_admin_vendor_select ON public.orders;
+ CREATE POLICY orders_customer_admin_vendor_select ON public.orders FOR SELECT TO authenticated USING(customer_id=(SELECT auth.uid()) OR (SELECT private.is_admin()) OR (SELECT public.vendor_can_see_order(orders.id)))`);
+ await db.exec('REVOKE EXECUTE ON FUNCTION public.vendor_can_see_order(uuid) FROM PUBLIC,authenticated');
+ await as(2);await reject(`SELECT public.vendor_can_see_order('${id(4)}')`,/permission denied for function vendor_can_see_order/i);
+ await root();await db.exec(fs.readFileSync('supabase/migrations/20261016101707_repair_order_policy_helper_access.sql','utf8'));
+ for(const [n,role] of [[801,'customer'],[802,'vendor'],[803,'vendor'],[808,'customer']]) await db.exec(`INSERT INTO auth.users(id,email) VALUES('${id(n)}','repair-${n}@example.invalid');INSERT INTO public.profiles(id,name,email,role) VALUES('${id(n)}','Synthetic repair','repair-${n}@example.invalid','${role}')`);
+ for(const [v,u,m,p] of [[804,802,806,70],[805,803,807,40]]) await db.exec(`INSERT INTO public.vendors(id,owner_id,name,category,status) VALUES('${id(v)}','${id(u)}','Synthetic repair vendor ${v}','Meals','approved');UPDATE public.profiles SET vendor_id='${id(v)}' WHERE id='${id(u)}';INSERT INTO public.meals(id,vendor_id,name,category,price) VALUES('${id(m)}','${id(v)}','Synthetic repair meal','Meals',${p})`);
+ await db.exec(`INSERT INTO public.vendors(id,name,category,status) VALUES('${id(809)}','Synthetic ownerless vendor','Meals','approved');INSERT INTO public.meals(id,vendor_id,name,category,price) VALUES('${id(810)}','${id(809)}','Synthetic ownerless meal','Meals',10)`);
+ const cart=JSON.stringify([{mealId:id(806),qty:1},{mealId:id(807),qty:1}]);
+ const create=async(customer,items=cart)=>(await scalar('SELECT public.create_order_from_cart($1,$2,$3,NULL,current_date+7,$4,$5) r',[customer,customer?null:'Synthetic guest',customer?null:'0821234567','Synthetic repair destination',items])).r;
+ await as(801);const order=await create(id(801));assert.equal(order.status,'pending_payment');checks++;assert.equal(Number(order.total),110);checks++;
+ assert.equal(Number((await scalar(`SELECT count(*) n FROM public.orders WHERE id='${order.id}'`)).n),1);checks++;
+ await as(808);assert.equal(Number((await scalar(`SELECT count(*) n FROM public.orders WHERE id='${order.id}'`)).n),0);checks++;
+ await as(802);assert.equal(Number((await scalar(`SELECT count(*) n FROM public.orders WHERE id='${order.id}'`)).n),1);checks++;
+ assert.equal(Number((await scalar(`SELECT count(*) n FROM public.order_suborders WHERE order_id='${order.id}'`)).n),1);checks++;
+ await reject(`SELECT public.update_suborder_status_and_notify('${order.id}','accepted')`,/payment|paid/i);
+ await as(null);assert.equal(Number((await scalar(`SELECT count(*) n FROM public.vendors WHERE id='${id(809)}'`)).n),0);checks++;
+ assert.equal(Number((await scalar(`SELECT count(*) n FROM public.meals WHERE id='${id(810)}'`)).n),0);checks++;
+ const guest=await create(null,JSON.stringify([{mealId:id(806),qty:1}]));assert.equal(guest.status,'pending_payment');checks++;
+ await reject(`SELECT public.create_order_from_cart(NULL,'Synthetic','0821234567',NULL,current_date+7,'Synthetic','[{"mealId":"${id(810)}","qty":1}]')`,/Active approved vendor|required for fulfilment/i);
+ await root();await reject(`UPDATE public.vendors SET logo='blob:https://other-preview.vercel.app/synthetic' WHERE id='${id(804)}'`,/temporary image URLs/i);
+ await db.exec(`SELECT public.confirm_payfast_payment('${order.id}','SYNTHETIC-REPAIR','${order.ticket_number}',110,'COMPLETE','{"amount_fee":"-2.30"}')`);
+ const paid=(await db.query(`SELECT id,commission_amount,commission_rate_snapshot,paid_at,delivery_snapshot FROM public.order_suborders WHERE order_id='${order.id}' ORDER BY id`)).rows;
+ assert.equal(paid.reduce((sum,r)=>sum+Number(r.commission_amount),0),18.7);checks++;
+ await as(802);await reject(`SELECT public.update_suborder_status_and_notify('${order.id}','completed')`,/transition|step/i);
+ for(const status of ['accepted','preparing','ready','collected','completed']) await db.exec(`SELECT public.update_suborder_status_and_notify('${order.id}','${status}')`);
+ await root();assert.equal((await scalar(`SELECT status FROM public.orders WHERE id='${order.id}'`)).status,'confirmed');checks++;
+ await as(803);for(const status of ['accepted','preparing','ready','collected','completed']) await db.exec(`SELECT public.update_suborder_status_and_notify('${order.id}','${status}')`);
+ await root();assert.equal((await scalar(`SELECT status FROM public.orders WHERE id='${order.id}'`)).status,'completed');checks++;
+ await db.exec(`SELECT public.confirm_payfast_payment('${order.id}','SYNTHETIC-REPAIR','${order.ticket_number}',110,'COMPLETE','{"amount_fee":"-2.30"}')`);
+ assert.deepEqual((await db.query(`SELECT id,commission_amount,commission_rate_snapshot,paid_at,delivery_snapshot FROM public.order_suborders WHERE order_id='${order.id}' ORDER BY id`)).rows,paid);checks++;
+ for(const row of snapshots) assert.deepEqual(await scalar('SELECT id,commission_amount,commission_rate_snapshot,paid_at,delivery_snapshot FROM public.order_suborders WHERE id=$1',[row.id]),row);
+ checks++;
+ assert.equal((await scalar('SELECT enabled FROM private.delivery_settings')).enabled,false);checks++;
+ console.log(`${checks} isolated order access/catalogue/checkout/payment/fulfilment/blob/snapshot repair assertions passed.`);
+}

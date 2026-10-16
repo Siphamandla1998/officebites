@@ -115,4 +115,6 @@ try {
  console.log(`${checks} isolated checkout/mobile/cancellation/delivery/gateway assertions passed. No hosted writes or native concurrency claims.`);
  await (await import('./ozow-subscription-database.mjs')).verifyOzowSubscriptions(db);
  await (await import('./delivery-origins.mjs')).verifyDeliveryOrigins(db);
+ await (await import('./legal-corporate-database.mjs')).verifyLegalCorporate(db);
+ await (await import('./checkout-repair-database.mjs')).verifyCheckoutRepair(db);
 } catch(error) {console.error('Checkout database checks failed:',error.message);process.exitCode=1;} finally {await db.close();}

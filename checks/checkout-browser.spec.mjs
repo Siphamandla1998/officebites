@@ -7,6 +7,69 @@ test.beforeEach(async ({page}) => {
   });
 });
 const open=async(page,path)=>{await page.goto('/checks/browser-harness.html?route='+encodeURIComponent(path));await page.waitForFunction(()=>window.fixture?.authChanged);};
+
+test('admin gateway saves are independent, confirmed and survive route refresh after receipt failure',async({page})=>{
+ await page.addInitScript(()=>{window.fixtureOzowAvailable=true;});
+ await open(page,'/help');
+ await page.evaluate(()=>{fixture.failFinance=true;fixture.setUser({id:'SYNTHETIC-ADMIN',role:'admin'});fixture.navigate('/admin/payments');});
+ const payfast=page.getByRole('form',{name:'PayFast gateway settings'});
+ const ozow=page.getByRole('form',{name:'Ozow gateway settings'});
+ await expect(page.getByText('Synthetic report failure')).toBeVisible();
+ await payfast.getByLabel('Enabled for new payments').uncheck();
+ await payfast.getByRole('button',{name:'Save gateway settings'}).click();
+ await expect(page.getByText('Gateway settings saved and reloaded.')).toBeVisible();
+ await expect(ozow.getByLabel('Enabled for new payments')).toBeChecked();
+ await page.evaluate(()=>{fixture.failFinance=false;fixture.navigate('/help');});
+ await page.evaluate(()=>fixture.navigate('/admin/payments'));
+ await expect(payfast.getByLabel('Enabled for new payments')).not.toBeChecked();
+ await payfast.getByLabel('Enabled for new payments').check();
+ await payfast.getByRole('button',{name:'Save gateway settings'}).click();
+ await expect(page.getByText('Gateway settings saved and reloaded.')).toBeVisible();
+ await ozow.getByLabel('Enabled for new payments').uncheck();
+ await ozow.getByRole('button',{name:'Save gateway settings'}).click();
+ await expect(ozow.getByLabel('Enabled for new payments')).not.toBeChecked();
+ await expect(payfast.getByLabel('Enabled for new payments')).toBeChecked();
+ await page.evaluate(()=>{fixture.failGatewaySave=true;});
+ await ozow.getByLabel('Enabled for new payments').check();
+ await ozow.getByRole('button',{name:'Save gateway settings'}).click();
+ await expect(page.getByText('Synthetic gateway save rejected')).toBeVisible();
+ await expect(page.getByText('Gateway settings saved and reloaded.')).toHaveCount(0);
+});
+
+test('unpaid inconsistent completion is not presented as fulfilled or safe to retry',async({page})=>{
+ await page.addInitScript(()=>{window.fixtureOrderOverride={status:'completed',subOrders:[{vendorId:'fixture-vendor',vendorName:'Synthetic',status:'completed',paymentStatus:'unpaid',items:[]}]};});
+ await open(page,'/orders/A/ticket');
+ await expect(page.getByText('Status needs review',{exact:true})).toBeVisible();
+ await expect(page.getByText(/Payment is still required/)).toBeVisible();
+ await expect(page.getByText(/Your order is complete/)).toHaveCount(0);
+ await page.evaluate(()=>fixture.navigate('/payment/A'));
+ await expect(page.getByRole('button',{name:/Pay .* with PayFast/})).toHaveCount(0);
+});
+test('admin payment badge is Paid independently of fulfilled source rows and includes delivery',async({page})=>{
+ await page.addInitScript(()=>{window.fixtureVerifiedReceipt=true;});await open(page,'/help');
+ await page.evaluate(()=>{fixture.setUser({id:'SYNTHETIC-ADMIN',role:'admin'});fixture.navigate('/admin/payments');});
+ await expect(page.getByText('Paid',{exact:true})).toBeVisible();
+ await expect(page.getByText('Completed',{exact:true})).toHaveCount(0);
+ await expect(page.getByText(/115[.,]00/)).toBeVisible();
+});
+test('admin vendor list never requests a persisted foreign-origin blob',async({page})=>{
+ const blobs=[];page.on('request',r=>{if(r.url().startsWith('blob:'))blobs.push(r.url());});
+ await page.addInitScript(()=>{window.fixturePersistedBlob=true;});await open(page,'/help');
+ await page.evaluate(()=>{fixture.setUser({id:'SYNTHETIC-ADMIN',role:'admin'});fixture.navigate('/admin/vendors');});
+ await expect(page.getByText('Synthetic blob vendor',{exact:true})).toBeVisible();
+ expect(await page.locator('img[src^="blob:"]').count()).toBe(0);expect(blobs).toEqual([]);
+});
+
+test('public legal routes disclose unpublished status on mobile without authentication',async({page})=>{
+ await page.setViewportSize({width:390,height:844});
+ for(const path of ['/terms','/privacy','/refund-policy','/vendor-agreement','/vendor-fees']) {
+  await open(page,path);
+  await expect(page.getByText('An approved version of this document has not been published.',{exact:false})).toBeVisible();
+  await expect(page.getByRole('link',{name:'Back to marketplace'})).toBeVisible();
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);
+ }
+ expect(await page.evaluate(()=>fixture.unknownRpcs)).toEqual([]);
+});
 test('return is navigation; explicit confirmed cancellation is single-shot',async({page})=>{
   await open(page,'/payment/A');
   await page.getByRole('button',{name:'Cancel payment',exact:true}).click();

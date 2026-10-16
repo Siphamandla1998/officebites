@@ -1,4 +1,6 @@
 import { supabase } from "./api/supabaseClient";
+import { commercialService } from './commercialService';
+import { authError } from '../utils/authError';
 
 // authService — thin wrapper around Supabase Auth + the profiles table.
 // Every function still returns { user, token } shaped like before, or
@@ -12,8 +14,12 @@ async function fetchProfile(userId) {
     .eq("id", userId)
     .single();
 
-  if (error) throw error;
-  if (data.suspended) throw new Error("Your OfficeBites account is suspended. Please contact support.");
+  if (error) {
+    const failure = new Error('Your account profile could not be loaded. Refresh or contact OfficeBites support.');
+    failure.code = error.code;
+    throw failure;
+  }
+  if (data.suspended || data.deleted_at) throw new Error("Your OfficeBites account is unavailable. Please contact support.");
 
   return {
     id: data.id,
@@ -34,12 +40,7 @@ export const authService = {
         password,
       });
 
-    if (error) {
-      throw {
-        message: error.message,
-        status: error.status,
-      };
-    }
+    if (error) throw authError(error);
 
     const user = await fetchProfile(data.user.id);
 
@@ -57,6 +58,7 @@ export const authService = {
     building,
     businessName,
     businessCategory,
+    vendorConsent,
   }) {
     const registrationRole = role || "customer";
     if (!["customer", "vendor"].includes(registrationRole)) {
@@ -76,6 +78,7 @@ export const authService = {
           business_name: businessName?.trim() || null,
           business_category:
             businessCategory?.trim() || null,
+          vendor_consent: registrationRole === 'vendor' ? vendorConsent : null,
         },
       },
     });
@@ -121,7 +124,9 @@ export const authService = {
     businessName,
     businessCategory,
     building,
+    vendorConsent,
   }) {
+    if (vendorConsent) await commercialService.consent(vendorConsent);
     const { data, error } = await supabase.rpc(
       "become_vendor",
       {
@@ -171,7 +176,8 @@ export const authService = {
    * Used when OfficeBites loads.
    */
   async getCurrentUser() {
-    const { data } = await supabase.auth.getSession();
+    const { data, error } = await supabase.auth.getSession();
+    if (error) throw authError(error);
 
     if (!data.session) {
       return null;

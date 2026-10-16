@@ -58,10 +58,9 @@ import {
   Guides,
   GuideDetail,
   Feedback,
-  Terms,
-  Privacy,
-  RefundPolicy,
   BusinessHours,
+  LegalDocument,
+  CommercialWorkspace,
   NotFound,
 } from "./routeComponents";
 
@@ -244,6 +243,7 @@ export default function AppRoutes() {
           }
         >
           <Route index element={<VendorOverview />} />
+          <Route path="corporate" element={<CommercialWorkspace />} />
 
           <Route
             path="orders"
@@ -294,6 +294,7 @@ export default function AppRoutes() {
             index
             element={<AdminOverview />}
           />
+          <Route path="commercial" element={<CommercialWorkspace />} />
 
           <Route
             path="payments"
@@ -333,6 +334,7 @@ export default function AppRoutes() {
 
         {/* Help and support */}
         <Route element={<PublicLayout />}>
+          {['terms','privacy','refund-policy','vendor-agreement','vendor-fees'].map(kind => <Route key={kind} path={`/${kind}`} element={<LegalDocument kind={kind} />} />)}
           <Route
             path="/help"
             element={<HelpHome />}
@@ -380,17 +382,17 @@ export default function AppRoutes() {
 
           <Route
             path="/help/terms"
-            element={<Terms />}
+            element={<Navigate to="/terms" replace />}
           />
 
           <Route
             path="/help/privacy"
-            element={<Privacy />}
+            element={<Navigate to="/privacy" replace />}
           />
 
           <Route
             path="/help/refunds"
-            element={<RefundPolicy />}
+            element={<Navigate to="/refund-policy" replace />}
           />
 
           <Route

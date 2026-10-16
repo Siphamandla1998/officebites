@@ -90,20 +90,18 @@ export const VENDOR_STATUS = {
 // OFFICEBITES FEES
 // ===============================
 
-// Percentage OfficeBites keeps from vendor sales
-// Example: R100 meal order = R17 commission
+// Combined standard deduction. Existing server snapshots/negotiated rates remain authoritative.
 export const COMMISSION_RATE = 0.17;
 
 
-// Payment gateway / transaction processing fee
-// Example: R100 order = R2.50 transaction fee
-export const TRANSACTION_FEE_RATE = 0.025;
+export const PLATFORM_COMMISSION_RATE = 0.15;
+// Internal OfficeBites charge, not the external gateway's actual expense.
+export const TRANSACTION_FEE_RATE = 0.02;
 
 
 // Total platform deduction
 // Commission + payment processing
-export const PLATFORM_FEE_RATE =
-  COMMISSION_RATE + TRANSACTION_FEE_RATE;
+export const PLATFORM_FEE_RATE = COMMISSION_RATE;
 
 
 // Currency

@@ -34,7 +34,7 @@ notificationService.dismiss=async()=>{};
 supabase.channel=()=>({on(){return this;},subscribe(){return this;}});
 supabase.removeChannel=async()=>{};
 supabase.auth.getSession=async()=>({data:{session:fixture.user?{user:fixture.user}:null},error:null});
-const order=id=>({id,ticketNumber:`OB-${id}`,customerId:fixture.user?.id || null,status:'pending_payment',total:100,deliveryDate:'2026-10-12',subOrders:[],createdAt:'2026-10-08T10:00:00Z'});
+const order=id=>({id,ticketNumber:`OB-${id}`,customerId:fixture.user?.id || null,status:'pending_payment',total:100,deliveryDate:'2026-10-12',subOrders:[{id:`sub-${id}`,vendorId:'fixture-vendor',vendorName:'Synthetic vendor',status:'pending_payment',paymentStatus:'unpaid',items:[]}],createdAt:'2026-10-08T10:00:00Z',...window.fixtureOrderOverride});
 orderService.getOrderById=async id=>fixture.deferOrder?new Promise(resolve=>fixture.pending.push({id,resolve})):order(id);
 fixture.resolveOrder=(index=0)=>{const pending=fixture.pending.splice(index,1)[0];pending.resolve(order(pending.id));};
 orderService.createOrder=async()=>{fixture.creates++;const created=order('CREATED');return fixture.deferCreate?new Promise(resolve=>fixture.resolveCreate=()=>resolve(created)):created;};
@@ -45,7 +45,7 @@ supportService.searchFAQs=async()=>{if(fixture.failPublic)throw new Error('Synth
 supportService.getGuides=async()=>[];
 foodService.getMeals=async()=>{if(fixture.failPublic)throw new Error('Synthetic catalogue failure');return[];};
 vendorService.getFeaturedVendors=async()=>[];
-vendorService.getVendors=async()=>[];
+vendorService.getVendors=async()=>window.fixturePersistedBlob?[{id:'fixture-vendor',name:'Synthetic blob vendor',status:'pending',logo:'blob:https://different-preview.vercel.app/synthetic'}]:[];
 vendorService.getVendorById=async id=>({id,name:'Synthetic vendor',status:'approved',address:'Synthetic premises',contactNumber:'',deliveryRadius:2,latitude:null,longitude:null});
 vendorService.getDashboardStats=async()=>{fixture.vendorRefreshes++;return {todaysOrders:0,revenue:0,pendingOrders:0};};
 orderService.getOrdersForVendor=async()=>[];
@@ -58,14 +58,23 @@ supabase.rpc=async (name,args={})=> {
  if(name==='admin_delivery_origin_queue')return {data:fixture.origin?[{...fixture.origin,vendor_id:'fixture-vendor',vendor_name:'Synthetic vendor'}]:[],error:null};
  if(name==='request_vendor_delivery_origin'){fixture.origin={mode:'CENTRAL',status:'pending',address:args.p_address,latitude:args.p_latitude,longitude:args.p_longitude,revision:1};return {data:null,error:null};}
  if(name==='admin_decide_delivery_origin'){fixture.origin={...fixture.origin,revision:fixture.origin.revision+1,status:args.p_action==='approve'?'approved':args.p_action==='revoke'?'revoked':fixture.origin.status,mode:args.p_action==='vendor'?'VENDOR':'CENTRAL'};return {data:null,error:null};}
- if(name==='get_payment_gateways')return {data:[{provider:'payfast',enabled:!fixture.gatewayDisabled,ready:true,maintenance:false,notice:''},{provider:'ozow',enabled:!!window.fixtureOzowAvailable,ready:!!window.fixtureOzowAvailable,maintenance:false,notice:''}],error:null};
+ if(name==='get_payment_gateways')return {data:fixture.gateways || [{provider:'payfast',enabled:!fixture.gatewayDisabled,ready:true,maintenance:false,notice:''},{provider:'ozow',enabled:!!window.fixtureOzowAvailable,ready:!!window.fixtureOzowAvailable,maintenance:false,notice:''}],error:null};
+ if(name==='admin_update_payment_gateway'){
+  if(fixture.failGatewaySave)return {data:null,error:{message:'Synthetic gateway save rejected'}};
+  const current=fixture.gateways || [{provider:'payfast',enabled:!fixture.gatewayDisabled,ready:true,maintenance:false,notice:''},{provider:'ozow',enabled:!!window.fixtureOzowAvailable,ready:!!window.fixtureOzowAvailable,maintenance:false,notice:''}];
+  fixture.gateways=current.map(g=>g.provider===args.p_provider?{...g,enabled:args.p_enabled,maintenance:args.p_maintenance,notice:args.p_notice,updated_at:new Date().toISOString()}:g);
+  return {data:null,error:null};
+ }
  if(name==='get_delivery_settings')return {data:fixture.deliveryConfig || {enabled:false},error:null};
+ if(name==='get_legal_portal')return {data:{business:{legalName:'Synthetic fixture only',email:'synthetic@test.invalid'},businessReady:false,documents:{},onboardingEnforced:false,acquisitionEnabled:false,standardBreakdownEnabled:false},error:null};
+ if(name==='get_commercial_workspace')return {data:{admin:fixture.user?.role==='admin',business:{legalName:'Synthetic fixture only'},documents:fixture.user?.role==='admin'?[]:{},accounts:[],agreements:[],memberships:[],acceptances:[],ledger:[],adjustments:[]},error:null};
+ if(name==='get_commercial_report')return {data:{rows:[],standardFees:[],weekly:[],totals:{chargedOrders:0,qualifyingOrders:0,uniquePayingCustomers:0,acquisitionFees:0,acquisitionCredits:0,netAcquisitionFees:0}},error:null};
  if(name==='quote_delivery')return {data:{enabled:true,id:'synthetic-quote',distanceKm:1.1,fee:15,expiresInSeconds:300},error:null};
  if(name==='get_financial_report'){
 fixture.reportCalls++;if(fixture.failFinance)return {data:null,error:{message:'Synthetic report failure'}};}
  if(name==='admin_set_fee_policy'){fixture.policy='platform_absorbs';return {data:null,error:null};}
  if(name==='get_payout_ledger')return {data:{policy:fixture.policy,eligible:[],payouts:[],settlementRule:'Synthetic settlement'},error:null};
- if(name==='get_financial_report')return {data:{feePolicy:fixture.policy,totals:{gmv:100,grossCommission:17,processorFees:fixture.unknownFees?null:3,vendorEarnings:83,netMarketplaceRevenue:fixture.policy?14:null,paidOrders:1,unresolvedCommission:0},rows:[{financial_date:'2026-10-08',date_basis:'paid',order_id:'fixture',ticket_number:'=unsafe',suborder_id:'sub',vendor_id:'vendor',vendor_name:'Fixture',status:'completed',gross:100,commission_rate:0.17,commission:17,processor_fee:fixture.unknownFees?null:3,vendor_earnings:83}],reconciliation:[]},error:null};
+ if(name==='get_financial_report')return {data:{feePolicy:fixture.policy,totals:{gmv:100,grossCommission:17,processorFees:fixture.unknownFees?null:3,vendorEarnings:83,netMarketplaceRevenue:fixture.policy?14:null,paidOrders:1,unresolvedCommission:0},rows:[{financial_date:'2026-10-08',date_basis:'paid',order_id:'fixture',ticket_number:'=unsafe',suborder_id:'sub',vendor_id:'vendor',vendor_name:'Fixture',status:'completed',gross:100,commission_rate:0.17,commission:17,processor_fee:fixture.unknownFees?null:3,vendor_earnings:83}],reconciliation:window.fixtureVerifiedReceipt?[{order_id:'fixture',recordedOrderTotal:115,recordedCompletePayments:115,completePaymentCount:1,orderAmountDifference:0}]:[]},error:null};
  fixture.unknownRpcs.push(name);throw new Error('Unexpected RPC in recovery fixture: '+name);
 };
 supabase.from=()=>({select(){return this;},eq(){return this;},order(){return this;},then(resolve){return Promise.resolve({data:[],error:null}).then(resolve);}});

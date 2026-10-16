@@ -14,6 +14,14 @@ test.beforeEach(async ({page}, testInfo) => {
 test.afterEach(async ({page}) => { if (!pageErrors.has(page)) return; expect(pageErrors.get(page)).toEqual([]); await expect(page.locator('body')).not.toContainText('Something went wrong'); expect(await page.evaluate(() => window.fixture?.unknownRpcs || [])).toEqual([]); });
 const user=id=>({id,name:id,email:`${id}@test.invalid`,role:'customer'});
 async function open(page,route='/help/tickets') { await page.goto(new URL(`/checks/browser-harness.html?route=${encodeURIComponent(route)}`, test.info().project.use.baseURL).href, {waitUntil: 'domcontentloaded'});await page.waitForFunction(()=>window.fixture?.authChanged); }
+test('commercial workspace downloads a real CSV and hides CRM from vendor UI',async({page})=>{
+ await open(page);await page.evaluate(()=>{fixture.setUser({id:'SYNTHETIC-VENDOR',name:'Synthetic vendor',role:'vendor',vendorId:'fixture-vendor'});fixture.navigate('/vendor/corporate');});
+ await expect(page.getByRole('heading',{name:'Corporate opportunities',exact:true})).toBeVisible();
+ await expect(page.getByText('Corporate account',{exact:true})).toHaveCount(0);
+ const pending=page.waitForEvent('download');await page.getByRole('button',{name:'Download filtered acquisition CSV',exact:true}).click();
+ const csv=await fs.readFile(await(await pending).path(),'utf8');expect(csv).toContain('"Eligible at"');expect(csv).toContain('"Net fee"');
+ await expect(page.getByText(/Provider expenses and tax are unresolved/)).toBeVisible();
+});
 test('real provider tree: signed out, reload, signed in, account switching, logout, notification failure/retry',async({page})=>{
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await open(page);await expect(page.getByText('Sign in to view your tickets')).toBeVisible();

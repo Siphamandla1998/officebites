@@ -14,8 +14,8 @@ import { orderService } from "../../services/orderService";
 import { paymentService } from "../../services/paymentService";
 import { useToast } from "../../context/ToastContext";
 import { formatCurrency } from "../../utils/formatters";
-import { ORDER_STATUS } from "../../utils/constants";
 import { getGuestOrderAccess } from "../../utils/guest";
+import { canRetryPayment, paymentMessage } from '../../utils/orderState';
 
 export default function PaymentUpload() {
   const { orderId } = useParams();
@@ -55,7 +55,7 @@ export default function PaymentUpload() {
       const fresh = await refetch({ silent: true, throwOnError: true });
       if (!current()) return;
       if (!fresh?.id) throw new Error("Could not check this order. Please try again.");
-      if (fresh.status !== ORDER_STATUS.PENDING_PAYMENT) {
+      if (!canRetryPayment(fresh)) {
         setPayfastLoading(false);
         showToast("This order is no longer awaiting payment.", { type: "info" });
         navigate(`/orders/${orderId}`, { replace: true });
@@ -112,7 +112,7 @@ export default function PaymentUpload() {
     try {
       const fresh = await refetch({ silent: true, throwOnError: true });
       if (!current()) return;
-      if (fresh?.status !== ORDER_STATUS.PENDING_PAYMENT) throw new Error('Refresh your order before paying.');
+      if (!canRetryPayment(fresh)) throw new Error('Refresh your order and verify payment status before paying.');
       const guestAccess = getGuestOrderAccess(orderId);
       if (!fresh.customerId && !guestAccess?.contact) throw new Error('Verify your order code and phone number on Track Order first.');
       const redirectUrl = await paymentService.initiateOzowPayment(orderId, guestAccess?.contact || null);
@@ -145,12 +145,13 @@ export default function PaymentUpload() {
     );
   }
 
-  if (order.status !== ORDER_STATUS.PENDING_PAYMENT) {
+  if (!canRetryPayment(order)) {
     return (
       <div>
         <Navbar showBack title="Payment" showCart={false} />
         <div className="ob-container pt-4 flex flex-col gap-3">
-          <p className="text-sm text-ink-muted">This order is no longer awaiting payment.</p>
+          <p className="text-sm text-ink-muted">Payment options are unavailable until the order state is verified.</p>
+          <p className="text-sm text-ink-muted">{paymentMessage(order)}</p>
           <button onClick={() => navigate(`/orders/${orderId}`)} className="btn-primary">View order status</button>
         </div>
       </div>
@@ -226,7 +227,7 @@ export default function PaymentUpload() {
             <p>Returning to your order leaves it available for payment. Confirming cancellation cancels an unpaid order only if no provider payment may be processing. A verified payment is never cancelled or refunded here.</p>
             <p>If you already opened PayFast or your bank shows a debit, return to your order and contact support for reconciliation. Leaving this page does not cancel a bank payment.</p>
             <div className="flex flex-col gap-3 mt-4">
-              <button className="btn-outline" disabled={cancelling} onClick={() => navigate(`/orders/${orderId}`)}>Return to order without cancelling</button>
+              <button className="btn-outline" disabled={cancelling} onClick={() => { setCancelOpen(false); navigate(`/orders/${orderId}`); }}>Return to order without cancelling</button>
               <button className="btn-primary" disabled={cancelling} onClick={cancelPayment}>{cancelling ? 'Checking payment…' : 'Confirm cancel unpaid order'}</button>
             </div>
           </Modal>

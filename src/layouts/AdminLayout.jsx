@@ -12,6 +12,7 @@ const TABS = [
   { to: "/admin/support", icon: FiHeadphones, label: "Support" },
   { to: "/admin/analytics", icon: FiBarChart2, label: "Analytics" },
   { to: "/admin/reports", icon: FiFileText, label: "Reports" },
+  { to: "/admin/commercial", icon: FiFileText, label: "Legal & corporate" },
 ];
 
 export default function AdminLayout() {

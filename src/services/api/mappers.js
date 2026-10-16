@@ -1,5 +1,6 @@
 // Converts Supabase snake_case rows into the camelCase
 // shapes used throughout OfficeBites.
+import { persistentImage } from '../../utils/persistentImage';
 
 export function mapVendor(row) {
   if (!row) return null;
@@ -19,8 +20,8 @@ export function mapVendor(row) {
       row.prep_time_mins || 0
     ),
 
-    coverImage: row.cover_image || "",
-    logo: row.logo || "",
+    coverImage: persistentImage(row.cover_image),
+    logo: persistentImage(row.logo),
 
     building: row.building || "",
     status: row.status || "",
@@ -91,9 +92,7 @@ export function mapMeal(row) {
     price:
       Number(row.price || 0),
 
-    image:
-      row.image ||
-      "/placeholder-food.svg",
+    image: persistentImage(row.image, '/placeholder-food.svg'),
 
     category:
       row.category || "Meals",
@@ -171,8 +170,8 @@ export function mapOrder(row) {
               subOrder.vendor_id,
 
             vendorName:
-              subOrder.vendors?.name ||
-              "",
+              subOrder.vendors?.name || subOrder.vendor_name_snapshot ||
+              "Vendor unavailable",
 
             status:
               subOrder.status || "",
@@ -235,7 +234,7 @@ export function mapOrder(row) {
     customerName:
       row.profiles?.name ||
       row.guest_name ||
-      "Guest",
+      (row.customer_id ? "Customer" : "Guest"),
 
     customerContact:
       row.guest_contact || null,

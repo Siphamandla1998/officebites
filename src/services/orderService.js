@@ -3,6 +3,7 @@ import { supabase } from "./api/supabaseClient";
 import { getOrderCustomerNames } from "./customerNameService";
 import { mapOrder, ORDER_SELECT } from "./api/mappers";
 import { getGuestOrderAccess } from "../utils/guest";
+import { checkoutError } from '../utils/checkoutError';
 
 export const orderService = {
   // ===============================
@@ -188,6 +189,17 @@ export const orderService = {
       qty: item.qty,
     }));
 
+    // Do not silently create a guest/member order under a different SDK session
+    // from the account currently shown in checkout.
+    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+    if (sessionError || (sessionData.session?.user?.id || null) !== (customerId || null)) {
+      throw checkoutError({ code: 'SESSION_CHANGED', message: 'Customer identity changed' });
+    }
+    if (customerId) {
+      const { data: verified, error: identityError } = await supabase.auth.getUser();
+      if (identityError || verified.user?.id !== customerId) throw checkoutError({ code: 'SESSION_EXPIRED', message: 'Customer identity could not be verified' });
+    }
+
     const { data, error } = await supabase.rpc(
       quoteId ? "create_order_with_delivery" : "create_order_from_cart",
       {
@@ -202,11 +214,7 @@ export const orderService = {
       }
     );
 
-    if (error) {
-      throw {
-        message: error.message,
-      };
-    }
+    if (error) throw checkoutError(error);
 
     if (!data) {
       throw {
@@ -348,9 +356,18 @@ export const orderService = {
   async getRecentPayments(limit = 10) {
     const report = await financialService.report({ period: 'all' });
     const orders = new Map();
+    const receipts = new Map((report.reconciliation || []).filter(r =>
+      Number(r.completePaymentCount) === 1 && Number(r.recordedOrderTotal) > 0 &&
+      Math.round(Number(r.recordedCompletePayments) * 100) === Math.round(Number(r.recordedOrderTotal) * 100) &&
+      Number(r.orderAmountDifference) === 0
+    ).map(r => [r.order_id, r]));
     for (const row of report.rows) {
-      const entry = orders.get(row.order_id) || { id: row.order_id, ticketNumber: row.ticket_number, customerName: 'Paid business sale', createdAt: row.financial_date + 'T12:00:00+02:00', status: row.status, total: 0 };
-      entry.total += Number(row.gross); orders.set(row.order_id, entry);
+      const receipt = receipts.get(row.order_id);
+      if (!receipt || orders.has(row.order_id)) continue;
+      orders.set(row.order_id, { id: row.order_id, ticketNumber: row.ticket_number,
+        customerName: 'Verified business payment', financialDate: row.financial_date,
+        createdAt: row.financial_date + 'T12:00:00+02:00', status: 'paid', paymentStatus: 'paid',
+        total: Number(receipt.recordedOrderTotal) });
     }
     return [...orders.values()].sort((a,b) => b.createdAt.localeCompare(a.createdAt)).slice(0,limit);
   },

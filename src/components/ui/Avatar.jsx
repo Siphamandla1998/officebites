@@ -1,6 +1,8 @@
 import { initials } from "../../utils/formatters";
+import { persistentImage } from '../../utils/persistentImage';
 
 export default function Avatar({ src, name, size = 40, className = "" }) {
+  src = persistentImage(src);
   return src ? (
     <img
       src={src}

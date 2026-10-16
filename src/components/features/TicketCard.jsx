@@ -1,6 +1,7 @@
 import { FiCheckCircle } from "react-icons/fi";
 import { formatCurrency, formatDate } from "../../utils/formatters";
 import StatusBadge from "../ui/StatusBadge";
+import { displayOrderStatus } from '../../utils/orderState';
 
 export default function TicketCard({ order }) {
   return (
@@ -11,7 +12,7 @@ export default function TicketCard({ order }) {
         </div>
         <p className="text-xs uppercase tracking-wide text-paper/60">Order ticket</p>
         <p className="text-2xl font-bold tracking-tight">{order.ticketNumber}</p>
-        <StatusBadge status={order.status} />
+        <StatusBadge status={displayOrderStatus(order)} />
       </div>
 
       {/* Perforated divider look */}

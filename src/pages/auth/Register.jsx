@@ -6,6 +6,7 @@ import TextField from "../../components/forms/TextField";
 import SelectField from "../../components/forms/SelectField";
 import Spinner from "../../components/ui/Spinner";
 import { ROLES } from "../../utils/constants";
+import VendorConsent from '../../components/features/VendorConsent';
 
 const VENDOR_CATEGORIES = [
   { value: "Home-cooked meals", label: "Home-cooked meals" },
@@ -30,6 +31,7 @@ export default function Register() {
   });
 
   const [submitting, setSubmitting] = useState(false);
+  const [vendorConsent, setVendorConsent] = useState(null);
   const [confirmSent, setConfirmSent] = useState(false);
 
   const { register } = useAuth();
@@ -65,7 +67,7 @@ export default function Register() {
 
     try {
       const { user, needsEmailConfirmation } =
-        await register(form);
+        await register({ ...form, vendorConsent: isVendor ? vendorConsent : null });
 
       if (needsEmailConfirmation) {
         setConfirmSent(true);
@@ -224,6 +226,7 @@ export default function Register() {
           </div>
         )}
 
+        {isVendor && <VendorConsent onChange={setVendorConsent} />}
         <button
           type="submit"
           className="btn-primary w-full mt-1"

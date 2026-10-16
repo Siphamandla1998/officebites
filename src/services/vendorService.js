@@ -1,4 +1,5 @@
 import { coordinatePair } from "../utils/coordinates";
+import { requirePersistentImage } from '../utils/persistentImage';
 import { validateMobile } from '../utils/mobile';
 import {
   supabase,
@@ -444,7 +445,7 @@ export const vendorService = {
       throw new Error("Meal ID is required.");
     }
 
-    let image = updates.image;
+    let image = updates.imageFile ? undefined : requirePersistentImage(updates.image);
 
     if (updates.imageFile) {
       if (!updates.vendorId) {
@@ -674,7 +675,7 @@ export const vendorService = {
         updates.logoFile
       );
     } else if (updates.logo !== undefined) {
-      patch.logo = updates.logo;
+      patch.logo = requirePersistentImage(updates.logo);
     }
 
     if (updates.coverImageFile) {
@@ -684,7 +685,7 @@ export const vendorService = {
       );
     } else if (updates.coverImage !== undefined) {
       patch.cover_image =
-        updates.coverImage;
+        requirePersistentImage(updates.coverImage);
     }
 
     const { data, error } = await supabase
