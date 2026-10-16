@@ -5,10 +5,11 @@ import { stripTypeScriptTypes } from 'node:module';
 import { stagingPaymentOrigins } from '../supabase/functions/_shared/payment-origins.ts';
 const staging='https://eyhmarmekioovcjibcbr.supabase.co';
 const preview='https://officebites-n7cs82zjg-sp24tg-6983s-projects.vercel.app';
+const feature='https://officebites-git-feat-legal-vendor-da31dd-sp24tg-6983s-projects.vercel.app';
 const local='http://127.0.0.1:5173';const production='https://officebites.co.za';
 let checks=0;
 for(const value of [undefined,'https://gfzhdkitdyqftealgqfi.supabase.co','https://eyhmarmekioovcjibcbr.supabase.co.attacker.invalid','https://attacker@eyhmarmekioovcjibcbr.supabase.co']) {assert.deepEqual(stagingPaymentOrigins(value),[]);checks++;}
-assert.deepEqual(stagingPaymentOrigins(staging),[preview,local]);checks++;
+assert.deepEqual(stagingPaymentOrigins(staging),[preview,local,feature]);checks++;
 const code=stripTypeScriptTypes(fs.readFileSync('supabase/functions/payfast-initiate/index.ts','utf8').replace(/^import .*;\r?\n/gm,''));
 function handler(project,origins,options={}) {
  let serve;let preparations=0;let clients=0;
@@ -21,14 +22,14 @@ function handler(project,origins,options={}) {
  };vm.createContext(context);vm.runInContext(code,context);return{run:r=>serve(r),counts:()=>({clients,preparations})};
 }
 const stage=handler(staging,'https://old-reviewed-preview.vercel.app');
-for(const origin of [preview,local]) {
+for(const origin of [preview,local,feature]) {
  const response=await stage.run(new Request(staging+'/functions/v1/payfast-initiate',{method:'OPTIONS',headers:{Origin:origin}}));
  assert.equal(response.headers.get('Access-Control-Allow-Origin'),origin);checks++;
  assert.equal(stage.counts().preparations,0);checks++;assert.equal(stage.counts().clients,0);checks++;
 }
 const unknown=await stage.run(new Request(staging+'/functions/v1/payfast-initiate',{method:'OPTIONS',headers:{Origin:'https://attacker.vercel.app'}}));
 assert.notEqual(unknown.headers.get('Access-Control-Allow-Origin'),'https://attacker.vercel.app');checks++;
-for(const origin of [preview,local]) {
+for(const origin of [preview,local,feature]) {
  const response=await stage.run(new Request(staging+'/functions/v1/payfast-initiate',{method:'POST',headers:{Origin:origin,'Content-Type':'application/json'},body:JSON.stringify({orderId:'synthetic-order',guestContact:'0821234567'})}));
  const data=await response.json();assert.equal(data.fields.return_url,origin+'/orders/synthetic-order?payfast=return');checks++;
  assert.equal(data.fields.cancel_url,origin+'/orders/synthetic-order?payfast=cancel');checks++;
@@ -37,6 +38,7 @@ for(const origin of [preview,local]) {
 const prod=handler('https://gfzhdkitdyqftealgqfi.supabase.co',production);
 const prodPreflight=await prod.run(new Request('https://example.invalid',{method:'OPTIONS',headers:{Origin:preview}}));
 assert.equal(prodPreflight.headers.get('Access-Control-Allow-Origin'),production);checks++;
+assert.equal((await prod.run(new Request('https://example.invalid',{method:'OPTIONS',headers:{Origin:feature}}))).headers.get('Access-Control-Allow-Origin'),production);checks++;
 for(const [options,status,bearer] of [[{invalidToken:true},401,'expired-synthetic-token'],[{caller:'synthetic-member',suspended:true},403,'valid-synthetic-token'],[{missingConfig:true},503,null]]){
  const fn=handler(staging,preview,options);const headers={Origin:preview,'Content-Type':'application/json'};if(bearer)headers.Authorization='Bearer '+bearer;
  const response=await fn.run(new Request(staging+'/functions/v1/payfast-initiate',{method:'POST',headers,body:JSON.stringify({orderId:'synthetic-order',guestContact:'0821234567'})}));

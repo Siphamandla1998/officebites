@@ -59,7 +59,15 @@ Actual hosted browser admin toggle persistence, designated-account order history
 
 ## Commit, push and deployment record
 
-Precommit validation passed. Exact commit SHA, GitHub push, Vercel ID/status/URL, source/environment evidence and actual new-Preview checks will be recorded after execution. This predeployment record does not claim a deployment has happened yet.
+Development commit **6400b23a13d54220d0cb90ffe9fec28ecafe8b75** was pushed normally to origin/feat/legal-vendor-corporate-acquisition. GitHub branch readback matches; remote main remains 4c4835db62b7db4c7a725c92d7a6294ca523fa57. Automatic Git integration created Preview **dpl_5JCrMPqWRXcTGujJ1yhA3wwisFzF**, READY, exact commit 6400b23, at https://officebites-n1n4mjpp2-sp24tg-6983s-projects.vercel.app/. Build logs confirm completion and 122 PWA precache entries. Target is Preview (API target=null), not production.
+
+Verified branch alias: **https://officebites-git-feat-legal-vendor-da31dd-sp24tg-6983s-projects.vercel.app/**. This is the intended payment-testing origin. The immutable deployment URL and branch alias initially both failed PayFast CORS (OPTIONS 200 but nonmatching Allow-Origin). That was a real broken boundary, not a successful preflight.
+
+Necessary staging-only follow-up: added only the verified exact branch alias to _shared/payment-origins.ts and extended checks/payment-cors.mjs. **32 assertions passed**, including return/cancel URLs and exclusion from production. Deno frozen check passed. Deployed **staging payfast-initiate v20 ACTIVE**, retaining verify_jwt=false and identical index/signature source. All three deployed files match local after line-ending normalization. Actual OPTIONS from the branch alias now returns a matching Allow-Origin. No POST/preparation/provider request was made. Unknown/immutable Preview origins remain unapproved; use the verified branch alias for payment UI checks. No wildcard origins or production functions were changed.
+
+The CORS follow-up is committed/pushed separately after review; its resulting frontend deployment and final hosted browser results are recorded below after completion. The admin gateway code is unchanged by this Edge-origin follow-up. Do not treat the initial immutable URL as proof of the follow-up HEAD.
+
+OAuth/confirmation/password-reset redirect allowlists cannot be read or edited with the connected Supabase tools. The app currently uses password login (no signInWithOAuth call); reset email requests use the current origin/reset-password. Exact branch-origin/reset-password allowance and confirmation email delivery need dashboard verification before those email-based flows can be claimed. No Auth setting or redirect secret was changed.
 
 ## Files reviewed for the development commit
 

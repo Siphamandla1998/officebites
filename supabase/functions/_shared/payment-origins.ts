@@ -9,6 +9,7 @@ export function stagingPaymentOrigins(projectUrl: string | undefined): string[] 
     return [
       'https://officebites-n7cs82zjg-sp24tg-6983s-projects.vercel.app',
       'http://127.0.0.1:5173',
+      'https://officebites-git-feat-legal-vendor-da31dd-sp24tg-6983s-projects.vercel.app',
     ];
   } catch { return []; }
 }
