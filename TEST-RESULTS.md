@@ -1,5 +1,17 @@
 # Checkout test results — 16 October 2026
 
+## Latest central-origin validation
+
+Full existing isolated regressions pass; **59 new isolated origin assertions** cover CENTRAL without GPS, approval permissions, reject/re-request/revoke, coordinate invalidation, boundary/mixed-cart eligibility, once-only fees, unchanged paid history, effective-origin discovery and zero-charge disabled-mode snapshots. Native staging suites pass **12 checkout + 16 Ozow/subscription + 24 delivery assertions**, using synthetic fixtures under ROLLBACK. Guest and authenticated SQL contexts are covered; actual SDK sign-in/browser checkout is not implied. Final fixture counts are zero and all activation flags remain false.
+
+**25 browser tests passed**, including the synthetic vendor request → admin approve → explicit VENDOR selection → revoke → CENTRAL journey. Full lint retains nine existing warnings; targeted new-source lint has no errors/warnings. Deno checks pass for all six existing payment/removal endpoints; no Edge code was changed/deployed. Staging production build passed with 117 PWA entries; final rerun after the last UI edits is recorded in chat.
+
+Final staging-mode build and targeted lint/whitespace checks passed after the profile/quote UI changes. No new lint warnings were introduced. The final SQL suite passed 59 origin assertions; source/history migration mappings and security-advisor results are in the dedicated delivery report.
+
+The two focused browser stories (customer quote, vendor/admin approval) also passed on the final UI. Source-only local commits are not pushed, so the existing Vercel preview is unchanged and does not include the central-hub UI.
+
+Failures corrected: isolated SQL alias collision; native fixture CASE syntax; staged hub-name Windows transport encoding repaired with a narrow forward migration. No failed migration was blindly replayed. An attempted two-session policy-lock probe could not observe the holder and is **inconclusive**, not passed. Simultaneous native revocation/checkout, operational GPS, real member/guest staging browser checkout and installed-PWA/mobile behavior remain release blockers. Details and runnable scripts: [CENTRAL-DELIVERY-REPORT.md](CENTRAL-DELIVERY-REPORT.md).
+
 ## Continuation results
 
 - Full local regression runner passed, including preservation checks, recovery/service/auth tests, 73 ledger checks, 38 checkout checks, timezone suites and initial new integration tests. Expanded new suites then passed 43 isolated Ozow/subscription/database-role assertions and 33 mocked handler/HTTP assertions. No provider credentials or hosted payments are used.

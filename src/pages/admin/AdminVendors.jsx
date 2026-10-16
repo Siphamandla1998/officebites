@@ -1,5 +1,6 @@
 import { useState } from "react";
 import AccountRemoval from '../../components/features/AccountRemoval';
+import VendorDeliveryOrigin from '../../components/features/VendorDeliveryOrigin';
 import RequestError from '../../components/ui/RequestError';
 import Filters from "../../components/ui/Filters";
 import Table from "../../components/ui/Table";
@@ -17,6 +18,7 @@ export default function AdminVendors() {
   const [filter, setFilter] = useState(
     VENDOR_STATUS.PENDING
   );
+  const [originVendor, setOriginVendor] = useState(null);
 
   const { showToast } = useToast();
 
@@ -148,6 +150,7 @@ export default function AdminVendors() {
       render:(v)=>(
 
         <div className="flex gap-2">
+          <button className="btn-outline text-xs" onClick={() => setOriginVendor(v.id)}>Delivery mode and approval</button>
           {v.archivedAt ? <span className="text-xs">Archived; financial history retained</span> : <AccountRemoval kind="vendor" id={v.id} onRemoved={refetch} />}
 
 
@@ -295,6 +298,7 @@ export default function AdminVendors() {
 
 
 
+      {originVendor && <VendorDeliveryOrigin key={originVendor} vendorId={originVendor} admin />}
       <div className="mt-5">
 
         {

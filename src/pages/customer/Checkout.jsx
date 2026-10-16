@@ -172,10 +172,10 @@ export default function Checkout() {
       <div className="ob-container pt-4 flex flex-col gap-5">
         <RequestError error={deliveryError} onRetry={reloadDelivery} />
         {deliveryConfig?.enabled && <section className="card p-4 flex flex-col gap-3">
-          <p>Delivery is calculated from the configured Eduvos origin to your device location, including each vendor’s delivery radius. Your typed address is a delivery instruction, not proof of distance.</p>
+          <p>Delivery uses the OfficeBites hub unless an administrator has approved a vendor origin. Every vendor must serve your destination. Your typed address gives delivery instructions; use your device location to calculate distance.</p>
           <button className="btn-outline" disabled={quoting} onClick={requestQuote}>{quoting ? 'Checking delivery…' : 'Use my location and calculate delivery'}</button>
           {geo.error && <p role="alert">{geo.error} Retry location. If location is unavailable, contact support before ordering; no delivery fee is guessed.</p>}
-          {usableQuote?.id && <p>{Number(usableQuote.distanceKm).toFixed(2)} km · Delivery {formatCurrency(usableQuote.fee)} · Total {formatCurrency(subtotal + Number(usableQuote.fee))}. Quote valid for five minutes.</p>}
+          {usableQuote?.id && <><p>Maximum delivery distance {Number(usableQuote.distanceKm).toFixed(2)} km · Delivery {formatCurrency(usableQuote.fee)} · Total {formatCurrency(subtotal + Number(usableQuote.fee))}. Delivery is charged once per checkout. Quote valid for five minutes.</p>{usableQuote.vendors?.map(v => <p key={v.vendorId}>{v.vendorName} · {v.mode === 'VENDOR' ? 'Approved vendor location' : 'OfficeBites hub'} · {Number(v.distanceKm).toFixed(2)} km</p>)}</>}
         </section>}
         {!isAuthenticated && (
           <div className="card p-4">

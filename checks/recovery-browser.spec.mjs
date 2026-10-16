@@ -168,3 +168,28 @@ test('vendor dashboard refreshes on focus without a navigation', async ({page}) 
   await page.evaluate(() => window.dispatchEvent(new Event('focus')));
   await page.waitForFunction(n => fixture.vendorRefreshes > n, before);
 });
+
+test('vendor proposes origin; admin approval and mode selection are separate',async({page})=>{
+ await open(page);await page.evaluate(u=>fixture.setUser(u),{...user('VENDOR'),role:'vendor',vendorId:'fixture-vendor'});
+ await page.evaluate(()=>fixture.navigate('/vendor/settings'));
+ await expect(page.getByText('Current mode:',{exact:false}).first()).toContainText('CENTRAL');
+ await page.getByLabel('Proposed physical address').fill('Synthetic verified premises');
+ await page.getByLabel('Proposed latitude',{exact:true}).fill('-29.72');
+ await page.getByLabel('Proposed longitude',{exact:true}).fill('31.07');
+ await page.getByRole('button',{name:'Request location approval'}).click();
+ await expect(page.getByText('Current mode:',{exact:false}).first()).toContainText('pending');
+ await expect(page.getByRole('button',{name:'Approve location',exact:true})).toHaveCount(0);
+ await page.evaluate(u=>fixture.setUser(u),{...user('ADMIN'),role:'admin'});
+ await page.evaluate(()=>fixture.navigate('/admin/payments'));
+ await page.getByRole('button',{name:/Synthetic vendor · pending/}).click();
+ await page.getByLabel('Decision reason').fill('Synthetic reviewed premises');
+ await page.getByRole('button',{name:'Approve location',exact:true}).click();
+ await expect(page.getByText('Current mode:',{exact:false}).first()).toContainText('CENTRAL');
+ await page.getByLabel('Decision reason').fill('Synthetic enable approved origin');
+ await page.getByRole('button',{name:'Use VENDOR origin',exact:true}).click();
+ await expect(page.getByText('Current mode:',{exact:false}).first()).toContainText('VENDOR');
+ await page.getByLabel('Decision reason').fill('Synthetic permission revoked');
+ await page.getByRole('button',{name:'Revoke origin permission',exact:true}).click();
+ await expect(page.getByText('Current mode:',{exact:false}).first()).toContainText('CENTRAL');
+ await expect(page.getByText('Current mode:',{exact:false}).first()).toContainText('revoked');
+});

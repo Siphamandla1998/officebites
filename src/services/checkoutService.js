@@ -18,4 +18,14 @@ export const checkoutService = {
     p_enabled: value.enabled, p_latitude: Number(value.latitude), p_longitude: Number(value.longitude),
     p_free_radius_km: Number(value.free_radius_km), p_max_radius_km: Number(value.max_radius_km), p_paid_fee: Number(value.paid_fee),
   }),
+  saveHub: (settings, reason) => rpc('admin_save_delivery_hub', { p_settings: settings, p_reason: reason }),
+  origin: vendorId => rpc('get_vendor_delivery_origin', { p_vendor_id: vendorId }),
+  originQueue: () => rpc('admin_delivery_origin_queue', {}),
+  requestOrigin: (vendorId, value) => rpc('request_vendor_delivery_origin', {
+    p_vendor_id: vendorId, p_address: value.address, p_latitude: Number(value.latitude), p_longitude: Number(value.longitude),
+  }),
+  decideOrigin: (vendorId, revision, action, reason, radius) => rpc('admin_decide_delivery_origin', {
+    p_vendor_id: vendorId, p_revision: revision, p_action: action, p_reason: reason,
+    p_radius_km: radius === '' || radius == null ? null : Number(radius),
+  }),
 };

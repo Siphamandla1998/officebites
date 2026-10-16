@@ -1,5 +1,7 @@
 # Ozow One API setup requirements — activation blocked
 
+Latest delivery pass: CENTRAL is the default origin, with admin-approved VENDOR exceptions and an authoritative once-per-checkout delivery fee. Stored order totals remain the only payment amount source; no fee/commission history was backfilled. Ozow handlers, signatures, readiness and credentials are unchanged; no provider/deployment action occurred. Ozow remains disabled. See [CENTRAL-DELIVERY-REPORT.md](CENTRAL-DELIVERY-REPORT.md) for staging migrations and origin snapshots; merchant integration/activation requirements below still apply.
+
 ## Current adapter and secure staging setup
 
 The earlier groundwork-only description below is historical. Attempt/receipt persistence, initiation, thin-webhook verification, atomic idempotent order confirmation and administrator reconciliation are now implemented and tested with mocks and native rollback fixtures. Staging endpoints exist but are gated off; production is explicitly refused by this release's handler.

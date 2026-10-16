@@ -11,6 +11,7 @@ import TextField from "../../components/forms/TextField";
 import TextAreaField from "../../components/forms/TextAreaField";
 import FileUpload from "../../components/forms/FileUpload";
 import Spinner from "../../components/ui/Spinner";
+import VendorDeliveryOrigin from '../../components/features/VendorDeliveryOrigin';
 
 import { useAsync } from "../../hooks/useAsync";
 import { vendorService } from "../../services/vendorService";
@@ -101,7 +102,7 @@ export default function VendorSettings() {
         setLocating(false);
 
         showToast(
-          "Business location captured. Save changes to apply it.",
+          "Business location captured. Saving a changed pin requires a new delivery-origin review.",
           { type: "success" }
         );
       },
@@ -135,27 +136,9 @@ export default function VendorSettings() {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const radius = Number(form.deliveryRadius);
-
     if (!form.address.trim()) {
       showToast(
         "Add your business address before saving.",
-        { type: "error" }
-      );
-      return;
-    }
-
-    if (!Number.isFinite(radius) || radius <= 0) {
-      showToast(
-        "Delivery radius must be greater than 0 km.",
-        { type: "error" }
-      );
-      return;
-    }
-
-    if (!hasCoordinates) {
-      showToast(
-        "Set your business location before saving. This is how OfficeBites shows your store to nearby customers.",
         { type: "error" }
       );
       return;
@@ -166,8 +149,11 @@ export default function VendorSettings() {
     try {
       const updates = {
         ...form,
-        deliveryRadius: radius,
       };
+      delete updates.deliveryRadius;
+      if ((form.latitude === vendor.latitude && form.longitude === vendor.longitude) || (!hasCoordinates && form.latitude == null && form.longitude == null)) {
+        delete updates.latitude; delete updates.longitude;
+      }
       // Existing contact values are not normalized or rejected during unrelated edits.
       if (form.contactNumber === (vendor.contactNumber || '')) delete updates.contactNumber;
 
@@ -225,11 +211,11 @@ export default function VendorSettings() {
         </h1>
 
         <p className="text-sm text-ink-muted mt-0.5">
-          Manage your business details, delivery area and
-          marketplace location.
+          Manage your business details and delivery-origin approval.
         </p>
       </div>
 
+      <VendorDeliveryOrigin vendorId={user.vendorId} />
       <form
         onSubmit={handleSubmit}
         className="flex flex-col gap-5"
@@ -305,8 +291,8 @@ export default function VendorSettings() {
               </h2>
 
               <p className="text-xs text-ink-muted mt-1">
-                OfficeBites uses this location to show your
-                business to customers inside your delivery area.
+                Business GPS is optional for CENTRAL delivery. A vendor-origin
+                location requires separate administrator approval below.
               </p>
             </div>
           </div>
@@ -319,15 +305,7 @@ export default function VendorSettings() {
             required
           />
 
-          <TextField
-            label="Delivery radius (km)"
-            type="number"
-            min="0.1"
-            step="0.1"
-            value={form.deliveryRadius}
-            onChange={update("deliveryRadius")}
-            required
-          />
+          <p className="text-xs text-ink-muted">OfficeBites sets delivery limits. To deliver from your premises, request location approval above; an administrator sets the approved service radius.</p>
 
           <div
             className={`rounded-xl border p-4 ${
@@ -361,8 +339,8 @@ export default function VendorSettings() {
 
                   <p className="text-xs text-ink-muted mt-1 max-w-md">
                     {hasCoordinates
-                      ? "Your location is ready for nearby customer discovery. Capture it again if the business moves."
-                      : "While you are at the business premises, use this device's location to place your store correctly in the OfficeBites marketplace."}
+                      ? "Business profile coordinates are set. Delivery from these premises still requires administrator approval."
+                      : "Business coordinates are optional for CENTRAL delivery. Capture them at the premises if you want to propose a vendor origin."}
                   </p>
                 </div>
               </div>

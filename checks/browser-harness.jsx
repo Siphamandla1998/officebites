@@ -46,13 +46,18 @@ supportService.getGuides=async()=>[];
 foodService.getMeals=async()=>{if(fixture.failPublic)throw new Error('Synthetic catalogue failure');return[];};
 vendorService.getFeaturedVendors=async()=>[];
 vendorService.getVendors=async()=>[];
+vendorService.getVendorById=async id=>({id,name:'Synthetic vendor',status:'approved',address:'Synthetic premises',contactNumber:'',deliveryRadius:2,latitude:null,longitude:null});
 vendorService.getDashboardStats=async()=>{fixture.vendorRefreshes++;return {todaysOrders:0,revenue:0,pendingOrders:0};};
 orderService.getOrdersForVendor=async()=>[];
 paymentService.initiatePayfastPayment=async()=>fixture.deferPayment?new Promise(resolve=>fixture.resolvePayment=()=>{fixture.resolvePayment=null;resolve({processUrl:'https://fixture.invalid',fields:{}});}):{processUrl:'https://fixture.invalid',fields:{}};
 paymentService.redirectToPayfast=value=>fixture.redirects.push(value);
 paymentService.initiateOzowPayment=async()=>{fixture.ozowCalls=(fixture.ozowCalls||0)+1;await new Promise(resolve=>setTimeout(resolve,50));throw new Error('Synthetic Ozow reconciliation required');};
 paymentService.cancelUnpaidOrder=async()=>{fixture.cancels=(fixture.cancels||0)+1;if(fixture.cancelFail)throw new Error('A payment may be processing');return {status:'cancelled'};};
-supabase.rpc=async name=> {
+supabase.rpc=async (name,args={})=> {
+ if(name==='get_vendor_delivery_origin')return {data:{current:fixture.origin || {mode:'CENTRAL',status:'not_requested'},history:fixture.originHistory || []},error:null};
+ if(name==='admin_delivery_origin_queue')return {data:fixture.origin?[{...fixture.origin,vendor_id:'fixture-vendor',vendor_name:'Synthetic vendor'}]:[],error:null};
+ if(name==='request_vendor_delivery_origin'){fixture.origin={mode:'CENTRAL',status:'pending',address:args.p_address,latitude:args.p_latitude,longitude:args.p_longitude,revision:1};return {data:null,error:null};}
+ if(name==='admin_decide_delivery_origin'){fixture.origin={...fixture.origin,revision:fixture.origin.revision+1,status:args.p_action==='approve'?'approved':args.p_action==='revoke'?'revoked':fixture.origin.status,mode:args.p_action==='vendor'?'VENDOR':'CENTRAL'};return {data:null,error:null};}
  if(name==='get_payment_gateways')return {data:[{provider:'payfast',enabled:!fixture.gatewayDisabled,ready:true,maintenance:false,notice:''},{provider:'ozow',enabled:!!window.fixtureOzowAvailable,ready:!!window.fixtureOzowAvailable,maintenance:false,notice:''}],error:null};
  if(name==='get_delivery_settings')return {data:fixture.deliveryConfig || {enabled:false},error:null};
  if(name==='quote_delivery')return {data:{enabled:true,id:'synthetic-quote',distanceKm:1.1,fee:15,expiresInSeconds:300},error:null};

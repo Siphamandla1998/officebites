@@ -2,12 +2,14 @@ import { useState } from 'react';
 import { useAsync } from '../../hooks/useAsync';
 import { checkoutService } from '../../services/checkoutService';
 import RequestError from '../ui/RequestError';
+import { DeliveryOriginQueue } from './VendorDeliveryOrigin';
 
 export default function CheckoutControls() {
   const gateways = useAsync(checkoutService.gateways, [], []);
   const delivery = useAsync(checkoutService.deliverySettings, [], null);
   const [busy, setBusy] = useState(false), [error, setError] = useState(null);
   const [draft, setDraft] = useState(null);
+  const [reason, setReason] = useState('');
   async function save(action) {
     if (busy) return;
     setBusy(true); setError(null);
@@ -29,13 +31,20 @@ export default function CheckoutControls() {
       <label>Public notice <input className="input" name="notice" maxLength={500} defaultValue={g.notice} /></label>
       <button className="btn-outline" disabled={busy}>Save gateway settings</button>
     </form>)}
-    {delivery.data && <form className="border-t pt-3 flex flex-col gap-3" onSubmit={event => { event.preventDefault(); void save(() => checkoutService.saveDelivery(draft || delivery.data)); }}>
+    {delivery.data && <form className="border-t pt-3 flex flex-col gap-3" onSubmit={event => { event.preventDefault(); void save(() => checkoutService.saveHub(draft || delivery.data, reason)); }}>
       <h3 className="font-semibold">Delivery policy</h3>
-      <p>Owner-confirmed Eduvos centre is prefilled. Confirm both radii and the paid-zone fee before enabling. Saving invalidates existing quotes.</p>
+      <p>CENTRAL is the default for every vendor. Delivery costs the standard fee once per checkout if any vendor requires a paid-zone delivery. The operational hub pin still requires verification.</p>
+      <a href={`https://www.google.com/maps?q=${encodeURIComponent(`${(draft || delivery.data).latitude},${(draft || delivery.data).longitude}`)}`} target="_blank" rel="noreferrer">Review central hub map pin</a>
+      {['hub_name', 'hub_address'].map(key => <label key={key}>{key === 'hub_name' ? 'Central hub name' : 'Central hub address'}<input className="input" required maxLength={key === 'hub_name' ? 200 : 1000} value={(draft || delivery.data)[key] || ''} onChange={event => setDraft({ ...(draft || delivery.data), [key]: event.target.value })} /></label>)}
       {['latitude','longitude','free_radius_km','max_radius_km','paid_fee'].map(key => <label key={key}>{({latitude:'Origin latitude',longitude:'Origin longitude',free_radius_km:'Free radius (km)',max_radius_km:'Maximum distance (km)',paid_fee:'Paid-zone fee (ZAR)'})[key]}
         <input className="input" type="number" step="any" required value={(draft || delivery.data)[key] ?? ''} onChange={event => setDraft({ ...(draft || delivery.data), [key]: event.target.value })} /></label>)}
-      <label><input type="checkbox" checked={Boolean((draft || delivery.data).enabled)} onChange={event => setDraft({ ...(draft || delivery.data), enabled: event.target.checked })} /> Enforce delivery quotes</label>
+      <label><input type="checkbox" checked={Boolean((draft || delivery.data).hub_pin_verified)} onChange={event => setDraft({ ...(draft || delivery.data), hub_pin_verified: event.target.checked })} /> I verified the exact operational hub map pin</label>
+      <label><input type="checkbox" checked={Boolean((draft || delivery.data).fee_structure_confirmed)} onChange={event => setDraft({ ...(draft || delivery.data), fee_structure_confirmed: event.target.checked })} /> Owner approved the once-per-checkout fee structure</label>
+      <p>Authenticated and guest staging checkout verification: {delivery.data.activation_ready ? 'Recorded' : 'Pending — enforcement stays disabled'}</p>
+      <label><input type="checkbox" disabled={!delivery.data.activation_ready || busy} checked={Boolean((draft || delivery.data).enabled)} onChange={event => setDraft({ ...(draft || delivery.data), enabled: event.target.checked })} /> Enforce delivery quotes</label>
+      <label>Configuration reason<textarea className="input" required maxLength={1000} value={reason} onChange={event => setReason(event.target.value)} /></label>
       <button className="btn-outline" disabled={busy}>Save confirmed delivery policy</button>
     </form>}
+    <DeliveryOriginQueue />
   </section>;
 }

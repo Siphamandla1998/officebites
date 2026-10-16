@@ -1,5 +1,9 @@
 # Staging readiness — 16 October 2026
 
+## Latest central-hub pass
+
+New central-hub approval, display-name correction and unenforced-order snapshot migrations are installed only on `eyhmarmekioovcjibcbr`; see [CENTRAL-DELIVERY-REPORT.md](CENTRAL-DELIVERY-REPORT.md) for source/history mappings. Earlier installed versions were preserved. Draft defaults are 0.5 km free, 5 km maximum, R15 once per checkout; candidate pin remains unverified. Enforcement, pin attestation, owner fee approval and service readiness remain false. Native rollback suites pass 12 + 16 + 24 assertions; zero synthetic Auth/origin records remain. Real authenticated/guest browser checkout and concurrent approval/revocation races remain unverified. The independent-session policy-lock attempt was inconclusive. No production mutation, push or frontend/Edge deployment occurred in this pass; the previously published preview does not contain these local delivery changes.
+
 ## Current continuation status
 
 This section supersedes the earlier baseline narrative below. Working tree started clean on `feat/checkout-ozow-distance-admin-controls`; `c5891ab` and `742ba10` were verified. Origin/main remains `4c4835d`. The owner reconfirmed Vercel Production Branch Tracking is main (the connector cannot independently expose that setting). Existing feature commits were pushed normally. Vercel returned a READY **preview**, target null, for `742ba109d433ab0c0035e4ce92805ad8c35698f2`: https://officebites-73898hklk-sp24tg-6983s-projects.vercel.app. No production deployment was requested.

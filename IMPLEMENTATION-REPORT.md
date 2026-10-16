@@ -1,5 +1,9 @@
 # Checkout feature implementation — 16 October 2026
 
+## Latest: central hub and approved vendor origins
+
+Implemented the superseding CENTRAL/VENDOR policy, private approval/audit workflow, admin queue/vendor UI, server per-vendor eligibility, once-only delivery fees, stale-quote protection and immutable order snapshots. CENTRAL requires no vendor GPS. Nearby discovery and customer/profile messaging now follow effective origins. Enforced and unenforced new orders retain context; historical orders/commissions are not backfilled. Draft 0.5 km/5 km/R15 staging settings remain disabled, with pin/owner approval/service readiness false. Three reviewed additive migrations were applied only to staging; the encoding repair and disabled-order snapshot extension are forward migrations. No push, merge or deployment in this pass. Full details, file inventory, native/browser evidence and limitations: [CENTRAL-DELIVERY-REPORT.md](CENTRAL-DELIVERY-REPORT.md). Earlier individual-vendor-GPS requirements below are superseded.
+
 ## Continuation implementation
 
 This section supersedes the original groundwork-only limits below. The supplied commits were preserved and pushed on the feature branch; Vercel created a preview, not production. No main merge or production changes were made.

@@ -1,5 +1,9 @@
 # Checkout implementation plan
 
+## Superseding central-delivery implementation
+
+CENTRAL defaults for every vendor; VENDOR requires separate admin approval and mode selection. Preserve legacy profile fields/financial history; store private proposal/decision history and immutable new-order origin/fee snapshots. Recompute all vendor eligibility server-side, reject stale approvals, and charge the configured fee once. Keep draft 0.5 km/5 km/R15 enforcement disabled until verified pin, final owner fee approval and real authenticated/guest staging checkout evidence. No push/merge/deploy. Implemented and tested in staging as detailed in [CENTRAL-DELIVERY-REPORT.md](CENTRAL-DELIVERY-REPORT.md). Independent-session concurrency verification remains outstanding; do not infer a pass from sequential tests.
+
 ## Continuation decisions and completion
 
 The original numbered plan below describes the first two commits; its Ozow/subscription groundwork limits are superseded by this continuation.

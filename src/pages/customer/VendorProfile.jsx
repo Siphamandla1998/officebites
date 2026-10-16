@@ -495,15 +495,14 @@ export default function VendorProfile() {
                 </div>
               )}
 
-              {vendor.deliveryRadius && (
+              {(
                 <div className="flex items-start justify-between gap-4 text-sm">
                   <span className="text-ink-muted">
                     Delivery area
                   </span>
 
                   <span className="text-ink font-medium text-right">
-                    Up to{" "}
-                    {vendor.deliveryRadius} km
+                    Availability and fee confirmed at checkout
                   </span>
                 </div>
               )}
