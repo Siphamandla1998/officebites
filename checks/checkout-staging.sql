@@ -1,5 +1,7 @@
 -- Synthetic native staging regression. Always rolled back; no provider calls or permanent accounts/orders.
 BEGIN;
+-- Test-only verified configuration; these flags/radii roll back with all fixtures.
+UPDATE private.delivery_settings SET enabled=false,free_radius_km=1,max_radius_km=2,paid_fee=15,hub_pin_verified=true,fee_structure_confirmed=true,activation_ready=true;
 DO $qa$ DECLARE admin_id uuid:=gen_random_uuid(); customer_id uuid:=gen_random_uuid(); vendor_user uuid:=gen_random_uuid(); vendor_id uuid; meal_id uuid:=gen_random_uuid(); o jsonb; pending jsonb; paid jsonb; q jsonb; report jsonb; items jsonb; n integer:=0; failed boolean; failure text; BEGIN
  BEGIN
  PERFORM set_config('request.jwt.claim.role','service_role',true);PERFORM set_config('request.jwt.claim.sub','',true);
