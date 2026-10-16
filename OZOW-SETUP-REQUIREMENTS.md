@@ -1,5 +1,35 @@
 # Ozow One API setup requirements — activation blocked
 
+## Current adapter and secure staging setup
+
+The earlier groundwork-only description below is historical. Attempt/receipt persistence, initiation, thin-webhook verification, atomic idempotent order confirmation and administrator reconciliation are now implemented and tested with mocks and native rollback fixtures. Staging endpoints exist but are gated off; production is explicitly refused by this release's handler.
+
+Official contract rechecked: Hosted Checkout, TransactionCompleteFullData and GET /transactions/{id} at https://hub.ozow.com/api-reference/one-api/get-transactions-id/. `payments` scope covers token/payment/transaction operations; `webhooks` is needed only if managing subscriptions through that API. Site-restricted client and separate staging portal access must be confirmed with Ozow. Thin event ID is a transaction ID, not the hosted payment ID. Transaction GET has Successful/Incomplete/Pending/Error/Refunded status; the adapter rejects undocumented shapes. Full webhooks/legacy notifyUrl are not configured for this thin handler.
+
+Configure **staging Supabase secret management only**, never frontend/VITE variables, Git, report values or chat:
+
+| Variable | Required value/purpose |
+| --- | --- |
+| OZOW_ENVIRONMENT | staging; production refused in current handlers |
+| OZOW_CLIENT_ID / OZOW_CLIENT_SECRET | One API staging client with payments scope |
+| OZOW_SITE_CODE | Verified staging merchant site |
+| OZOW_BENEFICIARY_REFERENCE | Merchant-approved alphanumeric bank reference |
+| OZOW_RETURN_ORIGIN | Exact approved HTTPS staging frontend origin, no path/trailing slash |
+| ALLOWED_ORIGINS | Comma-separated approved staging frontend origins |
+| OZOW_WEBHOOK_SECRET | Endpoint's whsec_ signing secret |
+| OZOW_INITIATION_ENABLED | Leave absent/false until tested and owner approved |
+| OZOW_RECONCILIATION_ENABLED | Leave absent/false until signature/API setup is verified |
+
+Platform SUPABASE_URL and server-only SUPABASE_SERVICE_ROLE_KEY are runtime-provided; SUPABASE_ANON_KEY supports verified user lookup. Never expose service credentials. Register exactly one **thin transaction.complete** HTTPS webhook at `https://eyhmarmekioovcjibcbr.supabase.co/functions/v1/ozow-webhook`; check existing subscriptions to avoid duplicates. No webhook was registered by this task. Keep incoming verification independent from initiation availability once enabled. Reconciliation endpoint accepts only transactionId from an active authenticated administrator, never a client-declared status/amount. Configure no automatic payment/cancellation/retention schedule.
+
+Initiate/webhook use verify_jwt=false intentionally for guest-proof checkout and Svix authentication; reconcile uses true plus administrator verification. This does not grant public receipt access: all settlement RPCs are service-only. A future move to production requires a separately reviewed environment restriction change and live release authorization.
+
+Remaining activation requirements: staging merchant/client/site access, secure secrets, return-origin/reference agreement, verified webhook samples, sandbox hosted checkout and transaction lookup, duplicate/reordered/late events, cancellation-versus-confirmation concurrency, fee/settlement import, operator handling of ambiguous creation without a returned payment ID, refunds/compensating entries and explicit owner approval. Transaction Error is not proof the whole payment request cannot later succeed; attempts deliberately remain blocked. No actual provider cancellation or automatic retry is advertised.
+
+Owner decisions: administrator sets delivery policy in app; R200/month subscription price; suspended-vendor re-approval requires admin. Benefits, refund/rejection rules, monthly renewal boundaries and separate re-approval fee still need definition. No commercial catalogue, subscription collection, auto-renewal, entitlement activation or automatic unsuspension is enabled. Existing marketplace/growth and basic tier values remain untouched. An approved server eligibility read model is preparation for future benefit guards, not an activated billing integration.
+
+## Earlier onboarding checklist (historical)
+
 Official references reviewed 16 October 2026:
 
 - https://hub.ozow.com/integration-methods/apis/money-in/hosted-checkout/ (updated 14 October 2026)

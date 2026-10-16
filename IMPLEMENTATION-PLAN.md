@@ -1,5 +1,17 @@
 # Checkout implementation plan
 
+## Continuation decisions and completion
+
+The original numbered plan below describes the first two commits; its Ozow/subscription groundwork limits are superseded by this continuation.
+
+1. Verified clean feature checkout, both supplied commits and origin. Fetched main without merging. Pushed the existing feature commits after owner confirmed production tracks main; confirmed Vercel preview target, not production. Keep any further work on this feature branch.
+2. Administrator will configure delivery radius/fee in existing Checkout controls. No radius or fee is invented or saved in staging. Preserve owner-supplied centre; official Eduvos page verifies the campus address, not an independent exact coordinate fix. Keep enforcement disabled. Existing isolated boundary/invalid-GPS/server-total tests and rolled-back native delivery checks pass.
+3. Added server-persisted Ozow attempts, authoritative transaction lookup, atomic receipt/delivery deduplication, cross-provider retry guards, late-payment review and provider-neutral report reconciliation. Added staging-only handlers and conditional checkout button. Preserve all PayFast signing/notification code. Keep initiation disabled until merchant tests and owner approval; unknown fees never become zero or fabricated PayFast receipts.
+4. Added private plan/subscription snapshots, service-only receipt recording, paid_pending_approval, active-admin decision and server eligibility checks. No existing vendor plan/tier, commission, suspension or financial history is overwritten. Owner confirmed R200/month and admin approval after suspension. Benefits, refund/rejection rules, calendar renewal handling and separate re-approval fee remain unspecified; catalogue/billing stay disabled.
+5. Reviewed and applied only the new staging migration (source 20261016083644, installed 20261016084712). Ran local, browser and native rollback tests; verified gates/RLS. Update all five reports with evidence and limits. Do not deploy production, merge main or transact.
+
+## Original implementation sequence
+
 1. Preserve current main recovery behavior; work only on the feature branch. Audit staging's actual contracts and capture baseline results.
 2. Add an atomic owner/guest-proof cancellation RPC with order/suborder locks and paid/processing/legacy guards. Serialize initiation through the existing server-only prepare RPC. Keep return navigation non-mutating. Do not infer provider cancellation from a browser redirect.
 3. Validate new mobile inputs client/server; retain exact legacy guest proof and unchanged stored vendor contacts. Registration, customer profile and vendor application currently have no phone input/storage contract; do not invent user metadata phone fields. Existing actual fields are checkout guest mobile, Track Order proof and vendor settings contact. Explicit international mode is available for vendor contact editing.

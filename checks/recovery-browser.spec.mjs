@@ -56,6 +56,15 @@ test('public request failure has retry, not an empty result',async({page})=>{
  await open(page);await page.evaluate(()=>{fixture.failPublic=true;fixture.navigate('/help/faq');});await expect(page.getByText('Synthetic FAQ failure')).toBeVisible();await expect(page.getByText('No matching FAQs')).toHaveCount(0);
  await page.evaluate(()=>fixture.failPublic=false);await page.getByRole('button',{name:/retry/i}).click();await expect(page.getByText('No matching FAQs')).toBeVisible();
 });
+test('unknown processor fees remain unresolved in downloaded CSV',async({page})=>{
+ await open(page);await page.evaluate(u=>{fixture.unknownFees=true;fixture.setUser(u);},{...user('ADMIN'),role:'admin'});
+ await page.evaluate(()=>fixture.navigate('/admin/reports'));
+ await expect(page.getByText(/Processor fees: Unresolved/)).toBeVisible();
+ const pending=page.waitForEvent('download');await page.getByRole('button',{name:'Download sales and commissions CSV'}).click();
+ const csv=await fs.readFile(await(await pending).path(),'utf8');
+ expect(csv).toContain('Unresolved');
+ expect(csv.split('\n').filter(line=>line.includes('Unresolved')).length).toBe(2);
+});
 
 for (const storageError of ['SecurityError','QuotaExceededError']) test(`successful checkout recovers without a second create under ${storageError}`, async ({page}) => {
   await page.addInitScript(() => localStorage.setItem('ob_cart', JSON.stringify([{mealId:'fixture-meal',vendorId:'fixture-vendor',vendorName:'Fixture',name:'Lunch',price:100,qty:1}])));

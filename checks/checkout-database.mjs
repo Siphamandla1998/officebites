@@ -113,4 +113,5 @@ try {
  const missingVendor=await quote(0);await db.exec(`UPDATE public.vendors SET latitude=NULL WHERE id='${id(4)}'`);
  await expectReject(`SELECT public.create_order_with_delivery(NULL,'Guest','0821234567',NULL,current_date+2,'Synthetic','${cart}','${missingVendor.id}')`,/vendor/i);
  console.log(`${checks} isolated checkout/mobile/cancellation/delivery/gateway assertions passed. No hosted writes or native concurrency claims.`);
+ await (await import('./ozow-subscription-database.mjs')).verifyOzowSubscriptions(db);
 } catch(error) {console.error('Checkout database checks failed:',error.message);process.exitCode=1;} finally {await db.close();}

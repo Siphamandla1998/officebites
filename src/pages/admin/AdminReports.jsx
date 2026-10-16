@@ -28,9 +28,9 @@ export default function AdminReports() {
   }
   function exportSales() {
     if (financialRevision() !== revision || report.loading || report.error || !report.data) return;
-    const rows = report.data.rows.map(r => [r.financial_date,r.date_basis,r.order_id,r.ticket_number,r.suborder_id,r.vendor_id,r.vendor_name,r.status,r.gross,r.commission_rate ?? 'Unresolved',r.commission ?? 'Unresolved',r.processor_fee,r.vendor_earnings ?? 'Unresolved',report.data.feePolicy || 'Undecided']);
+    const rows = report.data.rows.map(r => [r.financial_date,r.date_basis,r.order_id,r.ticket_number,r.suborder_id,r.vendor_id,r.vendor_name,r.status,r.gross,r.commission_rate ?? 'Unresolved',r.commission ?? 'Unresolved',r.processor_fee ?? 'Unresolved',r.vendor_earnings ?? 'Unresolved',report.data.feePolicy || 'Undecided']);
     const t = report.data.totals;
-    rows.push(['TOTAL','','','','','','','',t.gmv,'',t.grossCommission ?? 'Unresolved',t.processorFees,t.vendorEarnings ?? 'Unresolved','']);
+    rows.push(['TOTAL','','','','','','','',t.gmv,'',t.grossCommission ?? 'Unresolved',t.processorFees ?? 'Unresolved',t.vendorEarnings ?? 'Unresolved','']);
     downloadCsv(`officebites-sales-${from || 'all'}-${to || 'all'}.csv`, ['SAST financial date','Date basis','Order ID','Ticket','Suborder ID','Vendor ID','Vendor','Status','Gross sales ZAR','Commission rate','Commission ZAR','Processor fees ZAR','Vendor earnings before fees ZAR','Fee policy'], rows);
   }
   function exportPayouts() {

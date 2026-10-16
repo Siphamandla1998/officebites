@@ -1,5 +1,4 @@
-// One API groundwork only. Not wired to checkout or deployed until merchant onboarding,
-// persisted attempts and the separate verified-confirmation RPC are approved/tested.
+// One API adapter. Activation requires merchant staging verification and owner approval.
 type Environment = 'staging' | 'production';
 export const ozowBase = (environment: Environment) => {
   if (!['staging','production'].includes(environment)) throw new Error('Explicit Ozow environment required');
@@ -46,4 +45,20 @@ export async function verifyOzowWebhook(raw: string, headers: Headers, secret: s
   // Caller MUST fetch authoritative transaction data and match site/amount/currency/reference,
   // then atomically deduplicate provider transaction ID before recording any paid transition.
   return event;
+}
+
+export async function ozowTransaction(fetcher: typeof fetch, environment: Environment, token: string, id: string) {
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id) || !token) throw new Error('Invalid transaction lookup');
+  const response = await fetcher(`${ozowBase(environment)}/transactions/${id}`, {
+    headers: { Authorization: `Bearer ${token}` }, redirect: 'error', signal: AbortSignal.timeout(15000),
+  });
+  if (!response.ok) throw new Error('Transaction lookup unavailable; retry reconciliation');
+  const result = await response.json();
+  if (result.id !== id || !['Successful','Incomplete','Pending','Error','Refunded'].includes(result.status) ||
+      typeof result.siteCode !== 'string' || typeof result.merchantReference !== 'string' ||
+      result.amount?.currency !== 'ZAR' || typeof result.amount.value !== 'number' || !Number.isFinite(result.amount.value) ||
+      result.amount.value <= 0 || Math.abs(result.amount.value*100-Math.round(result.amount.value*100))>1e-6) throw new Error('Invalid transaction response');
+  // Persist only settlement identity/status, never payer banking or contact details.
+  return { id: result.id, status: result.status, siteCode: result.siteCode,
+    merchantReference: result.merchantReference, amount: result.amount };
 }

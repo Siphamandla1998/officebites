@@ -42,7 +42,19 @@ test('disabled gateway prevents initiation while keeping return navigation',asyn
   await page.addInitScript(()=>{window.fixtureGatewayDisabled=true;});
   await open(page,'/payment/A');
   await expect(page.getByRole('button',{name:/Pay .* with PayFast/})).toBeDisabled();
+  await expect(page.getByRole('button',{name:/Pay .* with Ozow/})).toHaveCount(0);
   await expect(page.getByRole('button',{name:'Return to order',exact:true})).toBeEnabled();
+});
+test('Ozow control obeys action lock and surfaces ambiguous initiation',async({page})=>{
+  await page.addInitScript(()=>{window.fixtureOzowAvailable=true;});
+  await open(page,'/payment/A');
+  await page.evaluate(()=>fixture.setUser({id:'SYNTHETIC-CUSTOMER',name:'Synthetic',email:'synthetic@test.invalid',role:'customer'}));
+  const button=page.getByRole('button',{name:/Pay .* with Ozow/});
+  await expect(button).toBeEnabled();
+  await button.evaluate(el=>{el.click();el.click();});
+  await expect(page.getByText('Synthetic Ozow reconciliation required',{exact:true})).toBeVisible();
+  expect(await page.evaluate(()=>fixture.ozowCalls)).toBe(1);
+  await expect(button).toBeEnabled();
 });
 test('enabled delivery requires permission and review of a server quote',async({page,context})=>{
   await context.grantPermissions(['geolocation']);

@@ -1,5 +1,22 @@
 # Checkout test results — 16 October 2026
 
+## Continuation results
+
+- Full local regression runner passed, including preservation checks, recovery/service/auth tests, 73 ledger checks, 38 checkout checks, timezone suites and initial new integration tests. Expanded new suites then passed 43 isolated Ozow/subscription/database-role assertions and 33 mocked handler/HTTP assertions. No provider credentials or hosted payments are used.
+- New tests cover persistence-before-POST, repeat initiation refusal, ambiguous timeout/bind failure, admin reconciliation, wrong amount/site/currency/reference/transaction identity, raw-body tampering, missing signature, durable duplicate credit/notification guards, Pending before Successful, cross-provider retry refusal, unknown-fee reporting, forged subscription receipt refusal, admin-before-payment refusal, paid_pending_approval and suspension blocking eligibility. Deno checks pass for all three new endpoints and existing removal/PayFast endpoints.
+- Native staging: existing 12 checks plus 16 new checks passed under explicit ROLLBACK using synthetic records. No external provider call. Postchecks found zero remaining QA Auth rows, zero enabled/saleable plans, all new tables protected by RLS and restricted grants, Ozow/delivery/retention disabled. Applied only the new reviewed staging migration; source 20261016083644 maps to history 20261016084712.
+- Browser suite: all 22 passed in disposable Edge profiles (21 synthetic-service tests and one unmocked signed-out staging read check; hosted writes blocked). This verifies the existing fixture stories and compilation of conditional Ozow UI, not a real provider redirect or signed-in staging payment.
+- Focused browser rerun: three passed, covering disabled gateway, Ozow duplicate-action/ambiguous-initiation handling, and a real CSV download showing unknown fees as Unresolved in both the row and total. Two are new tests, giving 24 distinct browser stories verified across the two runs. The first focused run was interrupted to correct its missing synthetic customer identity; no product regression or provider call was involved.
+- Full lint: zero errors, nine existing warnings. Production/PWA build in staging mode passed, 116 precache entries. No default live-mode build/deployment. Whitespace checks and final targeted lint recorded after report edits.
+- Staging Edge endpoints v1 deployed disabled: empty initiate and webhook probes return 503 staging configuration required; reconcile without JWT returns 401. These probes cannot initiate payments. No merchant secrets configured or provider webhook registered.
+- Feature push at 742ba109d433ab0c0035e4ce92805ad8c35698f2 produced READY Vercel preview https://officebites-73898hklk-sp24tg-6983s-projects.vercel.app, target null. Owner confirmed production branch main. No production deployment was triggered by that feature push.
+
+New failure found and corrected before staging application: the isolated older schema's orders_payment_method_check allowed only manual_eft/PayFast. New migration preserves those methods and adds Ozow. First expanded database tests then passed; no failed migration was rerun against staging. A source-file collection command yielded before completion; it was polled/re-collected before any Edge deployment.
+
+Still untested: actual Ozow merchant onboarding/token/hosted flow, provider-delivered signatures/replays, native concurrent sessions, settlement fees/refunds, end-to-end subscription collection/renewal/refund and benefits, hosted test-account authentication/chat, real device GPS/PWA upgrade. Official Eduvos campus address is verified; exact coordinates remain owner-supplied rather than independently surveyed. Administrator policy configuration and operational boundary tests remain pending; synthetic 1/2 km/R15 fixtures are not commercial settings. No production changes, real payments, customer messages, account deletions or order classification were performed.
+
+## Earlier baseline results
+
 ## Passed
 
 - Lockfile install: npm ci, 442 packages. Application package.json/package-lock.json unchanged.

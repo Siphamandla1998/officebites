@@ -1,7 +1,7 @@
 import { spawnSync } from 'node:child_process';
 const run = (file, timezone) => {
   console.log('\nCHECK', file, timezone || 'system timezone');
-  const result = spawnSync(process.execPath, [...(file.endsWith('checkout-rules.mjs') ? ['--experimental-strip-types'] : []), file], {
+  const result = spawnSync(process.execPath, [...(/(checkout-rules|ozow-integration)[.]mjs$/.test(file) ? ['--experimental-strip-types'] : []), file], {
     stdio: 'inherit',
     env: { ...process.env, ...(timezone ? { TZ: timezone } : {}) },
   });
@@ -9,7 +9,7 @@ const run = (file, timezone) => {
   if (result.status !== 0) process.exit(result.status || 1);
 };
 for (const file of ['recovery-scope.mjs', 'recovery-runtime.mjs', 'launch-database.mjs', 'support-service.mjs', 'auth-race.cjs']) run('checks/' + file);
-for (const file of ['checkout-database.mjs','checkout-rules.mjs']) run('checks/' + file);
+for (const file of ['checkout-database.mjs','checkout-rules.mjs','ozow-integration.mjs']) run('checks/' + file);
 for (const timezone of ['Africa/Johannesburg', 'UTC', 'America/Los_Angeles', 'Asia/Tokyo']) {
   for (const file of ['order-rules.mjs', 'catalogue-filters.mjs', 'launch-frontend.mjs']) run('checks/' + file, timezone);
 }

@@ -1,5 +1,23 @@
 # Checkout feature implementation — 16 October 2026
 
+## Continuation implementation
+
+This section supersedes the original groundwork-only limits below. The supplied commits were preserved and pushed on the feature branch; Vercel created a preview, not production. No main merge or production changes were made.
+
+New migration source: `20261016083644_ozow_attempts_subscription_approval.sql`; installed staging history version: `20261016084712`. Neither earlier installed migration was recreated/replayed. Adds private Ozow attempts, receipts and delivery identities; private subscription catalogue/snapshots; service-only preparation/binding/lookup/recording; guarded subscription request, payment and admin decision APIs. Locks orders before issuance/credit, refuses unresolved cross-provider attempts, snapshots authoritative amount/site/environment/reference, and applies paid transitions once. Duplicate notifications are prevented. Pending/error events do not imply cancellation; late/second payments and post-credit reversals require review. Ambiguous initiation remains blocked until operator/provider reconciliation. No browser return marks paid.
+
+Provider-neutral report receipts include actual Ozow successes without inserting anything into PayFast logs. Commission snapshots use the existing paid transition. Unknown Ozow processor fees and affected marketplace net revenue return NULL/Unresolved, including CSV; no fee policy is chosen. Full payout/settlement/fee import and refund correction remain activation work, not guessed from a success event.
+
+Added staging-only Edge handlers `ozow-initiate`, `ozow-webhook`, `ozow-reconcile`, shared injectable handlers/runtime and transaction lookup. The runtime pins supabase-js 2.110.8. Client amount is ignored; stored order amount is used. Thin Svix events trigger an OAuth-authorized transaction GET; site, currency, amount, reference and environment must match before the service-only atomic confirmation. Only necessary settlement identity/status fields are persisted, not raw payer data. Server gates require explicit staging configuration, flags and database readiness; all remain off. Conditional Ozow checkout navigation also validates an HTTPS Ozow-owned hostname and retains route/account/action guards. Three functions are deployed to staging only, returning configuration/auth refusal on harmless probes.
+
+Subscriptions now expose paid_pending_approval until a verified service receipt AND active administrator decision exist. Expiry, vendor suspension/archive and owner suspension/deletion block server eligibility. No existing plan, tier, rate or suspension is modified, and no benefit operation is activated. R200/month is the confirmed intended commercial price; catalogue stays empty pending benefits/refund/renewal definitions. Synthetic tests use an explicitly labelled 30-day fixture only; it is not the monthly commercial offer. Suspended-vendor re-approval never follows automatically from payment. A separate payable re-approval workflow/fee remains unspecified and inactive.
+
+New checks: `ozow-integration.mjs`, `ozow-subscription-database.mjs`, `ozow-staging.sql`; existing checkout DB/runner extended. The continuation also changes PaymentUpload, paymentService and AdminReports. Detailed validation and remaining limits are in TEST-RESULTS.md and OZOW-SETUP-REQUIREMENTS.md.
+
+Commercial schema inspection confirmed vendor_plan values marketplace/growth, subscription_tier default basic, commission default 0.17, and corporate priority/order flags default false. No existing public paid-plan catalogue or monthly price contract was found. These values and existing administrator overrides were preserved; new paid benefits have no activation endpoint. All five reports are updated. Continuation source/check/report changes are prepared for a separate feature commit after final lint/whitespace/privacy review; final commit/push status is reported in chat.
+
+## Earlier implementation record
+
 Base: current origin/main `4c4835db62b7db4c7a725c92d7a6294ca523fa57`. Feature branch: `feat/checkout-ozow-distance-admin-controls`. First incremental commit: `c5891ab`. No main merge/push, feature push, production deployment/configuration, production migration, real payment or customer message was performed.
 
 ## Implemented and tested first
