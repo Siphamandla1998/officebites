@@ -1,5 +1,8 @@
 import { ozowToken, ozowHostedRequest, ozowTransaction, verifyOzowWebhook } from './ozow.ts';
 
+const STAGING_PROJECT_URL = 'https://eyhmarmekioovcjibcbr.supabase.co';
+const STAGING_PREVIEW_ORIGIN = 'https://officebites-git-feat-legal-vendor-da31dd-sp24tg-6983s-projects.vercel.app';
+
 type Rpc = (name: string, args: Record<string, unknown>) => Promise<unknown>;
 export type OzowDependencies = {
   env: (name: string) => string | undefined;
@@ -13,6 +16,10 @@ export function ozowHandler(mode: 'initiate' | 'webhook' | 'reconcile', deps: Oz
   return async (req: Request) => {
     const origin = req.headers.get('origin');
     const allowed = (deps.env('ALLOWED_ORIGINS') || '').split(',').map(s=>s.trim()).filter(Boolean);
+    // Preserve configured origins; append only the reviewed stable alias in this
+    // exact staging project. No temporary Preview, localhost or wildcard added.
+    const projectUrl = deps.env('SUPABASE_URL');
+    if (projectUrl === STAGING_PROJECT_URL) allowed.push(STAGING_PREVIEW_ORIGIN);
     const headers: Record<string,string> = { 'Content-Type':'application/json', 'Cache-Control':'no-store', Vary:'Origin' };
     if (origin && allowed.includes(origin)) Object.assign(headers, {'Access-Control-Allow-Origin':origin,
       'Access-Control-Allow-Headers':'authorization, apikey, content-type, x-client-info', 'Access-Control-Allow-Methods':'POST, OPTIONS'});
@@ -21,7 +28,11 @@ export function ozowHandler(mode: 'initiate' | 'webhook' | 'reconcile', deps: Oz
     if (req.method!=='POST') return json({error:'Method not allowed'},405);
     if (origin && mode!=='webhook' && !allowed.includes(origin)) return json({error:'Origin not allowed'},403);
     // This release is staging-only. No runtime default may silently select production.
-    if (deps.env('OZOW_ENVIRONMENT')!=='staging' || deps.env('SUPABASE_URL')!=='https://eyhmarmekioovcjibcbr.supabase.co') return json({error:'Staging configuration required'},503);
+    if (projectUrl !== STAGING_PROJECT_URL) return json({error:'Staging configuration required',
+      code:projectUrl === undefined ? 'STAGING_PROJECT_MISSING' : 'STAGING_PROJECT_MISMATCH'},503);
+    const environment = deps.env('OZOW_ENVIRONMENT');
+    if (environment !== 'staging') return json({error:'Staging configuration required',
+      code:environment === undefined ? 'OZOW_ENVIRONMENT_MISSING' : 'OZOW_ENVIRONMENT_INVALID'},503);
     if (mode==='initiate' && deps.env('OZOW_INITIATION_ENABLED')!=='true') return json({error:'Ozow remains disabled'},503);
     if (mode!=='initiate' && deps.env('OZOW_RECONCILIATION_ENABLED')!=='true') return json({error:'Ozow reconciliation not configured'},503);
     try {

@@ -208,6 +208,30 @@ test('Ozow control obeys action lock and surfaces ambiguous initiation',async({p
   expect(await page.evaluate(()=>fixture.ozowCalls)).toBe(1);
   await expect(button).toBeEnabled();
 });
+
+test('Ozow visibility requires enabled ready and no maintenance, independently of PayFast',async({page})=>{
+ await open(page,'/help');
+ for(const [enabled,ready,maintenance,visible] of [[false,false,false,false],[false,true,false,false],[true,false,false,false],[true,true,true,false],[true,true,false,true]]) {
+  await page.evaluate(({enabled,ready,maintenance})=>{
+   fixture.gateways=[{provider:'payfast',enabled:true,ready:true,maintenance:false},{provider:'ozow',enabled,ready,maintenance}];
+   fixture.navigate('/payment/A');
+  },{enabled,ready,maintenance});
+  await expect(page.getByRole('button',{name:/Pay .* with PayFast/})).toBeEnabled();
+  await expect(page.getByRole('button',{name:/Pay .* with Ozow/})).toHaveCount(visible?1:0);
+  if(visible)await expect(page.getByRole('button',{name:/Pay .* with Ozow/})).toBeEnabled();
+  expect(await page.evaluate(()=>fixture.ozowCalls||0)).toBe(0);
+  await page.evaluate(()=>fixture.navigate('/help'));
+ }
+});
+
+test('Ozow return cancellation and failure query parameters never establish paid status',async({page})=>{
+ for(const outcome of ['return','cancel','failure','success']) {
+  await open(page,`/orders/A?ozow=${outcome}`);
+  await expect(page.getByText(/Payment: Unpaid/)).toBeVisible();
+  await expect(page.getByText('Paid',{exact:true})).toHaveCount(0);
+  expect(await page.evaluate(()=>fixture.ozowCalls||0)).toBe(0);
+ }
+});
 test('enabled delivery requires permission and review of a server quote',async({page,context})=>{
   await context.grantPermissions(['geolocation']);
   await context.setGeolocation({latitude:-29.721180,longitude:31.071621,accuracy:10});

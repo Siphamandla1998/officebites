@@ -36,9 +36,65 @@ const req=body=>new Request('https://functions.example.invalid',{method:'POST',h
 let checks=0;
 const expect=async(response,status)=>{assert.equal(response.status,status);checks++;return response.json();};
 const initiate=ozowHandler('initiate',deps),reconcile=ozowHandler('reconcile',deps),webhook=ozowHandler('webhook',deps);
+// CORS and readiness must fail before provider traffic or attempt creation.
+const safeBaseline={...config};
+const previewOrigin='https://officebites-git-feat-legal-vendor-da31dd-sp24tg-6983s-projects.vercel.app';
+const temporaryPreview='https://officebites-8oj6fgzwk-sp24tg-6983s-projects.vercel.app';
+for(const mode of ['initiate','reconcile']) {
+ const handler=ozowHandler(mode,deps);
+ for(const origin of [previewOrigin,temporaryPreview,'https://unknown.vercel.app']) {
+  const expected=origin===previewOrigin?200:403;
+  const response=await handler(new Request('https://functions.example.invalid',{method:'OPTIONS',headers:{Origin:origin}}));
+  await expect(response,expected);assert.equal(response.headers.get('access-control-allow-origin'),expected===200?origin:null);checks++;
+ }
+ const n=network.length,r=calls.length;
+ const response=await handler(new Request('https://functions.example.invalid',{method:'POST',headers:{Origin:previewOrigin},body:'{}'}));
+ await expect(response,400);assert.equal(response.headers.get('access-control-allow-origin'),previewOrigin);checks++;
+ assert.equal(network.length,n);assert.equal(calls.length,r);checks+=2;
+ const rejected=await handler(new Request('https://functions.example.invalid',{method:'POST',headers:{Origin:temporaryPreview},body:'{}'}));
+ await expect(rejected,403);assert.equal(rejected.headers.get('access-control-allow-origin'),null);checks++;
+}
+for(const project of [undefined,'https://production.example.invalid','https://eyhmarmekioovcjibcbr.supabase.co.attacker.invalid']) {
+ config.SUPABASE_URL=project;
+ const response=await initiate(new Request('https://functions.example.invalid',{method:'OPTIONS',headers:{Origin:previewOrigin}}));
+ await expect(response,403);assert.equal(response.headers.get('access-control-allow-origin'),null);checks++;
+}
+Object.assign(config,safeBaseline);
+for(const environment of [undefined,'','production','staging ']) {
+ config.OZOW_ENVIRONMENT=environment;const n=network.length,r=calls.length;
+ const body=await expect(await initiate(new Request('https://functions.example.invalid',{method:'POST',headers:{Origin:previewOrigin},body:'{}'})),503);
+ assert.equal(body.code,environment===undefined?'OZOW_ENVIRONMENT_MISSING':'OZOW_ENVIRONMENT_INVALID');checks++;
+ assert.equal(network.length,n);assert.equal(calls.length,r);checks+=2;
+}
+Object.assign(config,safeBaseline);
+for(const origin of [config.OZOW_RETURN_ORIGIN,'https://foreign-preview.example.invalid']) {
+ const response=await initiate(new Request('https://functions.example.invalid',{method:'OPTIONS',headers:{Origin:origin}}));
+ await expect(response,origin===config.OZOW_RETURN_ORIGIN?200:403);
+ assert.equal(response.headers.get('access-control-allow-origin'),origin===config.OZOW_RETURN_ORIGIN?origin:null);checks++;
+}
+for(const patch of [
+ {OZOW_ENVIRONMENT:undefined}, {OZOW_ENVIRONMENT:'production'},
+ {SUPABASE_URL:'https://production.example.invalid'}, {OZOW_INITIATION_ENABLED:undefined},
+ {OZOW_CLIENT_ID:undefined}, {OZOW_CLIENT_SECRET:undefined}, {OZOW_SITE_CODE:undefined},
+ {OZOW_RETURN_ORIGIN:'https://unapproved.example.invalid'},
+ {OZOW_RETURN_ORIGIN:config.OZOW_RETURN_ORIGIN+'/path'},
+ {OZOW_BENEFICIARY_REFERENCE:undefined},
+]) {
+ Object.assign(config,safeBaseline,patch);const n=network.length,r=calls.length;
+ await expect(await initiate(new Request('https://functions.example.invalid',{method:'POST',headers:{Origin:safeBaseline.OZOW_RETURN_ORIGIN},body:JSON.stringify({orderId:order})})),503);
+ assert.equal(network.length,n);assert.equal(calls.length,r);checks+=2;
+}
+Object.assign(config,safeBaseline);
+for(const mode of ['webhook','reconcile']) {
+ config.OZOW_RECONCILIATION_ENABLED='false';const n=network.length,r=calls.length;
+ await expect(await ozowHandler(mode,deps)(req({transactionId:tx})),503);
+ assert.equal(network.length,n);assert.equal(calls.length,r);checks+=2;
+}
+Object.assign(config,safeBaseline);
 config.OZOW_INITIATION_ENABLED='false';await expect(await initiate(req({orderId:order})),503);assert.equal(network.length,0);checks++;
 config.OZOW_INITIATION_ENABLED='true';
 await expect(await initiate(req({orderId:order})),200);assert.equal(bound,true);checks++;
+assert.equal(credited,false,'Hosted redirect creation is not payment evidence');checks++;
 await expect(await initiate(req({orderId:order})),503);assert.equal(network.filter(([url])=>url.endsWith('/payments')).length,1);checks++;
 admin=false;const before=network.length;await expect(await reconcile(req({transactionId:tx})),403);assert.equal(network.length,before);checks++;admin=true;
 wrongAmount=true;await expect(await reconcile(req({transactionId:tx})),409);assert.equal(credited,false);checks++;wrongAmount=false;

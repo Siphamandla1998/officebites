@@ -15,6 +15,12 @@ export async function verifyOzowSubscriptions(db) {
  const cart=JSON.stringify([{mealId:id(5),qty:1}]);
  const order=(await scalar(`SELECT public.create_order_from_cart(NULL,'Synthetic','0821234567',NULL,current_date+2,'Synthetic','${cart}') r`)).r;
  await reject(`SELECT public.begin_ozow_attempt('${order.id}',NULL,'0821234567','SYN-TEST-001','staging')`,/unavailable/i);
+ for(const [enabled,ready,maintenance] of [[true,false,false],[false,true,false],[true,true,true]]) {
+  await db.exec(`UPDATE private.gateway_settings SET enabled=${enabled},ready=${ready},maintenance=${maintenance} WHERE provider='ozow'`);
+  await reject(`SELECT public.begin_ozow_attempt('${order.id}',NULL,'0821234567','SYN-TEST-001','staging')`,/unavailable/i);
+  assert.equal(Number((await scalar(`SELECT count(*) n FROM private.ozow_attempts WHERE order_id='${order.id}'`)).n),0);checks++;
+ }
+ await db.exec("UPDATE private.gateway_settings SET maintenance=false WHERE provider='ozow'");
  await db.exec("UPDATE private.gateway_settings SET enabled=true,ready=true WHERE provider='ozow'");
  const a=(await scalar(`SELECT public.begin_ozow_attempt('${order.id}',NULL,'0821234567','SYN-TEST-001','staging') r`)).r;
  assert.equal(Number(a.amount),100);checks++;
@@ -49,6 +55,8 @@ export async function verifyOzowSubscriptions(db) {
  const second=(await scalar(record({...tx,id:id(202)},'msg_second'))).r;
  assert.equal(second.applied,false);checks++;assert.equal(second.reviewRequired,true);checks++;
  await db.exec("UPDATE private.gateway_settings SET enabled=false,ready=false WHERE provider='ozow'");
+ const disabledOrder=(await scalar(`SELECT public.create_order_from_cart(NULL,'Synthetic','0821234567',NULL,current_date+2,'Synthetic','${cart}') r`)).r;
+ await reject(`SELECT public.begin_ozow_attempt('${disabledOrder.id}',NULL,'0821234567','SYN-TEST-001','staging')`,/unavailable/i);
  // Disabled catalog, forged receipts, admin-before-payment, pending and approved eligibility.
  await as(3);await reject(`SELECT public.request_vendor_subscription('${id(4)}','monthly')`,/not enabled/i);
  await root();await db.exec(`INSERT INTO private.subscription_plans VALUES('synthetic',200,'ZAR',30,'{"testOnly":true}','Synthetic policy, not a commercial offer',true)`);
