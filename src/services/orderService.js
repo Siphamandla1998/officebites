@@ -4,6 +4,7 @@ import { getOrderCustomerNames } from "./customerNameService";
 import { mapOrder, ORDER_SELECT } from "./api/mappers";
 import { getGuestOrderAccess } from "../utils/guest";
 import { checkoutError } from '../utils/checkoutError';
+import { savePaymentToken } from './manualPaymentService';
 
 export const orderService = {
   // ===============================
@@ -177,6 +178,8 @@ export const orderService = {
     deliveryLocation,
     cartItems,
     quoteId,
+    paymentMethod,
+    requestId,
   }) {
     if (!Array.isArray(cartItems) || cartItems.length === 0) {
       throw {
@@ -201,7 +204,7 @@ export const orderService = {
     }
 
     const { data, error } = await supabase.rpc(
-      quoteId ? "create_order_with_delivery" : "create_order_from_cart",
+      "create_manual_order",
       {
         p_customer_id: customerId || null,
         p_guest_name: customerId ? null : customerName,
@@ -210,7 +213,9 @@ export const orderService = {
         p_delivery_date: deliveryDate,
         p_delivery_location: deliveryLocation || null,
         p_items: rpcItems,
-        ...(quoteId ? { p_quote_id: quoteId } : {}),
+        p_quote_id: quoteId || null,
+        p_method: paymentMethod,
+        p_request_id: requestId,
       }
     );
 
@@ -223,6 +228,7 @@ export const orderService = {
       };
     }
 
+    savePaymentToken(data.id, data.payment_token);
     return mapOrder(data);
   },
 

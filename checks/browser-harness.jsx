@@ -12,6 +12,7 @@ import { supportService } from '../src/services/supportService';
 import { foodService } from '../src/services/foodService';
 import { vendorService } from '../src/services/vendorService';
 import { paymentService } from '../src/services/paymentService';
+import { manualPaymentService } from '../src/services/manualPaymentService';
 import { supabase } from '../src/services/api/supabaseClient';
 import '../src/styles/index.css';
 const fixture=window.fixture={user:null,authChanged:null,notificationsFail:false,pending:[],deferOrder:false,deferPayment:false,redirects:[],creates:0,policy:null,unknownRpcs:[],deferCreate:false,reportCalls:0,vendorRefreshes:0,gatewayDisabled:!!window.fixtureGatewayDisabled,deliveryConfig:window.fixtureDeliveryConfig};
@@ -37,7 +38,7 @@ supabase.auth.getSession=async()=>({data:{session:fixture.user?{user:fixture.use
 const order=id=>({id,ticketNumber:`OB-${id}`,customerId:fixture.user?.id || null,status:'pending_payment',total:100,deliveryDate:'2026-10-12',subOrders:[{id:`sub-${id}`,vendorId:'fixture-vendor',vendorName:'Synthetic vendor',status:'pending_payment',paymentStatus:'unpaid',items:[]}],createdAt:'2026-10-08T10:00:00Z',...window.fixtureOrderOverride});
 orderService.getOrderById=async id=>fixture.deferOrder?new Promise(resolve=>fixture.pending.push({id,resolve})):order(id);
 fixture.resolveOrder=(index=0)=>{const pending=fixture.pending.splice(index,1)[0];pending.resolve(order(pending.id));};
-orderService.createOrder=async()=>{fixture.creates++;const created=order('CREATED');return fixture.deferCreate?new Promise(resolve=>fixture.resolveCreate=()=>resolve(created)):created;};
+orderService.createOrder=async input=>{fixture.creates++;fixture.createdPaymentMethod=input.paymentMethod;const created=order('CREATED');return fixture.deferCreate?new Promise(resolve=>fixture.resolveCreate=()=>resolve(created)):created;};
 orderService.getOrdersByCustomer=async()=>[];
 orderService.trackGuestOrder=async()=>order('TRACKED');
 supportService.getTickets=async()=>[];
@@ -53,6 +54,15 @@ paymentService.initiatePayfastPayment=async()=>fixture.deferPayment?new Promise(
 paymentService.redirectToPayfast=value=>fixture.redirects.push(value);
 paymentService.initiateOzowPayment=async()=>{fixture.ozowCalls=(fixture.ozowCalls||0)+1;await new Promise(resolve=>setTimeout(resolve,50));throw new Error('Synthetic Ozow reconciliation required');};
 paymentService.cancelUnpaidOrder=async()=>{fixture.cancels=(fixture.cancels||0)+1;if(fixture.cancelFail)throw new Error('A payment may be processing');return {status:'cancelled'};};
+manualPaymentService.methods=async vendorId=>{if(window.fixtureManualMethodsError)throw new Error('Synthetic method refresh failed');return window.fixtureManualMethodsByVendor?.[vendorId] ?? window.fixtureManualMethods ?? (window.fixtureManualUnavailable?{}:{manual_eft:true,manual_payshap:!window.fixtureEftOnly});};
+const manual = () => ({orderId:'A',method:window.fixtureManualMethod || 'manual_eft',destination:{accountHolder:'Synthetic Vendor Ltd',bank:'Synthetic Bank',accountNumber:'1234567890',accountType:'Business',branchCode:'123456',shapId:'synthetic@bank'},vendor:'Synthetic vendor',reference:'OB-SYNTHETIC',amount:100,deadline:new Date(Date.now()+15*60000).toISOString(),state:fixture.manualState || window.fixtureManualState || 'awaiting_payment'});
+manualPaymentService.instructions=async()=>{if(window.fixtureManualAccessDenied)throw new Error('Payment access unavailable');return manual();};
+manualPaymentService.report=async()=>{fixture.manualReports=(fixture.manualReports||0)+1;await new Promise(resolve=>setTimeout(resolve,50));fixture.manualState='payment_reported';};
+manualPaymentService.workspace=async(testOnly=false)=>{
+ fixture.workspaceScopes ||= [];fixture.workspaceScopes.push(testOnly);
+ if(fixture.failManualWorkspace)throw new Error('Synthetic manual workspace refresh failed');
+ return window.fixtureManualWorkspace?.[String(testOnly)] || {settings:{eft_enabled:true,payshap_enabled:true,deadline_minutes:15,review_threshold:500},profiles:[],payments:[],receivables:[],events:[]};
+};
 supabase.rpc=async (name,args={})=> {
  if(name==='get_vendor_delivery_origin')return {data:{current:fixture.origin || {mode:'CENTRAL',status:'not_requested'},history:fixture.originHistory || []},error:null};
  if(name==='admin_delivery_origin_queue')return {data:fixture.origin?[{...fixture.origin,vendor_id:'fixture-vendor',vendor_name:'Synthetic vendor'}]:[],error:null};

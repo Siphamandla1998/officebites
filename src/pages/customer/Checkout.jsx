@@ -1,11 +1,12 @@
 import { useRequestGuard } from '../../hooks/useRequestGuard';
 import { validateMobile } from '../../utils/mobile';
 import { checkoutService } from '../../services/checkoutService';
+import { manualPaymentService, manualRequestKey } from '../../services/manualPaymentService';
 import { useAsync } from '../../hooks/useAsync';
 import { useOperationalRefresh } from '../../hooks/useOperationalRefresh';
 import { useLocation } from '../../context/LocationContext';
 import RequestError from '../../components/ui/RequestError';
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../../components/layout/Navbar";
 import TextField from "../../components/forms/TextField";
@@ -19,7 +20,7 @@ import { useDeliveryDate } from "../../hooks/useDeliveryDate";
 import { addGuestOrder, getGuestOrderAccess } from "../../utils/guest";
 import Spinner from "../../components/ui/Spinner";
 import EmptyState from "../../components/ui/EmptyState";
-import { FiShoppingBag, FiUser } from "react-icons/fi";
+import { FiChevronDown, FiShoppingBag, FiUser } from "react-icons/fi";
 
 export default function Checkout() {
   const { items, subtotal, clearCart } = useCart();
@@ -38,9 +39,18 @@ export default function Checkout() {
   const [deliveryLocation, setDeliveryLocation] = useState("");
   const [errors, setErrors] = useState({});
   const { data: deliveryConfig, error: deliveryError, loading: deliveryLoading, refetch: reloadDelivery } = useAsync(checkoutService.deliverySettings, [], null);
-  const gateways = useAsync(checkoutService.gateways, [], []);
-  useOperationalRefresh(() => gateways.refetch({ silent: true }), 'checkout-gateways', 30000);
-  const paymentAvailable = gateways.data?.some(g => ['payfast', 'ozow'].includes(g.provider) && g.enabled && g.ready && !g.maintenance);
+  const vendorId = items[0]?.vendorId;
+  const gateways = useAsync(() => vendorId ? manualPaymentService.methods(vendorId) : Promise.resolve({}), [vendorId, user?.id], {});
+  const otherGateways = useAsync(checkoutService.gateways, [user?.id], []);
+  const [showOtherMethods, setShowOtherMethods] = useState(false);
+  const otherMethodsId = useId();
+  useOperationalRefresh(() => Promise.all([gateways.refetch({ silent: true }), otherGateways.refetch({ silent: true })]), 'checkout-gateways', 30000);
+  const [paymentMethod, setPaymentMethod] = useState('manual_payshap');
+  const requestKey = useRef(null);
+  const singleVendor = new Set(items.map(item => item.vendorId)).size === 1;
+  const selectedMethod = gateways.data?.[paymentMethod] === true ? paymentMethod : gateways.data?.manual_payshap === true ? 'manual_payshap' : 'manual_eft';
+  const paymentAvailable = singleVendor && gateways.data?.[selectedMethod] === true;
+  const otherMethods = Array.isArray(otherGateways.data) ? otherGateways.data.filter(method => !['manual_payshap', 'manual_eft'].includes(method.provider)) : [];
   const geo = useLocation();
   const [quote, setQuote] = useState(null);
   const [quoting, setQuoting] = useState(false);
@@ -103,6 +113,8 @@ export default function Checkout() {
     creating.current = true;
     setSubmitting(true);
     try {
+      const payloadKey = JSON.stringify([user?.id, guestDetails, deliveryDateKey(deliveryDate), deliveryLocation.trim(), cartKey, usableQuote?.id, selectedMethod]);
+      if (requestKey.current?.payload !== payloadKey) requestKey.current = { payload: payloadKey, ...await manualRequestKey(payloadKey) };
       const order = await orderService.createOrder({
         customerId: isAuthenticated ? user.id : null,
         customerName: isAuthenticated ? user.name : guestDetails.name,
@@ -112,6 +124,8 @@ export default function Checkout() {
         deliveryLocation: deliveryLocation.trim(),
         cartItems: items,
         quoteId: deliveryConfig?.enabled ? usableQuote.id : null,
+        paymentMethod: selectedMethod,
+        requestId: requestKey.current.id,
       });
       // Preserve the completed guest order even if navigation changed while
       // the server was creating it. Only current-scope UI/cart effects follow.
@@ -120,6 +134,7 @@ export default function Checkout() {
         ticketNumber: order.ticketNumber,
         contact: validateMobile(guestDetails.phone).value,
       });
+      requestKey.current.clear();
       if (!current()) return;
       setCreatedOrder(order);
       if (!persisted) {
@@ -236,8 +251,7 @@ export default function Checkout() {
           <p className="text-xs font-medium text-ink-muted mb-1">Delivery date</p>
           <p className="text-sm font-semibold text-ink">{formatDate(deliveryDate)}</p>
           <p className="text-xs text-ink-muted mt-1">
-            One checkout, one experience — your order is split behind the scenes so each vendor only
-            sees their own items.
+            One vendor per checkout. Pay that food vendor directly through your banking app.
           </p>
         </div>
 
@@ -258,9 +272,37 @@ export default function Checkout() {
             </div>
           </div>
         ))}
+        <section className="card p-4 flex flex-col gap-3" aria-label="Payment methods">
+          <fieldset disabled={submitting || gateways.loading || !!gateways.error || !singleVendor} className="flex flex-col gap-2">
+            <legend className="font-semibold mb-3">Pay the vendor directly</legend>
+            {gateways.data?.manual_payshap === true && <label className="flex items-center gap-3 rounded-xl border border-line p-3 text-sm cursor-pointer has-[:checked]:border-nude-500 has-[:checked]:bg-nude-50"><input type="radio" name="method" value="manual_payshap" checked={selectedMethod === 'manual_payshap'} onChange={() => setPaymentMethod('manual_payshap')} className="accent-nude-700 shrink-0" /> PayShap — recommended where supported</label>}
+            {gateways.data?.manual_eft === true && <label className="flex items-center gap-3 rounded-xl border border-line p-3 text-sm cursor-pointer has-[:checked]:border-nude-500 has-[:checked]:bg-nude-50"><input type="radio" name="method" value="manual_eft" checked={selectedMethod === 'manual_eft'} onChange={() => setPaymentMethod('manual_eft')} className="accent-nude-700 shrink-0" /> Bank transfer (EFT)</label>}
+            {gateways.loading && <p className="text-sm text-ink-muted" role="status">Checking this vendor's payment methods…</p>}
+          </fieldset>
+          <button type="button" className="btn-outline w-full flex items-center justify-between gap-3" aria-expanded={showOtherMethods} aria-controls={otherMethodsId} onClick={() => setShowOtherMethods(value => !value)}>
+            Other Payment Methods
+            <FiChevronDown aria-hidden="true" className={`shrink-0 transition-transform ${showOtherMethods ? 'rotate-180' : ''}`} />
+          </button>
+          <div id={otherMethodsId} hidden={!showOtherMethods}>
+            {otherGateways.loading ? <p className="text-sm text-ink-muted" role="status">Checking other payment methods…</p> : otherGateways.error ? <div className="flex flex-col gap-2"><p className="text-sm" role="status">Other payment methods are unavailable right now.</p><button type="button" className="btn-outline" onClick={() => otherGateways.refetch()}>Retry other payment methods</button></div> : <div className="flex flex-col gap-2">
+              {otherMethods.map(method => {
+                const name = ({ payfast: 'PayFast', ozow: 'Ozow' })[method.provider] || 'Additional payment method';
+                const status = method.provider === 'payfast' ? 'Unavailable for vendor orders' : method.provider === 'ozow' ? 'Not available yet' : method.maintenance ? 'Temporarily unavailable' : 'Unavailable for this order';
+                return <label key={method.provider} className="flex items-start gap-3 rounded-xl border border-line bg-paper p-3">
+                  <input type="radio" name="method" value={method.provider} disabled checked={false} readOnly className="mt-1 shrink-0" />
+                  <span className="min-w-0 text-sm"><span className="block font-semibold text-ink-soft">{name}</span><span className="block text-ink-muted">{status}</span></span>
+                </label>;
+              })}
+              {otherMethods.length === 0 && <p className="text-sm text-ink-muted">No other payment methods are available for this order.</p>}
+              <p className="text-xs text-ink-muted">Unavailable methods cannot be used for this order. Choose an available vendor-direct option above.</p>
+            </div>}
+          </div>
+          <p className="text-sm">The vendor confirms receipt and handles refunds. OfficeBites coordinates support through <Link to="/support" className="underline">Support</Link>. Bank transfers are not automatically refunded.</p>
+        </section>
       </div>
 
       <div className="fixed bottom-0 left-0 right-0 mx-auto w-full max-w-app bg-paper-raised border-t border-line px-4 pt-4 pb-[calc(1rem+env(safe-area-inset-bottom))] shadow-nav flex flex-col gap-3">
+        {!singleVendor && <p role="alert">Please complete one vendor order at a time. Remove the other vendor’s items before checkout.</p>}
         <RequestError error={gateways.error} onRetry={gateways.refetch} />
         {!gateways.loading && !gateways.error && !paymentAvailable && <p role="status" className="text-sm">Payments are temporarily unavailable. Your cart is saved. Please try again later.</p>}
         <div className="flex justify-between text-sm">
