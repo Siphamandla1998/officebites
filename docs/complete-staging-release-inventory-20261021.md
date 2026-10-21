@@ -25,7 +25,7 @@ Initial branch: feat/vendor-direct-launch-payments; HEAD bb074addb7f9a348f72f694
 | checks/fixtures/manual-settings-baseline-20261021.json | Include: regression / applied-SQL provenance | Reviewed local regression or migration evidence; no hosted operation |
 | checks/manual-payments-database.mjs | Include: regression / applied-SQL provenance | Reviewed local regression or migration evidence; no hosted operation |
 | checks/manual-payments-staging-preflight.sql | Exclude / preserve | Manual operations tooling not needed in frontend artifact |
-| checks/manual-payments-staging-stop.sql | Exclude / preserve | Manual operations tooling not needed in frontend artifact |
+| checks/manual-payments-staging-stop.sql | Include: local regression dependency only | Isolated manual-payment suite reads this reviewed stop SQL; never uploaded or executed hosted by this release |
 | checks/manual-settings-singleton.mjs | Include: regression / applied-SQL provenance | Reviewed local regression or migration evidence; no hosted operation |
 | checks/prepare-manual-staging-release.mjs | Exclude / preserve | Manual operations tooling not needed in frontend artifact |
 | checks/uat/checkpoint.example.json | Exclude / preserve | Security/provisioning installation remains blocked; separate scope |
@@ -82,3 +82,5 @@ Runtime deployment artifact must be exported only from the final commit's src, p
 ## Validation and handoff
 
 Final counts, commit SHAs, deployment evidence and remaining operational blockers are recorded in the release results report. No launch-readiness claim: notification isolation, effective PostgREST configuration, protected operator access and separately authorised synthetic onboarding/UAT remain prerequisites.
+
+Isolated validation correction: the first clean checkout-database run stopped on a missing `checks/manual-payments-staging-stop.sql` dependency. Its existing transaction only disables gateways and appends a stop event; it makes no transfers or deletes and is exercised solely inside PGlite here. Record it in Git to make the existing test reproducible, but retain its explicit hosted-approval warning and exclude it from the frontend artifact. No money/state assertion failure or hosted execution occurred. A separate correction commit records this packaging dependency and inventory correction.
