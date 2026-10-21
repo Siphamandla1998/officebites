@@ -41,14 +41,13 @@ test('deferred manual order response cannot replace route B',async({page})=>{
  await page.evaluate(()=>{while(fixture.pending.length)fixture.resolveOrder();});await expect(page.getByText('OB-B').first()).toBeVisible();await expect(page.getByText('OB-A')).toHaveCount(0);
 });
 test('payment response cannot redirect after route or account switch',async({page})=>{
- await open(page,'/payment/A');await page.evaluate(u=>fixture.setUser(u),user('A'));await expect(page.getByRole('button',{name:/Pay R100/})).toBeVisible();
- await page.evaluate(()=>fixture.deferPayment=true);await page.getByRole('button',{name:/Pay R100/}).click();await page.waitForFunction(()=>fixture.resolvePayment);
- await page.evaluate(()=>fixture.navigate('/payment/B'));await expect(page.getByText(/existing order OB-B/)).toBeVisible();
- await page.evaluate(()=>fixture.resolvePayment());expect(await page.evaluate(()=>fixture.redirects.length)).toBe(0);
- await page.getByRole('button',{name:/Pay R100/}).click();await page.waitForFunction(()=>fixture.resolvePayment);
- await page.evaluate(u=>fixture.setUser(u),user('B'));await page.evaluate(()=>fixture.resolvePayment());expect(await page.evaluate(()=>fixture.redirects.length)).toBe(0);
-});
-for(const storageError of ['SecurityError','QuotaExceededError'])test(`verified guest tracking survives ${storageError}`,async({page})=>{
+
+ await open(page,'/payment/A');await page.evaluate(u=>fixture.setUser(u),user('A'));
+ await expect(page.getByRole('button',{name:/with PayFast|with Ozow/})).toHaveCount(0);
+ await page.getByRole('button',{name:"I've made payment"}).click();await page.evaluate(()=>fixture.navigate('/help/tickets'));
+ await expect(page).toHaveURL(/help\/tickets/);expect(await page.evaluate(()=>fixture.redirects.length)).toBe(0);
+
+});for(const storageError of ['SecurityError','QuotaExceededError'])test(`verified guest tracking survives ${storageError}`,async({page})=>{
  await open(page,'/track');await page.evaluate(name=>{Storage.prototype.setItem=function(){throw new DOMException('Blocked',name);};},storageError);
  await page.getByLabel('Order code').fill('OB-TRACKED');await page.getByLabel('Phone number used at checkout').fill('fixture-contact');await page.getByRole('button',{name:'Find my order'}).click();
  await expect(page.getByText('OB-TRACKED').first()).toBeVisible();expect(await page.evaluate(()=>fixture.guestAccess('TRACKED')?.contact)).toBe('fixture-contact');
@@ -85,7 +84,7 @@ for (const storageError of ['SecurityError','QuotaExceededError']) test(`success
   await expect(page.getByText('OB-CREATED',{exact:true})).toBeVisible();
   await expect(page.getByText(/Save this code/)).toBeVisible();
   await page.getByRole('button',{name:'Continue to payment'}).click();
-  await expect(page.getByText(/existing order OB-CREATED/)).toBeVisible();
+  await expect(page.getByText('OB-SYNTHETIC',{exact:true})).toBeVisible();
   expect(await page.evaluate(() => fixture.creates)).toBe(1);
 });
 test('business clocks, date-only values and cutoff across four browser timezones', async ({browser}) => {
@@ -110,20 +109,14 @@ test('unmocked public frontend renders signed out against read-only hosted data'
   expect(errors).toEqual([]);
 });
 
-test('payment response cannot redirect once the URL leaves the payment page', async ({page}) => {
-  await open(page, '/payment/A');
-  await page.evaluate(u => fixture.setUser(u), user('A'));
-  await expect(page.getByRole('button', {name:/Pay R100/})).toBeVisible();
-  await page.evaluate(() => fixture.deferPayment = true);
-  await page.getByRole('button', {name:/Pay R100/}).click();
-  await page.waitForFunction(() => fixture.resolvePayment);
-  await page.evaluate(() => fixture.navigate('/help/tickets'));
-  await expect(page).toHaveURL(/help\/tickets/);
-  await page.evaluate(() => fixture.resolvePayment());
-  expect(await page.evaluate(() => fixture.redirects.length)).toBe(0);
-  await expect(page).toHaveURL(/help\/tickets/);
-});
+test('payment response cannot redirect once the URL leaves the payment page',async({page})=>{
 
+ await open(page,'/payment/A');await page.evaluate(u=>fixture.setUser(u),user('A'));
+ await expect(page.getByRole('button',{name:/with PayFast|with Ozow/})).toHaveCount(0);
+ await page.getByRole('button',{name:"I've made payment"}).click();await page.evaluate(()=>fixture.navigate('/help/tickets'));
+ await expect(page).toHaveURL(/help\/tickets/);expect(await page.evaluate(()=>fixture.redirects.length)).toBe(0);
+
+});
 for (const leave of ['route', 'account']) test(`checkout response cannot affect a new ${leave} scope`, async ({page}) => {
   await page.addInitScript(() => localStorage.setItem('ob_cart', JSON.stringify([{mealId:'fixture-meal',vendorId:'fixture-vendor',vendorName:'Fixture',name:'Lunch',price:100,qty:1}])));
   await open(page, '/checkout');

@@ -62,7 +62,15 @@ manualPaymentService.workspace=async(testOnly=false)=>{
  fixture.workspaceScopes ||= [];fixture.workspaceScopes.push(testOnly);
  if(fixture.deferManualWorkspace)await new Promise(resolve=>fixture.releaseManualWorkspace=resolve);
  if(fixture.failManualWorkspace)throw new Error('Synthetic manual workspace refresh failed');
- return window.fixtureManualWorkspace?.[String(testOnly)] || {settings:fixture.manualSettings || {eft_enabled:true,payshap_enabled:true,deadline_minutes:15,review_threshold:500},profiles:[],payments:[],receivables:[],events:[]};
+ return window.fixtureManualWorkspace?.[String(testOnly)] || {settings:fixture.manualSettings || {eft_enabled:true,payshap_enabled:true,deadline_minutes:15,review_threshold:500},profiles:fixture.paymentProfiles || [],payments:[],receivables:[],events:[]};
+};
+manualPaymentService.submit=async(vendorId,destination,eft,payshap)=>{
+ fixture.paymentProfiles ||= [];const id='synthetic-profile-'+(fixture.paymentProfiles.length+1);
+ fixture.paymentProfiles.push({id,vendor_id:vendorId,destination,eft,payshap,created_at:'2026-10-21T10:00:00Z',approved_at:null});return id;
+};
+manualPaymentService.approve=async(id,evidence)=>{
+ fixture.profileApprovals ||= [];fixture.profileApprovals.push({id,evidence});
+ fixture.paymentProfiles=fixture.paymentProfiles.map(p=>p.id===id?{...p,approved_at:'2026-10-21T10:05:00Z'}:p);
 };
 manualPaymentService.settings=async(eft,payshap,minutes,threshold,reason)=>{
  fixture.settingsCalls ||= [];fixture.settingsCalls.push({eft,payshap,minutes:Number(minutes),threshold:Number(threshold),reason});

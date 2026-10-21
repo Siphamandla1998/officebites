@@ -34,13 +34,13 @@ const mapperCtx={persistentImage};vm.createContext(mapperCtx);vm.runInContext(st
 assert.equal(mapperCtx.mapper.mapVendor({logo:'blob:https://old.vercel.app/id'}).logo,'');checks++;
 assert.equal(mapperCtx.mapper.mapMeal({image:'blob:https://old.vercel.app/id'}).image,'/placeholder-food.svg');checks++;
 let uid=null,calls=[];let rpcError=null;let identityError=null;let report={rows:[],reconciliation:[]};
-const context={checkoutError,mapOrder:mapperCtx.mapper.mapOrder,financialService:{report:async()=>report},getOrderCustomerNames:async()=>new Map(),supabase:{
+const context={savePaymentToken:()=>{},checkoutError,mapOrder:mapperCtx.mapper.mapOrder,financialService:{report:async()=>report},getOrderCustomerNames:async()=>new Map(),supabase:{
  auth:{getSession:async()=>({data:{session:uid?{user:{id:uid}}:null},error:null}),getUser:async()=>({data:{user:uid?{id:uid}:null},error:identityError})},
  rpc:async(name,args)=>{calls.push({name,args});return{data:rpcError?null:{id:'synthetic',status:'pending_payment'},error:rpcError};},
 }};vm.createContext(context);vm.runInContext(strip(fs.readFileSync('src/services/orderService.js','utf8'))+'\nthis.service=orderService;',context);
 const request={customerId:null,customerName:'Synthetic guest',guestContact:'0821234567',deliveryDate:'2099-01-01',deliveryLocation:'Synthetic',cartItems:[{mealId:'synthetic-meal',qty:1}]};
-await context.service.createOrder(request);assert.equal(calls[0].name,'create_order_from_cart');checks++;
-assert.deepEqual(Object.keys(calls[0].args).sort(),['p_customer_id','p_delivery_date','p_delivery_location','p_guest_contact','p_guest_email','p_guest_name','p_items']);checks++;
+await context.service.createOrder(request);assert.equal(calls[0].name,'create_manual_order');checks++;
+assert.deepEqual(Object.keys(calls[0].args).sort(),['p_customer_id','p_delivery_date','p_delivery_location','p_guest_contact','p_guest_email','p_guest_name','p_items','p_method','p_quote_id','p_request_id']);checks++;
 assert.equal(JSON.stringify(calls[0].args.p_items),'[{"mealId":"synthetic-meal","qty":1}]');checks++;
 uid='member';await assert.rejects(()=>context.service.createOrder(request),/session/i);checks++;
 const count=calls.length;identityError=new Error('expired');await assert.rejects(()=>context.service.createOrder({...request,customerId:'member'}),/session/i);checks++;assert.equal(calls.length,count);checks++;

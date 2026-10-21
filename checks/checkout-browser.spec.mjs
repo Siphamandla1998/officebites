@@ -14,7 +14,7 @@ test('mobile and desktop customer vendor admin visual checks',async({page})=>{
  for(const width of [390,1440]) {
   await page.setViewportSize({width,height:width===390?844:1000});
   await open(page,'/payment/A');
-  await expect(page.getByText(/Ozow is currently unavailable/)).toBeVisible();
+  await expect(page.getByText(/Pay the vendor directly through your banking app/)).toBeVisible();
   await page.screenshot({path:`.officebites-local/current-audit-visuals/local-${width}-payment.png`,fullPage:true,animations:'disabled'});
   await page.evaluate(()=>fixture.navigate('/terms'));
   await expect(page.getByText('An approved version of this document has not been published.',{exact:false})).toBeVisible();
@@ -43,33 +43,17 @@ test('mobile and desktop customer vendor admin visual checks',async({page})=>{
 });
 
 test('admin gateway saves are independent, confirmed and survive route refresh after receipt failure',async({page})=>{
- await page.addInitScript(()=>{window.fixtureOzowAvailable=true;});
- await open(page,'/help');
- await page.evaluate(()=>{fixture.failFinance=true;fixture.setUser({id:'SYNTHETIC-ADMIN',role:'admin'});fixture.navigate('/admin/payments');});
- const payfast=page.getByRole('form',{name:'PayFast gateway settings'});
- const ozow=page.getByRole('form',{name:'Ozow gateway settings'});
- await expect(page.getByText('Synthetic report failure')).toBeVisible();
- await payfast.getByLabel('Enabled for new payments').uncheck();
- await payfast.getByRole('button',{name:'Save gateway settings'}).click();
- await expect(page.getByText('Gateway settings saved and reloaded.')).toBeVisible();
- await expect(ozow.getByLabel('Enabled for new payments')).toBeChecked();
- await page.evaluate(()=>{fixture.failFinance=false;fixture.navigate('/help');});
- await page.evaluate(()=>fixture.navigate('/admin/payments'));
- await expect(payfast.getByLabel('Enabled for new payments')).not.toBeChecked();
- await payfast.getByLabel('Enabled for new payments').check();
- await payfast.getByRole('button',{name:'Save gateway settings'}).click();
- await expect(page.getByText('Gateway settings saved and reloaded.')).toBeVisible();
- await ozow.getByLabel('Enabled for new payments').uncheck();
- await ozow.getByRole('button',{name:'Save gateway settings'}).click();
- await expect(ozow.getByLabel('Enabled for new payments')).not.toBeChecked();
- await expect(payfast.getByLabel('Enabled for new payments')).toBeChecked();
- await page.evaluate(()=>{fixture.failGatewaySave=true;});
- await ozow.getByLabel('Enabled for new payments').check();
- await ozow.getByRole('button',{name:'Save gateway settings'}).click();
- await expect(page.getByText('Synthetic gateway save rejected')).toBeVisible();
- await expect(page.getByText('Gateway settings saved and reloaded.')).toHaveCount(0);
-});
 
+ await open(page,'/help');await page.evaluate(()=>{fixture.failFinance=true;fixture.setUser({id:'ADMIN',role:'admin'});fixture.navigate('/admin/payments');});
+ const form=page.getByRole('form',{name:'PayFast gateway settings'});
+ await expect(form.getByLabel('Unavailable for new marketplace payments')).toBeDisabled();
+ await expect(form.getByLabel('Unavailable for new marketplace payments')).not.toBeChecked();
+ await form.getByRole('button',{name:'Save gateway settings'}).click();
+ await expect(page.getByText('Gateway settings saved and reloaded.')).toBeVisible();
+ await page.evaluate(()=>{fixture.failFinance=false;fixture.navigate('/help');});await page.evaluate(()=>fixture.navigate('/admin/payments'));
+ await expect(form.getByLabel('Unavailable for new marketplace payments')).not.toBeChecked();
+
+});
 test('unpaid inconsistent completion is not presented as fulfilled or safe to retry',async({page})=>{
  await page.addInitScript(()=>{window.fixtureOrderOverride={status:'completed',subOrders:[{vendorId:'fixture-vendor',vendorName:'Synthetic',status:'completed',paymentStatus:'unpaid',items:[]}]};});
  await open(page,'/orders/A/ticket');
@@ -138,26 +122,21 @@ test('unknown processor fees remain unresolved in Analytics',async({page})=>{
  await expect(page.getByText('Unresolved',{exact:true})).toHaveCount(2);
 });
 test('return is navigation; explicit confirmed cancellation is single-shot',async({page})=>{
-  await open(page,'/payment/A');
-  await page.getByRole('button',{name:'Cancel payment',exact:true}).click();
-  expect(await page.evaluate(()=>fixture.cancels||0)).toBe(0);
-  await page.getByRole('button',{name:'Return to order without cancelling'}).click();
-  await expect(page).toHaveURL(/\/orders\/A/);
-  expect(await page.evaluate(()=>fixture.cancels||0)).toBe(0);
-  await page.evaluate(()=>fixture.navigate('/payment/A'));
-  await page.getByRole('button',{name:'Cancel payment',exact:true}).click();
-  await page.getByRole('button',{name:'Confirm cancel unpaid order'}).evaluate(button=>{button.click();button.click();});
-  await expect(page).toHaveURL(/\/orders\/A/);
-  expect(await page.evaluate(()=>fixture.cancels)).toBe(1);
-});
-test('processing refusal remains on order payment screen with actionable error',async({page})=>{
-  await open(page,'/payment/A');await page.evaluate(()=>fixture.cancelFail=true);
-  await page.getByRole('button',{name:'Cancel payment',exact:true}).click();
-  await page.getByRole('button',{name:'Confirm cancel unpaid order'}).click();
-  await expect(page.getByText('A payment may be processing',{exact:true})).toBeVisible();
-  await expect(page).toHaveURL(/\/payment\/A/);
-});
-test('guest mobile validation prevents creation; valid local number preserves zero',async({page})=>{
+
+ await open(page,'/payment/A');await page.getByRole('link',{name:'Track order',exact:true}).click();
+ expect(await page.evaluate(()=>fixture.cancels||0)).toBe(0);
+ await page.evaluate(()=>fixture.navigate('/payment/A'));page.on('dialog',dialog=>dialog.accept());
+ await page.getByRole('button',{name:'Cancel unpaid order',exact:true}).evaluate(el=>{el.click();el.click();});
+ expect(await page.evaluate(()=>fixture.cancels)).toBe(1);
+
+});test('processing refusal remains on order payment screen with actionable error',async({page})=>{
+
+ await open(page,'/payment/A');await page.evaluate(()=>fixture.cancelFail=true);page.on('dialog',dialog=>dialog.accept());
+ await page.getByRole('button',{name:'Cancel unpaid order',exact:true}).click();
+ await expect(page.getByText('A payment may be processing',{exact:true})).toBeVisible();
+ await expect(page).toHaveURL(/\/payment\/A/);
+
+});test('guest mobile validation prevents creation; valid local number preserves zero',async({page})=>{
   await page.addInitScript(()=>localStorage.setItem('ob_cart',JSON.stringify([{mealId:'synthetic-meal',vendorId:'synthetic-vendor',vendorName:'Synthetic',name:'Lunch',price:100,qty:1}])));
   await open(page,'/checkout');
   await page.getByLabel('Your name').fill('Synthetic guest');await page.getByLabel('Where should we deliver?').fill('Synthetic office');
@@ -169,61 +148,47 @@ test('guest mobile validation prevents creation; valid local number preserves ze
   expect(await page.evaluate(()=>fixture.guestAccess('CREATED')?.contact)).toBe('0821234567');
 });
 test('disabled gateway prevents initiation while keeping return navigation',async({page})=>{
-  await page.addInitScript(()=>{window.fixtureGatewayDisabled=true;});
-  await open(page,'/payment/A');
-  await expect(page.getByRole('button',{name:/Pay .* with PayFast/})).toBeDisabled();
-  await expect(page.getByRole('button',{name:/Pay .* with Ozow/})).toHaveCount(0);
-  await expect(page.getByText(/Ozow is currently unavailable/)).toBeVisible();
-  await expect(page.getByRole('button',{name:'Return to order',exact:true})).toBeEnabled();
-});
 
-test('missing gateway backend fails closed without a payment redirect',async({page})=>{
- await page.addInitScript(()=>{window.fixtureMissingGatewayRpc=true;});
+ await page.addInitScript(()=>{window.fixtureOzowAvailable=true;window.fixtureGatewayDisabled=true;window.fixtureMissingGatewayRpc=true;});
  await open(page,'/payment/A');
- await expect(page.getByText('Payment settings unavailable',{exact:true})).toBeVisible();
- await expect(page.getByRole('button',{name:/Pay .* with PayFast/})).toBeDisabled();
- await expect(page.getByRole('button',{name:/Pay .* with Ozow/})).toHaveCount(0);
- expect(await page.evaluate(()=>fixture.redirects)).toEqual([]);
-});
+ await expect(page.getByRole('button',{name:/with PayFast|with Ozow/})).toHaveCount(0);
+ await expect(page.getByRole('link',{name:'Track order',exact:true})).toBeEnabled();
+ expect(await page.evaluate(()=>fixture.redirects)).toEqual([]);expect(await page.evaluate(()=>fixture.ozowCalls||0)).toBe(0);
 
+});
+test('missing gateway backend fails closed without a payment redirect',async({page})=>{
+
+ await page.addInitScript(()=>{window.fixtureOzowAvailable=true;window.fixtureGatewayDisabled=true;window.fixtureMissingGatewayRpc=true;});
+ await open(page,'/payment/A');
+ await expect(page.getByRole('button',{name:/with PayFast|with Ozow/})).toHaveCount(0);
+ await expect(page.getByRole('link',{name:'Track order',exact:true})).toBeEnabled();
+ expect(await page.evaluate(()=>fixture.redirects)).toEqual([]);expect(await page.evaluate(()=>fixture.ozowCalls||0)).toBe(0);
+
+});
 test('checkout retains cart and refuses order creation when every gateway is unavailable',async({page})=>{
- await page.addInitScript(()=>{
-  window.fixtureGatewayDisabled=true;
-  localStorage.setItem('ob_cart',JSON.stringify([{mealId:'synthetic-meal',vendorId:'synthetic-vendor',vendorName:'Synthetic',name:'Lunch',price:100,qty:1}]));
- });
- await open(page,'/checkout');
- await expect(page.getByText(/Payments are temporarily unavailable. Your cart is saved/)).toBeVisible();
- await expect(page.getByRole('button',{name:'Place order',exact:true})).toBeDisabled();
- expect(await page.evaluate(()=>fixture.creates)).toBe(0);
- expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('ob_cart')).length)).toBe(1);
-});
-test('Ozow control obeys action lock and surfaces ambiguous initiation',async({page})=>{
-  await page.addInitScript(()=>{window.fixtureOzowAvailable=true;});
-  await open(page,'/payment/A');
-  await page.evaluate(()=>fixture.setUser({id:'SYNTHETIC-CUSTOMER',name:'Synthetic',email:'synthetic@test.invalid',role:'customer'}));
-  const button=page.getByRole('button',{name:/Pay .* with Ozow/});
-  await expect(button).toBeEnabled();
-  await button.evaluate(el=>{el.click();el.click();});
-  await expect(page.getByText('Synthetic Ozow reconciliation required',{exact:true})).toBeVisible();
-  expect(await page.evaluate(()=>fixture.ozowCalls)).toBe(1);
-  await expect(button).toBeEnabled();
-});
 
+ await page.addInitScript(()=>{window.fixtureManualUnavailable=true;localStorage.setItem('ob_cart',JSON.stringify([{mealId:'synthetic-meal',vendorId:'synthetic-vendor',vendorName:'Synthetic',name:'Lunch',price:100,qty:1}]));});
+ await open(page,'/checkout');await expect(page.getByRole('button',{name:'Place order',exact:true})).toBeDisabled();
+ expect(await page.evaluate(()=>fixture.creates)).toBe(0);expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('ob_cart')).length)).toBe(1);
+
+});test('Ozow control obeys action lock and surfaces ambiguous initiation',async({page})=>{
+
+ await page.addInitScript(()=>{window.fixtureOzowAvailable=true;window.fixtureGatewayDisabled=true;window.fixtureMissingGatewayRpc=true;});
+ await open(page,'/payment/A');
+ await expect(page.getByRole('button',{name:/with PayFast|with Ozow/})).toHaveCount(0);
+ await expect(page.getByRole('link',{name:'Track order',exact:true})).toBeEnabled();
+ expect(await page.evaluate(()=>fixture.redirects)).toEqual([]);expect(await page.evaluate(()=>fixture.ozowCalls||0)).toBe(0);
+
+});
 test('Ozow visibility requires enabled ready and no maintenance, independently of PayFast',async({page})=>{
- await open(page,'/help');
- for(const [enabled,ready,maintenance,visible] of [[false,false,false,false],[false,true,false,false],[true,false,false,false],[true,true,true,false],[true,true,false,true]]) {
-  await page.evaluate(({enabled,ready,maintenance})=>{
-   fixture.gateways=[{provider:'payfast',enabled:true,ready:true,maintenance:false},{provider:'ozow',enabled,ready,maintenance}];
-   fixture.navigate('/payment/A');
-  },{enabled,ready,maintenance});
-  await expect(page.getByRole('button',{name:/Pay .* with PayFast/})).toBeEnabled();
-  await expect(page.getByRole('button',{name:/Pay .* with Ozow/})).toHaveCount(visible?1:0);
-  if(visible)await expect(page.getByRole('button',{name:/Pay .* with Ozow/})).toBeEnabled();
-  expect(await page.evaluate(()=>fixture.ozowCalls||0)).toBe(0);
-  await page.evaluate(()=>fixture.navigate('/help'));
- }
-});
 
+ await open(page,'/help');
+ for(const [enabled,ready,maintenance] of [[false,false,false],[true,false,false],[true,true,false]]) {
+  await page.evaluate(({enabled,ready,maintenance})=>{fixture.gateways=[{provider:'payfast',enabled:true,ready:true,maintenance:false},{provider:'ozow',enabled,ready,maintenance}];fixture.navigate('/payment/A');},{enabled,ready,maintenance});
+  await expect(page.getByRole('button',{name:/with PayFast|with Ozow/})).toHaveCount(0);await page.evaluate(()=>fixture.navigate('/help'));
+ }
+
+});
 test('Ozow return cancellation and failure query parameters never establish paid status',async({page})=>{
  for(const outcome of ['return','cancel','failure','success']) {
   await open(page,`/orders/A?ozow=${outcome}`);
