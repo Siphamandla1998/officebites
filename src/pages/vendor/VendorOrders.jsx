@@ -1,6 +1,7 @@
 import { useRequestGuard } from '../../hooks/useRequestGuard';
 import { useOperationalRefresh } from '../../hooks/useOperationalRefresh';
 import RequestError from '../../components/ui/RequestError';
+import ManualPaymentWorkspace from '../../components/features/ManualPaymentWorkspace';
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FiEye, FiMessageCircle } from "react-icons/fi";
@@ -145,6 +146,7 @@ export default function VendorOrders() {
         labels={ORDER_STATUS_LABELS}
       />
       {loading ? <div className="skeleton h-64" /> : <Table columns={columns} data={filtered} />}
+      <ManualPaymentWorkspace />
 
       <Modal
         open={!!selected}

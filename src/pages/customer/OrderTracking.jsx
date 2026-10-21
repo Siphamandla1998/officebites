@@ -10,6 +10,7 @@ import { orderService } from "../../services/orderService";
 import { formatCurrency, formatDate } from "../../utils/formatters";
 import { ORDER_STATUS } from "../../utils/constants";
 import RequestError from '../../components/ui/RequestError';
+import ManualPaymentStatus from '../../components/features/ManualPaymentStatus';
 import { canRetryPayment, paymentMessage, displayOrderStatus } from '../../utils/orderState';
 
 // Recovery is based on the stored order state, including browser Back returns
@@ -211,6 +212,7 @@ export default function OrderTracking() {
     <div className="pb-8">
       <Navbar showBack title={order.ticketNumber} showCart={false} />
       <div className="ob-container pt-4 flex flex-col gap-4">
+        {['manual_payshap','manual_eft'].includes(order.paymentMethod) && <ManualPaymentStatus orderId={orderId} />}
         <PaymentRecovery
           order={order}
           payfastState={payfastState}

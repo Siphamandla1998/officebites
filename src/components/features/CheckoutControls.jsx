@@ -21,15 +21,15 @@ export default function CheckoutControls() {
     <h2 className="section-title">Checkout controls</h2>
     {confirmation && <p role="status">{confirmation}</p>}
     <RequestError error={error || gateways.error || delivery.error} onRetry={() => { setError(null); gateways.refetch(); delivery.refetch(); }} />
-    <p>Disabling new payments does not disable webhooks or change confirmed payments. Ozow cannot be enabled until server readiness is verified; secrets are never entered here.</p>
-    <p>Manual EFT is unavailable; manual proof uploads cannot confirm payment.</p>
-    {gateways.data?.map(g => <form aria-label={`${g.provider === 'payfast' ? 'PayFast' : 'Ozow'} gateway settings`} className="border-t pt-3 flex flex-col gap-2" key={`${g.provider}:${g.updated_at}`} onSubmit={event => {
+    <p>Disabling new payments does not disable webhooks or change confirmed payments. Neither gateway is authorised for new marketplace payments.</p>
+    <p>New gateway payments are blocked for this marketplace. Reactivation requires documented provider authorisation and a reviewed release. Manage approved vendor-direct payments below.</p>
+    {gateways.data?.filter(g => ['payfast','ozow'].includes(g.provider)).map(g => <form aria-label={`${g.provider === 'payfast' ? 'PayFast' : 'Ozow'} gateway settings`} className="border-t pt-3 flex flex-col gap-2" key={`${g.provider}:${g.updated_at}`} onSubmit={event => {
       event.preventDefault(); const form = new FormData(event.currentTarget);
       void save(() => checkoutService.saveGateway(g.provider, form.has('enabled'), form.has('maintenance'), String(form.get('notice') || '')), 'Gateway settings saved and reloaded.');
     }}>
       <strong>{g.provider === 'payfast' ? 'PayFast' : 'Ozow'}</strong>
-      <p>Configuration gate: {g.ready ? 'Available' : 'Not verified'} · Updated: {g.updated_at ? new Date(g.updated_at).toLocaleString() : 'Backend installation pending'}</p>
-      <label><input type="checkbox" name="enabled" defaultChecked={g.enabled} disabled={!g.ready || busy} /> Enabled for new payments</label>
+      <p>Technical configuration: {g.ready ? 'Present (does not authorise use)' : 'Not verified'} · Updated: {g.updated_at ? new Date(g.updated_at).toLocaleString() : 'Backend installation pending'}</p>
+      <label><input type="checkbox" name="enabled" checked={false} disabled /> Unavailable for new marketplace payments</label>
       <label><input type="checkbox" name="maintenance" defaultChecked={g.maintenance} disabled={busy} /> Maintenance</label>
       <label>Public notice <input className="input" name="notice" maxLength={500} defaultValue={g.notice} /></label>
       <button className="btn-outline" disabled={busy}>Save gateway settings</button>

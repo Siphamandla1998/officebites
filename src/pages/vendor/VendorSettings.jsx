@@ -12,6 +12,7 @@ import TextAreaField from "../../components/forms/TextAreaField";
 import FileUpload from "../../components/forms/FileUpload";
 import Spinner from "../../components/ui/Spinner";
 import VendorDeliveryOrigin from '../../components/features/VendorDeliveryOrigin';
+import ManualPaymentWorkspace from '../../components/features/ManualPaymentWorkspace';
 
 import { useAsync } from "../../hooks/useAsync";
 import { vendorService } from "../../services/vendorService";
@@ -415,6 +416,7 @@ export default function VendorSettings() {
           )}
         </button>
       </form>
+      <ManualPaymentWorkspace profiles />
     </div>
   );
 }
