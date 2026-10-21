@@ -8,6 +8,87 @@ test.beforeEach(async ({page}) => {
  });
 });
 const open=async(page,route)=>{await page.goto('/checks/browser-harness.html?route='+encodeURIComponent(route));await page.waitForFunction(()=>window.fixture?.authChanged);};
+
+test('checkout support action opens the existing contact form by keyboard on mobile and desktop',async({page})=>{
+ for(const width of [390,1440]){
+  await page.setViewportSize({width,height:900});
+  await page.addInitScript(()=>localStorage.setItem('ob_cart',JSON.stringify([{mealId:'synthetic-meal',vendorId:'fixture-vendor',vendorName:'Synthetic vendor',name:'Lunch',price:100,qty:1}])));
+  await open(page,'/checkout');
+  const support=page.getByRole('link',{name:'Contact Support',exact:true});
+  await support.scrollIntoViewIfNeeded();await support.focus();await page.keyboard.press('Enter');
+  await expect(page).toHaveURL(/\/help\/contact$/);
+  await expect(page.getByLabel('Subject',{exact:true})).toBeVisible();
+  await expect(page.getByLabel('Category',{exact:true})).toBeVisible();
+  await expect(page.getByLabel('Message',{exact:true})).toBeVisible();
+  await expect(page.getByRole('button',{name:'Submit request',exact:true})).toBeVisible();
+  expect(await page.evaluate(()=>fixture.creates)).toBe(0);
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+ }
+});
+
+test('direct support and refresh use the real SPA fallback and contact route',async({page})=>{
+ // Remove document substitution: this exercises index.html and the actual router,
+ // rather than making a harness response appear to prove the server fallback.
+ await page.unroute('http://127.0.0.1:5176/**');
+ const response=await page.goto('/support');expect(response.status()).toBe(200);
+ await expect(page).toHaveURL(/\/help\/contact$/);
+ await expect(page.getByLabel('Subject',{exact:true})).toBeVisible();
+ await page.reload();await expect(page.getByRole('button',{name:'Submit request',exact:true})).toBeVisible();
+ await page.goto('/support');await expect(page).toHaveURL(/\/help\/contact$/);
+ await page.reload();await expect(page.getByLabel('Message',{exact:true})).toBeVisible();
+});
+
+test('copy snapshot details and report payment remain separate from settlement at both widths',async({page})=>{
+ fs.mkdirSync('.officebites-local/manual-payment-visuals',{recursive:true});
+ await page.addInitScript(()=>Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:async text=>{window.copiedPayment=text;}}}));
+ for(const width of [390,1440]){
+  await page.setViewportSize({width,height:1000});await open(page,'/payment/A');
+  const copy=page.getByRole('button',{name:'Copy Payment Details',exact:true});
+  await copy.focus();await page.keyboard.press('Enter');await expect(page.getByText('Copied',{exact:true})).toBeVisible();
+  expect(await page.evaluate(()=>window.copiedPayment)).toContain('Account number: 1234567890');
+  expect(await page.evaluate(()=>window.copiedPayment)).toContain('Payment reference: OB-SYNTHETIC');
+  expect(await page.evaluate(()=>window.copiedPayment)).not.toContain('synthetic@bank');
+  await expect(page.getByText(/Reporting payment does not confirm receipt or authorise fulfilment/)).toBeVisible();
+  await page.getByRole('button',{name:"I've made payment"}).click();
+  await expect(page.getByText(/Payment reported. Awaiting independent verification/)).toBeVisible();
+  await expect(page.getByRole('button',{name:"I've made payment"})).toBeDisabled();
+  expect(await page.evaluate(()=>fixture.manualState)).toBe('payment_reported');
+  await expect(page.getByText('1234567890',{exact:true})).toBeVisible();
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+  await page.screenshot({path:`.officebites-local/manual-payment-visuals/payment-controls-${width}.png`,fullPage:true});
+ }
+});
+
+test('clipboard failure leaves original details and reporting available',async({page})=>{
+ await page.addInitScript(()=>Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:async()=>{throw new Error('Synthetic clipboard denied');}}}));
+ await open(page,'/payment/A');await page.getByRole('button',{name:'Copy Payment Details',exact:true}).click();
+ await expect(page.getByText('Copy unavailable. Select and copy the value shown.')).toBeVisible();
+ await expect(page.getByText('1234567890',{exact:true})).toBeVisible();
+ await expect(page.getByRole('button',{name:"I've made payment"})).toBeEnabled();
+ expect(await page.evaluate(()=>fixture.manualReports||0)).toBe(0);
+});
+
+test('PayShap copy contains the order ShapID without EFT-only account fields',async({page})=>{
+ await page.addInitScript(()=>{window.fixtureManualMethod='manual_payshap';Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:async text=>{window.copiedPayment=text;}}});});
+ await open(page,'/payment/A');await page.getByRole('button',{name:'Copy Payment Details',exact:true}).click();
+ const copied=await page.evaluate(()=>window.copiedPayment);
+ expect(copied).toContain('Registered ShapID: synthetic@bank');expect(copied).toContain('Payment reference: OB-SYNTHETIC');
+ expect(copied).not.toContain('1234567890');expect(copied).not.toContain('Branch code');
+});
+
+test('confirmed cancelled and disputed payment screens cannot report again',async({page})=>{
+ await page.addInitScript(()=>{window.fixtureManualState=new URLSearchParams(location.search).get('manualState');});
+ for(const state of ['paid','cancelled','disputed']){
+  await page.goto(`/checks/browser-harness.html?manualState=${state}&route=${encodeURIComponent('/payment/A')}`);
+  await page.waitForFunction(()=>window.fixture?.authChanged);
+  expect(await page.evaluate(()=>window.fixtureManualState)).toBe(state);
+  await expect(page.getByRole('button',{name:"I've made payment"})).toBeDisabled();
+  await expect(page.getByText('1234567890',{exact:true})).toBeVisible();
+  await expect(page.getByText(/The vendor handles refunds after checking their bank account/)).toBeVisible();
+  await expect(page.getByRole('link',{name:'Contact Support',exact:true})).toBeVisible();
+  expect(await page.evaluate(()=>fixture.manualReports||0)).toBe(0);
+ }
+});
 test('manual EFT instructions, reporting lock, and no gateway fallback at mobile and desktop',async({page})=>{
  fs.mkdirSync('.officebites-local/manual-payment-visuals',{recursive:true});
  for(const width of [390,1440]){

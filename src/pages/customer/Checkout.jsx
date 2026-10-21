@@ -297,7 +297,8 @@ export default function Checkout() {
               <p className="text-xs text-ink-muted">Unavailable methods cannot be used for this order. Choose an available vendor-direct option above.</p>
             </div>}
           </div>
-          <p className="text-sm">The vendor confirms receipt and handles refunds. OfficeBites coordinates support through <Link to="/support" className="underline">Support</Link>. Bank transfers are not automatically refunded.</p>
+          <p className="text-sm">The vendor confirms receipt and handles refunds. OfficeBites coordinates support. Bank transfers are not automatically refunded.</p>
+          <Link to="/help/contact" className="btn-outline w-full min-h-11">Contact Support</Link>
         </section>
       </div>
 
