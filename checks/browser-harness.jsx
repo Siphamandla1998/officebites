@@ -60,8 +60,15 @@ manualPaymentService.instructions=async()=>{if(window.fixtureManualAccessDenied)
 manualPaymentService.report=async()=>{fixture.manualReports=(fixture.manualReports||0)+1;await new Promise(resolve=>setTimeout(resolve,50));fixture.manualState='payment_reported';};
 manualPaymentService.workspace=async(testOnly=false)=>{
  fixture.workspaceScopes ||= [];fixture.workspaceScopes.push(testOnly);
+ if(fixture.deferManualWorkspace)await new Promise(resolve=>fixture.releaseManualWorkspace=resolve);
  if(fixture.failManualWorkspace)throw new Error('Synthetic manual workspace refresh failed');
- return window.fixtureManualWorkspace?.[String(testOnly)] || {settings:{eft_enabled:true,payshap_enabled:true,deadline_minutes:15,review_threshold:500},profiles:[],payments:[],receivables:[],events:[]};
+ return window.fixtureManualWorkspace?.[String(testOnly)] || {settings:fixture.manualSettings || {eft_enabled:true,payshap_enabled:true,deadline_minutes:15,review_threshold:500},profiles:[],payments:[],receivables:[],events:[]};
+};
+manualPaymentService.settings=async(eft,payshap,minutes,threshold,reason)=>{
+ fixture.settingsCalls ||= [];fixture.settingsCalls.push({eft,payshap,minutes:Number(minutes),threshold:Number(threshold),reason});
+ if(fixture.deferSettings)await new Promise(resolve=>fixture.releaseSettings=resolve);
+ if(fixture.failSettings)throw new Error('Synthetic save failed');
+ fixture.manualSettings={eft_enabled:eft,payshap_enabled:payshap,deadline_minutes:Number(minutes),review_threshold:Number(threshold)};
 };
 supabase.rpc=async (name,args={})=> {
  if(name==='get_vendor_delivery_origin')return {data:{current:fixture.origin || {mode:'CENTRAL',status:'not_requested'},history:fixture.originHistory || []},error:null};

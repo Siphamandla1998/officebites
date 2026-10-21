@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import ManualSettingsForm from './ManualSettingsForm';
 import { useAuth } from '../../context/AuthContext';
 import { useAsync } from '../../hooks/useAsync';
 import { useRequestGuard } from '../../hooks/useRequestGuard';
@@ -44,18 +45,7 @@ export default function ManualPaymentWorkspace({ admin = false, profiles = false
     {message && <p role="status">{message}</p>}
     {result.loading && <p>Loading payment workspace…</p>}
     {data && <>
-      {admin && data.settings && <form className="flex flex-col gap-3" onSubmit={event => {
-        event.preventDefault();const f = new FormData(event.currentTarget);
-        void run(() => service.settings(f.has('eft'),f.has('payshap'),f.get('minutes'),f.get('threshold'),f.get('reason')));
-      }}>
-        <h3 className="font-semibold">Manual checkout controls</h3>
-        <label><input type="checkbox" name="eft" defaultChecked={data.settings.eft_enabled} /> EFT available for approved profiles</label>
-        <label><input type="checkbox" name="payshap" defaultChecked={data.settings.payshap_enabled} /> PayShap available for approved profiles</label>
-        <label>Payment deadline (minutes)<input className="input" name="minutes" type="number" min="5" max="60" required defaultValue={data.settings.deadline_minutes} /></label>
-        <label>Admin review threshold (ZAR)<input className="input" name="threshold" type="number" min="1" step="0.01" required defaultValue={data.settings.review_threshold} /></label>
-        <label>Change reason<input className="input" name="reason" required minLength={10} maxLength={1000} /></label>
-        <button className="btn-outline" disabled={busy}>Save manual settings</button>
-      </form>}
+      {admin && data.settings && <ManualSettingsForm key={user?.id} settings={data.settings} loading={result.loading} loadError={result.error} reload={result.refetch} onBusyChange={setBusy} />}
       {profiles && !admin && <form className="flex flex-col gap-3" onSubmit={event => {
         event.preventDefault();const f = new FormData(event.currentTarget);
         void run(() => service.submit(user.vendorId,Object.fromEntries(Object.keys(fields).map(k => [k,String(f.get(k) || '')])),f.has('eft'),f.has('payshap')));
