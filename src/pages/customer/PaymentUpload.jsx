@@ -67,7 +67,7 @@ export default function PaymentUpload() {
         }}>Cancel unpaid order</button>}
       </>}
       <Link className="btn-outline" to={`/orders/${orderId}`}>Track order</Link>
-      <Link className="btn-outline min-h-11" to="/help/contact">Contact Support</Link>
+      <Link className="btn-outline min-h-11" to="/help/contact">Payment Help</Link>
       {!payment && !result.loading && <p>Historical gateway payments remain in your order history. Contact support for reconciliation. New gateway payments are unavailable.</p>}
     </main>
   </div>;

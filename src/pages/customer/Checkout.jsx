@@ -6,7 +6,7 @@ import { useAsync } from '../../hooks/useAsync';
 import { useOperationalRefresh } from '../../hooks/useOperationalRefresh';
 import { useLocation } from '../../context/LocationContext';
 import RequestError from '../../components/ui/RequestError';
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../../components/layout/Navbar";
 import TextField from "../../components/forms/TextField";
@@ -20,7 +20,7 @@ import { useDeliveryDate } from "../../hooks/useDeliveryDate";
 import { addGuestOrder, getGuestOrderAccess } from "../../utils/guest";
 import Spinner from "../../components/ui/Spinner";
 import EmptyState from "../../components/ui/EmptyState";
-import { FiChevronDown, FiShoppingBag, FiUser } from "react-icons/fi";
+import { FiShoppingBag, FiUser } from "react-icons/fi";
 
 export default function Checkout() {
   const { items, subtotal, clearCart } = useCart();
@@ -41,16 +41,12 @@ export default function Checkout() {
   const { data: deliveryConfig, error: deliveryError, loading: deliveryLoading, refetch: reloadDelivery } = useAsync(checkoutService.deliverySettings, [], null);
   const vendorId = items[0]?.vendorId;
   const gateways = useAsync(() => vendorId ? manualPaymentService.methods(vendorId) : Promise.resolve({}), [vendorId, user?.id], {});
-  const otherGateways = useAsync(checkoutService.gateways, [user?.id], []);
-  const [showOtherMethods, setShowOtherMethods] = useState(false);
-  const otherMethodsId = useId();
-  useOperationalRefresh(() => Promise.all([gateways.refetch({ silent: true }), otherGateways.refetch({ silent: true })]), 'checkout-gateways', 30000);
+  useOperationalRefresh(() => gateways.refetch({ silent: true }), 'checkout-gateways', 30000);
   const [paymentMethod, setPaymentMethod] = useState('manual_payshap');
   const requestKey = useRef(null);
   const singleVendor = new Set(items.map(item => item.vendorId)).size === 1;
-  const selectedMethod = gateways.data?.[paymentMethod] === true ? paymentMethod : gateways.data?.manual_payshap === true ? 'manual_payshap' : 'manual_eft';
+  const selectedMethod = gateways.data?.[paymentMethod] === true ? paymentMethod : gateways.data?.manual_payshap === true ? 'manual_payshap' : gateways.data?.manual_eft === true ? 'manual_eft' : null;
   const paymentAvailable = singleVendor && gateways.data?.[selectedMethod] === true;
-  const otherMethods = Array.isArray(otherGateways.data) ? otherGateways.data.filter(method => !['manual_payshap', 'manual_eft'].includes(method.provider)) : [];
   const geo = useLocation();
   const [quote, setQuote] = useState(null);
   const [quoting, setQuoting] = useState(false);
@@ -272,40 +268,30 @@ export default function Checkout() {
             </div>
           </div>
         ))}
-        <section className="card p-4 flex flex-col gap-3" aria-label="Payment methods">
-          <fieldset disabled={submitting || gateways.loading || !!gateways.error || !singleVendor} className="flex flex-col gap-2">
-            <legend className="font-semibold mb-3">Pay the vendor directly</legend>
-            {gateways.data?.manual_payshap === true && <label className="flex items-center gap-3 rounded-xl border border-line p-3 text-sm cursor-pointer has-[:checked]:border-nude-500 has-[:checked]:bg-nude-50"><input type="radio" name="method" value="manual_payshap" checked={selectedMethod === 'manual_payshap'} onChange={() => setPaymentMethod('manual_payshap')} className="accent-nude-700 shrink-0" /> PayShap — recommended where supported</label>}
-            {gateways.data?.manual_eft === true && <label className="flex items-center gap-3 rounded-xl border border-line p-3 text-sm cursor-pointer has-[:checked]:border-nude-500 has-[:checked]:bg-nude-50"><input type="radio" name="method" value="manual_eft" checked={selectedMethod === 'manual_eft'} onChange={() => setPaymentMethod('manual_eft')} className="accent-nude-700 shrink-0" /> Bank transfer (EFT)</label>}
-            {gateways.loading && <p className="text-sm text-ink-muted" role="status">Checking this vendor's payment methods…</p>}
-          </fieldset>
-          <button type="button" className="btn-outline w-full flex items-center justify-between gap-3" aria-expanded={showOtherMethods} aria-controls={otherMethodsId} onClick={() => setShowOtherMethods(value => !value)}>
-            Other Payment Methods
-            <FiChevronDown aria-hidden="true" className={`shrink-0 transition-transform ${showOtherMethods ? 'rotate-180' : ''}`} />
-          </button>
-          <div id={otherMethodsId} hidden={!showOtherMethods}>
-            {otherGateways.loading ? <p className="text-sm text-ink-muted" role="status">Checking other payment methods…</p> : otherGateways.error ? <div className="flex flex-col gap-2"><p className="text-sm" role="status">Other payment methods are unavailable right now.</p><button type="button" className="btn-outline" onClick={() => otherGateways.refetch()}>Retry other payment methods</button></div> : <div className="flex flex-col gap-2">
-              {otherMethods.map(method => {
-                const name = ({ payfast: 'PayFast', ozow: 'Ozow' })[method.provider] || 'Additional payment method';
-                const status = method.provider === 'payfast' ? 'Unavailable for vendor orders' : method.provider === 'ozow' ? 'Not available yet' : method.maintenance ? 'Temporarily unavailable' : 'Unavailable for this order';
-                return <label key={method.provider} className="flex items-start gap-3 rounded-xl border border-line bg-paper p-3">
-                  <input type="radio" name="method" value={method.provider} disabled checked={false} readOnly className="mt-1 shrink-0" />
-                  <span className="min-w-0 text-sm"><span className="block font-semibold text-ink-soft">{name}</span><span className="block text-ink-muted">{status}</span></span>
-                </label>;
-              })}
-              {otherMethods.length === 0 && <p className="text-sm text-ink-muted">No other payment methods are available for this order.</p>}
-              <p className="text-xs text-ink-muted">Unavailable methods cannot be used for this order. Choose an available vendor-direct option above.</p>
-            </div>}
-          </div>
-          <p className="text-sm">The vendor confirms receipt and handles refunds. OfficeBites coordinates support. Bank transfers are not automatically refunded.</p>
-          <Link to="/help/contact" className="btn-outline w-full min-h-11">Contact Support</Link>
+        <section className="flex flex-col gap-3" aria-label="Payment">
+          <h2 className="section-title">Payment</h2>
+          {gateways.loading ? <p role="status" className="text-sm text-ink-muted">Checking available payment options…</p> : gateways.error ? <RequestError error={gateways.error} onRetry={gateways.refetch} /> : singleVendor && paymentAvailable ? <fieldset disabled={submitting} className="flex flex-col gap-3">
+            <legend className="font-semibold mb-3">How would you like to pay?</legend>
+            {[
+              {value:'manual_payshap',title:'PayShap',description:'Pay directly from your banking app.'},
+              {value:'manual_eft',title:'EFT / Bank Transfer',description:"Transfer directly to the vendor's bank account."},
+            ].filter(method => gateways.data?.[method.value] === true).map(method => <label key={method.value} className="flex items-center gap-3 rounded-xl border border-line p-4 cursor-pointer has-[:checked]:border-nude-500 has-[:checked]:bg-nude-50 focus-within:ring-2 focus-within:ring-nude-500 focus-within:ring-offset-2">
+              <input type="radio" name="method" value={method.value} checked={selectedMethod === method.value} onChange={() => setPaymentMethod(method.value)} className="accent-nude-700 shrink-0" />
+              <span className="min-w-0"><span className="block font-semibold text-sm">{method.title}</span><span className="block text-sm text-ink-muted">{method.description}</span></span>
+            </label>)}
+          </fieldset> : singleVendor ? <div className="rounded-xl bg-nude-50 p-4 flex flex-col gap-2" role="status">
+            <p className="font-semibold">Online ordering is temporarily unavailable.</p>
+            <p className="text-sm text-ink-muted">Payment options are being prepared. Your cart remains saved.</p>
+            <Link to="/food/search" className="btn-outline min-h-11 mt-1">Back to menu</Link>
+          </div> : <p className="text-sm">Choose items from one vendor to see payment options.</p>}
+          {!gateways.loading && !gateways.error && paymentAvailable && <p className="text-sm text-ink-muted">Place your order to receive the vendor's payment details and unique reference. Pay in your banking app, then report payment and wait for independent vendor confirmation.</p>}
         </section>
+        <p className="text-xs text-ink-muted">Your payment goes directly to the vendor. OfficeBites does not automatically process payments or bank refunds. The vendor confirms receipt and handles refunds; OfficeBites can help coordinate disputes.</p>
       </div>
 
       <div className="fixed bottom-0 left-0 right-0 mx-auto w-full max-w-app bg-paper-raised border-t border-line px-4 pt-4 pb-[calc(1rem+env(safe-area-inset-bottom))] shadow-nav flex flex-col gap-3">
         {!singleVendor && <p role="alert">Please complete one vendor order at a time. Remove the other vendor’s items before checkout.</p>}
-        <RequestError error={gateways.error} onRetry={gateways.refetch} />
-        {!gateways.loading && !gateways.error && !paymentAvailable && <p role="status" className="text-sm">Payments are temporarily unavailable. Your cart is saved. Please try again later.</p>}
+
         <div className="flex justify-between text-sm">
           <span className="text-ink-muted">Total</span>
           <span className="font-bold text-ink text-base">{deliveryConfig?.enabled && !usableQuote ? 'Calculate delivery first' : formatCurrency(subtotal + (deliveryConfig?.enabled ? Number(usableQuote?.fee || 0) : 0))}</span>

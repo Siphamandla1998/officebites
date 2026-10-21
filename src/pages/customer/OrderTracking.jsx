@@ -1,7 +1,7 @@
 import { useAuth } from '../../context/AuthContext';
 import { useRequestGuard } from '../../hooks/useRequestGuard';
 import { useCallback, useEffect, useState } from "react";
-import { useParams, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { FiCheck, FiClock } from "react-icons/fi";
 import Navbar from "../../components/layout/Navbar";
 import StatusBadge from "../../components/ui/StatusBadge";
@@ -219,6 +219,7 @@ export default function OrderTracking() {
           refreshing={refreshing}
           refreshError={refreshError}
         />
+        <Link to="/help/contact" className="btn-outline min-h-11">Get Help with This Order</Link>
         <p className="text-xs text-ink-muted">Delivery date: {formatDate(order.deliveryDate)}</p>
         {order.subOrders.map((so) => (
           <SubOrderTimeline key={so.vendorId} subOrder={so} />

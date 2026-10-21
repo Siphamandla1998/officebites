@@ -9,23 +9,16 @@ test.beforeEach(async ({page}) => {
 });
 const open=async(page,route)=>{await page.goto('/checks/browser-harness.html?route='+encodeURIComponent(route));await page.waitForFunction(()=>window.fixture?.authChanged);};
 
-test('checkout support action opens the existing contact form by keyboard on mobile and desktop',async({page})=>{
+test('support is contextual to payment instructions and order tracking on mobile and desktop',async({page})=>{
  for(const width of [390,1440]){
-  await page.setViewportSize({width,height:900});
-  await page.addInitScript(()=>localStorage.setItem('ob_cart',JSON.stringify([{mealId:'synthetic-meal',vendorId:'fixture-vendor',vendorName:'Synthetic vendor',name:'Lunch',price:100,qty:1}])));
-  await open(page,'/checkout');
-  const support=page.getByRole('link',{name:'Contact Support',exact:true});
-  await support.scrollIntoViewIfNeeded();await support.focus();await page.keyboard.press('Enter');
+  await page.setViewportSize({width,height:900});await open(page,'/payment/A');
+  const help=page.getByRole('link',{name:'Payment Help',exact:true});await help.focus();await page.keyboard.press('Enter');
+  await expect(page).toHaveURL(/\/help\/contact$/);await expect(page.getByLabel('Message',{exact:true})).toBeVisible();
+  await open(page,'/orders/A');await page.getByRole('link',{name:'Get Help with This Order',exact:true}).click();
   await expect(page).toHaveURL(/\/help\/contact$/);
-  await expect(page.getByLabel('Subject',{exact:true})).toBeVisible();
-  await expect(page.getByLabel('Category',{exact:true})).toBeVisible();
-  await expect(page.getByLabel('Message',{exact:true})).toBeVisible();
-  await expect(page.getByRole('button',{name:'Submit request',exact:true})).toBeVisible();
   expect(await page.evaluate(()=>fixture.creates)).toBe(0);
-  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
  }
 });
-
 test('direct support and refresh use the real SPA fallback and contact route',async({page})=>{
  // Remove document substitution: this exercises index.html and the actual router,
  // rather than making a harness response appear to prove the server fallback.
@@ -85,7 +78,7 @@ test('confirmed cancelled and disputed payment screens cannot report again',asyn
   await expect(page.getByRole('button',{name:"I've made payment"})).toBeDisabled();
   await expect(page.getByText('1234567890',{exact:true})).toBeVisible();
   await expect(page.getByText(/The vendor handles refunds after checking their bank account/)).toBeVisible();
-  await expect(page.getByRole('link',{name:'Contact Support',exact:true})).toBeVisible();
+  await expect(page.getByRole('link',{name:'Payment Help',exact:true})).toBeVisible();
   expect(await page.evaluate(()=>fixture.manualReports||0)).toBe(0);
  }
 });
@@ -119,7 +112,7 @@ test('guest checkout supports only approved vendor methods',async({page})=>{
  await page.addInitScript(()=>{window.fixtureEftOnly=true;localStorage.setItem('ob_cart',JSON.stringify([{mealId:'synthetic-meal',vendorId:'fixture-vendor',vendorName:'Synthetic vendor',name:'Lunch',price:100,qty:1}]));});
  await page.setViewportSize({width:390,height:900});await open(page,'/checkout');
  await expect(page.getByRole('radio',{name:/PayShap/})).toHaveCount(0);
- await expect(page.getByRole('radio',{name:/Bank transfer/})).toBeChecked();
+ await expect(page.getByRole('radio',{name:/EFT/})).toBeChecked();
  await page.getByLabel('Your name').fill('Synthetic guest');await page.getByLabel('Mobile number').fill('0821234567');await page.getByLabel('Where should we deliver?').fill('Synthetic office');
  await page.getByRole('button',{name:'Place order',exact:true}).click();
  await expect(page).toHaveURL(/\/payment\/CREATED/);expect(await page.evaluate(()=>fixture.creates)).toBe(1);
@@ -132,39 +125,44 @@ test('unapproved profile blocks checkout and preserves cart',async({page})=>{
  expect(await page.evaluate(()=>fixture.creates)).toBe(0);
 });
 
-test('other payment methods expand with keyboard on mobile and desktop and never initiate providers',async({page})=>{
- fs.mkdirSync('.officebites-local/manual-payment-visuals',{recursive:true});
- await page.addInitScript(()=>{window.fixtureOzowAvailable=true;localStorage.setItem('ob_cart',JSON.stringify([{mealId:'synthetic-meal',vendorId:'fixture-vendor',vendorName:'Synthetic vendor',name:'Lunch',price:70,qty:1}]));});
+for(const [name,methods,selected] of [
+ ['PayShap only',{manual_payshap:true,manual_eft:false},'PayShap'],
+ ['EFT only',{manual_payshap:false,manual_eft:true},'EFT'],
+ ['both eligible',{manual_payshap:true,manual_eft:true},'PayShap'],
+ ['neither eligible',{manual_payshap:false,manual_eft:false},null],
+])test(`payment hierarchy: ${name}`,async({page})=>{
+ fs.mkdirSync('.officebites-local/payment-hierarchy',{recursive:true});
+ await page.addInitScript(value=>{window.fixtureManualMethods=value;window.fixtureOzowAvailable=true;localStorage.setItem('ob_cart',JSON.stringify([{mealId:'synthetic-meal',vendorId:'fixture-vendor',vendorName:'Synthetic vendor',name:'Lunch',price:70,qty:1}]));},methods);
  for(const width of [390,1440]){
   await page.setViewportSize({width,height:1000});await open(page,'/checkout');
-  const toggle=page.getByRole('button',{name:'Other Payment Methods',exact:true});
-  await expect(toggle).toHaveAttribute('aria-expanded','false');
-  await expect(page.getByRole('radio',{name:/PayFast/})).toHaveCount(0);
-  await toggle.focus();await page.keyboard.press('Enter');
-  await expect(toggle).toHaveAttribute('aria-expanded','true');
-  const payfast=page.getByRole('radio',{name:/PayFast/});const ozow=page.getByRole('radio',{name:/Ozow/});
-  await expect(payfast).toBeDisabled();await expect(ozow).toBeDisabled();
-  await expect(page.getByText('Unavailable for vendor orders',{exact:true})).toBeVisible();
-  await expect(page.getByText('Not available yet',{exact:true})).toBeVisible();
-  // Even technically enabled fixture gateway flags cannot authorise marketplace use.
-  await payfast.evaluate(el=>el.click());await ozow.evaluate(el=>el.click());
-  await expect(page.getByRole('radio',{name:/PayShap/})).toBeChecked();
-  expect(await page.evaluate(()=>fixture.redirects)).toEqual([]);
-  expect(await page.evaluate(()=>fixture.ozowCalls||0)).toBe(0);
+  await expect(page.getByRole('heading',{name:'Payment',exact:true})).toBeVisible();
+  await expect(page.getByRole('button',{name:'Other Payment Methods',exact:true})).toHaveCount(0);
+  await expect(page.getByRole('radio',{name:/PayFast|Ozow/})).toHaveCount(0);
+  await expect(page.getByRole('link',{name:/Contact Support|Payment Help/})).toHaveCount(0);
+  if(selected){
+   await expect(page.getByRole('radio',{name:new RegExp(selected)})).toBeChecked();
+   await expect(page.getByRole('radio')).toHaveCount(Object.values(methods).filter(Boolean).length);
+   await expect(page.getByRole('button',{name:'Place order',exact:true})).toBeEnabled();
+  }else{
+   await expect(page.getByText('Online ordering is temporarily unavailable.',{exact:true})).toBeVisible();
+   await expect(page.getByRole('radio')).toHaveCount(0);
+   await expect(page.getByRole('button',{name:'Place order',exact:true})).toBeDisabled();
+   await expect(page.getByRole('link',{name:'Back to menu',exact:true})).toHaveAttribute('href','/food/search');
+  }
+  expect(await page.evaluate(()=>fixture.creates)).toBe(0);expect(await page.evaluate(()=>fixture.redirects)).toEqual([]);
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
-  await page.getByRole('region',{name:'Payment methods',exact:true}).scrollIntoViewIfNeeded();
-  await page.screenshot({path:`.officebites-local/manual-payment-visuals/checkout-methods-${width}.png`});
-  await toggle.focus();await page.keyboard.press('Space');
-  await expect(toggle).toHaveAttribute('aria-expanded','false');
-  await expect(page.getByRole('radio',{name:/Ozow/})).toHaveCount(0);
-  await expect(page.getByRole('button',{name:'Other Payment Methods',exact:true})).toBeFocused();
+  await page.getByRole('region',{name:'Payment',exact:true}).evaluate(el=>window.scrollTo(0,Math.max(0,el.getBoundingClientRect().top+window.scrollY-130)));
+  await page.screenshot({path:`.officebites-local/payment-hierarchy/${name.replaceAll(' ','-')}-${width}.png`});
+  if(!selected){
+   await page.getByRole('link',{name:'Back to menu',exact:true}).click();await expect(page).toHaveURL(/\/food\/search$/);
+   expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('ob_cart')).length)).toBe(1);
+  }
  }
 });
-
 test('permitted primary methods select with keyboard and order creation retains EFT',async({page})=>{
  await page.addInitScript(()=>localStorage.setItem('ob_cart',JSON.stringify([{mealId:'synthetic-meal',vendorId:'fixture-vendor',vendorName:'Synthetic vendor',name:'Lunch',price:70,qty:1}])));
  await open(page,'/checkout');
- const payshap=page.getByRole('radio',{name:/PayShap/});const eft=page.getByRole('radio',{name:/Bank transfer/});
+ const payshap=page.getByRole('radio',{name:/PayShap/});const eft=page.getByRole('radio',{name:/EFT/});
  await expect(payshap).toBeChecked();await payshap.focus();await page.keyboard.press('ArrowDown');await expect(eft).toBeChecked();
  await page.getByLabel('Your name').fill('Synthetic guest');await page.getByLabel('Mobile number').fill('0821234567');await page.getByLabel('Where should we deliver?').fill('Synthetic office');
  await page.getByRole('button',{name:'Place order',exact:true}).click();
@@ -176,23 +174,29 @@ test('permitted primary methods select with keyboard and order creation retains 
 test('backend availability refresh removes disabled primary choices without provider fallback',async({page})=>{
  await page.addInitScript(()=>{window.fixtureManualMethodsByVendor={'fixture-vendor':{manual_eft:false,manual_payshap:true}};localStorage.setItem('ob_cart',JSON.stringify([{mealId:'synthetic-meal',vendorId:'fixture-vendor',vendorName:'Synthetic vendor',name:'Lunch',price:70,qty:1}]));});
  await open(page,'/checkout');
- await expect(page.getByRole('radio',{name:/PayShap/})).toBeChecked();await expect(page.getByRole('radio',{name:/Bank transfer/})).toHaveCount(0);
+ await expect(page.getByRole('radio',{name:/PayShap/})).toBeChecked();await expect(page.getByRole('radio',{name:/EFT/})).toHaveCount(0);
  await page.evaluate(()=>{window.fixtureManualMethodsByVendor['fixture-vendor']={manual_eft:false,manual_payshap:false};window.dispatchEvent(new Event('focus'));});
  await expect(page.getByRole('radio',{name:/PayShap/})).toHaveCount(0);
  await expect(page.getByRole('button',{name:'Place order',exact:true})).toBeDisabled();
  expect(await page.evaluate(()=>fixture.creates)).toBe(0);
- await page.getByRole('button',{name:'Other Payment Methods',exact:true}).click();
- await expect(page.getByRole('radio',{name:/PayFast/})).toBeDisabled();await expect(page.getByRole('radio',{name:/Ozow/})).toBeDisabled();
+ await expect(page.getByRole('button',{name:'Other Payment Methods',exact:true})).toHaveCount(0);
 });
 
-test('other-method settings failure shows a safe retry message without blocking vendor-direct choices',async({page})=>{
- await page.addInitScript(()=>{window.fixtureMissingGatewayRpc=true;localStorage.setItem('ob_cart',JSON.stringify([{mealId:'synthetic-meal',vendorId:'fixture-vendor',vendorName:'Synthetic vendor',name:'Lunch',price:70,qty:1}]));});
- await open(page,'/checkout');await page.getByRole('button',{name:'Other Payment Methods',exact:true}).click();
- await expect(page.getByText('Other payment methods are unavailable right now.',{exact:true})).toBeVisible();
- await expect(page.getByRole('radio',{name:/PayShap/})).toBeEnabled();
- await expect(page.getByRole('radio',{name:/PayFast|Ozow/})).toHaveCount(0);
- await page.evaluate(()=>{window.fixtureMissingGatewayRpc=false;});await page.getByRole('button',{name:'Retry other payment methods'}).click();
- await expect(page.getByRole('radio',{name:/PayFast/})).toBeDisabled();
+test('method loading and error stay distinct from confirmed unavailability and retry safely',async({page})=>{
+ await page.addInitScript(()=>{window.fixtureDeferManualMethods=true;window.fixtureManualMethods={manual_eft:true};localStorage.setItem('ob_cart',JSON.stringify([{mealId:'synthetic-meal',vendorId:'fixture-vendor',vendorName:'Synthetic vendor',name:'Lunch',price:70,qty:1}]));});
+ await open(page,'/checkout');await expect(page.getByText('Checking available payment options…',{exact:true})).toBeVisible();
+ await expect(page.getByText('Online ordering is temporarily unavailable.',{exact:true})).toHaveCount(0);
+ await expect(page.getByRole('button',{name:'Place order',exact:true})).toBeDisabled();
+ await page.evaluate(()=>{window.fixtureDeferManualMethods=false;fixture.resolveManualMethods();});
+ await expect(page.getByRole('radio',{name:/EFT/})).toBeChecked();
+ await page.evaluate(()=>{window.fixtureManualMethodsError=true;window.dispatchEvent(new Event('focus'));});
+ await expect(page.getByText('Synthetic method refresh failed',{exact:true})).toBeVisible();
+ await expect(page.getByRole('radio')).toHaveCount(0);
+ await expect(page.getByText('Online ordering is temporarily unavailable.',{exact:true})).toHaveCount(0);
+ await expect(page.getByRole('button',{name:'Place order',exact:true})).toBeDisabled();
+ await page.evaluate(()=>{window.fixtureManualMethodsError=false;});await page.getByRole('button',{name:'Retry',exact:true}).click();
+ await expect(page.getByRole('radio',{name:/EFT/})).toBeChecked();
+ expect(await page.evaluate(()=>fixture.creates)).toBe(0);
 });
 test('synthetic statements are opt-in, labelled, and blocked after a failed refresh',async({page})=>{
  await page.addInitScript(()=>{
