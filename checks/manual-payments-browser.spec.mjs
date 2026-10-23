@@ -1,5 +1,103 @@
 import { test, expect } from '@playwright/test';
 import fs from 'node:fs';
+
+test('absent release RPCs fail closed in customer vendor and admin screens',async({page})=>{
+ await page.addInitScript(()=>{
+  window.fixtureMissingReleaseRpcs=true;window.fixtureManualUnavailable=true;
+  localStorage.setItem('ob_cart',JSON.stringify([{mealId:'synthetic-meal',vendorId:'fixture-vendor',vendorName:'Synthetic vendor',name:'Lunch',price:70,qty:1}]));
+ });
+ await open(page,'/checkout');
+ await expect(page.getByRole('button',{name:'Place order',exact:true})).toBeDisabled();
+ await expect(page.getByRole('radio',{name:/EFT|PayShap/})).toHaveCount(0);
+ for(const role of ['vendor','admin']){
+  await page.evaluate(async role=>{await fixture.setUser({id:'SYNTHETIC-'+role,name:'Synthetic '+role,role,vendorId:role==='vendor'?'fixture-vendor':undefined});fixture.navigate(role==='vendor'?'/vendor/orders':'/admin');},role);
+  await page.getByRole('button',{name:'Create Order / Assisted Orders',exact:true}).click();
+  await expect(page.getByText('Assisted ordering is locked. No payment or booking is activated.',{exact:true})).toBeVisible();
+  await expect(page.getByRole('button',{name:'Create assisted order',exact:true})).toBeDisabled();
+ }
+ expect(await page.evaluate(()=>fixture.creates)).toBe(0);
+});
+
+test('prepaid cash receipt has no bank transfer or payment reporting controls on mobile',async({page})=>{
+ await page.setViewportSize({width:390,height:844});
+ await page.addInitScript(()=>{window.fixtureManualMethod='cash';window.fixtureManualState='paid';});
+ await open(page,'/payment/A');
+ await expect(page.getByRole('heading',{name:'Cash Received',exact:true})).toBeVisible();
+ await expect(page.getByRole('button',{name:"I've made payment"})).toHaveCount(0);
+ await expect(page.getByText('In your banking app,',{exact:false})).toHaveCount(0);
+ await expect(page.getByRole('link',{name:'Track order',exact:true})).toBeVisible();
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+});
+
+const collectionFixture=()=>({enabled:true,revision:4,fee:0,hub:'Eduvos, Umhlanga',windows:[{id:'synthetic-window',revision:2,destinationId:'synthetic-pickup',destinationLabel:'Synthetic approved Eduvos pickup',startsAt:new Date(Date.now()+7*86400000).toISOString(),endsAt:new Date(Date.now()+7*86400000+3600000).toISOString(),remaining:1}]});
+test('free collection chooses an approved day/window, preserves EFT and prevents repeated submission',async({page})=>{
+ for(const width of [390,1440]){
+  await page.setViewportSize({width,height:1000});
+  await page.addInitScript(options=>{window.fixtureCollection=options;localStorage.setItem('ob_cart',JSON.stringify([{mealId:'synthetic-meal',vendorId:'fixture-vendor',vendorName:'Synthetic vendor',name:'Lunch',price:70,qty:1}]));},collectionFixture());
+  await open(page,'/checkout');
+  await expect(page.getByRole('button',{name:'Place order',exact:true})).toBeDisabled();
+  await expect(page.getByLabel('Where should we deliver?')).toHaveCount(0);
+  await expect(page.getByRole('radio',{name:/PayShap/})).toHaveCount(0);
+  await expect(page.getByText(/Collection at the approved Eduvos pickup point is/)).toContainText('0');
+  await page.getByLabel('Collection day').selectOption({index:1});
+  const window=page.getByLabel('Collection window');await window.focus();await page.keyboard.press('ArrowDown');await page.keyboard.press('Enter');
+  await expect(window).not.toHaveValue('');
+  await page.getByLabel('Your name').fill('Synthetic collection guest');await page.getByLabel('Mobile number').fill('0821234567');
+  fs.mkdirSync('.officebites-local/atomic-collection-visuals',{recursive:true});
+  await page.screenshot({path:`.officebites-local/atomic-collection-visuals/checkout-${width}.png`,fullPage:true});
+  await page.evaluate(()=>fixture.deferCreate=true);
+  await page.getByRole('button',{name:'Place order',exact:true}).click();await expect(page.getByLabel('Collection day')).toBeDisabled();
+  expect(await page.evaluate(()=>fixture.creates)).toBe(1);
+  expect(await page.evaluate(()=>fixture.createdCollection)).toMatchObject({id:'synthetic-window',policyRevision:4,revision:2});
+  expect(await page.evaluate(()=>fixture.createdPaymentMethod)).toBe('manual_eft');
+  await page.evaluate(()=>fixture.resolveCreate());await expect(page).toHaveURL(/\/payment\/CREATED/);
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+ }
+});
+test('empty collection availability and transport errors cannot fall back to delivery checkout',async({page})=>{
+ await page.addInitScript(()=>{window.fixtureCollection={enabled:true,revision:1,windows:[]};localStorage.setItem('ob_cart',JSON.stringify([{mealId:'synthetic-meal',vendorId:'fixture-vendor',vendorName:'Synthetic vendor',name:'Lunch',price:70,qty:1}]));});
+ await open(page,'/checkout');await expect(page.getByText(/No collection windows are available/)).toBeVisible();
+ await expect(page.getByRole('button',{name:'Place order',exact:true})).toBeDisabled();expect(await page.evaluate(()=>fixture.creates)).toBe(0);
+ await page.evaluate(()=>{window.fixtureCollectionError=true;window.dispatchEvent(new Event('focus'));});
+ await expect(page.getByText('Synthetic collection unavailable',{exact:true})).toBeVisible();
+ await expect(page.getByRole('button',{name:'Place order',exact:true})).toBeDisabled();
+ expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('ob_cart')).length)).toBe(1);
+});
+test('protected collection snapshot explains expiry without implying payment verification',async({page})=>{
+ await page.addInitScript(w=>{window.fixturePaymentCollection={...w,state:'expired'};},collectionFixture().windows[0]);
+ await open(page,'/payment/A');const booking=page.getByRole('region',{name:'Booked collection'});
+ await expect(booking).toContainText('Synthetic approved Eduvos pickup');await expect(booking).toContainText('reservation does not confirm payment');
+ await expect(booking.getByRole('alert')).toContainText('Do not pay again');
+});
+test('collection admin saves approved points with revision and reason without payment activation',async({page})=>{
+ await page.addInitScript(()=>window.fixtureCollectionAdmin={policy:{enabled:false,revision:1},windows:[],destinations:[]});
+ await open(page,'/help/contact');await page.evaluate(async()=>{await fixture.setUser({id:'synthetic-collection-admin',role:'admin',name:'Synthetic admin'});fixture.navigate('/admin/payments');});
+ const section=page.getByRole('region',{name:'Collection administration'});
+ await section.getByLabel('Configuration type').selectOption('destination');
+ await section.getByLabel('Approved Eduvos pickup point',{exact:true}).fill('Synthetic approved pickup');
+ await section.getByLabel('Operator approved this pickup point').check();
+ await section.getByLabel('Approval evidence and reason').fill('Synthetic operator pickup approval evidence');
+ await section.getByRole('button',{name:'Save collection configuration'}).click();
+ await expect(section.getByText('Saved and reloaded collection settings.',{exact:true})).toBeVisible();
+ await expect(section.getByLabel('Approval evidence and reason')).toHaveValue('');
+ expect(await page.evaluate(()=>fixture.collectionConfigCalls)).toBe(1);
+ expect(await page.evaluate(()=>fixture.collectionConfigChange)).toMatchObject({p_revision:1,p_change:{kind:'destination',approved:true}});
+ expect(await page.evaluate(()=>fixture.creates)).toBe(0);
+});
+test('collection admin retains its request key and expected revision after an uncertain response',async({page})=>{
+ await page.addInitScript(()=>{window.fixtureCollectionAdmin={policy:{enabled:false,revision:1},windows:[],destinations:[]};window.fixtureCollectionResponseLost=true;});
+ await open(page,'/help/contact');await page.evaluate(async()=>{await fixture.setUser({id:'synthetic-collection-admin',role:'admin',name:'Synthetic admin'});fixture.navigate('/admin/payments');});
+ const section=page.getByRole('region',{name:'Collection administration'});
+ await section.getByLabel('Configuration type').selectOption('destination');await section.getByLabel('Approved Eduvos pickup point',{exact:true}).fill('Synthetic idempotent pickup');
+ await section.getByLabel('Approval evidence and reason').fill('Synthetic uncertain response reconciliation evidence');
+ const save=section.getByRole('button',{name:'Save collection configuration'});await save.click();
+ await expect(section.getByText(/Save was not confirmed/)).toBeVisible();await expect(save).toBeDisabled();
+ const original=await page.evaluate(()=>fixture.collectionConfigChange);
+ await section.getByRole('button',{name:'Reload collection settings'}).click();await expect(save).toBeEnabled();await save.click();
+ await expect(section.getByText('Saved and reloaded collection settings.',{exact:true})).toBeVisible();
+ expect(await page.evaluate(()=>fixture.collectionConfigChange)).toMatchObject({p_request_id:original.p_request_id,p_revision:1});
+ expect(await page.evaluate(()=>Object.keys(fixture.collectionRequestResults).length)).toBe(1);
+});
 test.beforeEach(async ({page}) => {
  await page.route('**/*.supabase.co/**',route=>route.abort());
  await page.route('http://127.0.0.1:5176/**',async route=>{
@@ -128,7 +226,7 @@ test('unapproved profile blocks checkout and preserves cart',async({page})=>{
 for(const [name,methods,selected] of [
  ['PayShap only',{manual_payshap:true,manual_eft:false},'PayShap'],
  ['EFT only',{manual_payshap:false,manual_eft:true},'EFT'],
- ['both eligible',{manual_payshap:true,manual_eft:true},'PayShap'],
+ ['both eligible',{manual_payshap:true,manual_eft:true},'EFT'],
  ['neither eligible',{manual_payshap:false,manual_eft:false},null],
 ])test(`payment hierarchy: ${name}`,async({page})=>{
  fs.mkdirSync('.officebites-local/payment-hierarchy',{recursive:true});
@@ -163,7 +261,8 @@ test('permitted primary methods select with keyboard and order creation retains 
  await page.addInitScript(()=>localStorage.setItem('ob_cart',JSON.stringify([{mealId:'synthetic-meal',vendorId:'fixture-vendor',vendorName:'Synthetic vendor',name:'Lunch',price:70,qty:1}])));
  await open(page,'/checkout');
  const payshap=page.getByRole('radio',{name:/PayShap/});const eft=page.getByRole('radio',{name:/EFT/});
- await expect(payshap).toBeChecked();await payshap.focus();await page.keyboard.press('ArrowDown');await expect(eft).toBeChecked();
+ await expect(eft).toBeChecked();await eft.focus();await page.keyboard.press('ArrowDown');await expect(payshap).toBeChecked();
+ await page.keyboard.press('ArrowUp');await expect(eft).toBeChecked();
  await page.getByLabel('Your name').fill('Synthetic guest');await page.getByLabel('Mobile number').fill('0821234567');await page.getByLabel('Where should we deliver?').fill('Synthetic office');
  await page.getByRole('button',{name:'Place order',exact:true}).click();
  await expect(page).toHaveURL(/\/payment\/CREATED/);

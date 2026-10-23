@@ -1,0 +1,37 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+import { RELEASE, validateCheckpoint } from './provision-core.mjs';
+import { restorationSteps, authRecoveryDecision } from './recovery.mjs';
+const read = file => JSON.parse(fs.readFileSync('checks/uat/' + file, 'utf8'));
+const historical = read('fixtures/recovery-baseline.json');
+const current = read('fixtures/recovery-baseline-20261022.json');
+let count = 0;
+const check = fn => { fn(); count++; };
+check(() => assert.equal(current.active_account.definition, historical.active_account.definition));
+check(() => assert.equal(current.active_account.owner, historical.active_account.owner));
+check(() => assert.equal(current.active_account.acl, historical.active_account.acl));
+const grants = x => [...x].sort((a, b) => a.grantee.localeCompare(b.grantee));
+check(() => assert.deepEqual(grants(current.active_account.grants), grants(historical.active_account.grants)));
+check(() => assert.deepEqual(current.rest_role_settings, historical.rest_role_settings));
+check(() => assert.deepEqual(current.rest_database_settings, historical.rest_database_settings));
+check(() => assert.equal(current.methods.length, 4));
+check(() => assert.ok(current.methods.every(m => !m.enabled)));
+check(() => assert.equal(current.manual_settings[0].deadline_minutes, 15));
+check(() => assert.equal(Number(current.manual_settings[0].review_threshold), 500));
+check(() => assert.equal(current.rest_effective_service_configuration.verified, false));
+check(() => assert.equal(current.auth_email_configuration.safe_notification_suppression_baseline, false));
+check(() => assert.equal(current.releaseCommit, RELEASE.releaseCommit));
+check(() => assert.equal(current.preview, RELEASE.preview));
+check(() => assert.deepEqual(restorationSteps(current).map(x => x.name), restorationSteps(historical).map(x => x.name)));
+check(() => assert.equal(restorationSteps(current).find(x => x.name === 'definition').sql, historical.active_account.definition));
+for (const changes of [{ project: 'production' }, { uat_installed: true }, { latest_migration: '20990101000000' }, { required_migrations: [] }, { preview: 'production' }, { releaseCommit: 'other' }]) {
+  check(() => assert.throws(() => restorationSteps({ ...current, ...changes })));
+}
+const checkpoint = read('fixtures/readiness-checkpoint-20261022.json');
+check(() => assert.throws(() => validateCheckpoint(checkpoint, Date.parse(checkpoint.checkedAt))));
+check(() => assert.equal(checkpoint.provisioningApproved, false));
+check(() => assert.throws(() => validateCheckpoint(read('checkpoint.example.json'))));
+check(() => assert.equal(authRecoveryDecision(current.auth_email_configuration, { enabled: true, uri: 'pg-functions://postgres/private/uat_send_email' }).action, 'retain-suppression'));
+check(() => assert.throws(() => authRecoveryDecision(current.auth_email_configuration, { enabled: false })));
+check(() => assert.equal(authRecoveryDecision({ previous_hook_known: true, previous_hook: { enabled: false } }, { enabled: true, uri: 'pg-functions://postgres/private/uat_send_email' }).action, 'retain-suppression'));
+console.log(`${count} refreshed preparation/checkpoint assertions passed; no network or hosted writes.`);

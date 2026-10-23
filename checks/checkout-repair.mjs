@@ -42,6 +42,11 @@ const request={customerId:null,customerName:'Synthetic guest',guestContact:'0821
 await context.service.createOrder(request);assert.equal(calls[0].name,'create_manual_order');checks++;
 assert.deepEqual(Object.keys(calls[0].args).sort(),['p_customer_id','p_delivery_date','p_delivery_location','p_guest_contact','p_guest_email','p_guest_name','p_items','p_method','p_quote_id','p_request_id']);checks++;
 assert.equal(JSON.stringify(calls[0].args.p_items),'[{"mealId":"synthetic-meal","qty":1}]');checks++;
+await context.service.createOrder({...request,paymentMethod:'manual_eft',requestId:'synthetic-request',collection:{id:'synthetic-window',destinationId:'synthetic-point',policyRevision:4,revision:2,fee:999}});
+assert.equal(calls.at(-1).name,'create_collection_order');checks++;
+assert.deepEqual(Object.keys(calls.at(-1).args).sort(),['p_customer_id','p_destination_id','p_guest_contact','p_guest_name','p_items','p_method','p_policy_revision','p_request_id','p_window_id','p_window_revision']);checks++;
+assert.equal(calls.at(-1).args.p_window_id,'synthetic-window');checks++;
+assert.equal(calls.at(-1).args.p_policy_revision,4);checks++;
 uid='member';await assert.rejects(()=>context.service.createOrder(request),/session/i);checks++;
 const count=calls.length;identityError=new Error('expired');await assert.rejects(()=>context.service.createOrder({...request,customerId:'member'}),/session/i);checks++;assert.equal(calls.length,count);checks++;
 identityError=null;await context.service.createOrder({...request,customerId:'member'});assert.equal(calls.at(-1).args.p_guest_name,null);checks++;

@@ -1,4 +1,5 @@
 import RequestError from '../../components/ui/RequestError';
+import AssistedOrders from '../../components/features/AssistedOrders';
 import { Link } from "react-router-dom";
 import {
   FiUsers,
@@ -51,6 +52,7 @@ export default function AdminOverview() {
         </p>
       </div>
 
+      <AssistedOrders />
       {loading ? (
         <div className="skeleton h-24" />
       ) : (

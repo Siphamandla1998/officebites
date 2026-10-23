@@ -180,6 +180,7 @@ export const orderService = {
     quoteId,
     paymentMethod,
     requestId,
+    collection,
   }) {
     if (!Array.isArray(cartItems) || cartItems.length === 0) {
       throw {
@@ -204,8 +205,13 @@ export const orderService = {
     }
 
     const { data, error } = await supabase.rpc(
-      "create_manual_order",
-      {
+      collection ? 'create_collection_order' : "create_manual_order",
+      collection ? {
+        p_customer_id:customerId||null,p_guest_name:customerId?null:customerName,
+        p_guest_contact:customerId?null:guestContact,p_items:rpcItems,p_method:paymentMethod,p_request_id:requestId,
+        p_window_id:collection.id,p_destination_id:collection.destinationId,
+        p_policy_revision:collection.policyRevision,p_window_revision:collection.revision,
+      } : {
         p_customer_id: customerId || null,
         p_guest_name: customerId ? null : customerName,
         p_guest_contact: customerId ? null : guestContact,

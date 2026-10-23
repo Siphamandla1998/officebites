@@ -38,7 +38,7 @@ supabase.auth.getSession=async()=>({data:{session:fixture.user?{user:fixture.use
 const order=id=>({id,ticketNumber:`OB-${id}`,customerId:fixture.user?.id || null,status:'pending_payment',total:100,deliveryDate:'2026-10-12',subOrders:[{id:`sub-${id}`,vendorId:'fixture-vendor',vendorName:'Synthetic vendor',status:'pending_payment',paymentStatus:'unpaid',items:[]}],createdAt:'2026-10-08T10:00:00Z',...window.fixtureOrderOverride});
 orderService.getOrderById=async id=>fixture.deferOrder?new Promise(resolve=>fixture.pending.push({id,resolve})):order(id);
 fixture.resolveOrder=(index=0)=>{const pending=fixture.pending.splice(index,1)[0];pending.resolve(order(pending.id));};
-orderService.createOrder=async input=>{fixture.creates++;fixture.createdPaymentMethod=input.paymentMethod;const created=order('CREATED');return fixture.deferCreate?new Promise(resolve=>fixture.resolveCreate=()=>resolve(created)):created;};
+orderService.createOrder=async input=>{fixture.creates++;fixture.createdPaymentMethod=input.paymentMethod;fixture.createdCollection=input.collection;const created=order('CREATED');return fixture.deferCreate?new Promise(resolve=>fixture.resolveCreate=()=>resolve(created)):created;};
 orderService.getOrdersByCustomer=async()=>[];
 orderService.trackGuestOrder=async()=>order('TRACKED');
 supportService.getTickets=async()=>[];
@@ -56,7 +56,7 @@ paymentService.initiateOzowPayment=async()=>{fixture.ozowCalls=(fixture.ozowCall
 paymentService.cancelUnpaidOrder=async()=>{fixture.cancels=(fixture.cancels||0)+1;if(fixture.cancelFail)throw new Error('A payment may be processing');return {status:'cancelled'};};
 manualPaymentService.methods=async vendorId=>{if(window.fixtureManualMethodsError)throw new Error('Synthetic method refresh failed');if(window.fixtureDeferManualMethods)return new Promise(resolve=>{fixture.resolveManualMethods=()=>resolve(window.fixtureManualMethods||{});});return window.fixtureManualMethodsByVendor?.[vendorId] ?? window.fixtureManualMethods ?? (window.fixtureManualUnavailable?{}:{manual_eft:true,manual_payshap:!window.fixtureEftOnly});};
 const manual = () => ({orderId:'A',method:window.fixtureManualMethod || 'manual_eft',destination:{accountHolder:'Synthetic Vendor Ltd',bank:'Synthetic Bank',accountNumber:'1234567890',accountType:'Business',branchCode:'123456',shapId:'synthetic@bank'},vendor:'Synthetic vendor',reference:'OB-SYNTHETIC',amount:100,deadline:new Date(Date.now()+15*60000).toISOString(),state:fixture.manualState || window.fixtureManualState || 'awaiting_payment'});
-manualPaymentService.instructions=async()=>{if(window.fixtureManualAccessDenied)throw new Error('Payment access unavailable');return manual();};
+ manualPaymentService.instructions=async()=>{if(window.fixtureManualAccessDenied)throw new Error('Payment access unavailable');return {...manual(),collection:window.fixturePaymentCollection};};
 manualPaymentService.report=async()=>{fixture.manualReports=(fixture.manualReports||0)+1;await new Promise(resolve=>setTimeout(resolve,50));fixture.manualState='payment_reported';};
 manualPaymentService.workspace=async(testOnly=false)=>{
  fixture.workspaceScopes ||= [];fixture.workspaceScopes.push(testOnly);
@@ -79,6 +79,21 @@ manualPaymentService.settings=async(eft,payshap,minutes,threshold,reason)=>{
  fixture.manualSettings={eft_enabled:eft,payshap_enabled:payshap,deadline_minutes:Number(minutes),review_threshold:Number(threshold)};
 };
 supabase.rpc=async (name,args={})=> {
+  if(window.fixtureMissingReleaseRpcs&&['get_collection_options','admin_collection_workspace','get_order_assistance_options','assisted_order_workspace','cash_custody_workspace'].includes(name))return {data:null,error:{code:'PGRST202',message:'Synthetic missing release RPC'}};
+  if(name==='cash_custody_workspace')return {data:{adminCashEnabled:false,receipts:[],handovers:[]},error:null};
+  if(name==='get_order_assistance_options')return {data:{requestsEnabled:false,dates:[]},error:null};
+  if(name==='assisted_order_workspace')return {data:{enabled:false,cashEnabled:false,vendors:[],meals:[],requests:[],orders:[],dates:[]},error:null};
+ if(name==='get_collection_options')return window.fixtureCollectionError?{data:null,error:{message:'Synthetic collection unavailable'}}:{data:window.fixtureCollection||{enabled:false,windows:[]},error:null};
+ if(name==='admin_collection_workspace')return {data:window.fixtureCollectionAdmin||null,error:null};
+ if(name==='admin_collection_config'){
+  fixture.collectionConfigCalls=(fixture.collectionConfigCalls||0)+1;fixture.collectionConfigChange=args;
+  fixture.collectionRequestResults ||= {};
+  if(fixture.collectionRequestResults[args.p_request_id])return {data:fixture.collectionRequestResults[args.p_request_id],error:null};
+  if(window.fixtureCollectionAdmin)window.fixtureCollectionAdmin.policy.revision++;
+  const saved={revision:window.fixtureCollectionAdmin?.policy.revision};fixture.collectionRequestResults[args.p_request_id]=saved;
+  if(window.fixtureCollectionResponseLost){window.fixtureCollectionResponseLost=false;return {data:null,error:{message:'Synthetic response lost after commit'}};}
+  return {data:saved,error:null};
+ }
  if(name==='get_vendor_delivery_origin')return {data:{current:fixture.origin || {mode:'CENTRAL',status:'not_requested'},history:fixture.originHistory || []},error:null};
  if(name==='admin_delivery_origin_queue')return {data:fixture.origin?[{...fixture.origin,vendor_id:'fixture-vendor',vendor_name:'Synthetic vendor'}]:[],error:null};
  if(name==='request_vendor_delivery_origin'){fixture.origin={mode:'CENTRAL',status:'pending',address:args.p_address,latitude:args.p_latitude,longitude:args.p_longitude,revision:1};return {data:null,error:null};}

@@ -1,6 +1,9 @@
 import { useRequestGuard } from '../../hooks/useRequestGuard';
 import { validateMobile } from '../../utils/mobile';
 import { checkoutService } from '../../services/checkoutService';
+import { collectionService } from '../../services/collectionService';
+import CollectionBooking from '../../components/features/CollectionBooking';
+import CustomerOrderRequest from '../../components/features/CustomerOrderRequest';
 import { manualPaymentService, manualRequestKey } from '../../services/manualPaymentService';
 import { useAsync } from '../../hooks/useAsync';
 import { useOperationalRefresh } from '../../hooks/useOperationalRefresh';
@@ -40,12 +43,20 @@ export default function Checkout() {
   const [errors, setErrors] = useState({});
   const { data: deliveryConfig, error: deliveryError, loading: deliveryLoading, refetch: reloadDelivery } = useAsync(checkoutService.deliverySettings, [], null);
   const vendorId = items[0]?.vendorId;
+  const collection = useAsync(() => collectionService.options(vendorId), [vendorId, user?.id], null);
+  useOperationalRefresh(() => collection.refetch({silent:true}), 'collection-options', 30000);
+  const [collectionChoice,setCollectionChoice]=useState(null);
+  useEffect(()=>setCollectionChoice(null),[vendorId,user?.id]);
+  const collecting=collection.data?.enabled===true;
+  const validCollection=collecting && collectionChoice?.policyRevision===collection.data.revision
+    && collection.data.windows?.some(w=>w.id===collectionChoice.id && w.destinationId===collectionChoice.destinationId && w.revision===collectionChoice.revision);
   const gateways = useAsync(() => vendorId ? manualPaymentService.methods(vendorId) : Promise.resolve({}), [vendorId, user?.id], {});
   useOperationalRefresh(() => gateways.refetch({ silent: true }), 'checkout-gateways', 30000);
-  const [paymentMethod, setPaymentMethod] = useState('manual_payshap');
+  const [paymentMethod, setPaymentMethod] = useState('manual_eft');
   const requestKey = useRef(null);
   const singleVendor = new Set(items.map(item => item.vendorId)).size === 1;
-  const selectedMethod = gateways.data?.[paymentMethod] === true ? paymentMethod : gateways.data?.manual_payshap === true ? 'manual_payshap' : gateways.data?.manual_eft === true ? 'manual_eft' : null;
+  const selectedMethod = collecting ? (gateways.data?.manual_eft === true ? 'manual_eft' : null)
+    : gateways.data?.[paymentMethod] === true ? paymentMethod : gateways.data?.manual_eft === true ? 'manual_eft' : gateways.data?.manual_payshap === true ? 'manual_payshap' : null;
   const paymentAvailable = singleVendor && gateways.data?.[selectedMethod] === true;
   const geo = useLocation();
   const [quote, setQuote] = useState(null);
@@ -78,7 +89,7 @@ export default function Checkout() {
 
   const validateGuest = () => {
     const next = {};
-    if (!deliveryLocation.trim()) next.deliveryLocation = "Let us know where to deliver";
+    if (!collecting && !deliveryLocation.trim()) next.deliveryLocation = "Let us know where to deliver";
     if (isAuthenticated) {
       setErrors(next);
       return Object.keys(next).length === 0;
@@ -93,11 +104,12 @@ export default function Checkout() {
   const handlePlaceOrder = async () => {
     if (creating.current || createdOrder) return;
     if (deliveryLoading || deliveryError) return;
+    if (collection.loading || collection.error || (collecting && !validCollection)) return;
     if (gateways.loading || gateways.error || !paymentAvailable) return;
-    if (deliveryConfig?.enabled && (!usableQuote?.id || usableQuote.expiresAt <= Date.now())) {
+    if (!collecting && deliveryConfig?.enabled && (!usableQuote?.id || usableQuote.expiresAt <= Date.now())) {
       showToast('Calculate and review delivery before ordering.', { type: 'info' }); return;
     }
-    if (!isOrderingOpen(deliveryDate)) {
+    if (!collecting && !isOrderingOpen(deliveryDate)) {
       showToast("The ordering cutoff has passed. Please review the updated delivery date before ordering.", { type: "info" });
       return;
     }
@@ -109,7 +121,7 @@ export default function Checkout() {
     creating.current = true;
     setSubmitting(true);
     try {
-      const payloadKey = JSON.stringify([user?.id, guestDetails, deliveryDateKey(deliveryDate), deliveryLocation.trim(), cartKey, usableQuote?.id, selectedMethod]);
+      const payloadKey = JSON.stringify([user?.id, guestDetails, deliveryDateKey(deliveryDate), deliveryLocation.trim(), cartKey, usableQuote?.id, selectedMethod, collecting?collectionChoice:null]);
       if (requestKey.current?.payload !== payloadKey) requestKey.current = { payload: payloadKey, ...await manualRequestKey(payloadKey) };
       const order = await orderService.createOrder({
         customerId: isAuthenticated ? user.id : null,
@@ -122,6 +134,7 @@ export default function Checkout() {
         quoteId: deliveryConfig?.enabled ? usableQuote.id : null,
         paymentMethod: selectedMethod,
         requestId: requestKey.current.id,
+        collection: collecting?collectionChoice:null,
       });
       // Preserve the completed guest order even if navigation changed while
       // the server was creating it. Only current-scope UI/cart effects follow.
@@ -187,7 +200,11 @@ export default function Checkout() {
       <Navbar showBack title="Checkout" showCart={false} />
       <div className="ob-container pt-4 flex flex-col gap-5">
         <RequestError error={deliveryError} onRetry={reloadDelivery} />
-        {deliveryConfig?.enabled && <section className="card p-4 flex flex-col gap-3">
+        <RequestError error={collection.error} onRetry={collection.refetch} />
+        {collection.loading && <p role="status">Checking collection availability…</p>}
+        {collecting && <CollectionBooking options={collection.data} value={validCollection?collectionChoice:collectionChoice?.id?null:collectionChoice} onChange={setCollectionChoice} disabled={submitting} />}
+        {collecting && collectionChoice?.id && !validCollection && <p role="alert">Collection availability changed. Choose an available window again.</p>}
+        {!collecting && deliveryConfig?.enabled && <section className="card p-4 flex flex-col gap-3">
           <p>Delivery uses the OfficeBites hub unless an administrator has approved a vendor origin. Every vendor must serve your destination. Your typed address gives delivery instructions; use your device location to calculate distance.</p>
           <button className="btn-outline" disabled={quoting} onClick={requestQuote}>{quoting ? 'Checking delivery…' : 'Use my location and calculate delivery'}</button>
           {geo.error && <p role="alert">{geo.error} Retry location. If location is unavailable, contact support before ordering; no delivery fee is guessed.</p>}
@@ -233,7 +250,7 @@ export default function Checkout() {
           </div>
         )}
 
-        <div className="card p-4">
+        {!collecting && <div className="card p-4">
           <TextField
             label="Where should we deliver?"
             value={deliveryLocation}
@@ -241,11 +258,11 @@ export default function Checkout() {
             error={errors.deliveryLocation}
             placeholder="e.g. Nedbank Building, 3rd Floor, Office 302"
           />
-        </div>
+        </div>}
 
         <div className="card p-4">
-          <p className="text-xs font-medium text-ink-muted mb-1">Delivery date</p>
-          <p className="text-sm font-semibold text-ink">{formatDate(deliveryDate)}</p>
+          <p className="text-xs font-medium text-ink-muted mb-1">{collecting?'Collection':'Delivery date'}</p>
+          <p className="text-sm font-semibold text-ink">{collecting?'Choose your pickup day and window above':formatDate(deliveryDate)}</p>
           <p className="text-xs text-ink-muted mt-1">
             One vendor per checkout. Pay that food vendor directly through your banking app.
           </p>
@@ -268,14 +285,15 @@ export default function Checkout() {
             </div>
           </div>
         ))}
+        {singleVendor&&<CustomerOrderRequest key={`${vendorId}:${user?.id||'guest'}`} vendorId={vendorId} items={items} customer={isAuthenticated?user:guestDetails}/>}
         <section className="flex flex-col gap-3" aria-label="Payment">
           <h2 className="section-title">Payment</h2>
           {gateways.loading ? <p role="status" className="text-sm text-ink-muted">Checking available payment options…</p> : gateways.error ? <RequestError error={gateways.error} onRetry={gateways.refetch} /> : singleVendor && paymentAvailable ? <fieldset disabled={submitting} className="flex flex-col gap-3">
             <legend className="font-semibold mb-3">How would you like to pay?</legend>
             {[
-              {value:'manual_payshap',title:'PayShap',description:'Pay directly from your banking app.'},
               {value:'manual_eft',title:'EFT / Bank Transfer',description:"Transfer directly to the vendor's bank account."},
-            ].filter(method => gateways.data?.[method.value] === true).map(method => <label key={method.value} className="flex items-center gap-3 rounded-xl border border-line p-4 cursor-pointer has-[:checked]:border-nude-500 has-[:checked]:bg-nude-50 focus-within:ring-2 focus-within:ring-nude-500 focus-within:ring-offset-2">
+              {value:'manual_payshap',title:'PayShap',description:'Pay directly from your banking app.'},
+            ].filter(method => gateways.data?.[method.value] === true && (!collecting || method.value==='manual_eft')).map(method => <label key={method.value} className="flex items-center gap-3 rounded-xl border border-line p-4 cursor-pointer has-[:checked]:border-nude-500 has-[:checked]:bg-nude-50 focus-within:ring-2 focus-within:ring-nude-500 focus-within:ring-offset-2">
               <input type="radio" name="method" value={method.value} checked={selectedMethod === method.value} onChange={() => setPaymentMethod(method.value)} className="accent-nude-700 shrink-0" />
               <span className="min-w-0"><span className="block font-semibold text-sm">{method.title}</span><span className="block text-sm text-ink-muted">{method.description}</span></span>
             </label>)}
@@ -294,9 +312,9 @@ export default function Checkout() {
 
         <div className="flex justify-between text-sm">
           <span className="text-ink-muted">Total</span>
-          <span className="font-bold text-ink text-base">{deliveryConfig?.enabled && !usableQuote ? 'Calculate delivery first' : formatCurrency(subtotal + (deliveryConfig?.enabled ? Number(usableQuote?.fee || 0) : 0))}</span>
+          <span className="font-bold text-ink text-base">{!collecting && deliveryConfig?.enabled && !usableQuote ? 'Calculate delivery first' : formatCurrency(subtotal + (!collecting && deliveryConfig?.enabled ? Number(usableQuote?.fee || 0) : 0))}</span>
         </div>
-        <button onClick={handlePlaceOrder} className="btn-primary w-full" disabled={submitting || gateways.loading || !!gateways.error || !paymentAvailable || deliveryLoading || !!deliveryError || (deliveryConfig?.enabled && !usableQuote?.id)}>
+        <button onClick={handlePlaceOrder} className="btn-primary w-full" disabled={submitting || collection.loading || !!collection.error || (collecting && !validCollection) || gateways.loading || !!gateways.error || !paymentAvailable || deliveryLoading || !!deliveryError || (!collecting && deliveryConfig?.enabled && !usableQuote?.id)}>
           {submitting ? <Spinner size={16} className="!border-paper/30 !border-t-paper" /> : "Place order"}
         </button>
       </div>

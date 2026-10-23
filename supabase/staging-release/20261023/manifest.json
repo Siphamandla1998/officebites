@@ -1,0 +1,55 @@
+{
+  "project": "eyhmarmekioovcjibcbr",
+  "previewProject": "prj_bGDTykMMQufLAJ2CkjvnOAq4KQ71",
+  "migrationName": "officebites_staging_locked_release_20261023",
+  "payloadSha256": "bfece8414f6578896aff42fc96ee01e3a3847e8a46bb3d284fc896dd89eb525d",
+  "notApproved": true,
+  "sourceFiles": [
+    {
+      "file": "checks/uat/staging-security.sql",
+      "sha256": "50dfb18c768421f3299722fa751a812ee8d278a9ee855b6d6562073c37a7a756"
+    },
+    {
+      "file": "checks/pilot/booking-candidate.sql",
+      "sha256": "6625ddacfe65a184cc8d356a284d58cd8559dc52dbf93f9af6fa0c7ba13e4a18"
+    },
+    {
+      "file": "checks/pilot/atomic-collection-candidate.sql",
+      "sha256": "c7f2f5db6e93c3c0d3a782d1deaa5e5b7c9989f57662b6f05029af8e72c03122"
+    },
+    {
+      "file": "checks/pilot/assisted-cash-candidate.sql",
+      "sha256": "29d37659983715cb9de704ed13a6a875e92c1b1d10f895e3da3ef8adab521db5"
+    },
+    {
+      "file": "checks/pilot/cash-custody-candidate.sql",
+      "sha256": "d124d0f1324896d98d607116dfb4416d863ffb7f1b12dc6b3d5745831ffd14c8"
+    }
+  ],
+  "files": [
+    {
+      "file": "preflight.sql",
+      "sha256": "d97568364149392aa02c7fa44cee5e4425011adf67929fde6b4ed6f61bf20103"
+    },
+    {
+      "file": "install.sql",
+      "sha256": "2ae2241eb39afed6d35e5b3a23275adacd7f215e7bce46242d29831791e0aec6"
+    },
+    {
+      "file": "post-install.sql",
+      "sha256": "24e53caae288ba5683202322580c505d55b5e52b4752479792a6e79a2216c1cf"
+    },
+    {
+      "file": "forward-containment.sql",
+      "sha256": "37f6ccc24ede11548b8d3c1c1f1209cd3dd4760044de32707fecc87c68dba805"
+    },
+    {
+      "file": "repair-cash-index.sql",
+      "sha256": "b547aef0566e63b255ba7784cba8fddd1df19aee2e6fb6762bf0eac86f347196"
+    },
+    {
+      "file": "post-recovery.sql",
+      "sha256": "24e53caae288ba5683202322580c505d55b5e52b4752479792a6e79a2216c1cf"
+    }
+  ]
+}

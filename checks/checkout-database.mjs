@@ -6,7 +6,8 @@ import path from 'node:path';
 const modulePath = process.env.PGLITE_MODULE || 'node_modules/@electric-sql/pglite/dist/index.js';
 if (!modulePath) throw new Error('Set PGLITE_MODULE to an installed @electric-sql/pglite/dist/index.js; no live DB is used.');
 const { PGlite } = await import(pathToFileURL(path.resolve(modulePath)).href);
-const db = new PGlite();
+const db = process.env.OFFICEBITES_LOCAL_NATIVE === '1'
+ ? await (await import('./pilot/native-client.mjs')).localNativeClient() : new PGlite();
 const baseline = JSON.parse(fs.readFileSync(new URL('./fixtures/live-contract-baseline.json', import.meta.url)));
 const ident = value => '"' + value.replaceAll('"','""') + '"';
 const literal = value => "'" + value.replaceAll("'","''") + "'";
@@ -118,4 +119,11 @@ try {
  await (await import('./legal-corporate-database.mjs')).verifyLegalCorporate(db);
  await (await import('./checkout-repair-database.mjs')).verifyCheckoutRepair(db);
  await (await import('./manual-payments-database.mjs')).verifyManualPayments(db);
-} catch(error) {console.error('Checkout database checks failed:',error.message);process.exitCode=1;} finally {await db.close();}
+ if(process.env.OFFICEBITES_INSTALL_PACKAGE==='1')await (await import('./uat/installation-package.test.mjs')).verifyInstallationPackage(db);
+ await (await import('./pilot/booking-database.mjs')).verifyPilotBookings(db);
+ await (await import('./pilot/atomic-collection-database.mjs')).verifyAtomicCollection(db);
+ if(process.env.OFFICEBITES_LOCAL_NATIVE==='1')await (await import('./pilot/native-concurrency.mjs')).verifyNativeConcurrency(db);
+ await (await import('./pilot/assisted-cash-database.mjs')).verifyAssistedCash(db);
+ await (await import('./uat/recovery-database.mjs')).verifyUatRecovery(db);
+ await (await import('./uat/security-database.mjs')).verifyUatSecurity(db);
+} catch(error) {console.error('Checkout database checks failed:',error.stack||error.message);process.exitCode=1;} finally {await db.close();}

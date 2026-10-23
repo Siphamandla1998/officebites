@@ -1,6 +1,7 @@
 import RequestError from '../../components/ui/RequestError';
 import CheckoutControls from '../../components/features/CheckoutControls';
 import ManualPaymentWorkspace from '../../components/features/ManualPaymentWorkspace';
+import CollectionAdmin from '../../components/features/CollectionAdmin';
 import { FiCreditCard } from "react-icons/fi";
 import EmptyState from "../../components/ui/EmptyState";
 import StatusBadge from "../../components/ui/StatusBadge";
@@ -35,6 +36,7 @@ export default function AdminPayments() {
 
       <CheckoutControls />
       <ManualPaymentWorkspace admin />
+      <CollectionAdmin />
 
       {error ? <RequestError error={error} onRetry={refetch} /> : loading ? (
         <div className="skeleton h-64" />
