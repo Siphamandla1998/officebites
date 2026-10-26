@@ -32,3 +32,23 @@ test('admin profile review requires evidence and reloads approved status locally
  expect(await page.evaluate(()=>fixture.profileApprovals.length)).toBe(1);
  await expect(button).toHaveCount(0);
 });
+
+test('admin assists pending vendor banking and cannot approve own submission',async({page})=>{
+ await page.setViewportSize({width:390,height:844});
+ await page.evaluate(async()=>{window.fixtureAdminVendors=[{id:'synthetic-pending-vendor',name:'Synthetic pending vendor',status:'pending'}];await fixture.setUser({id:'synthetic-bank-submitter',role:'admin'});fixture.navigate('/admin/payments');});
+ await page.getByText('Submit banking on behalf of a vendor',{exact:true}).click();const f=page.getByRole('form',{name:'Admin vendor banking submission'});
+ await f.getByLabel('Vendor receiving these payments').selectOption('synthetic-pending-vendor');
+ for(const [label,value]of Object.entries({'Account holder':'Synthetic non-routing recipient','Bank':'Synthetic bank','Account number':'0000000000','Account type':'Synthetic','Branch code':'000000'}))await f.getByLabel(label,{exact:true}).fill(value);
+ await f.getByLabel('Account supports EFT',{exact:true}).check();await f.getByRole('button',{name:'Submit pending banking version'}).click();
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+ await expect(page.getByText('Saved and reloaded.',{exact:true})).toBeVisible();await page.getByText('Payment profile versions (1)',{exact:true}).click();
+ await expect(page.getByText('A different administrator must independently approve this submitted version.',{exact:true})).toBeVisible();
+ await expect(page.getByRole('button',{name:'Approve verified profile'})).toHaveCount(0);
+ expect(await page.evaluate(()=>fixture.paymentProfiles[0].vendor_id)).toBe('synthetic-pending-vendor');
+ await page.evaluate(async()=>fixture.setUser({id:'synthetic-bank-approver',role:'admin'}));
+ await page.getByText('Payment profile versions (1)',{exact:true}).click();
+ await expect(page.getByRole('button',{name:'Approve verified profile'})).toBeVisible();
+ await page.getByLabel('Independent ownership, recipient and receiving-capability evidence').fill('Synthetic independent bank ownership review only');
+ await page.getByRole('button',{name:'Approve verified profile'}).click();
+ await expect(page.getByRole('button',{name:'Approve verified profile'})).toHaveCount(0);
+});

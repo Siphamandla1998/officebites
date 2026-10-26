@@ -32,6 +32,7 @@ export async function verifyManualPayments(db) {
  const create=async (...args)=>(await q(createSql,createArgs(...args))).r;
  await as(null);await reject(createSql,createArgs());
  await as(1);await q('SELECT public.approve_vendor_payment_profile($1,$2)',[profile,'Independent bank ownership, recipient and PayShap registration checked']);
+ assert.deepEqual((await q('SELECT public.get_vendor_manual_methods($1) r',[id(804)])).r,{manual_eft:false,manual_payshap:false});checks++;
  await q('SELECT public.admin_manual_settings(true,true,15,500,$1)',['Synthetic-only local test method enable']);
  await reject("SELECT public.admin_update_payment_gateway('payfast',true,false,'')");
  await as(null);assert.deepEqual((await q('SELECT public.get_vendor_manual_methods($1) r',[id(804)])).r,{manual_eft:true,manual_payshap:true});checks++;

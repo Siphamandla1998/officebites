@@ -46,7 +46,7 @@ supportService.searchFAQs=async()=>{if(fixture.failPublic)throw new Error('Synth
 supportService.getGuides=async()=>[];
 foodService.getMeals=async()=>{if(fixture.failPublic)throw new Error('Synthetic catalogue failure');return[];};
 vendorService.getFeaturedVendors=async()=>[];
-vendorService.getVendors=async()=>window.fixturePersistedBlob?[{id:'fixture-vendor',name:'Synthetic blob vendor',status:'pending',logo:'blob:https://different-preview.vercel.app/synthetic'}]:[];
+vendorService.getVendors=async()=>window.fixtureAdminVendors || (window.fixturePersistedBlob?[{id:'fixture-vendor',name:'Synthetic blob vendor',status:'pending',logo:'blob:https://different-preview.vercel.app/synthetic'}]:[]);
 vendorService.getVendorById=async id=>({id,name:'Synthetic vendor',status:'approved',address:'Synthetic premises',contactNumber:'',deliveryRadius:2,latitude:null,longitude:null});
 vendorService.getDashboardStats=async()=>{fixture.vendorRefreshes++;return {todaysOrders:0,revenue:0,pendingOrders:0};};
 orderService.getOrdersForVendor=async()=>window.fixtureVendorOrders || [];
@@ -62,21 +62,23 @@ manualPaymentService.workspace=async(testOnly=false)=>{
  fixture.workspaceScopes ||= [];fixture.workspaceScopes.push(testOnly);
  if(fixture.deferManualWorkspace)await new Promise(resolve=>fixture.releaseManualWorkspace=resolve);
  if(fixture.failManualWorkspace)throw new Error('Synthetic manual workspace refresh failed');
- return window.fixtureManualWorkspace?.[String(testOnly)] || {settings:fixture.manualSettings || {eft_enabled:true,payshap_enabled:true,deadline_minutes:15,review_threshold:500},profiles:fixture.paymentProfiles || [],payments:[],receivables:[],events:[]};
+ return window.fixtureManualWorkspace?.[String(testOnly)] || {settings:fixture.manualSettings || {eft_enabled:true,payshap_enabled:true,deadline_minutes:15,review_threshold:500,settings_revision:'fixture-revision-0'},profiles:fixture.paymentProfiles || [],payments:[],receivables:[],events:[]};
 };
 manualPaymentService.submit=async(vendorId,destination,eft,payshap)=>{
  fixture.paymentProfiles ||= [];const id='synthetic-profile-'+(fixture.paymentProfiles.length+1);
- fixture.paymentProfiles.push({id,vendor_id:vendorId,destination,eft,payshap,created_at:'2026-10-21T10:00:00Z',approved_at:null});return id;
+ fixture.paymentProfiles.push({id,vendor_id:vendorId,destination,eft,payshap,created_at:'2026-10-21T10:00:00Z',approved_at:null,submitted_by:fixture.user.id});return id;
 };
 manualPaymentService.approve=async(id,evidence)=>{
  fixture.profileApprovals ||= [];fixture.profileApprovals.push({id,evidence});
  fixture.paymentProfiles=fixture.paymentProfiles.map(p=>p.id===id?{...p,approved_at:'2026-10-21T10:05:00Z'}:p);
 };
-manualPaymentService.settings=async(eft,payshap,minutes,threshold,reason)=>{
+manualPaymentService.settings=async(eft,payshap,minutes,threshold,reason,expectedRevision)=>{
  fixture.settingsCalls ||= [];fixture.settingsCalls.push({eft,payshap,minutes:Number(minutes),threshold:Number(threshold),reason});
  if(fixture.deferSettings)await new Promise(resolve=>fixture.releaseSettings=resolve);
+ if(fixture.settingsError)throw Object.assign(new Error(fixture.settingsError.message),fixture.settingsError);
+ if(expectedRevision!==undefined && expectedRevision!==fixture.manualSettings?.settings_revision)throw Object.assign(new Error('Settings changed; reload'),{code:'40001'});
  if(fixture.failSettings)throw new Error('Synthetic save failed');
- fixture.manualSettings={eft_enabled:eft,payshap_enabled:payshap,deadline_minutes:Number(minutes),review_threshold:Number(threshold)};
+ fixture.manualSettings={eft_enabled:eft,payshap_enabled:payshap,deadline_minutes:Number(minutes),review_threshold:Number(threshold),settings_revision:'saved-'+fixture.settingsCalls.length};
 };
 supabase.rpc=async (name,args={})=> {
   if(window.fixtureMissingReleaseRpcs&&['get_collection_options','admin_collection_workspace','get_order_assistance_options','assisted_order_workspace','cash_custody_workspace'].includes(name))return {data:null,error:{code:'PGRST202',message:'Synthetic missing release RPC'}};

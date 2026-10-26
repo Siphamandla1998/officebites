@@ -119,9 +119,12 @@ try {
  await (await import('./legal-corporate-database.mjs')).verifyLegalCorporate(db);
  await (await import('./checkout-repair-database.mjs')).verifyCheckoutRepair(db);
  await (await import('./manual-payments-database.mjs')).verifyManualPayments(db);
+ if(process.env.OFFICEBITES_EFT_PACKAGE==='1')await (await import('./uat/eft-installation-package.test.mjs')).verifyEftInstallationPackage(db,
+  process.env.OFFICEBITES_SETTINGS_FIX==='1' ? (await import('./manual-settings-database.mjs')).verifySettingsPackageCompatibility : undefined);
  if(process.env.OFFICEBITES_INSTALL_PACKAGE==='1')await (await import('./uat/installation-package.test.mjs')).verifyInstallationPackage(db);
  await (await import('./pilot/booking-database.mjs')).verifyPilotBookings(db);
  await (await import('./pilot/atomic-collection-database.mjs')).verifyAtomicCollection(db);
+ if(process.env.OFFICEBITES_SETTINGS_FIX==='1')await (await import('./manual-settings-database.mjs')).verifySettingsFix(db);
  if(process.env.OFFICEBITES_LOCAL_NATIVE==='1')await (await import('./pilot/native-concurrency.mjs')).verifyNativeConcurrency(db);
  await (await import('./pilot/assisted-cash-database.mjs')).verifyAssistedCash(db);
  await (await import('./uat/recovery-database.mjs')).verifyUatRecovery(db);

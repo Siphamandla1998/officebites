@@ -27,6 +27,66 @@ Production baseline: officebites.co.za alias points to `dpl_9mWoxNCL9NqX7DHKAUy7
 
 ## Deployment and hosted verification
 
-Pending the reviewed feature commit/push. Postdeployment results will be appended locally after verifying READY and exact pushed SHA, without a report-only push that would replace the deployment being described.
+Commit **9b1623680afe6530c7282ed2be6754cd4947d373** (`fix: fail closed on checkout gateways and separate payment statuses`) was pushed normally only to the authorised feature branch. Remote branch readback equals HEAD. Vercel Git integration created **dpl_ZGxYvQjxdGY74s7Lhx1J1RVEQEvz**, **READY**, Preview (`target=null`), source Git, exact matching commit/branch. Build logs confirm cloning 9b16236 and running the project build. No production deployment was requested.
+
+- Inspection URL: **https://officebites-git-feat-legal-vendor-da31dd-sp24tg-6983s-projects.vercel.app/**. Alias readback resolves to the new deployment. Use this accepted payment origin.
+- Immutable URL: https://officebites-8oj6fgzwk-sp24tg-6983s-projects.vercel.app/. It is not an approved initiation/return origin; no wildcard CORS allowance was added.
+- Actual branch-origin PayFast OPTIONS returns HTTP 200 and exact matching Allow-Origin; no POST/initiation was sent.
+- Actual deployed compiled client contains the intended staging URL/public publishable key, no production project URL. Actual hosted reads reached only `eyhmarmekioovcjibcbr.supabase.co`.
+
+### Deployed Edge QA and visual findings
+
+At **390×844** and **1440×1000**, fresh contexts, service workers blocked for deterministic online checks:
+
+| Step | Check | Result and evidence boundary |
+| --- | --- | --- |
+| 1 | Search and empty checkout | Actual staging/public rendering passed; customer footer has only Terms/Privacy/Refunds. |
+| 2 | Terms and vendor-fee access | Actual Terms displays unpublished notice; signed-out vendor fee route redirects to login. No document published. |
+| 3 | Admin/vendor signed-out access | Actual `/admin/payments` and `/vendor/orders` redirect to login; no credentials submitted. |
+| 4 | Customer nonempty checkout and payment | Deployed JavaScript with intercepted synthetic backend passed: no-gateway Place order disabled, cart retained, PayFast disabled and Ozow explanation visible. No order/payment request reached staging. |
+| 5 | Payment states | Deployed synthetic unpaid order shows Unpaid; a separate synthetic stored-paid response shows Paid and Waiting for vendor acceptance, with no fulfilment completion implied. No hosted order changed. |
+| 6 | Admin gateways | Deployed synthetic admin form passed PayFast ON/OFF, maintenance, save/reload persistence; Ozow enable checkbox remains disabled while unready. Four save requests across both widths were fulfilled locally by the browser interceptor, not sent to Supabase. This does not verify hosted admin persistence. |
+| 7 | Analytics and Legal | Deployed synthetic admin views passed; unknown processor fees render Unresolved; legal/commercial administration is grouped and collapsed. |
+| 8 | Vendor Orders and overview | Deployed synthetic vendor role rendered both screens at both sizes. This does not certify real-account login, RLS or fulfilment. |
+
+**Passed:** full deployed QA rerun (12 actual public route checks plus six role/viewport scenarios), no page errors, no horizontal document overflow, no unexpected backend calls; separate actual hosted/bundle-isolation smoke passed. Saved screenshots under `.officebites-local/release-visuals/`; inspected mobile disabled checkout, paid-awaiting-acceptance and desktop gateway controls directly. Visual spacing, legible controls and customer policy navigation are consistent on inspected sizes.
+
+**Harness failures retained:** initial deployed-fixture run omitted the favourites read response. Initial legacy isolation helper blocked the documented read-only delivery settings RPC. Both were corrected in ignored audit helpers; complete reruns passed. No application/deployment failure was found.
+
+![Deployed mobile checkout, synthetic backend, gateways disabled](.officebites-local/release-visuals/deployed-fixture-390-checkout-disabled.png)
+
+![Deployed desktop gateway controls, synthetic backend](.officebites-local/release-visuals/deployed-fixture-1440-admin-gateways.png)
+
+### Final safety and outstanding work
+
+Post-QA staging reads confirm both gateway states unchanged, delivery disabled, acquisition/standard/onboarding disabled and zero published legal versions. Remote main still `4c4835db62b7db4c7a725c92d7a6294ca523fa57`; officebites.co.za remains on `dpl_9mWoxNCL9NqX7DHKAUy7NCfBWGnt`. No production database was queried or migrated. No Edge Function, payment secret, cutoff or historical payment/commission record changed.
+
+Still blocked/unverified: genuine customer/vendor/admin login and refresh on the new Preview, hosted admin setting persistence, actual guest/member order submission while gateways are disabled, merchant sandbox mode/credentials/redirects/ITN/webhooks/refund/settlement, installed-PWA/offline/device GPS, and the specific reported Preview Paid case without its ticket code. These are not claimed as passes or clearance for real-money use.
+
+All pre-existing work is included in the feature commit. This postdeployment release-report update is the only intentionally uncommitted tracked change so recording the exact deployment does not trigger a second deployment. Existing payment validation report remains unchanged at its starting file hash.
+
+## Exact committed file inventory
+
+```text
+OFFICEBITES-CURRENT-REPAIR-AUDIT.md
+OFFICEBITES-PREVIEW-PAYMENT-VALIDATION-REPORT.md
+OFFICEBITES-PREVIEW-RELEASE-20261016.md
+checks/browser-harness.jsx
+checks/checkout-browser.spec.mjs
+checks/recovery-browser.spec.mjs
+src/components/features/CheckoutControls.jsx
+src/components/features/VendorConsent.jsx
+src/components/layout/LegalLinks.jsx
+src/components/ui/Modal.jsx
+src/layouts/VendorLayout.jsx
+src/pages/admin/AdminAnalytics.jsx
+src/pages/admin/AdminPayments.jsx
+src/pages/customer/Checkout.jsx
+src/pages/customer/PaymentUpload.jsx
+src/pages/shared/CommercialWorkspace.jsx
+src/pages/vendor/VendorOrders.jsx
+src/routes/AppRoutes.jsx
+src/services/checkoutService.js
+```
 
 Authenticated real-account hosted journeys and actual merchant integration require designated sessions and verified sandbox access; they must not be represented as passed by synthetic role fixtures. The reported Preview Paid case still lacks its ticket code; current staging paid orders match stored receipts, which alone do not prove bank settlement.

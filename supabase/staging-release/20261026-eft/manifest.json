@@ -1,0 +1,61 @@
+{
+  "project": "eyhmarmekioovcjibcbr",
+  "builderSha256": "da1824a56c767f21fa339a66c807e2aa881d09f0f15b723564d1aa61af742c5c",
+  "previewProject": "prj_bGDTykMMQufLAJ2CkjvnOAq4KQ71",
+  "migrationName": "officebites_staging_eft_locked_20261026",
+  "payloadSha256": "0f65603281048631d437ef436272762b232763d1af57dabf094a97ae6f22deac",
+  "notApproved": true,
+  "scope": "R0 customer-web EFT only; no assisted/cash/custody or B-E",
+  "baselineSha256": "23ae85f2dd55acd84f87db8783da087f651dba28c0fcce65bf76dc9b5860cbf6",
+  "externalBlockers": [
+    "effective REST/Auth/notification attestation",
+    "backup/maintenance acceptance",
+    "PayFast maintenance provenance",
+    "owner installation approval",
+    "pending banking/B-E integration and native transport"
+  ],
+  "sourceFiles": [
+    {
+      "file": "checks/uat/staging-security.sql",
+      "sha256": "50dfb18c768421f3299722fa751a812ee8d278a9ee855b6d6562073c37a7a756"
+    },
+    {
+      "file": "checks/pilot/booking-candidate.sql",
+      "sha256": "6625ddacfe65a184cc8d356a284d58cd8559dc52dbf93f9af6fa0c7ba13e4a18"
+    },
+    {
+      "file": "checks/pilot/atomic-collection-candidate.sql",
+      "sha256": "c7f2f5db6e93c3c0d3a782d1deaa5e5b7c9989f57662b6f05029af8e72c03122"
+    }
+  ],
+  "files": [
+    {
+      "file": "preflight.sql",
+      "sha256": "a85f772d26a718653a23a3681de4293f2b0a55acd4b586c4746cdacaaba8609d"
+    },
+    {
+      "file": "baseline-capture.sql",
+      "sha256": "849f167b0d06acc61b34dd4c7b8f646cd8472f2f06b32c7f45f5dac55f57a87c"
+    },
+    {
+      "file": "readiness.sql",
+      "sha256": "6d31e72b5229a43a95ff4341f2f525a553f1e35fdf6926d5ba3fd7d12eeab41c"
+    },
+    {
+      "file": "install.sql",
+      "sha256": "b80909ae1978d57323bce1093761197ad582d33384ee28016935286989cc9e4b"
+    },
+    {
+      "file": "post-install.sql",
+      "sha256": "a12779446ed6a9ac6720155d7fb969a9183d0df7fe939fea537f34df5d3709b8"
+    },
+    {
+      "file": "forward-containment.sql",
+      "sha256": "3faafa66c9b9c3422152fb9bca70091c653907b155e273f3741cbf8b8c6bde15"
+    },
+    {
+      "file": "post-recovery.sql",
+      "sha256": "4a810390fd5b3ac2a1aeaf3bb7b8c77749b4f43833c2d6a1ed711081c82146c3"
+    }
+  ]
+}

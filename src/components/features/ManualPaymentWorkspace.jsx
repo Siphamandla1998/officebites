@@ -1,5 +1,6 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import ManualSettingsForm from './ManualSettingsForm';
+import AdminPaymentProfileForm from './AdminPaymentProfileForm';
 import { useAuth } from '../../context/AuthContext';
 import { useAsync } from '../../hooks/useAsync';
 import { useRequestGuard } from '../../hooks/useRequestGuard';
@@ -23,12 +24,15 @@ export default function ManualPaymentWorkspace({ admin = false, profiles = false
   const [statementFrom, setStatementFrom] = useState('');
   const [statementTo, setStatementTo] = useState('');
   const lock = useRef(false);
+  useEffect(() => {
+    lock.current = false; setBusy(false); setError(null); setMessage('');
+  }, [user?.id, user?.vendorId]);
   async function run(fn) {
     if (lock.current) return;
-    const current = guard.capture();lock.current = true;setBusy(true);setError(null);setMessage('');
+    const current = guard.capture();const operation = Symbol();lock.current = operation;setBusy(true);setError(null);setMessage('');
     try { const state = await fn();if (current()) { await result.refetch({ throwOnError: true });setMessage(state === 'under_review' ? 'Payment remains unpaid and requires admin review.' : 'Saved and reloaded.'); } }
     catch (failure) { if (current()) setError(failure); }
-    finally { lock.current = false;if (current()) setBusy(false); }
+    finally { if (lock.current === operation) { lock.current = false;if (current()) setBusy(false); } }
   }
   const data = result.data;
   const rows = (data?.receivables || []).filter(r => (!statementFrom || sastDateKey(r.created_at)>=statementFrom) && (!statementTo || sastDateKey(r.created_at)<=statementTo));
@@ -46,6 +50,7 @@ export default function ManualPaymentWorkspace({ admin = false, profiles = false
     {result.loading && <p>Loading payment workspace…</p>}
     {data && <>
       {admin && data.settings && <ManualSettingsForm key={user?.id} settings={data.settings} loading={result.loading} loadError={result.error} reload={result.refetch} onBusyChange={setBusy} />}
+      {admin && <AdminPaymentProfileForm key={`banking:${user?.id}`} userId={user?.id} fields={fields} busy={busy} submit={(vendor, destination, eft, payshap) => run(() => service.submit(vendor, destination, eft, payshap))} />}
       {profiles && !admin && <form className="flex flex-col gap-3" onSubmit={event => {
         event.preventDefault();const f = new FormData(event.currentTarget);
         void run(() => service.submit(user.vendorId,Object.fromEntries(Object.keys(fields).map(k => [k,String(f.get(k) || '')])),f.has('eft'),f.has('payshap')));
@@ -61,7 +66,8 @@ export default function ManualPaymentWorkspace({ admin = false, profiles = false
         {data.profiles.map(p => <div className="border-t py-3 flex flex-col gap-2" key={p.id}>
           <p>Vendor {p.vendor_id} · Version {p.id} · {p.approved_at ? 'Approved' : 'Pending verification'} · {new Date(p.created_at).toLocaleString()}</p>
           <dl>{Object.entries(fields).map(([key,label]) => <div key={key}><dt className="text-xs">{label}</dt><dd className="break-all">{p.destination[key] || '—'}</dd></div>)}</dl>
-          {admin && !p.approved_at && <form onSubmit={event => { event.preventDefault();const f = new FormData(event.currentTarget);void run(() => service.approve(p.id,String(f.get('evidence')))); }}>
+          {admin && !p.approved_at && p.submitted_by === user?.id && <p>A different administrator must independently approve this submitted version.</p>}
+          {admin && !p.approved_at && p.submitted_by !== user?.id && <form onSubmit={event => { event.preventDefault();const f = new FormData(event.currentTarget);void run(() => service.approve(p.id,String(f.get('evidence')))); }}>
             <label>Independent ownership, recipient and receiving-capability evidence<textarea className="input" name="evidence" required minLength={15} maxLength={1000} /></label>
             <button className="btn-outline" disabled={busy}>Approve verified profile</button>
           </form>}

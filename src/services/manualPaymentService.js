@@ -20,7 +20,12 @@ function token(id) {
 }
 async function rpc(name, args = {}) {
   const { data, error } = await supabase.rpc(name, args);
-  if (error) throw new Error(error.message || 'Payment request unavailable. Please retry.');
+  if (error) {
+    const failure = new Error(error.message || 'Payment request unavailable. Please retry.');
+    // Preserve the machine-readable code for safe, allowlisted UI guidance.
+    failure.code = error.code;
+    throw failure;
+  }
   return data;
 }
 export const manualPaymentService = {
@@ -35,6 +40,6 @@ export const manualPaymentService = {
   resolveDispute: (id, evidence) => rpc('resolve_manual_payment_dispute', { p_order_id: id, p_evidence: evidence }),
   cancelRefunded: (id, reason) => rpc('admin_cancel_refunded_manual_order', { p_order_id: id, p_reason: reason }),
   refund: (id, status, amount, productRefund, evidence) => rpc('record_manual_refund_status', { p_order_id: id, p_status: status, p_amount: amount === '' ? null : Number(amount), p_product_refund: Number(productRefund), p_evidence: evidence }),
-  settings: (eft, payshap, minutes, threshold, reason) => rpc('admin_manual_settings', { p_eft: eft, p_payshap: payshap, p_minutes: Number(minutes), p_threshold: Number(threshold), p_reason: reason }),
+  settings: (eft, payshap, minutes, threshold, reason, revision) => rpc('admin_manual_settings_checked', { p_eft: eft, p_payshap: payshap, p_minutes: Number(minutes), p_threshold: Number(threshold), p_reason: reason, p_expected_revision: revision }),
   entry: (id, kind, amount, evidence, productRefund = 0) => rpc('admin_manual_receivable_entry', { p_order_id: id, p_kind: kind, p_amount: Number(amount), p_evidence: evidence, p_product_refund: Number(productRefund) }),
 };

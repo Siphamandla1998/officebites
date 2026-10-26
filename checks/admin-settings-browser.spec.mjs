@@ -6,7 +6,7 @@ test.beforeEach(async ({ page }) => {
   await page.goto('/checks/browser-harness.html?route=/help/contact');
   await page.waitForFunction(() => window.fixture?.authChanged);
   await page.evaluate(async () => {
-    fixture.manualSettings = { eft_enabled: false, payshap_enabled: false, deadline_minutes: 15, review_threshold: 500 };
+    fixture.manualSettings = { eft_enabled: false, payshap_enabled: false, deadline_minutes: 15, review_threshold: 500, settings_revision: 'fixture-revision-0' };
     await fixture.setUser({ id: 'synthetic-settings-admin', role: 'admin', name: 'Synthetic admin' });
     fixture.navigate('/admin/payments');
   });
@@ -101,4 +101,30 @@ for (const width of [390, 1440]) test(`settings form keyboard and layout review 
   await page.keyboard.press('Enter');
   await expect(form(page).getByRole('status')).toHaveText('Save and reload succeeded.');
   await expect(reason(page)).toHaveValue(''); expect(await calls(page)).toBe(1);
+});
+
+test('permission failure gives a safe actionable explanation instead of hiding the RPC error',async({page})=>{
+ await edit(page);await page.evaluate(()=>{fixture.settingsError={code:'42501',message:'private.internal SQL diagnostic'};});
+ await save(page).click();await expect(form(page).getByRole('status')).toContainText('active administrator');
+ await expect(form(page)).not.toContainText('private.internal');expect(await calls(page)).toBe(1);
+});
+test('server change before save rejects stale revision without overwriting the newer settings',async({page})=>{
+ await edit(page);await page.evaluate(()=>{fixture.manualSettings.review_threshold=800;fixture.manualSettings.settings_revision='newer-revision';});
+ await save(page).click();await expect(form(page).getByRole('status')).toContainText('changed');
+ expect(await page.evaluate(()=>fixture.manualSettings.review_threshold)).toBe(800);
+ await reload(page).click();await expect(form(page).getByRole('alert')).toContainText('Server settings changed');
+});
+
+test('missing checked settings backend is explicit and cannot fall back to a write',async({page})=>{
+ await page.evaluate(()=>{delete fixture.manualSettings.settings_revision;});await reload(page).click();await edit(page);
+ await expect(form(page).getByRole('alert')).toContainText('not installed');await expect(save(page)).toBeDisabled();expect(await calls(page)).toBe(0);
+});
+test('offline save cannot submit',async({page,context})=>{
+ await edit(page);await context.setOffline(true);await expect(save(page)).toBeDisabled();await expect(form(page).getByRole('alert')).toContainText('Offline');expect(await calls(page)).toBe(0);
+});
+test('account switch clears prior admin busy state and late completion cannot replace the new form',async({page})=>{
+ await edit(page);await page.evaluate(()=>fixture.deferSettings=true);await save(page).click();await expect(save(page)).toBeDisabled();
+ await page.evaluate(async()=>{await fixture.setUser({id:'second-synthetic-settings-admin',role:'admin'});});
+ await expect(threshold(page)).toBeEnabled();await page.evaluate(()=>{fixture.deferSettings=false;fixture.releaseSettings();});
+ await expect(form(page).getByText('Save and reload succeeded.',{exact:true})).toHaveCount(0);
 });
