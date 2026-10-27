@@ -1,0 +1,95 @@
+name: OfficeBites staging backup and restore verification
+
+on:
+  workflow_dispatch:
+    inputs:
+      staging_project:
+        description: Type eyhmarmekioovcjibcbr to confirm staging only
+        required: true
+        type: string
+      no_schema_role_changes:
+        description: Operator confirms no concurrent schema or role changes during export
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: officebites-staging-backup
+  cancel-in-progress: false
+
+jobs:
+  backup:
+    if: github.ref == 'refs/heads/release/vendor-eft-legal-launch'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    environment: officebites-staging-backup
+    env:
+      OB_BACKUP_APPROVED_SHA: ${{ vars.STAGING_BACKUP_APPROVED_SHA }}
+      OB_RESTORE_IMAGE: ${{ vars.STAGING_RESTORE_IMAGE }}
+      OB_AGE_RECIPIENT: ${{ vars.STAGING_BACKUP_AGE_RECIPIENT }}
+      OB_CONFIRM_PROJECT: ${{ inputs.staging_project }}
+      OB_ROLE_FREEZE_CONFIRMED: ${{ inputs.no_schema_role_changes }}
+    steps:
+      - name: Checkout reviewed commit without persistent credentials
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 1
+          submodules: false
+
+      - name: Validate scope before obtaining database secrets
+        run: |
+          node checks/cloud/staging-backup.mjs allocate
+          bash -n checks/cloud/restore-staging-backup.sh
+
+      - name: Install tools on ephemeral cloud runner only
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends postgresql-client-17 node-pg age
+          /usr/lib/postgresql/17/bin/pg_dump --version
+          /usr/lib/postgresql/17/bin/pg_restore --version
+          age --version
+          docker --version
+          node --version
+          node -p "require('/usr/share/nodejs/pg/package.json').version"
+
+      - name: Export staging read-only
+        id: export
+        env:
+          OB_STAGING_DB_HOST: ${{ secrets.OFFICEBITES_STAGING_DB_HOST }}
+          OB_STAGING_DB_PASSWORD: ${{ secrets.OFFICEBITES_STAGING_DB_PASSWORD }}
+          OB_STAGING_DB_CA_CERT: ${{ secrets.OFFICEBITES_STAGING_DB_CA_CERT }}
+        run: node checks/cloud/staging-backup.mjs export
+
+      - name: Verify full restore without source credentials or network
+        if: success()
+        run: node checks/cloud/staging-backup.mjs restore
+
+      - name: Encrypt complete or failed-attempt evidence before upload
+        id: encrypt
+        if: always() && steps.export.outcome != 'skipped'
+        run: node checks/cloud/staging-backup.mjs encrypt
+
+      - name: Upload ciphertext and ciphertext hash only
+        if: always() && steps.encrypt.outcome == 'success'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: staging-eyhmarmekioovcjibcbr-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ steps.encrypt.outputs.ciphertext }}
+            ${{ steps.encrypt.outputs.ciphertext_hash }}
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 0
+          overwrite: false
+          include-hidden-files: false
+
+      - name: Remove only this run's private files and restore container
+        if: always()
+        run: node checks/cloud/staging-backup.mjs cleanup

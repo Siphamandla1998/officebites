@@ -1,0 +1,39 @@
+[
+  {
+    "observed_utc": "2026-10-27 11:56:45.375114+00",
+    "managed_tables": [
+      {
+        "rls": true,
+        "owner": "supabase_storage_admin",
+        "table": "buckets",
+        "schema": "storage",
+        "postgres_owner_membership": false,
+        "postgres_effective_owner_role": false
+      },
+      {
+        "rls": true,
+        "owner": "supabase_storage_admin",
+        "table": "objects",
+        "schema": "storage",
+        "postgres_owner_membership": false,
+        "postgres_effective_owner_role": false
+      }
+    ],
+    "roles": [
+      {
+        "name": "supabase_storage_admin",
+        "inherit": false,
+        "bypassrls": false,
+        "superuser": false,
+        "createrole": true
+      },
+      {
+        "name": "postgres",
+        "inherit": true,
+        "bypassrls": true,
+        "superuser": false,
+        "createrole": true
+      }
+    ]
+  }
+]

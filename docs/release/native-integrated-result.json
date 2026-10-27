@@ -1,0 +1,7 @@
+{
+  "observedUtc": "2026-10-27T12:06:36.651Z",
+  "engine": "PostgreSQL 17.10 on x86_64-windows, compiled by msvc-19.44.35226, 64-bit",
+  "assertions": 119,
+  "result": "passed",
+  "managedServices": "Auth/Storage contracts are fixtures; no PostgREST runtime proof"
+}

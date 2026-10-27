@@ -1,0 +1,51 @@
+{
+  "observedUtc": "2026-10-27 12:44:00 UTC",
+  "project": "eyhmarmekioovcjibcbr",
+  "source": "read-only Edge Functions management metadata; no function invoked; no hosted SQL",
+  "functions": [
+    {
+      "name": "payfast-initiate",
+      "status": "ACTIVE",
+      "version": 22,
+      "verifyJwt": false,
+      "sourceBundleSha256": "e6382b5feffa0f31135ae6bcea1d5fcd3f4816443a239e7b3242e9e5eadec3a7"
+    },
+    {
+      "name": "payfast-notify",
+      "status": "ACTIVE",
+      "version": 20,
+      "verifyJwt": false,
+      "sourceBundleSha256": "24717ba295a6473125d27b4b9f0b612c72699383521f139d48751ff158f81218"
+    },
+    {
+      "name": "admin-account-removal",
+      "status": "ACTIVE",
+      "version": 3,
+      "verifyJwt": true,
+      "sourceBundleSha256": "f69c6c421363bb19e083c934fc8ad1dd6d63d4a5c32a08a519e30dbe0ffc6ca0"
+    },
+    {
+      "name": "ozow-initiate",
+      "status": "ACTIVE",
+      "version": 4,
+      "verifyJwt": false,
+      "sourceBundleSha256": "9b5f5475ad983f13bc46ed11e7f8908ffb1b2a5c1cc77286531034d7eb7e2d84"
+    },
+    {
+      "name": "ozow-webhook",
+      "status": "ACTIVE",
+      "version": 4,
+      "verifyJwt": false,
+      "sourceBundleSha256": "49cd6408eaad82ad4cc10dff1c029fbe38cb2c73b7e35c878a3229efa7a1bc2c"
+    },
+    {
+      "name": "ozow-reconcile",
+      "status": "ACTIVE",
+      "version": 4,
+      "verifyJwt": true,
+      "sourceBundleSha256": "ba834e8ea24452c61b59e062c2a4cd9a33af341f0a4af50749eb309e02aa1385"
+    }
+  ],
+  "isolationVerified": false,
+  "reason": "Function metadata does not expose Auth hooks, SMTP, provider workers, DB cron, external queues or delivery sinks"
+}

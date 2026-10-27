@@ -1,0 +1,537 @@
+{
+  "projectRef": "eyhmarmekioovcjibcbr",
+  "newDatabaseObservation": {
+    "observed_utc": "2026-10-27T13:16:07.711231+00:00",
+    "event_triggers": [
+      {
+        "name": "issue_graphql_placeholder",
+        "event": "sql_drop",
+        "enabled": "O",
+        "function": "set_graphql_placeholder()"
+      },
+      {
+        "name": "pgrst_ddl_watch",
+        "event": "ddl_command_end",
+        "enabled": "O",
+        "function": "pgrst_ddl_watch()"
+      },
+      {
+        "name": "pgrst_drop_watch",
+        "event": "sql_drop",
+        "enabled": "O",
+        "function": "pgrst_drop_watch()"
+      },
+      {
+        "name": "issue_pg_cron_access",
+        "event": "ddl_command_end",
+        "enabled": "O",
+        "function": "grant_pg_cron_access()"
+      },
+      {
+        "name": "issue_pg_net_access",
+        "event": "ddl_command_end",
+        "enabled": "O",
+        "function": "grant_pg_net_access()"
+      },
+      {
+        "name": "issue_pg_graphql_access",
+        "event": "ddl_command_end",
+        "enabled": "O",
+        "function": "grant_pg_graphql_access()"
+      }
+    ],
+    "queue_relations": [
+      {
+        "name": "notifications",
+        "schema": "public"
+      }
+    ],
+    "channel_functions": [
+      {
+        "owner": "postgres",
+        "signature": "admin_preview_test_order(uuid)",
+        "definition_md5": "09e5731486c363bb1a0489be770fc103",
+        "http_call_syntax": false,
+        "notification_syntax": false
+      },
+      {
+        "owner": "postgres",
+        "signature": "admin_verify_payment(uuid,boolean)",
+        "definition_md5": "12c9e7edc408f5930e22ca58bf737594",
+        "http_call_syntax": false,
+        "notification_syntax": true
+      },
+      {
+        "owner": "postgres",
+        "signature": "confirm_payfast_payment(uuid,text,text,numeric,text,jsonb)",
+        "definition_md5": "8e0b0463a1c84106374f38a29c953bda",
+        "http_call_syntax": false,
+        "notification_syntax": true
+      },
+      {
+        "owner": "postgres",
+        "signature": "notify_chat_recipient()",
+        "definition_md5": "930939a8c50110580a554017e91a585a",
+        "http_call_syntax": false,
+        "notification_syntax": true
+      },
+      {
+        "owner": "postgres",
+        "signature": "notify_support_reply()",
+        "definition_md5": "31c02b304e6ff20def53feddc3f17e86",
+        "http_call_syntax": false,
+        "notification_syntax": true
+      },
+      {
+        "owner": "postgres",
+        "signature": "private.account_removal_preview(uuid,text,uuid)",
+        "definition_md5": "6b62375bf83d0a301c3fbe670f84878c",
+        "http_call_syntax": false,
+        "notification_syntax": false
+      },
+      {
+        "owner": "postgres",
+        "signature": "private.origin_event(uuid,text,text)",
+        "definition_md5": "3924b4dc68d66a34536e4f07632cdc4b",
+        "http_call_syntax": false,
+        "notification_syntax": true
+      },
+      {
+        "owner": "postgres",
+        "signature": "record_ozow_transaction(jsonb,text,text)",
+        "definition_md5": "4736649065fd9346e228cd5d76c6d932",
+        "http_call_syntax": false,
+        "notification_syntax": true
+      },
+      {
+        "owner": "postgres",
+        "signature": "update_suborder_status_and_notify(uuid,text)",
+        "definition_md5": "429194ce25e81fec4ed3535bad58b545",
+        "http_call_syntax": false,
+        "notification_syntax": true
+      }
+    ],
+    "channel_extensions": null,
+    "realtime_publications": [
+      {
+        "table": "messages",
+        "schema": "public",
+        "publication": "supabase_realtime"
+      },
+      {
+        "table": "notifications",
+        "schema": "public",
+        "publication": "supabase_realtime"
+      },
+      {
+        "table": "messages_2026_10_23",
+        "schema": "realtime",
+        "publication": "supabase_realtime_messages_publication"
+      },
+      {
+        "table": "messages_2026_10_24",
+        "schema": "realtime",
+        "publication": "supabase_realtime_messages_publication"
+      },
+      {
+        "table": "messages_2026_10_25",
+        "schema": "realtime",
+        "publication": "supabase_realtime_messages_publication"
+      },
+      {
+        "table": "messages_2026_10_26",
+        "schema": "realtime",
+        "publication": "supabase_realtime_messages_publication"
+      },
+      {
+        "table": "messages_2026_10_27",
+        "schema": "realtime",
+        "publication": "supabase_realtime_messages_publication"
+      },
+      {
+        "table": "messages_2026_10_28",
+        "schema": "realtime",
+        "publication": "supabase_realtime_messages_publication"
+      },
+      {
+        "table": "messages_2026_10_29",
+        "schema": "realtime",
+        "publication": "supabase_realtime_messages_publication"
+      }
+    ]
+  },
+  "databaseSelectOnly": true,
+  "edgeFunctionsInspectedWithoutInvocation": [
+    {
+      "slug": "payfast-initiate",
+      "status": "ACTIVE",
+      "version": 22,
+      "verifyJwt": false,
+      "sourceBundleSha256": "e6382b5feffa0f31135ae6bcea1d5fcd3f4816443a239e7b3242e9e5eadec3a7",
+      "files": [
+        {
+          "file": "payfast-initiate/index.ts",
+          "envNames": [
+            "SITE_URL",
+            "ALLOWED_ORIGINS",
+            "SUPABASE_URL",
+            "SUPABASE_SERVICE_ROLE_KEY",
+            "SUPABASE_ANON_KEY"
+          ],
+          "urls": [
+            "officebites.co.za"
+          ],
+          "calls": [
+            {
+              "line": 113,
+              "code": "const { data: order, error: preparationError } = await admin.rpc('prepare_payfast_order', {"
+            }
+          ]
+        },
+        {
+          "file": "_shared/payfast.ts",
+          "envNames": [
+            "PAYFAST_MODE",
+            "PAYFAST_MERCHANT_ID",
+            "PAYFAST_MERCHANT_KEY",
+            "PAYFAST_PASSPHRASE"
+          ],
+          "urls": [],
+          "calls": []
+        },
+        {
+          "file": "_shared/payment-origins.ts",
+          "envNames": [],
+          "urls": [
+            "officebites-n7cs82zjg-sp24tg-6983s-projects.vercel.app",
+            "officebites-git-feat-legal-vendor-da31dd-sp24tg-6983s-projects.vercel.app"
+          ],
+          "calls": []
+        }
+      ]
+    },
+    {
+      "slug": "payfast-notify",
+      "status": "ACTIVE",
+      "version": 20,
+      "verifyJwt": false,
+      "sourceBundleSha256": "24717ba295a6473125d27b4b9f0b612c72699383521f139d48751ff158f81218",
+      "files": [
+        {
+          "file": "payfast-notify/index.ts",
+          "envNames": [],
+          "urls": [],
+          "calls": [
+            {
+              "line": 204,
+              "code": "await fetch("
+            },
+            {
+              "line": 380,
+              "code": "} = await admin.rpc("
+            }
+          ]
+        },
+        {
+          "file": "_shared/payfast.ts",
+          "envNames": [
+            "PAYFAST_MODE",
+            "PAYFAST_MERCHANT_ID",
+            "PAYFAST_MERCHANT_KEY",
+            "PAYFAST_PASSPHRASE"
+          ],
+          "urls": [
+            "developers.payfast.co.za"
+          ],
+          "calls": []
+        }
+      ]
+    },
+    {
+      "slug": "admin-account-removal",
+      "status": "ACTIVE",
+      "version": 3,
+      "verifyJwt": true,
+      "sourceBundleSha256": "f69c6c421363bb19e083c934fc8ad1dd6d63d4a5c32a08a519e30dbe0ffc6ca0",
+      "files": [
+        {
+          "file": "admin-account-removal/index.ts",
+          "envNames": [
+            "OFFICEBITES_ALLOWED_ORIGINS",
+            "SUPABASE_URL",
+            "SUPABASE_ANON_KEY",
+            "SUPABASE_SERVICE_ROLE_KEY"
+          ],
+          "urls": [
+            "officebites.co.za",
+            "www.officebites.co.za"
+          ],
+          "calls": [
+            {
+              "line": 24,
+              "code": "const preview = await caller.rpc('admin_preview_account_removal', { p_kind: input.kind, p_id: input.id });"
+            }
+          ]
+        },
+        {
+          "file": "_shared/account-removal.ts",
+          "envNames": [],
+          "urls": [],
+          "calls": [
+            {
+              "line": 3,
+              "code": "const prepared = await admin.rpc('prepare_account_removal', { p_actor: actorId, p_kind: input.kind, p_id: input.id, p_fingerprint: input.fingerprint, p_confirmation: input.confirmation });"
+            },
+            {
+              "line": 9,
+              "code": "const ban = await admin.auth.admin.updateUserById(target, { ban_duration: '876000h' });"
+            },
+            {
+              "line": 22,
+              "code": "const deletion = await admin.auth.admin.deleteUser(target);"
+            },
+            {
+              "line": 24,
+              "code": "const complete = await admin.rpc('complete_account_removal', { p_actor: actorId, p_job_id: jobId });"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "ozow-initiate",
+      "status": "ACTIVE",
+      "version": 4,
+      "verifyJwt": false,
+      "sourceBundleSha256": "9b5f5475ad983f13bc46ed11e7f8908ffb1b2a5c1cc77286531034d7eb7e2d84",
+      "files": [
+        {
+          "file": "ozow-initiate/index.ts",
+          "envNames": [],
+          "urls": [],
+          "calls": []
+        },
+        {
+          "file": "_shared/ozow-handlers.ts",
+          "envNames": [
+            "ALLOWED_ORIGINS",
+            "SUPABASE_URL",
+            "OZOW_ENVIRONMENT",
+            "OZOW_INITIATION_ENABLED",
+            "OZOW_RECONCILIATION_ENABLED",
+            "OZOW_SITE_CODE",
+            "OZOW_CLIENT_ID",
+            "OZOW_CLIENT_SECRET",
+            "OZOW_WEBHOOK_SECRET",
+            "OZOW_RETURN_ORIGIN",
+            "OZOW_BENEFICIARY_REFERENCE"
+          ],
+          "urls": [
+            "eyhmarmekioovcjibcbr.supabase.co",
+            "officebites-git-feat-legal-vendor-da31dd-sp24tg-6983s-projects.vercel.app"
+          ],
+          "calls": [
+            {
+              "line": 66,
+              "code": "const attempt=await deps.rpc('begin_ozow_attempt',{p_order_id:body.orderId,p_caller_id:caller,"
+            },
+            {
+              "line": 71,
+              "code": "await deps.rpc('bind_ozow_payment',{p_attempt_id:attempt.id,p_payment_id:payment.id,p_redirect_url:payment.redirectUrl});"
+            },
+            {
+              "line": 77,
+              "code": "const attempt=await deps.rpc('get_ozow_attempt',{p_reference:transaction.merchantReference}) as {site_code:string;amount:number;currency:string;environment:string}|null;"
+            },
+            {
+              "line": 79,
+              "code": "const result=await deps.rpc('record_ozow_transaction',{p_transaction:transaction,p_environment:'staging',p_delivery_id:deliveryId});"
+            }
+          ]
+        },
+        {
+          "file": "_shared/ozow.ts",
+          "envNames": [],
+          "urls": [
+            "stagingone.ozow.com",
+            "one.ozow.com"
+          ],
+          "calls": []
+        },
+        {
+          "file": "_shared/ozow-runtime.ts",
+          "envNames": [
+            "SUPABASE_URL",
+            "SUPABASE_SERVICE_ROLE_KEY",
+            "SUPABASE_ANON_KEY"
+          ],
+          "urls": [],
+          "calls": [
+            {
+              "line": 11,
+              "code": "rpc:async(name,args)=>{const {data,error}=await admin.rpc(name,args);if(error)throw new Error('RPC rejected');return data;},"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "ozow-webhook",
+      "status": "ACTIVE",
+      "version": 4,
+      "verifyJwt": false,
+      "sourceBundleSha256": "49cd6408eaad82ad4cc10dff1c029fbe38cb2c73b7e35c878a3229efa7a1bc2c",
+      "files": [
+        {
+          "file": "ozow-webhook/index.ts",
+          "envNames": [],
+          "urls": [],
+          "calls": []
+        },
+        {
+          "file": "_shared/ozow-handlers.ts",
+          "envNames": [
+            "ALLOWED_ORIGINS",
+            "SUPABASE_URL",
+            "OZOW_ENVIRONMENT",
+            "OZOW_INITIATION_ENABLED",
+            "OZOW_RECONCILIATION_ENABLED",
+            "OZOW_SITE_CODE",
+            "OZOW_CLIENT_ID",
+            "OZOW_CLIENT_SECRET",
+            "OZOW_WEBHOOK_SECRET",
+            "OZOW_RETURN_ORIGIN",
+            "OZOW_BENEFICIARY_REFERENCE"
+          ],
+          "urls": [
+            "eyhmarmekioovcjibcbr.supabase.co",
+            "officebites-git-feat-legal-vendor-da31dd-sp24tg-6983s-projects.vercel.app"
+          ],
+          "calls": [
+            {
+              "line": 66,
+              "code": "const attempt=await deps.rpc('begin_ozow_attempt',{p_order_id:body.orderId,p_caller_id:caller,"
+            },
+            {
+              "line": 71,
+              "code": "await deps.rpc('bind_ozow_payment',{p_attempt_id:attempt.id,p_payment_id:payment.id,p_redirect_url:payment.redirectUrl});"
+            },
+            {
+              "line": 77,
+              "code": "const attempt=await deps.rpc('get_ozow_attempt',{p_reference:transaction.merchantReference}) as {site_code:string;amount:number;currency:string;environment:string}|null;"
+            },
+            {
+              "line": 79,
+              "code": "const result=await deps.rpc('record_ozow_transaction',{p_transaction:transaction,p_environment:'staging',p_delivery_id:deliveryId});"
+            }
+          ]
+        },
+        {
+          "file": "_shared/ozow.ts",
+          "envNames": [],
+          "urls": [
+            "stagingone.ozow.com",
+            "one.ozow.com"
+          ],
+          "calls": []
+        },
+        {
+          "file": "_shared/ozow-runtime.ts",
+          "envNames": [
+            "SUPABASE_URL",
+            "SUPABASE_SERVICE_ROLE_KEY",
+            "SUPABASE_ANON_KEY"
+          ],
+          "urls": [],
+          "calls": [
+            {
+              "line": 11,
+              "code": "rpc:async(name,args)=>{const {data,error}=await admin.rpc(name,args);if(error)throw new Error('RPC rejected');return data;},"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "ozow-reconcile",
+      "status": "ACTIVE",
+      "version": 4,
+      "verifyJwt": true,
+      "sourceBundleSha256": "ba834e8ea24452c61b59e062c2a4cd9a33af341f0a4af50749eb309e02aa1385",
+      "files": [
+        {
+          "file": "ozow-reconcile/index.ts",
+          "envNames": [],
+          "urls": [],
+          "calls": []
+        },
+        {
+          "file": "_shared/ozow-handlers.ts",
+          "envNames": [
+            "ALLOWED_ORIGINS",
+            "SUPABASE_URL",
+            "OZOW_ENVIRONMENT",
+            "OZOW_INITIATION_ENABLED",
+            "OZOW_RECONCILIATION_ENABLED",
+            "OZOW_SITE_CODE",
+            "OZOW_CLIENT_ID",
+            "OZOW_CLIENT_SECRET",
+            "OZOW_WEBHOOK_SECRET",
+            "OZOW_RETURN_ORIGIN",
+            "OZOW_BENEFICIARY_REFERENCE"
+          ],
+          "urls": [
+            "eyhmarmekioovcjibcbr.supabase.co",
+            "officebites-git-feat-legal-vendor-da31dd-sp24tg-6983s-projects.vercel.app"
+          ],
+          "calls": [
+            {
+              "line": 66,
+              "code": "const attempt=await deps.rpc('begin_ozow_attempt',{p_order_id:body.orderId,p_caller_id:caller,"
+            },
+            {
+              "line": 71,
+              "code": "await deps.rpc('bind_ozow_payment',{p_attempt_id:attempt.id,p_payment_id:payment.id,p_redirect_url:payment.redirectUrl});"
+            },
+            {
+              "line": 77,
+              "code": "const attempt=await deps.rpc('get_ozow_attempt',{p_reference:transaction.merchantReference}) as {site_code:string;amount:number;currency:string;environment:string}|null;"
+            },
+            {
+              "line": 79,
+              "code": "const result=await deps.rpc('record_ozow_transaction',{p_transaction:transaction,p_environment:'staging',p_delivery_id:deliveryId});"
+            }
+          ]
+        },
+        {
+          "file": "_shared/ozow.ts",
+          "envNames": [],
+          "urls": [
+            "stagingone.ozow.com",
+            "one.ozow.com"
+          ],
+          "calls": []
+        },
+        {
+          "file": "_shared/ozow-runtime.ts",
+          "envNames": [
+            "SUPABASE_URL",
+            "SUPABASE_SERVICE_ROLE_KEY",
+            "SUPABASE_ANON_KEY"
+          ],
+          "urls": [],
+          "calls": [
+            {
+              "line": 11,
+              "code": "rpc:async(name,args)=>{const {data,error}=await admin.rpc(name,args);if(error)throw new Error('RPC rejected');return data;},"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "scopeLimits": "Static source inspection and metadata only; runtime environment values, scheduled invocations, Auth delivery, provider destinations and transport isolation remain UNKNOWN.",
+  "operatorEvidenceProvided": false,
+  "maintenanceAccepted": false
+}
+

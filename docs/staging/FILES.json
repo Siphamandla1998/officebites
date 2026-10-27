@@ -1,0 +1,130 @@
+{
+  "preparedUtc": "2026-10-27T12:58:16.365Z",
+  "hostedSqlExecuted": false,
+  "files": [
+    {
+      "file": "checks/prepare-staging-integration.mjs",
+      "sha256": "4b4c337d139696ab2b671706e396655d94a2996fc315f9bb95e118c6edcb985c"
+    },
+    {
+      "file": "checks/native-staging-installation.mjs",
+      "sha256": "e3336a80853fd8d0880703b70aa27b5057b169b33b38c29262a2b5a955dd5c28"
+    },
+    {
+      "file": "checks/native-staging-recovery.mjs",
+      "sha256": "3a3a6ae038da3197815fb74a922c6806abe19c090644722eb1284622bbb9cd94"
+    },
+    {
+      "file": "checks/staging-forward-containment.sql",
+      "sha256": "828d57ee2b231115b4e15817e34283868eee0adf4734e753e9c0c0ac290fb296"
+    },
+    {
+      "file": "checks/staging-cold-restore.mjs",
+      "sha256": "fdd8fcc246eca85c147189c2b48d035d241bef6f59c94e763d11ba46eec19ead"
+    },
+    {
+      "file": "checks/staging-recovery-drill.ps1",
+      "sha256": "a0bfdc753c37020946d95b42bf7784e894ab9475d5e34ebdbe97163ba0d052c6"
+    },
+    {
+      "file": "checks/verify-staging-cold-restore.mjs",
+      "sha256": "3358387a614d741d06e9db3096e8f961a593f9d760b5d03e7e46c3fe52951022"
+    },
+    {
+      "file": "checks/verify-staging-query-files.mjs",
+      "sha256": "cd574056e97228044aed117f491d8775ed59627b6daf66b7c45082dbf5d0ff69"
+    },
+    {
+      "file": "checks/staging-installation-preflight.sql",
+      "sha256": "b892e5babb2c150467b2d788bf6bd5f1404069712202b5e4edd625277b6268e5"
+    },
+    {
+      "file": "checks/staging-installation-postflight.sql",
+      "sha256": "2fcd5b44e579160dbe2540c58c2239b34536fc2ffdc5f91b105f3a761b5870c6"
+    },
+    {
+      "file": "checks/she-cooks-existing-account-preflight.sql",
+      "sha256": "cf5dfbbf0fd3f974207ebea87d583d8752d226455dc1e43081f5b19a487a5f11"
+    },
+    {
+      "file": "release/staging-candidates/20261027123110_staging_integrated_vendor_legal_payments.sql",
+      "sha256": "094bb368b642668e5b7fc55e2a8e1c07ada1c4450dfc62d721b5ce3121cae695"
+    },
+    {
+      "file": "release/staging-candidates/20261027123110_staging_integrated_vendor_legal_payments.installation.sql",
+      "sha256": "e97b3d1a71d939173917f0a936ed8adb648b783f6d6013981def720994ed4ed4"
+    },
+    {
+      "file": "release/staging-candidates/20261027123115_staging_compliance_storage_policies.sql",
+      "sha256": "14341ece653a76ec2bdf510effda2f54347d6361dff02f490c49cec6abe078e1"
+    },
+    {
+      "file": "release/staging-candidates/20261027123115_staging_compliance_storage_policies.installation.sql",
+      "sha256": "b6ca7f74d9ecb20bb3089f048ee6f5a00fe326370787fe50879b62f78bd42c9d"
+    },
+    {
+      "file": "docs/release/staging-installation-manifest.json",
+      "sha256": "c768fa9d5c127cd03dfde984063f524f317a903682191def4401d54b3a1e9113"
+    },
+    {
+      "file": "docs/release/staging-preimage-rehearsal.json",
+      "sha256": "96e279936558fe58b821456d2006a263525cbccbab4bb914b24f685ba8938724"
+    },
+    {
+      "file": "docs/release/native-staging-installation-result.json",
+      "sha256": "a063d000093324cd3c5bb21d6a6401bd2dd869a9a3cb2a0e6322528f71b8d5e6"
+    },
+    {
+      "file": "docs/release/staging-query-file-tests.json",
+      "sha256": "62f6f2a5287089264f6d834fbd3bdff183bfbd88bf222ad6b770f0ad1e6ac143"
+    },
+    {
+      "file": "docs/release/staging-channel-control-plane.json",
+      "sha256": "3effd4a5aa31f62adc43b10100cc94559a2a150268a06ec85f464efafaecb97d"
+    },
+    {
+      "file": "docs/staging/DOCUMENTS-AND-EXISTING-VENDOR.md",
+      "sha256": "4bb50af38fa79a6495972a680320dcc23f7173cb3df22c9d273783a174cc8599"
+    },
+    {
+      "file": "docs/staging/EVIDENCE-CHECKLIST.md",
+      "sha256": "151f5aec918604612fede965ecdd0060c37d5505348d6853b093066e3a067310"
+    },
+    {
+      "file": "docs/staging/INSTALL-AND-UAT.md",
+      "sha256": "8f6b03a18c4189d75189a41f7b54a1f0e95b93f35bcb96e9fcb5e50b127651ba"
+    },
+    {
+      "file": "docs/staging/OWNER-APPROVAL-RECORD.json",
+      "sha256": "5fec25c3ef19f156c032e05049ab7c694427b1dcdd59682f73cbf7fdc7b27d06"
+    },
+    {
+      "file": "docs/staging/SUPABASE-POLICY-AND-API-REQUEST.md",
+      "sha256": "0451fbec3e3a137f34c718efb1b9a9a226223429ac8d8a2d5fcea3c15a0ac1d4"
+    },
+    {
+      "file": "checks/staging-handoff-manifest.mjs",
+      "sha256": "0cd58da361953b733c206fdc68976fae7189df65c31374c3b8319520ad135ee5"
+    },
+    {
+      "file": "checks/validate-staging-handoff.mjs",
+      "sha256": "8c76c3879cf0a3d811df551022085c53bc055e07cba5cf913b69b2b29d924787"
+    },
+    {
+      "file": "checks/native-release-scenarios.mjs",
+      "sha256": "2eac594a32d9b8a467f00f7bddd12078fba4c5ea27d4006e826742ecce84ae09"
+    },
+    {
+      "file": "release/staging-candidates/README.md",
+      "sha256": "cdc1db032ae3bb8c36818206899d859549ab019e55249d6725170566c2078948"
+    },
+    {
+      "file": "docs/release/staging-cold-restore-preimage.json",
+      "sha256": "6b98a8f62ed5bff07f7092978bd360b5ec8a1ddb4e5dd7ee4156f289b0bfe227"
+    },
+    {
+      "file": "docs/release/staging-cold-restore-result.json",
+      "sha256": "8109afd225a2736785e49859d4c1896d8217e21a2ad086d8e47c0fc36baa6eea"
+    }
+  ]
+}

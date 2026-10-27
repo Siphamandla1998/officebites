@@ -1,0 +1,9 @@
+{
+  "observedUtc": "2026-10-27T12:58:16.659Z",
+  "result": "passed",
+  "artifactHashes": 31,
+  "originalProductionCandidatesUnchanged": 4,
+  "secretPatternScan": "No private keys, AWS access IDs, Supabase secret keys or JWT literals detected in handoff artifacts; not proof against every possible sensitive value",
+  "separateChecks": "Run node --check, git diff --check and npm run lint separately; this validator does not spawn child processes",
+  "hostedSqlExecuted": false
+}

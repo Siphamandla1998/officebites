@@ -1,0 +1,16 @@
+{
+  "id": "gfzhdkitdyqftealgqfi",
+  "ref": "gfzhdkitdyqftealgqfi",
+  "organization_id": "uhgbmvutojjkmsfyotdk",
+  "organization_slug": "uhgbmvutojjkmsfyotdk",
+  "name": "OfficeBites",
+  "region": "eu-west-1",
+  "status": "ACTIVE_HEALTHY",
+  "database": {
+    "host": "db.gfzhdkitdyqftealgqfi.supabase.co",
+    "version": "17.6.1.147",
+    "postgres_engine": "17",
+    "release_channel": "ga"
+  },
+  "created_at": "2026-07-27T08:09:59.372849Z"
+}

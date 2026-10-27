@@ -1,0 +1,79 @@
+[
+  {
+    "observed_utc": "2026-10-27 12:11:06.381163+00",
+    "schemas": [
+      {
+        "acl": [
+          "supabase_admin=UC/supabase_admin",
+          "postgres=U*/supabase_admin",
+          "anon=U/supabase_admin",
+          "authenticated=U/supabase_admin",
+          "service_role=U/supabase_admin",
+          "supabase_storage_admin=U*C*/supabase_admin",
+          "dashboard_user=UC/supabase_admin"
+        ],
+        "owner": "supabase_admin",
+        "schema": "storage",
+        "managed_usage": true
+      },
+      {
+        "acl": [
+          "postgres=UC/postgres",
+          "anon=U/postgres",
+          "authenticated=U/postgres",
+          "service_role=U/postgres"
+        ],
+        "owner": "postgres",
+        "schema": "private",
+        "managed_usage": false
+      }
+    ],
+    "postgres_memberships": [
+      {
+        "role": "pg_monitor",
+        "member": "postgres",
+        "admin_option": true
+      },
+      {
+        "role": "pg_signal_backend",
+        "member": "postgres",
+        "admin_option": true
+      },
+      {
+        "role": "pg_read_all_data",
+        "member": "postgres",
+        "admin_option": true
+      },
+      {
+        "role": "pg_create_subscription",
+        "member": "postgres",
+        "admin_option": true
+      },
+      {
+        "role": "anon",
+        "member": "postgres",
+        "admin_option": true
+      },
+      {
+        "role": "authenticated",
+        "member": "postgres",
+        "admin_option": true
+      },
+      {
+        "role": "service_role",
+        "member": "postgres",
+        "admin_option": true
+      },
+      {
+        "role": "authenticator",
+        "member": "postgres",
+        "admin_option": true
+      },
+      {
+        "role": "supabase_privileged_role",
+        "member": "postgres",
+        "admin_option": false
+      }
+    ]
+  }
+]

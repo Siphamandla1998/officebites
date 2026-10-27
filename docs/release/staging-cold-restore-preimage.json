@@ -1,0 +1,75 @@
+{
+  "observedUtc": "2026-10-27T12:42:28.381Z",
+  "database": "officebites_staging_disposable_1793104930335",
+  "sourceDataDirectory": ".officebites-local/pg-release-owner-data",
+  "restoreDataDirectory": ".officebites-local/pg-staging-recovery-copy-20261027",
+  "restorePort": 55442,
+  "syntheticOnly": true,
+  "tables": [
+    {
+      "table": "public.orders",
+      "count": 7,
+      "digest": "617d6704fe931d506886c68dd577019e"
+    },
+    {
+      "table": "public.order_suborders",
+      "count": 7,
+      "digest": "46e7012f3b25787abaaa8d8266e46337"
+    },
+    {
+      "table": "public.order_items",
+      "count": 7,
+      "digest": "d40d220a28facc382decd40bc0be53cf"
+    },
+    {
+      "table": "public.vendors",
+      "count": 3,
+      "digest": "25b60eabb16c3ce8085b56d144654368"
+    },
+    {
+      "table": "private.vendor_legal_acceptances",
+      "count": 2,
+      "digest": "dd0ad92745c31c730f53ccadba138af6"
+    },
+    {
+      "table": "private.vendor_legal_assignments",
+      "count": 1,
+      "digest": "dc99ada7961825354efee703b507587e"
+    },
+    {
+      "table": "private.order_legal_acceptances",
+      "count": 6,
+      "digest": "f8d442c07d66cecd9363ab638ba63052"
+    },
+    {
+      "table": "private.vendor_compliance_events",
+      "count": 18,
+      "digest": "f5a45d6774b77dc4a59878af6f851d8b"
+    },
+    {
+      "table": "private.vendor_payment_profiles",
+      "count": 1,
+      "digest": "b73dcc24ea4e261ff2fd8de71976d671"
+    },
+    {
+      "table": "private.manual_order_payments",
+      "count": 6,
+      "digest": "fafb38c24f47e7de196123c0ec736ffb"
+    },
+    {
+      "table": "private.manual_payment_events",
+      "count": 20,
+      "digest": "1af2f46db275346eb24435787005bb47"
+    },
+    {
+      "table": "private.manual_receivables",
+      "count": 3,
+      "digest": "37ded11ed93cef0dbfc7de2b2569bc2e"
+    },
+    {
+      "table": "private.manual_receivable_entries",
+      "count": 1,
+      "digest": "411852eb9479b0b6aa129bb398354208"
+    }
+  ]
+}

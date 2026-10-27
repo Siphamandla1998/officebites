@@ -1,0 +1,57 @@
+{
+  "projectRef": "eyhmarmekioovcjibcbr",
+  "templateOnly": true,
+  "status": "PENDING",
+  "releaseOwner": "OfficeBites release owner (user)",
+  "ownerStatement": "No maintenance window or recovery RPO/RTO acceptance has been documented. Do not install migrations or change hosted settings until technical evidence and approval are complete.",
+  "maintenanceAccepted": false,
+  "windowStartSast": null,
+  "windowEndSast": null,
+  "executor": null,
+  "stopDecisionOwner": null,
+  "maximumAcceptedDataLossRpo": null,
+  "maximumAcceptedRecoveryTimeRto": null,
+  "recoveryTargetsAccepted": false,
+  "selectedBackupOrRestorePointReference": null,
+  "databaseRecoveryEvidenceReference": null,
+  "storageBytesRecoveryEvidenceReference": null,
+  "externalConfigRecoveryEvidenceReference": null,
+  "postRestoreObligationReconciliationOwner": null,
+  "notificationIsolationAttestationReference": null,
+  "technicalGateReportReference": "FINAL-INSTALLATION-GATE-20261027.md",
+  "applicationInstallerVersion": "20261027123110",
+  "storagePolicyInstallerVersion": "20261027123115",
+  "approvedBundleHashes": null,
+  "installationOnlyApproval": {
+    "approved": false,
+    "approvedBy": null,
+    "approvedAtSast": null,
+    "approvalReference": null,
+    "bucketCreationApproved": false,
+    "sqlExecutorAndRunnerConfirmed": false,
+    "immediateGuardRecheckEvidenceReference": null
+  },
+  "authSettingChangeApproval": {
+    "approved": false,
+    "setting": "Prevent use of leaked passwords",
+    "desiredValue": "enabled",
+    "planEligibilityVerified": false,
+    "approvedBy": null,
+    "approvalReference": null
+  },
+  "separateFutureUatApproval": false,
+  "paymentActivationApproved": false,
+  "legalPublicationApproved": false,
+  "productionChangesApproved": false,
+  "stopConditions": [
+    "Any baseline/history/fingerprint/owner/grant drift",
+    "Unverified notification isolation or recovery",
+    "Wrong project or non-postgres application executor",
+    "Unexpected enabled payment or legal rollout",
+    "Bucket limits/policies differ",
+    "Connection outcome cannot be reconciled against ledger"
+  ],
+  "containmentReference": "checks/staging-forward-containment.sql",
+  "containmentExecutionApproved": false
+}
+

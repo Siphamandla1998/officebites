@@ -1,0 +1,63 @@
+﻿{
+    "observedUtc":  "2026-10-27T09:30:10.7988652Z",
+    "host":  "officebites.co.za",
+    "httpStatus":  200,
+    "assets":  [
+                   {
+                       "asset":  "/assets/authService-BSJeHlQU.js",
+                       "httpStatus":  200,
+                       "decodedTextSha256":  "e99202c04c9cad513086f62cc7e4af639362e6a984ad27b39f0bbd3b649e4780",
+                       "supabaseHosts":  [
+
+                                         ]
+                   },
+                   {
+                       "asset":  "/assets/constants-BJgsnS6_.js",
+                       "httpStatus":  200,
+                       "decodedTextSha256":  "ac82333fc2f3a2118d92616043068e5d23581c0519889d730e3bc9a180ac430e",
+                       "supabaseHosts":  [
+
+                                         ]
+                   },
+                   {
+                       "asset":  "/assets/fi-Ci9chMD9.js",
+                       "httpStatus":  200,
+                       "decodedTextSha256":  "5e875f2531ce0dd04617c2c55623f05e3afbd14bc9234de77618bcdf2a8c7cdd",
+                       "supabaseHosts":  [
+
+                                         ]
+                   },
+                   {
+                       "asset":  "/assets/index-XOi8zB1P.js",
+                       "httpStatus":  200,
+                       "decodedTextSha256":  "9e5226a5b272bdba9ec05b73109cd94b8de30aed1f22d99cb753ba974238c59c",
+                       "supabaseHosts":  [
+
+                                         ]
+                   },
+                   {
+                       "asset":  "/assets/jsx-runtime-CbZIRoI9.js",
+                       "httpStatus":  200,
+                       "decodedTextSha256":  "2c0255b3d1c014e0890a03fb43b336a71d12c85848a8438eb95fd06308fc3842",
+                       "supabaseHosts":  [
+
+                                         ]
+                   },
+                   {
+                       "asset":  "/assets/reportingDates-X9orqd3t.js",
+                       "httpStatus":  200,
+                       "decodedTextSha256":  "fa4928720c0c72114ddffc06762258a30155fa635fc1811dc4bb0c9f7f222bbb",
+                       "supabaseHosts":  [
+
+                                         ]
+                   },
+                   {
+                       "asset":  "/assets/supabaseClient-l9VSwrPa.js",
+                       "httpStatus":  200,
+                       "decodedTextSha256":  "4e2dc74fd21a74861cdb19ef522edc024bfbfcbb7e59d9f4707ce2c257ab5301",
+                       "supabaseHosts":  [
+                                             "gfzhdkitdyqftealgqfi.supabase.co"
+                                         ]
+                   }
+               ]
+}

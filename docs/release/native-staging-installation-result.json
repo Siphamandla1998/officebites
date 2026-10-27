@@ -1,0 +1,9 @@
+{
+  "observedUtc": "2026-10-27T12:42:28.383Z",
+  "assertions": 139,
+  "result": "passed",
+  "baseline": "captured 54-history plus 10 exact function preimages",
+  "ownership": "non-superuser application; distinct managed owner fallback",
+  "preferredHostedPolicyPath": "supautils delegation not installed locally; operator confirmation required",
+  "hostedSqlExecuted": false
+}

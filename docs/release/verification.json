@@ -1,0 +1,97 @@
+{
+  "observedUtc": "2026-10-27T10:23:12.054Z",
+  "status": "LOCAL_CANDIDATE_PRODUCTION_NO_GO",
+  "checks": [
+    {
+      "command": "node node_modules/vite/bin/vite.js build",
+      "result": "PASS",
+      "scope": "Final frontend/PWA only"
+    },
+    {
+      "command": "node node_modules/oxlint/bin/oxlint",
+      "result": "PASS",
+      "existingWarnings": 9
+    },
+    {
+      "command": "node checks/phase-e-service.mjs",
+      "result": "PASS",
+      "assertions": 15,
+      "network": "SDK mocked"
+    },
+    {
+      "command": "node checks/frontend-public-config.mjs --self-test",
+      "result": "PASS",
+      "assertions": 6
+    },
+    {
+      "command": "node checks/frontend-public-config.mjs",
+      "result": "BLOCKED_EXPECTED_NONZERO",
+      "missing": [
+        "VITE_SUPABASE_URL",
+        "VITE_SUPABASE_PUBLISHABLE_KEY"
+      ]
+    },
+    {
+      "command": "node checks/verify-reference-security.mjs",
+      "result": "PASS",
+      "scope": "Fresh in-memory reference foundations, not production"
+    },
+    {
+      "command": "node checks/verify-launch-guards.mjs",
+      "result": "PASS",
+      "newAssertions": 25,
+      "prerequisiteAssertions": {
+        "B": 47,
+        "C": 63,
+        "D": 54,
+        "E": 69,
+        "manual": 110
+      },
+      "scope": "Fresh PGlite only, not native concurrency"
+    },
+    {
+      "command": "node checks/production-grants.test.mjs",
+      "result": "PASS",
+      "assertions": 18,
+      "scope": "Fresh PGlite subset fixture"
+    },
+    {
+      "command": "node checks/production-grants.test.mjs --native",
+      "result": "PASS",
+      "assertions": 18,
+      "engine": "PostgreSQL 17.10",
+      "host": "127.0.0.1",
+      "port": 55439,
+      "database": "officebites_release_grants_disposable",
+      "scope": "Exact newly initialized data-directory identity checked before creating DB/mutating; no full production rehearsal or concurrency claim",
+      "serverStopped": true
+    },
+    {
+      "command": "playwright test (launch suites)",
+      "result": "65_PASS_1_FAIL_BEFORE_FIXTURE_CORRECTION",
+      "failedCase": "admin assists pending vendor banking and cannot approve own submission",
+      "reason": "Merged harness omitted fixtureAdminVendors selector data"
+    },
+    {
+      "command": "playwright test checks/manual-profile-browser.spec.mjs checks/vendor-compliance-browser.spec.mjs",
+      "result": "PASS",
+      "tests": 11,
+      "scope": "Corrected bank fixture and final legacy warning"
+    },
+    {
+      "command": "playwright test checks/manual-payments-browser.spec.mjs checks/launch-scope-browser.spec.mjs",
+      "result": "PASS",
+      "tests": 20,
+      "scope": "Final method whitelist and payment/support flows"
+    },
+    {
+      "command": "git diff --check",
+      "result": "PASS",
+      "scope": "Tracked release diffs; CRLF notices only"
+    },
+    {
+      "check": "Full production foundation installer/native concurrency/hosted service transport",
+      "result": "BLOCKED_NOT_RUN"
+    }
+  ]
+}

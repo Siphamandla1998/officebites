@@ -1,0 +1,41 @@
+{
+  "result": {
+    "deployment": {
+      "id": "dpl_9mWoxNCL9NqX7DHKAUy7NCfBWGnt",
+      "name": "officebites",
+      "url": "officebites-ms6sjgmw8-sp24tg-6983s-projects.vercel.app",
+      "type": "LAMBDAS",
+      "state": "READY",
+      "createdAt": 1791629339987,
+      "creator": {
+        "uid": "iLVxiMya3sxavsU31H4Inddy",
+        "username": "sp24tg-6983"
+      },
+      "project": {
+        "id": "prj_bGDTykMMQufLAJ2CkjvnOAq4KQ71",
+        "name": "officebites",
+        "framework": "vite"
+      },
+      "meta": {
+        "githubCommitRef": "fix/backend-staging-completion",
+        "githubCommitSha": "ee258d614e46eb3ae7a1957ffb11ff7a3c819180",
+        "githubCommitMessage": "Show customer names on payments and simplify account removal confirmation",
+        "githubRepo": "officebites",
+        "githubOrg": "Siphamandla1998"
+      },
+      "alias": [
+        "officebites.co.za",
+        "www.officebites.co.za",
+        "officebites-pi.vercel.app"
+      ],
+      "target": "production",
+      "regions": [
+        "iad1"
+      ],
+      "buildingAt": 1791629343692,
+      "ready": 1791629364274,
+      "readyState": "READY",
+      "aliasError": null
+    }
+  }
+}

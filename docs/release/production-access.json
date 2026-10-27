@@ -1,0 +1,1659 @@
+[
+  {
+    "observed_utc": "2026-10-27 09:06:33.399426+00",
+    "policies": [
+      {
+        "cmd": "ALL",
+        "qual": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))",
+        "roles": [
+          "anon",
+          "authenticated"
+        ],
+        "tablename": "order_items",
+        "permissive": "RESTRICTIVE",
+        "policyname": "active_account_access",
+        "schemaname": "public",
+        "with_check": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))"
+      },
+      {
+        "cmd": "SELECT",
+        "qual": "(EXISTS ( SELECT 1\n   FROM (order_suborders so\n     JOIN orders o ON ((o.id = so.order_id)))\n  WHERE ((so.id = order_items.suborder_id) AND (( SELECT private.is_admin() AS is_admin) OR (so.vendor_id = ( SELECT private.current_vendor_id() AS current_vendor_id)) OR (o.customer_id = ( SELECT auth.uid() AS uid))))))",
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "order_items",
+        "permissive": "PERMISSIVE",
+        "policyname": "items_related_select",
+        "schemaname": "public",
+        "with_check": null
+      },
+      {
+        "cmd": "ALL",
+        "qual": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))",
+        "roles": [
+          "anon",
+          "authenticated"
+        ],
+        "tablename": "order_suborders",
+        "permissive": "RESTRICTIVE",
+        "policyname": "active_account_access",
+        "schemaname": "public",
+        "with_check": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))"
+      },
+      {
+        "cmd": "SELECT",
+        "qual": "(( SELECT private.is_admin() AS is_admin) OR (vendor_id = ( SELECT private.current_vendor_id() AS current_vendor_id)) OR (EXISTS ( SELECT 1\n   FROM orders o\n  WHERE ((o.id = order_suborders.order_id) AND (o.customer_id = ( SELECT auth.uid() AS uid))))))",
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "order_suborders",
+        "permissive": "PERMISSIVE",
+        "policyname": "suborders_related_select",
+        "schemaname": "public",
+        "with_check": null
+      },
+      {
+        "cmd": "UPDATE",
+        "qual": "((vendor_id = private.current_vendor_id()) OR private.is_admin())",
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "order_suborders",
+        "permissive": "PERMISSIVE",
+        "policyname": "suborders_vendor_notes_update",
+        "schemaname": "public",
+        "with_check": "((vendor_id = private.current_vendor_id()) OR private.is_admin())"
+      },
+      {
+        "cmd": "ALL",
+        "qual": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))",
+        "roles": [
+          "anon",
+          "authenticated"
+        ],
+        "tablename": "orders",
+        "permissive": "RESTRICTIVE",
+        "policyname": "active_account_access",
+        "schemaname": "public",
+        "with_check": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))"
+      },
+      {
+        "cmd": "SELECT",
+        "qual": "((customer_id = ( SELECT auth.uid() AS uid)) OR ( SELECT private.is_admin() AS is_admin) OR ( SELECT private.vendor_can_see_order(orders.id) AS vendor_can_see_order))",
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "orders",
+        "permissive": "PERMISSIVE",
+        "policyname": "orders_customer_admin_vendor_select",
+        "schemaname": "public",
+        "with_check": null
+      },
+      {
+        "cmd": "ALL",
+        "qual": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))",
+        "roles": [
+          "anon",
+          "authenticated"
+        ],
+        "tablename": "profiles",
+        "permissive": "RESTRICTIVE",
+        "policyname": "active_account_access",
+        "schemaname": "public",
+        "with_check": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))"
+      },
+      {
+        "cmd": "SELECT",
+        "qual": "((id = ( SELECT auth.uid() AS uid)) OR ( SELECT private.is_admin() AS is_admin))",
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "profiles",
+        "permissive": "PERMISSIVE",
+        "policyname": "profiles_self_select",
+        "schemaname": "public",
+        "with_check": null
+      },
+      {
+        "cmd": "UPDATE",
+        "qual": "((id = ( SELECT auth.uid() AS uid)) OR ( SELECT private.is_admin() AS is_admin))",
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "profiles",
+        "permissive": "PERMISSIVE",
+        "policyname": "profiles_self_update",
+        "schemaname": "public",
+        "with_check": "((id = ( SELECT auth.uid() AS uid)) OR ( SELECT private.is_admin() AS is_admin))"
+      },
+      {
+        "cmd": "ALL",
+        "qual": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))",
+        "roles": [
+          "anon",
+          "authenticated"
+        ],
+        "tablename": "vendors",
+        "permissive": "RESTRICTIVE",
+        "policyname": "active_account_access",
+        "schemaname": "public",
+        "with_check": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))"
+      },
+      {
+        "cmd": "SELECT",
+        "qual": "(status = 'approved'::vendor_status)",
+        "roles": [
+          "anon"
+        ],
+        "tablename": "vendors",
+        "permissive": "PERMISSIVE",
+        "policyname": "staging_approved_vendor_catalog",
+        "schemaname": "public",
+        "with_check": null
+      },
+      {
+        "cmd": "SELECT",
+        "qual": "((status = 'approved'::vendor_status) OR (owner_id = ( SELECT auth.uid() AS uid)) OR ( SELECT private.is_admin() AS is_admin))",
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "vendors",
+        "permissive": "PERMISSIVE",
+        "policyname": "vendors_owner_admin_select",
+        "schemaname": "public",
+        "with_check": null
+      },
+      {
+        "cmd": "UPDATE",
+        "qual": "((owner_id = ( SELECT auth.uid() AS uid)) OR ( SELECT private.is_admin() AS is_admin))",
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "vendors",
+        "permissive": "PERMISSIVE",
+        "policyname": "vendors_owner_admin_update",
+        "schemaname": "public",
+        "with_check": "((owner_id = ( SELECT auth.uid() AS uid)) OR ( SELECT private.is_admin() AS is_admin))"
+      }
+    ],
+    "grants": [
+      {
+        "grantee": "anon",
+        "table_name": "order_items",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "order_items",
+        "privilege_type": "REFERENCES"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "order_items",
+        "privilege_type": "SELECT"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "order_items",
+        "privilege_type": "TRIGGER"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "order_items",
+        "privilege_type": "TRUNCATE"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "order_items",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "order_items",
+        "privilege_type": "REFERENCES"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "order_items",
+        "privilege_type": "SELECT"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "order_items",
+        "privilege_type": "TRIGGER"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "order_items",
+        "privilege_type": "TRUNCATE"
+      },
+      {
+        "grantee": "service_role",
+        "table_name": "order_items",
+        "privilege_type": "DELETE"
+      },
+      {
+        "grantee": "service_role",
+        "table_name": "order_items",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "service_role",
+        "table_name": "order_items",
+        "privilege_type": "REFERENCES"
+      },
+      {
+        "grantee": "service_role",
+        "table_name": "order_items",
+        "privilege_type": "SELECT"
+      },
+      {
+        "grantee": "service_role",
+        "table_name": "order_items",
+        "privilege_type": "TRIGGER"
+      },
+      {
+        "grantee": "service_role",
+        "table_name": "order_items",
+        "privilege_type": "TRUNCATE"
+      },
+      {
+        "grantee": "service_role",
+        "table_name": "order_items",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "order_suborders",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "order_suborders",
+        "privilege_type": "REFERENCES"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "order_suborders",
+        "privilege_type": "SELECT"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "order_suborders",
+        "privilege_type": "TRIGGER"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "order_suborders",
+        "privilege_type": "TRUNCATE"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "order_suborders",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "order_suborders",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "order_suborders",
+        "privilege_type": "REFERENCES"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "order_suborders",
+        "privilege_type": "SELECT"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "order_suborders",
+        "privilege_type": "TRIGGER"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "order_suborders",
+        "privilege_type": "TRUNCATE"
+      },
+      {
+        "grantee": "service_role",
+        "table_name": "order_suborders",
+        "privilege_type": "DELETE"
+      },
+      {
+        "grantee": "service_role",
+        "table_name": "order_suborders",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "service_role",
+        "table_name": "order_suborders",
+        "privilege_type": "REFERENCES"
+      },
+      {
+        "grantee": "service_role",
+        "table_name": "order_suborders",
+        "privilege_type": "SELECT"
+      },
+      {
+        "grantee": "service_role",
+        "table_name": "order_suborders",
+        "privilege_type": "TRIGGER"
+      },
+      {
+        "grantee": "service_role",
+        "table_name": "order_suborders",
+        "privilege_type": "TRUNCATE"
+      },
+      {
+        "grantee": "service_role",
+        "table_name": "order_suborders",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "orders",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "orders",
+        "privilege_type": "REFERENCES"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "orders",
+        "privilege_type": "SELECT"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "orders",
+        "privilege_type": "TRIGGER"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "orders",
+        "privilege_type": "TRUNCATE"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "orders",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "orders",
+        "privilege_type": "REFERENCES"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "orders",
+        "privilege_type": "SELECT"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "orders",
+        "privilege_type": "TRIGGER"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "orders",
+        "privilege_type": "TRUNCATE"
+      },
+      {
+        "grantee": "service_role",
+        "table_name": "orders",
+        "privilege_type": "DELETE"
+      },
+      {
+        "grantee": "service_role",
+        "table_name": "orders",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "service_role",
+        "table_name": "orders",
+        "privilege_type": "REFERENCES"
+      },
+      {
+        "grantee": "service_role",
+        "table_name": "orders",
+        "privilege_type": "SELECT"
+      },
+      {
+        "grantee": "service_role",
+        "table_name": "orders",
+        "privilege_type": "TRIGGER"
+      },
+      {
+        "grantee": "service_role",
+        "table_name": "orders",
+        "privilege_type": "TRUNCATE"
+      },
+      {
+        "grantee": "service_role",
+        "table_name": "orders",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "profiles",
+        "privilege_type": "DELETE"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "profiles",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "profiles",
+        "privilege_type": "REFERENCES"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "profiles",
+        "privilege_type": "SELECT"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "profiles",
+        "privilege_type": "TRIGGER"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "profiles",
+        "privilege_type": "TRUNCATE"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "profiles",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "profiles",
+        "privilege_type": "DELETE"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "profiles",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "profiles",
+        "privilege_type": "REFERENCES"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "profiles",
+        "privilege_type": "SELECT"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "profiles",
+        "privilege_type": "TRIGGER"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "profiles",
+        "privilege_type": "TRUNCATE"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "profiles",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "service_role",
+        "table_name": "profiles",
+        "privilege_type": "DELETE"
+      },
+      {
+        "grantee": "service_role",
+        "table_name": "profiles",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "service_role",
+        "table_name": "profiles",
+        "privilege_type": "REFERENCES"
+      },
+      {
+        "grantee": "service_role",
+        "table_name": "profiles",
+        "privilege_type": "SELECT"
+      },
+      {
+        "grantee": "service_role",
+        "table_name": "profiles",
+        "privilege_type": "TRIGGER"
+      },
+      {
+        "grantee": "service_role",
+        "table_name": "profiles",
+        "privilege_type": "TRUNCATE"
+      },
+      {
+        "grantee": "service_role",
+        "table_name": "profiles",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "vendors",
+        "privilege_type": "DELETE"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "vendors",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "vendors",
+        "privilege_type": "REFERENCES"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "vendors",
+        "privilege_type": "SELECT"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "vendors",
+        "privilege_type": "TRIGGER"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "vendors",
+        "privilege_type": "TRUNCATE"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "vendors",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "vendors",
+        "privilege_type": "DELETE"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "vendors",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "vendors",
+        "privilege_type": "REFERENCES"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "vendors",
+        "privilege_type": "SELECT"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "vendors",
+        "privilege_type": "TRIGGER"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "vendors",
+        "privilege_type": "TRUNCATE"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "vendors",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "service_role",
+        "table_name": "vendors",
+        "privilege_type": "DELETE"
+      },
+      {
+        "grantee": "service_role",
+        "table_name": "vendors",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "service_role",
+        "table_name": "vendors",
+        "privilege_type": "REFERENCES"
+      },
+      {
+        "grantee": "service_role",
+        "table_name": "vendors",
+        "privilege_type": "SELECT"
+      },
+      {
+        "grantee": "service_role",
+        "table_name": "vendors",
+        "privilege_type": "TRIGGER"
+      },
+      {
+        "grantee": "service_role",
+        "table_name": "vendors",
+        "privilege_type": "TRUNCATE"
+      },
+      {
+        "grantee": "service_role",
+        "table_name": "vendors",
+        "privilege_type": "UPDATE"
+      }
+    ],
+    "column_grants": [
+      {
+        "grantee": "anon",
+        "table_name": "profiles",
+        "column_name": "avatar_url",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "profiles",
+        "column_name": "avatar_url",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "profiles",
+        "column_name": "avatar_url",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "profiles",
+        "column_name": "avatar_url",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "profiles",
+        "column_name": "building",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "profiles",
+        "column_name": "building",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "profiles",
+        "column_name": "building",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "profiles",
+        "column_name": "building",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "profiles",
+        "column_name": "created_at",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "profiles",
+        "column_name": "created_at",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "profiles",
+        "column_name": "created_at",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "profiles",
+        "column_name": "created_at",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "profiles",
+        "column_name": "deleted_at",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "profiles",
+        "column_name": "deleted_at",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "profiles",
+        "column_name": "deleted_at",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "profiles",
+        "column_name": "deleted_at",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "profiles",
+        "column_name": "email",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "profiles",
+        "column_name": "email",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "profiles",
+        "column_name": "email",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "profiles",
+        "column_name": "email",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "profiles",
+        "column_name": "id",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "profiles",
+        "column_name": "id",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "profiles",
+        "column_name": "id",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "profiles",
+        "column_name": "id",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "profiles",
+        "column_name": "name",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "profiles",
+        "column_name": "name",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "profiles",
+        "column_name": "name",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "profiles",
+        "column_name": "name",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "profiles",
+        "column_name": "role",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "profiles",
+        "column_name": "role",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "profiles",
+        "column_name": "role",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "profiles",
+        "column_name": "role",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "profiles",
+        "column_name": "suspended",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "profiles",
+        "column_name": "suspended",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "profiles",
+        "column_name": "suspended",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "profiles",
+        "column_name": "suspended",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "profiles",
+        "column_name": "vendor_id",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "profiles",
+        "column_name": "vendor_id",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "profiles",
+        "column_name": "vendor_id",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "profiles",
+        "column_name": "vendor_id",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "vendors",
+        "column_name": "address",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "vendors",
+        "column_name": "address",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "vendors",
+        "column_name": "address",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "vendors",
+        "column_name": "address",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "vendors",
+        "column_name": "analytics_enabled",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "vendors",
+        "column_name": "analytics_enabled",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "vendors",
+        "column_name": "analytics_enabled",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "vendors",
+        "column_name": "analytics_enabled",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "vendors",
+        "column_name": "archived_at",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "vendors",
+        "column_name": "archived_at",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "vendors",
+        "column_name": "archived_at",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "vendors",
+        "column_name": "archived_at",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "vendors",
+        "column_name": "building",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "vendors",
+        "column_name": "building",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "vendors",
+        "column_name": "building",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "vendors",
+        "column_name": "building",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "vendors",
+        "column_name": "category",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "vendors",
+        "column_name": "category",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "vendors",
+        "column_name": "category",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "vendors",
+        "column_name": "category",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "vendors",
+        "column_name": "commission_rate",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "vendors",
+        "column_name": "commission_rate",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "vendors",
+        "column_name": "commission_rate",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "vendors",
+        "column_name": "commission_rate",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "vendors",
+        "column_name": "contact_number",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "vendors",
+        "column_name": "contact_number",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "vendors",
+        "column_name": "contact_number",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "vendors",
+        "column_name": "contact_number",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "vendors",
+        "column_name": "corporate_orders_enabled",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "vendors",
+        "column_name": "corporate_orders_enabled",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "vendors",
+        "column_name": "corporate_orders_enabled",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "vendors",
+        "column_name": "corporate_orders_enabled",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "vendors",
+        "column_name": "cover_image",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "vendors",
+        "column_name": "cover_image",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "vendors",
+        "column_name": "cover_image",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "vendors",
+        "column_name": "cover_image",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "vendors",
+        "column_name": "created_at",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "vendors",
+        "column_name": "created_at",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "vendors",
+        "column_name": "created_at",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "vendors",
+        "column_name": "created_at",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "vendors",
+        "column_name": "delivery_radius",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "vendors",
+        "column_name": "delivery_radius",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "vendors",
+        "column_name": "delivery_radius",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "vendors",
+        "column_name": "delivery_radius",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "vendors",
+        "column_name": "email",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "vendors",
+        "column_name": "email",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "vendors",
+        "column_name": "email",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "vendors",
+        "column_name": "email",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "vendors",
+        "column_name": "featured",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "vendors",
+        "column_name": "featured",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "vendors",
+        "column_name": "featured",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "vendors",
+        "column_name": "featured",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "vendors",
+        "column_name": "id",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "vendors",
+        "column_name": "id",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "vendors",
+        "column_name": "id",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "vendors",
+        "column_name": "id",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "vendors",
+        "column_name": "latitude",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "vendors",
+        "column_name": "latitude",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "vendors",
+        "column_name": "latitude",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "vendors",
+        "column_name": "latitude",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "vendors",
+        "column_name": "logo",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "vendors",
+        "column_name": "logo",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "vendors",
+        "column_name": "logo",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "vendors",
+        "column_name": "logo",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "vendors",
+        "column_name": "longitude",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "vendors",
+        "column_name": "longitude",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "vendors",
+        "column_name": "longitude",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "vendors",
+        "column_name": "longitude",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "vendors",
+        "column_name": "name",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "vendors",
+        "column_name": "name",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "vendors",
+        "column_name": "name",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "vendors",
+        "column_name": "name",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "vendors",
+        "column_name": "operating_hours",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "vendors",
+        "column_name": "operating_hours",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "vendors",
+        "column_name": "operating_hours",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "vendors",
+        "column_name": "operating_hours",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "vendors",
+        "column_name": "owner_id",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "vendors",
+        "column_name": "owner_id",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "vendors",
+        "column_name": "owner_id",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "vendors",
+        "column_name": "owner_id",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "vendors",
+        "column_name": "plan",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "vendors",
+        "column_name": "plan",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "vendors",
+        "column_name": "plan",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "vendors",
+        "column_name": "plan",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "vendors",
+        "column_name": "prep_time_mins",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "vendors",
+        "column_name": "prep_time_mins",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "vendors",
+        "column_name": "prep_time_mins",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "vendors",
+        "column_name": "prep_time_mins",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "vendors",
+        "column_name": "rating",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "vendors",
+        "column_name": "rating",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "vendors",
+        "column_name": "rating",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "vendors",
+        "column_name": "rating",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "vendors",
+        "column_name": "recommendations_enabled",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "vendors",
+        "column_name": "recommendations_enabled",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "vendors",
+        "column_name": "recommendations_enabled",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "vendors",
+        "column_name": "recommendations_enabled",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "vendors",
+        "column_name": "review_count",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "vendors",
+        "column_name": "review_count",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "vendors",
+        "column_name": "review_count",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "vendors",
+        "column_name": "review_count",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "vendors",
+        "column_name": "status",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "vendors",
+        "column_name": "status",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "vendors",
+        "column_name": "status",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "vendors",
+        "column_name": "status",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "vendors",
+        "column_name": "subscription_tier",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "vendors",
+        "column_name": "subscription_tier",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "vendors",
+        "column_name": "subscription_tier",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "vendors",
+        "column_name": "subscription_tier",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "vendors",
+        "column_name": "tagline",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "anon",
+        "table_name": "vendors",
+        "column_name": "tagline",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "vendors",
+        "column_name": "tagline",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "authenticated",
+        "table_name": "vendors",
+        "column_name": "tagline",
+        "privilege_type": "UPDATE"
+      }
+    ],
+    "triggers": [
+      {
+        "definition": "CREATE TRIGGER active_account_write BEFORE INSERT OR DELETE OR UPDATE ON order_items FOR EACH ROW EXECUTE FUNCTION private.reject_inactive_write()",
+        "table_name": "order_items",
+        "trigger_name": "active_account_write"
+      },
+      {
+        "definition": "CREATE TRIGGER guard_paid_item_history BEFORE UPDATE ON order_items FOR EACH ROW EXECUTE FUNCTION private.guard_paid_item_history()",
+        "table_name": "order_items",
+        "trigger_name": "guard_paid_item_history"
+      },
+      {
+        "definition": "CREATE TRIGGER snapshot_order_item BEFORE INSERT ON order_items FOR EACH ROW EXECUTE FUNCTION private.snapshot_order_item()",
+        "table_name": "order_items",
+        "trigger_name": "snapshot_order_item"
+      },
+      {
+        "definition": "CREATE TRIGGER active_account_write BEFORE INSERT OR DELETE OR UPDATE ON order_suborders FOR EACH ROW EXECUTE FUNCTION private.reject_inactive_write()",
+        "table_name": "order_suborders",
+        "trigger_name": "active_account_write"
+      },
+      {
+        "definition": "CREATE TRIGGER order_suborders_close_conversation AFTER UPDATE ON order_suborders FOR EACH ROW EXECUTE FUNCTION close_order_conversation_on_terminal_suborder()",
+        "table_name": "order_suborders",
+        "trigger_name": "order_suborders_close_conversation"
+      },
+      {
+        "definition": "CREATE TRIGGER order_suborders_status_guard BEFORE UPDATE ON order_suborders FOR EACH ROW EXECUTE FUNCTION enforce_order_status_transition()",
+        "table_name": "order_suborders",
+        "trigger_name": "order_suborders_status_guard"
+      },
+      {
+        "definition": "CREATE TRIGGER require_fulfilment BEFORE INSERT ON order_suborders FOR EACH ROW EXECUTE FUNCTION private.require_fulfilment_on_insert()",
+        "table_name": "order_suborders",
+        "trigger_name": "require_fulfilment"
+      },
+      {
+        "definition": "CREATE TRIGGER snapshot_paid_commission BEFORE INSERT OR UPDATE ON order_suborders FOR EACH ROW EXECUTE FUNCTION private.snapshot_paid_commission()",
+        "table_name": "order_suborders",
+        "trigger_name": "snapshot_paid_commission"
+      },
+      {
+        "definition": "CREATE TRIGGER active_account_write BEFORE INSERT OR DELETE OR UPDATE ON orders FOR EACH ROW EXECUTE FUNCTION private.reject_inactive_write()",
+        "table_name": "orders",
+        "trigger_name": "active_account_write"
+      },
+      {
+        "definition": "CREATE TRIGGER require_fulfilment BEFORE INSERT ON orders FOR EACH ROW EXECUTE FUNCTION private.require_fulfilment_on_insert()",
+        "table_name": "orders",
+        "trigger_name": "require_fulfilment"
+      },
+      {
+        "definition": "CREATE TRIGGER active_account_write BEFORE INSERT OR DELETE OR UPDATE ON profiles FOR EACH ROW EXECUTE FUNCTION private.reject_inactive_write()",
+        "table_name": "profiles",
+        "trigger_name": "active_account_write"
+      },
+      {
+        "definition": "CREATE TRIGGER guard_profile_privileged_fields BEFORE UPDATE ON profiles FOR EACH ROW EXECUTE FUNCTION guard_profile_privileged_fields()",
+        "table_name": "profiles",
+        "trigger_name": "guard_profile_privileged_fields"
+      },
+      {
+        "definition": "CREATE TRIGGER require_auth_identity BEFORE INSERT ON profiles FOR EACH ROW EXECUTE FUNCTION private.require_auth_identity_on_profile_insert()",
+        "table_name": "profiles",
+        "trigger_name": "require_auth_identity"
+      },
+      {
+        "definition": "CREATE TRIGGER active_account_write BEFORE INSERT OR DELETE OR UPDATE ON vendors FOR EACH ROW EXECUTE FUNCTION private.reject_inactive_write()",
+        "table_name": "vendors",
+        "trigger_name": "active_account_write"
+      },
+      {
+        "definition": "CREATE TRIGGER guard_vendor_privileged_fields BEFORE UPDATE ON vendors FOR EACH ROW EXECUTE FUNCTION guard_vendor_privileged_fields()",
+        "table_name": "vendors",
+        "trigger_name": "guard_vendor_privileged_fields"
+      }
+    ],
+    "vendor_counts": [
+      {
+        "count": 1,
+        "status": "approved"
+      },
+      {
+        "count": 9,
+        "status": "suspended"
+      }
+    ],
+    "commission_counts": [
+      {
+        "count": 10,
+        "commission_rate": 0.17
+      }
+    ]
+  }
+]

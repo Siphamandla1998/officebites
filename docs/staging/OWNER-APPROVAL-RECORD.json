@@ -1,0 +1,79 @@
+{
+  "recordedUtc": "2026-10-27T12:58:16.352Z",
+  "source": "Owner message in this conversation",
+  "instructionVerbatim": "I approve all the terms and conditions we creaed",
+  "interpretation": "Owner approval of created terms recorded; current task expressly prohibits publication. No invented business/tax facts or alteration of publication guards.",
+  "exactVersionApprovalManifest": "Not created; these hashes identify available files for finalisation, not proof that incomplete fields are verified",
+  "documents": [
+    {
+      "file": "checks/reference-regressions/docs/legal-implementation/policies/Company_Information_Revision_B.md",
+      "sha256": "7e3c5b041e0eb86247536df779f66db2492095295bfa295db3c70ab7f4b86b95",
+      "publicationBlockerLines": [
+        7,
+        9,
+        11,
+        15,
+        23
+      ],
+      "inApplicationBundle": false,
+      "approvedDatabaseVersionCreated": false
+    },
+    {
+      "file": "checks/reference-regressions/docs/legal-implementation/policies/Cookies_Revision_B.md",
+      "sha256": "90ad8d9f4a86605d98ff8b8cf090efb342becef229627bc14e5bf9bb4d866428",
+      "publicationBlockerLines": [
+        3
+      ],
+      "inApplicationBundle": false,
+      "approvedDatabaseVersionCreated": false
+    },
+    {
+      "file": "checks/reference-regressions/docs/legal-implementation/policies/Delivery_Revision_B.md",
+      "sha256": "19414f26c2ab22276b9bbf1778692a1eecf7de3847028c6c3aff09fecbc3bb75",
+      "publicationBlockerLines": [
+        3
+      ],
+      "inApplicationBundle": false,
+      "approvedDatabaseVersionCreated": false
+    },
+    {
+      "file": "checks/reference-regressions/docs/legal-implementation/policies/Privacy_Revision_A.md",
+      "sha256": "34570ef41dab4fc3d1cce6c906ff4f3c3d532ad98d3480184787182557bd96f1",
+      "publicationBlockerLines": [
+        3,
+        8,
+        14,
+        53,
+        65,
+        71
+      ],
+      "inApplicationBundle": false,
+      "approvedDatabaseVersionCreated": false
+    },
+    {
+      "file": "checks/reference-regressions/docs/legal-implementation/policies/Refunds_Revision_A.md",
+      "sha256": "407709bb1c5c7715c20be21ac2d9a714d1c9bf0690aec19dde654d5bedf7f4a9",
+      "publicationBlockerLines": [],
+      "inApplicationBundle": false,
+      "approvedDatabaseVersionCreated": false
+    },
+    {
+      "file": "checks/reference-regressions/docs/legal-implementation/policies/Terms_Revision_A.md",
+      "sha256": "8dc12f631e8b8c674595009ce6622a3e2b6e5981a422cbe647a7dcb6c0974d46",
+      "publicationBlockerLines": [
+        1,
+        2,
+        3,
+        6
+      ],
+      "inApplicationBundle": false,
+      "approvedDatabaseVersionCreated": false
+    }
+  ],
+  "missingReleaseText": [
+    "Vendor Agreement",
+    "Vendor Operating Standards",
+    "SHE COOKS BY SNE vendor-specific Commercial Fee Schedule"
+  ],
+  "publicationPerformed": false
+}

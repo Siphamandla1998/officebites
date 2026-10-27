@@ -1,0 +1,3498 @@
+{
+  "tables": [
+    {
+      "acl": [
+        "postgres=arwdDxtm/postgres"
+      ],
+      "rls": false,
+      "kind": "r",
+      "name": "account_removal_jobs",
+      "owner": "postgres",
+      "schema": "private",
+      "force_rls": false
+    },
+    {
+      "acl": [
+        "postgres=arwdDxtm/postgres"
+      ],
+      "rls": true,
+      "kind": "r",
+      "name": "acquisition_ledger",
+      "owner": "postgres",
+      "schema": "private",
+      "force_rls": false
+    },
+    {
+      "acl": [
+        "postgres=arwdDxtm/postgres"
+      ],
+      "rls": false,
+      "kind": "r",
+      "name": "business_audit",
+      "owner": "postgres",
+      "schema": "private",
+      "force_rls": false
+    },
+    {
+      "acl": [
+        "postgres=arwdDxtm/postgres"
+      ],
+      "rls": true,
+      "kind": "r",
+      "name": "commercial_audit",
+      "owner": "postgres",
+      "schema": "private",
+      "force_rls": false
+    },
+    {
+      "acl": [
+        "postgres=arwdDxtm/postgres"
+      ],
+      "rls": true,
+      "kind": "r",
+      "name": "commercial_refund_adjustments",
+      "owner": "postgres",
+      "schema": "private",
+      "force_rls": false
+    },
+    {
+      "acl": [
+        "postgres=arwdDxtm/postgres"
+      ],
+      "rls": true,
+      "kind": "r",
+      "name": "commercial_settings",
+      "owner": "postgres",
+      "schema": "private",
+      "force_rls": false
+    },
+    {
+      "acl": [
+        "postgres=arwdDxtm/postgres"
+      ],
+      "rls": true,
+      "kind": "r",
+      "name": "corporate_accounts",
+      "owner": "postgres",
+      "schema": "private",
+      "force_rls": false
+    },
+    {
+      "acl": [
+        "postgres=arwdDxtm/postgres"
+      ],
+      "rls": true,
+      "kind": "r",
+      "name": "corporate_agreements",
+      "owner": "postgres",
+      "schema": "private",
+      "force_rls": false
+    },
+    {
+      "acl": [
+        "postgres=arwdDxtm/postgres"
+      ],
+      "rls": true,
+      "kind": "r",
+      "name": "corporate_attributions",
+      "owner": "postgres",
+      "schema": "private",
+      "force_rls": false
+    },
+    {
+      "acl": [
+        "postgres=arwdDxtm/postgres"
+      ],
+      "rls": true,
+      "kind": "r",
+      "name": "corporate_memberships",
+      "owner": "postgres",
+      "schema": "private",
+      "force_rls": false
+    },
+    {
+      "acl": [
+        "postgres=arwdDxtm/postgres"
+      ],
+      "rls": true,
+      "kind": "r",
+      "name": "delivery_origin_history",
+      "owner": "postgres",
+      "schema": "private",
+      "force_rls": false
+    },
+    {
+      "acl": [
+        "postgres=arwdDxtm/postgres"
+      ],
+      "rls": true,
+      "kind": "r",
+      "name": "delivery_quotes",
+      "owner": "postgres",
+      "schema": "private",
+      "force_rls": false
+    },
+    {
+      "acl": [
+        "postgres=arwdDxtm/postgres"
+      ],
+      "rls": true,
+      "kind": "r",
+      "name": "delivery_settings",
+      "owner": "postgres",
+      "schema": "private",
+      "force_rls": false
+    },
+    {
+      "acl": [
+        "postgres=arwdDxtm/postgres"
+      ],
+      "rls": false,
+      "kind": "r",
+      "name": "finance_settings",
+      "owner": "postgres",
+      "schema": "private",
+      "force_rls": false
+    },
+    {
+      "acl": [
+        "postgres=arwdDxtm/postgres"
+      ],
+      "rls": false,
+      "kind": "v",
+      "name": "financial_sales",
+      "owner": "postgres",
+      "schema": "private",
+      "force_rls": false
+    },
+    {
+      "acl": [
+        "postgres=arwdDxtm/postgres"
+      ],
+      "rls": true,
+      "kind": "r",
+      "name": "gateway_settings",
+      "owner": "postgres",
+      "schema": "private",
+      "force_rls": false
+    },
+    {
+      "acl": [
+        "postgres=arwdDxtm/postgres"
+      ],
+      "rls": true,
+      "kind": "r",
+      "name": "legal_versions",
+      "owner": "postgres",
+      "schema": "private",
+      "force_rls": false
+    },
+    {
+      "acl": [
+        "postgres=arwdDxtm/postgres"
+      ],
+      "rls": true,
+      "kind": "r",
+      "name": "manual_order_payments",
+      "owner": "postgres",
+      "schema": "private",
+      "force_rls": false
+    },
+    {
+      "acl": [
+        "postgres=arwdDxtm/postgres"
+      ],
+      "rls": true,
+      "kind": "r",
+      "name": "manual_payment_events",
+      "owner": "postgres",
+      "schema": "private",
+      "force_rls": false
+    },
+    {
+      "acl": [
+        "postgres=arwdDxtm/postgres"
+      ],
+      "rls": true,
+      "kind": "r",
+      "name": "manual_payment_settings",
+      "owner": "postgres",
+      "schema": "private",
+      "force_rls": false
+    },
+    {
+      "acl": [
+        "postgres=arwdDxtm/postgres"
+      ],
+      "rls": true,
+      "kind": "r",
+      "name": "manual_receivable_entries",
+      "owner": "postgres",
+      "schema": "private",
+      "force_rls": false
+    },
+    {
+      "acl": [
+        "postgres=arwdDxtm/postgres"
+      ],
+      "rls": true,
+      "kind": "r",
+      "name": "manual_receivables",
+      "owner": "postgres",
+      "schema": "private",
+      "force_rls": false
+    },
+    {
+      "acl": [
+        "postgres=arwdDxtm/postgres"
+      ],
+      "rls": true,
+      "kind": "r",
+      "name": "manual_refund_events",
+      "owner": "postgres",
+      "schema": "private",
+      "force_rls": false
+    },
+    {
+      "acl": [
+        "postgres=arwdDxtm/postgres"
+      ],
+      "rls": true,
+      "kind": "r",
+      "name": "ozow_attempts",
+      "owner": "postgres",
+      "schema": "private",
+      "force_rls": false
+    },
+    {
+      "acl": [
+        "postgres=arwdDxtm/postgres"
+      ],
+      "rls": true,
+      "kind": "r",
+      "name": "ozow_deliveries",
+      "owner": "postgres",
+      "schema": "private",
+      "force_rls": false
+    },
+    {
+      "acl": [
+        "postgres=arwdDxtm/postgres"
+      ],
+      "rls": true,
+      "kind": "r",
+      "name": "ozow_receipts",
+      "owner": "postgres",
+      "schema": "private",
+      "force_rls": false
+    },
+    {
+      "acl": [
+        "postgres=arwdDxtm/postgres"
+      ],
+      "rls": true,
+      "kind": "r",
+      "name": "payment_attempts",
+      "owner": "postgres",
+      "schema": "private",
+      "force_rls": false
+    },
+    {
+      "acl": [
+        "postgres=arwdDxtm/postgres"
+      ],
+      "rls": false,
+      "kind": "v",
+      "name": "provider_order_payments",
+      "owner": "postgres",
+      "schema": "private",
+      "force_rls": false
+    },
+    {
+      "acl": [
+        "postgres=arwdDxtm/postgres"
+      ],
+      "rls": false,
+      "kind": "r",
+      "name": "retention_settings",
+      "owner": "postgres",
+      "schema": "private",
+      "force_rls": false
+    },
+    {
+      "acl": [
+        "postgres=arwdDxtm/postgres"
+      ],
+      "rls": true,
+      "kind": "r",
+      "name": "standard_fee_ledger",
+      "owner": "postgres",
+      "schema": "private",
+      "force_rls": false
+    },
+    {
+      "acl": [
+        "postgres=arwdDxtm/postgres"
+      ],
+      "rls": true,
+      "kind": "r",
+      "name": "standard_sale_contracts",
+      "owner": "postgres",
+      "schema": "private",
+      "force_rls": false
+    },
+    {
+      "acl": [
+        "postgres=arwdDxtm/postgres"
+      ],
+      "rls": true,
+      "kind": "r",
+      "name": "subscription_plans",
+      "owner": "postgres",
+      "schema": "private",
+      "force_rls": false
+    },
+    {
+      "acl": [
+        "postgres=arwdDxtm/postgres"
+      ],
+      "rls": true,
+      "kind": "r",
+      "name": "vendor_consent_intents",
+      "owner": "postgres",
+      "schema": "private",
+      "force_rls": false
+    },
+    {
+      "acl": [
+        "postgres=arwdDxtm/postgres"
+      ],
+      "rls": true,
+      "kind": "r",
+      "name": "vendor_delivery_origins",
+      "owner": "postgres",
+      "schema": "private",
+      "force_rls": false
+    },
+    {
+      "acl": [
+        "postgres=arwdDxtm/postgres"
+      ],
+      "rls": true,
+      "kind": "r",
+      "name": "vendor_legal_acceptances",
+      "owner": "postgres",
+      "schema": "private",
+      "force_rls": false
+    },
+    {
+      "acl": [
+        "postgres=arwdDxtm/postgres"
+      ],
+      "rls": true,
+      "kind": "r",
+      "name": "vendor_payment_profiles",
+      "owner": "postgres",
+      "schema": "private",
+      "force_rls": false
+    },
+    {
+      "acl": [
+        "postgres=arwdDxtm/postgres"
+      ],
+      "rls": true,
+      "kind": "r",
+      "name": "vendor_subscriptions",
+      "owner": "postgres",
+      "schema": "private",
+      "force_rls": false
+    },
+    {
+      "acl": [
+        "postgres=arwdDxtm/postgres",
+        "service_role=arwdDxtm/postgres",
+        "authenticated=r/postgres"
+      ],
+      "rls": true,
+      "kind": "r",
+      "name": "booking_pricing_rules",
+      "owner": "postgres",
+      "schema": "public",
+      "force_rls": false
+    },
+    {
+      "acl": [
+        "postgres=arwdDxtm/postgres",
+        "service_role=arwdDxtm/postgres",
+        "authenticated=ard/postgres"
+      ],
+      "rls": true,
+      "kind": "r",
+      "name": "conversations",
+      "owner": "postgres",
+      "schema": "public",
+      "force_rls": false
+    },
+    {
+      "acl": [
+        "postgres=arwdDxtm/postgres",
+        "service_role=arwdDxtm/postgres",
+        "authenticated=rw/postgres"
+      ],
+      "rls": true,
+      "kind": "r",
+      "name": "corporate_opportunities",
+      "owner": "postgres",
+      "schema": "public",
+      "force_rls": false
+    },
+    {
+      "acl": [
+        "postgres=arwdDxtm/postgres",
+        "service_role=arwdDxtm/postgres",
+        "authenticated=ar/postgres"
+      ],
+      "rls": true,
+      "kind": "r",
+      "name": "event_booking_requests",
+      "owner": "postgres",
+      "schema": "public",
+      "force_rls": false
+    },
+    {
+      "acl": [
+        "postgres=arwdDxtm/postgres",
+        "service_role=arwdDxtm/postgres",
+        "authenticated=arwd/postgres"
+      ],
+      "rls": true,
+      "kind": "r",
+      "name": "favourites",
+      "owner": "postgres",
+      "schema": "public",
+      "force_rls": false
+    },
+    {
+      "acl": [
+        "postgres=arwdDxtm/postgres",
+        "service_role=arwdDxtm/postgres",
+        "authenticated=r/postgres"
+      ],
+      "rls": true,
+      "kind": "r",
+      "name": "feedback",
+      "owner": "postgres",
+      "schema": "public",
+      "force_rls": false
+    },
+    {
+      "acl": [
+        "postgres=arwdDxtm/postgres",
+        "service_role=arwdDxtm/postgres",
+        "anon=r/postgres",
+        "authenticated=r/postgres"
+      ],
+      "rls": true,
+      "kind": "r",
+      "name": "help_articles",
+      "owner": "postgres",
+      "schema": "public",
+      "force_rls": false
+    },
+    {
+      "acl": [
+        "postgres=arwdDxtm/postgres",
+        "service_role=arwdDxtm/postgres",
+        "anon=r/postgres",
+        "authenticated=arwd/postgres"
+      ],
+      "rls": true,
+      "kind": "r",
+      "name": "meals",
+      "owner": "postgres",
+      "schema": "public",
+      "force_rls": false
+    },
+    {
+      "acl": [
+        "postgres=arwdDxtm/postgres",
+        "service_role=arwdDxtm/postgres",
+        "authenticated=ar/postgres"
+      ],
+      "rls": true,
+      "kind": "r",
+      "name": "messages",
+      "owner": "postgres",
+      "schema": "public",
+      "force_rls": false
+    },
+    {
+      "acl": [
+        "postgres=arwdDxtm/postgres",
+        "service_role=arwdDxtm/postgres",
+        "authenticated=r/postgres"
+      ],
+      "rls": true,
+      "kind": "r",
+      "name": "notifications",
+      "owner": "postgres",
+      "schema": "public",
+      "force_rls": false
+    },
+    {
+      "acl": [
+        "postgres=arwdDxtm/postgres",
+        "service_role=arwdDxtm/postgres"
+      ],
+      "rls": true,
+      "kind": "r",
+      "name": "order_flow",
+      "owner": "postgres",
+      "schema": "public",
+      "force_rls": false
+    },
+    {
+      "acl": [
+        "postgres=arwdDxtm/postgres",
+        "service_role=arwdDxtm/postgres",
+        "authenticated=r/postgres"
+      ],
+      "rls": true,
+      "kind": "r",
+      "name": "order_items",
+      "owner": "postgres",
+      "schema": "public",
+      "force_rls": false
+    },
+    {
+      "acl": [
+        "postgres=arwdDxtm/postgres",
+        "service_role=arwdDxtm/postgres",
+        "authenticated=r/postgres"
+      ],
+      "rls": true,
+      "kind": "r",
+      "name": "order_suborders",
+      "owner": "postgres",
+      "schema": "public",
+      "force_rls": false
+    },
+    {
+      "acl": [
+        "postgres=arwdDxtm/postgres",
+        "service_role=arwdDxtm/postgres",
+        "authenticated=r/postgres"
+      ],
+      "rls": true,
+      "kind": "r",
+      "name": "orders",
+      "owner": "postgres",
+      "schema": "public",
+      "force_rls": false
+    },
+    {
+      "acl": [
+        "postgres=arwdDxtm/postgres",
+        "service_role=arwdDxtm/postgres"
+      ],
+      "rls": true,
+      "kind": "r",
+      "name": "payfast_itn_log",
+      "owner": "postgres",
+      "schema": "public",
+      "force_rls": false
+    },
+    {
+      "acl": [
+        "postgres=arwdDxtm/postgres",
+        "service_role=arwdDxtm/postgres",
+        "authenticated=r/postgres"
+      ],
+      "rls": true,
+      "kind": "r",
+      "name": "payout_allocations",
+      "owner": "postgres",
+      "schema": "public",
+      "force_rls": false
+    },
+    {
+      "acl": [
+        "postgres=arwdDxtm/postgres",
+        "service_role=arwdDxtm/postgres",
+        "authenticated=rw/postgres"
+      ],
+      "rls": true,
+      "kind": "r",
+      "name": "profiles",
+      "owner": "postgres",
+      "schema": "public",
+      "force_rls": false
+    },
+    {
+      "acl": [
+        "postgres=arwdDxtm/postgres",
+        "service_role=arwdDxtm/postgres",
+        "anon=r/postgres",
+        "authenticated=ar/postgres"
+      ],
+      "rls": true,
+      "kind": "r",
+      "name": "reviews",
+      "owner": "postgres",
+      "schema": "public",
+      "force_rls": false
+    },
+    {
+      "acl": [
+        "postgres=arwdDxtm/postgres",
+        "service_role=arwdDxtm/postgres",
+        "authenticated=ar/postgres"
+      ],
+      "rls": true,
+      "kind": "r",
+      "name": "support_ticket_messages",
+      "owner": "postgres",
+      "schema": "public",
+      "force_rls": false
+    },
+    {
+      "acl": [
+        "postgres=arwdDxtm/postgres",
+        "service_role=arwdDxtm/postgres",
+        "authenticated=ar/postgres"
+      ],
+      "rls": true,
+      "kind": "r",
+      "name": "support_tickets",
+      "owner": "postgres",
+      "schema": "public",
+      "force_rls": false
+    },
+    {
+      "acl": [
+        "postgres=arwdDxtm/postgres",
+        "service_role=arwdDxtm/postgres",
+        "authenticated=r/postgres"
+      ],
+      "rls": true,
+      "kind": "r",
+      "name": "vendor_payouts",
+      "owner": "postgres",
+      "schema": "public",
+      "force_rls": false
+    },
+    {
+      "acl": [
+        "postgres=arwdDxtm/postgres",
+        "service_role=arwdDxtm/postgres",
+        "anon=r/postgres",
+        "authenticated=rw/postgres"
+      ],
+      "rls": true,
+      "kind": "r",
+      "name": "vendors",
+      "owner": "postgres",
+      "schema": "public",
+      "force_rls": false
+    }
+  ],
+  "policies": [
+    {
+      "cmd": "ALL",
+      "qual": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))",
+      "roles": [
+        "anon",
+        "authenticated"
+      ],
+      "tablename": "booking_pricing_rules",
+      "permissive": "RESTRICTIVE",
+      "policyname": "active_account_access",
+      "schemaname": "public",
+      "with_check": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))"
+    },
+    {
+      "cmd": "SELECT",
+      "qual": "((active = true) OR ( SELECT is_admin() AS is_admin))",
+      "roles": [
+        "authenticated"
+      ],
+      "tablename": "booking_pricing_rules",
+      "permissive": "PERMISSIVE",
+      "policyname": "booking_pricing_authenticated_read",
+      "schemaname": "public",
+      "with_check": null
+    },
+    {
+      "cmd": "ALL",
+      "qual": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))",
+      "roles": [
+        "anon",
+        "authenticated"
+      ],
+      "tablename": "conversations",
+      "permissive": "RESTRICTIVE",
+      "policyname": "active_account_access",
+      "schemaname": "public",
+      "with_check": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))"
+    },
+    {
+      "cmd": "DELETE",
+      "qual": "( SELECT is_admin() AS is_admin)",
+      "roles": [
+        "authenticated"
+      ],
+      "tablename": "conversations",
+      "permissive": "PERMISSIVE",
+      "policyname": "conversations_admin_delete",
+      "schemaname": "public",
+      "with_check": null
+    },
+    {
+      "cmd": "INSERT",
+      "qual": null,
+      "roles": [
+        "authenticated"
+      ],
+      "tablename": "conversations",
+      "permissive": "PERMISSIVE",
+      "policyname": "conversations_order_participant_insert",
+      "schemaname": "public",
+      "with_check": "((order_id IS NOT NULL) AND (EXISTS ( SELECT 1\n   FROM (orders o\n     JOIN order_suborders so ON ((so.order_id = o.id)))\n  WHERE ((o.id = conversations.order_id) AND (o.customer_id = conversations.customer_id) AND (so.vendor_id = conversations.vendor_id) AND ((conversations.customer_id = ( SELECT auth.uid() AS uid)) OR (conversations.vendor_id = ( SELECT current_vendor_id() AS current_vendor_id)))))))"
+    },
+    {
+      "cmd": "SELECT",
+      "qual": "((customer_id = ( SELECT auth.uid() AS uid)) OR (vendor_id = ( SELECT current_vendor_id() AS current_vendor_id)) OR ( SELECT is_admin() AS is_admin))",
+      "roles": [
+        "authenticated"
+      ],
+      "tablename": "conversations",
+      "permissive": "PERMISSIVE",
+      "policyname": "conversations_participants_select",
+      "schemaname": "public",
+      "with_check": null
+    },
+    {
+      "cmd": "ALL",
+      "qual": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))",
+      "roles": [
+        "anon",
+        "authenticated"
+      ],
+      "tablename": "corporate_opportunities",
+      "permissive": "RESTRICTIVE",
+      "policyname": "active_account_access",
+      "schemaname": "public",
+      "with_check": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))"
+    },
+    {
+      "cmd": "SELECT",
+      "qual": "((vendor_id = ( SELECT current_vendor_id() AS current_vendor_id)) OR ( SELECT is_admin() AS is_admin))",
+      "roles": [
+        "authenticated"
+      ],
+      "tablename": "corporate_opportunities",
+      "permissive": "PERMISSIVE",
+      "policyname": "corporate_opportunity_vendor_read",
+      "schemaname": "public",
+      "with_check": null
+    },
+    {
+      "cmd": "UPDATE",
+      "qual": "((vendor_id = ( SELECT current_vendor_id() AS current_vendor_id)) OR ( SELECT is_admin() AS is_admin))",
+      "roles": [
+        "authenticated"
+      ],
+      "tablename": "corporate_opportunities",
+      "permissive": "PERMISSIVE",
+      "policyname": "corporate_opportunity_vendor_update",
+      "schemaname": "public",
+      "with_check": "((vendor_id = ( SELECT current_vendor_id() AS current_vendor_id)) OR ( SELECT is_admin() AS is_admin))"
+    },
+    {
+      "cmd": "ALL",
+      "qual": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))",
+      "roles": [
+        "anon",
+        "authenticated"
+      ],
+      "tablename": "event_booking_requests",
+      "permissive": "RESTRICTIVE",
+      "policyname": "active_account_access",
+      "schemaname": "public",
+      "with_check": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))"
+    },
+    {
+      "cmd": "INSERT",
+      "qual": null,
+      "roles": [
+        "authenticated"
+      ],
+      "tablename": "event_booking_requests",
+      "permissive": "PERMISSIVE",
+      "policyname": "event_booking_own_insert",
+      "schemaname": "public",
+      "with_check": "(requester_id = ( SELECT auth.uid() AS uid))"
+    },
+    {
+      "cmd": "SELECT",
+      "qual": "((requester_id = ( SELECT auth.uid() AS uid)) OR ( SELECT is_admin() AS is_admin))",
+      "roles": [
+        "authenticated"
+      ],
+      "tablename": "event_booking_requests",
+      "permissive": "PERMISSIVE",
+      "policyname": "event_booking_own_select",
+      "schemaname": "public",
+      "with_check": null
+    },
+    {
+      "cmd": "ALL",
+      "qual": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))",
+      "roles": [
+        "anon",
+        "authenticated"
+      ],
+      "tablename": "favourites",
+      "permissive": "RESTRICTIVE",
+      "policyname": "active_account_access",
+      "schemaname": "public",
+      "with_check": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))"
+    },
+    {
+      "cmd": "ALL",
+      "qual": "(profile_id = ( SELECT auth.uid() AS uid))",
+      "roles": [
+        "authenticated"
+      ],
+      "tablename": "favourites",
+      "permissive": "PERMISSIVE",
+      "policyname": "favourites_own_all",
+      "schemaname": "public",
+      "with_check": "(profile_id = ( SELECT auth.uid() AS uid))"
+    },
+    {
+      "cmd": "ALL",
+      "qual": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))",
+      "roles": [
+        "anon",
+        "authenticated"
+      ],
+      "tablename": "feedback",
+      "permissive": "RESTRICTIVE",
+      "policyname": "active_account_access",
+      "schemaname": "public",
+      "with_check": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))"
+    },
+    {
+      "cmd": "SELECT",
+      "qual": "((user_id = ( SELECT auth.uid() AS uid)) OR ( SELECT private.is_admin() AS is_admin))",
+      "roles": [
+        "authenticated"
+      ],
+      "tablename": "feedback",
+      "permissive": "PERMISSIVE",
+      "policyname": "feedback_read",
+      "schemaname": "public",
+      "with_check": null
+    },
+    {
+      "cmd": "INSERT",
+      "qual": null,
+      "roles": [
+        "anon",
+        "authenticated"
+      ],
+      "tablename": "feedback",
+      "permissive": "PERMISSIVE",
+      "policyname": "feedback_submit",
+      "schemaname": "public",
+      "with_check": "(NOT (user_id IS DISTINCT FROM ( SELECT auth.uid() AS uid)))"
+    },
+    {
+      "cmd": "ALL",
+      "qual": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))",
+      "roles": [
+        "anon",
+        "authenticated"
+      ],
+      "tablename": "help_articles",
+      "permissive": "RESTRICTIVE",
+      "policyname": "active_account_access",
+      "schemaname": "public",
+      "with_check": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))"
+    },
+    {
+      "cmd": "SELECT",
+      "qual": "(published = true)",
+      "roles": [
+        "anon",
+        "authenticated"
+      ],
+      "tablename": "help_articles",
+      "permissive": "PERMISSIVE",
+      "policyname": "help_articles_public_read",
+      "schemaname": "public",
+      "with_check": null
+    },
+    {
+      "cmd": "ALL",
+      "qual": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))",
+      "roles": [
+        "anon",
+        "authenticated"
+      ],
+      "tablename": "meals",
+      "permissive": "RESTRICTIVE",
+      "policyname": "active_account_access",
+      "schemaname": "public",
+      "with_check": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))"
+    },
+    {
+      "cmd": "SELECT",
+      "qual": "((available = true) AND (EXISTS ( SELECT 1\n   FROM vendors v\n  WHERE ((v.id = meals.vendor_id) AND (v.status = 'approved'::vendor_status)))))",
+      "roles": [
+        "anon"
+      ],
+      "tablename": "meals",
+      "permissive": "PERMISSIVE",
+      "policyname": "meals_anonymous_approved_catalog",
+      "schemaname": "public",
+      "with_check": null
+    },
+    {
+      "cmd": "SELECT",
+      "qual": "(((available = true) AND (EXISTS ( SELECT 1\n   FROM vendors v\n  WHERE ((v.id = meals.vendor_id) AND (v.status = 'approved'::vendor_status))))) OR ((( SELECT auth.uid() AS uid) IS NOT NULL) AND (( SELECT is_admin() AS is_admin) OR (vendor_id = ( SELECT current_vendor_id() AS current_vendor_id)))))",
+      "roles": [
+        "authenticated"
+      ],
+      "tablename": "meals",
+      "permissive": "PERMISSIVE",
+      "policyname": "meals_catalog_and_owner_select",
+      "schemaname": "public",
+      "with_check": null
+    },
+    {
+      "cmd": "DELETE",
+      "qual": "(is_admin() OR (vendor_id = current_vendor_id()))",
+      "roles": [
+        "authenticated"
+      ],
+      "tablename": "meals",
+      "permissive": "PERMISSIVE",
+      "policyname": "meals_owner_admin_delete",
+      "schemaname": "public",
+      "with_check": null
+    },
+    {
+      "cmd": "INSERT",
+      "qual": null,
+      "roles": [
+        "authenticated"
+      ],
+      "tablename": "meals",
+      "permissive": "PERMISSIVE",
+      "policyname": "meals_owner_admin_insert",
+      "schemaname": "public",
+      "with_check": "(is_admin() OR (vendor_id = current_vendor_id()))"
+    },
+    {
+      "cmd": "UPDATE",
+      "qual": "(is_admin() OR (vendor_id = current_vendor_id()))",
+      "roles": [
+        "authenticated"
+      ],
+      "tablename": "meals",
+      "permissive": "PERMISSIVE",
+      "policyname": "meals_owner_admin_update",
+      "schemaname": "public",
+      "with_check": "(is_admin() OR (vendor_id = current_vendor_id()))"
+    },
+    {
+      "cmd": "ALL",
+      "qual": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))",
+      "roles": [
+        "anon",
+        "authenticated"
+      ],
+      "tablename": "messages",
+      "permissive": "RESTRICTIVE",
+      "policyname": "active_account_access",
+      "schemaname": "public",
+      "with_check": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))"
+    },
+    {
+      "cmd": "INSERT",
+      "qual": null,
+      "roles": [
+        "authenticated"
+      ],
+      "tablename": "messages",
+      "permissive": "PERMISSIVE",
+      "policyname": "messages_participants_insert",
+      "schemaname": "public",
+      "with_check": "((sender_id = ( SELECT auth.uid() AS uid)) AND (read = false) AND (length(TRIM(BOTH FROM text)) > 0) AND (EXISTS ( SELECT 1\n   FROM conversations c\n  WHERE ((c.id = messages.conversation_id) AND (c.closed_at IS NULL) AND ((c.customer_id = ( SELECT auth.uid() AS uid)) OR (c.vendor_id = ( SELECT private.current_vendor_id() AS current_vendor_id)))))))"
+    },
+    {
+      "cmd": "SELECT",
+      "qual": "(EXISTS ( SELECT 1\n   FROM conversations c\n  WHERE ((c.id = messages.conversation_id) AND ((c.customer_id = ( SELECT auth.uid() AS uid)) OR (c.vendor_id = ( SELECT current_vendor_id() AS current_vendor_id)) OR ( SELECT is_admin() AS is_admin)))))",
+      "roles": [
+        "authenticated"
+      ],
+      "tablename": "messages",
+      "permissive": "PERMISSIVE",
+      "policyname": "messages_participants_select",
+      "schemaname": "public",
+      "with_check": null
+    },
+    {
+      "cmd": "UPDATE",
+      "qual": "(EXISTS ( SELECT 1\n   FROM conversations c\n  WHERE ((c.id = messages.conversation_id) AND ((c.customer_id = ( SELECT auth.uid() AS uid)) OR (c.vendor_id = ( SELECT current_vendor_id() AS current_vendor_id))))))",
+      "roles": [
+        "authenticated"
+      ],
+      "tablename": "messages",
+      "permissive": "PERMISSIVE",
+      "policyname": "messages_participants_update",
+      "schemaname": "public",
+      "with_check": "(EXISTS ( SELECT 1\n   FROM conversations c\n  WHERE ((c.id = messages.conversation_id) AND ((c.customer_id = ( SELECT auth.uid() AS uid)) OR (c.vendor_id = ( SELECT current_vendor_id() AS current_vendor_id))))))"
+    },
+    {
+      "cmd": "ALL",
+      "qual": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))",
+      "roles": [
+        "anon",
+        "authenticated"
+      ],
+      "tablename": "notifications",
+      "permissive": "RESTRICTIVE",
+      "policyname": "active_account_access",
+      "schemaname": "public",
+      "with_check": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))"
+    },
+    {
+      "cmd": "SELECT",
+      "qual": "((user_id = ( SELECT auth.uid() AS uid)) OR ( SELECT is_admin() AS is_admin))",
+      "roles": [
+        "authenticated"
+      ],
+      "tablename": "notifications",
+      "permissive": "PERMISSIVE",
+      "policyname": "notifications_own_select",
+      "schemaname": "public",
+      "with_check": null
+    },
+    {
+      "cmd": "UPDATE",
+      "qual": "((user_id = ( SELECT auth.uid() AS uid)) OR ( SELECT is_admin() AS is_admin))",
+      "roles": [
+        "authenticated"
+      ],
+      "tablename": "notifications",
+      "permissive": "PERMISSIVE",
+      "policyname": "notifications_own_update",
+      "schemaname": "public",
+      "with_check": "((user_id = ( SELECT auth.uid() AS uid)) OR ( SELECT is_admin() AS is_admin))"
+    },
+    {
+      "cmd": "ALL",
+      "qual": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))",
+      "roles": [
+        "anon",
+        "authenticated"
+      ],
+      "tablename": "order_flow",
+      "permissive": "RESTRICTIVE",
+      "policyname": "active_account_access",
+      "schemaname": "public",
+      "with_check": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))"
+    },
+    {
+      "cmd": "ALL",
+      "qual": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))",
+      "roles": [
+        "anon",
+        "authenticated"
+      ],
+      "tablename": "order_items",
+      "permissive": "RESTRICTIVE",
+      "policyname": "active_account_access",
+      "schemaname": "public",
+      "with_check": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))"
+    },
+    {
+      "cmd": "SELECT",
+      "qual": "(EXISTS ( SELECT 1\n   FROM (order_suborders so\n     JOIN orders o ON ((o.id = so.order_id)))\n  WHERE ((so.id = order_items.suborder_id) AND (( SELECT is_admin() AS is_admin) OR (so.vendor_id = ( SELECT current_vendor_id() AS current_vendor_id)) OR (o.customer_id = ( SELECT auth.uid() AS uid))))))",
+      "roles": [
+        "authenticated"
+      ],
+      "tablename": "order_items",
+      "permissive": "PERMISSIVE",
+      "policyname": "items_related_select",
+      "schemaname": "public",
+      "with_check": null
+    },
+    {
+      "cmd": "ALL",
+      "qual": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))",
+      "roles": [
+        "anon",
+        "authenticated"
+      ],
+      "tablename": "order_suborders",
+      "permissive": "RESTRICTIVE",
+      "policyname": "active_account_access",
+      "schemaname": "public",
+      "with_check": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))"
+    },
+    {
+      "cmd": "SELECT",
+      "qual": "(( SELECT is_admin() AS is_admin) OR (vendor_id = ( SELECT current_vendor_id() AS current_vendor_id)) OR (EXISTS ( SELECT 1\n   FROM orders o\n  WHERE ((o.id = order_suborders.order_id) AND (o.customer_id = ( SELECT auth.uid() AS uid))))))",
+      "roles": [
+        "authenticated"
+      ],
+      "tablename": "order_suborders",
+      "permissive": "PERMISSIVE",
+      "policyname": "suborders_related_select",
+      "schemaname": "public",
+      "with_check": null
+    },
+    {
+      "cmd": "UPDATE",
+      "qual": "((vendor_id = current_vendor_id()) OR is_admin())",
+      "roles": [
+        "authenticated"
+      ],
+      "tablename": "order_suborders",
+      "permissive": "PERMISSIVE",
+      "policyname": "suborders_vendor_notes_update",
+      "schemaname": "public",
+      "with_check": "((vendor_id = current_vendor_id()) OR is_admin())"
+    },
+    {
+      "cmd": "ALL",
+      "qual": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))",
+      "roles": [
+        "anon",
+        "authenticated"
+      ],
+      "tablename": "orders",
+      "permissive": "RESTRICTIVE",
+      "policyname": "active_account_access",
+      "schemaname": "public",
+      "with_check": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))"
+    },
+    {
+      "cmd": "SELECT",
+      "qual": "((customer_id = ( SELECT auth.uid() AS uid)) OR ( SELECT is_admin() AS is_admin) OR ( SELECT vendor_can_see_order(orders.id) AS vendor_can_see_order))",
+      "roles": [
+        "authenticated"
+      ],
+      "tablename": "orders",
+      "permissive": "PERMISSIVE",
+      "policyname": "orders_customer_admin_vendor_select",
+      "schemaname": "public",
+      "with_check": null
+    },
+    {
+      "cmd": "ALL",
+      "qual": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))",
+      "roles": [
+        "anon",
+        "authenticated"
+      ],
+      "tablename": "payfast_itn_log",
+      "permissive": "RESTRICTIVE",
+      "policyname": "active_account_access",
+      "schemaname": "public",
+      "with_check": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))"
+    },
+    {
+      "cmd": "ALL",
+      "qual": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))",
+      "roles": [
+        "anon",
+        "authenticated"
+      ],
+      "tablename": "payout_allocations",
+      "permissive": "RESTRICTIVE",
+      "policyname": "active_account_access",
+      "schemaname": "public",
+      "with_check": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))"
+    },
+    {
+      "cmd": "SELECT",
+      "qual": "(EXISTS ( SELECT 1\n   FROM vendor_payouts p\n  WHERE (p.id = payout_allocations.payout_id)))",
+      "roles": [
+        "authenticated"
+      ],
+      "tablename": "payout_allocations",
+      "permissive": "PERMISSIVE",
+      "policyname": "allocation_read",
+      "schemaname": "public",
+      "with_check": null
+    },
+    {
+      "cmd": "ALL",
+      "qual": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))",
+      "roles": [
+        "anon",
+        "authenticated"
+      ],
+      "tablename": "profiles",
+      "permissive": "RESTRICTIVE",
+      "policyname": "active_account_access",
+      "schemaname": "public",
+      "with_check": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))"
+    },
+    {
+      "cmd": "SELECT",
+      "qual": "((id = ( SELECT auth.uid() AS uid)) OR ( SELECT is_admin() AS is_admin))",
+      "roles": [
+        "authenticated"
+      ],
+      "tablename": "profiles",
+      "permissive": "PERMISSIVE",
+      "policyname": "profiles_self_select",
+      "schemaname": "public",
+      "with_check": null
+    },
+    {
+      "cmd": "UPDATE",
+      "qual": "((id = ( SELECT auth.uid() AS uid)) OR ( SELECT is_admin() AS is_admin))",
+      "roles": [
+        "authenticated"
+      ],
+      "tablename": "profiles",
+      "permissive": "PERMISSIVE",
+      "policyname": "profiles_self_update",
+      "schemaname": "public",
+      "with_check": "((id = ( SELECT auth.uid() AS uid)) OR ( SELECT is_admin() AS is_admin))"
+    },
+    {
+      "cmd": "ALL",
+      "qual": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))",
+      "roles": [
+        "anon",
+        "authenticated"
+      ],
+      "tablename": "reviews",
+      "permissive": "RESTRICTIVE",
+      "policyname": "active_account_access",
+      "schemaname": "public",
+      "with_check": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))"
+    },
+    {
+      "cmd": "INSERT",
+      "qual": null,
+      "roles": [
+        "authenticated"
+      ],
+      "tablename": "reviews",
+      "permissive": "PERMISSIVE",
+      "policyname": "reviews_customer_insert",
+      "schemaname": "public",
+      "with_check": "(customer_id = ( SELECT auth.uid() AS uid))"
+    },
+    {
+      "cmd": "SELECT",
+      "qual": "true",
+      "roles": [
+        "anon",
+        "authenticated"
+      ],
+      "tablename": "reviews",
+      "permissive": "PERMISSIVE",
+      "policyname": "reviews_public_read",
+      "schemaname": "public",
+      "with_check": null
+    },
+    {
+      "cmd": "ALL",
+      "qual": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))",
+      "roles": [
+        "anon",
+        "authenticated"
+      ],
+      "tablename": "support_ticket_messages",
+      "permissive": "RESTRICTIVE",
+      "policyname": "active_account_access",
+      "schemaname": "public",
+      "with_check": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))"
+    },
+    {
+      "cmd": "INSERT",
+      "qual": null,
+      "roles": [
+        "authenticated"
+      ],
+      "tablename": "support_ticket_messages",
+      "permissive": "PERMISSIVE",
+      "policyname": "support_message_customer_create",
+      "schemaname": "public",
+      "with_check": "((sender_id = ( SELECT auth.uid() AS uid)) AND (sender_role = 'customer'::text) AND (internal = false) AND (EXISTS ( SELECT 1\n   FROM support_tickets t\n  WHERE ((t.id = support_ticket_messages.ticket_id) AND (t.requester_id = ( SELECT auth.uid() AS uid))))))"
+    },
+    {
+      "cmd": "SELECT",
+      "qual": "(( SELECT is_admin() AS is_admin) OR ((internal = false) AND (EXISTS ( SELECT 1\n   FROM support_tickets t\n  WHERE ((t.id = support_ticket_messages.ticket_id) AND (t.requester_id = ( SELECT auth.uid() AS uid)))))))",
+      "roles": [
+        "authenticated"
+      ],
+      "tablename": "support_ticket_messages",
+      "permissive": "PERMISSIVE",
+      "policyname": "support_message_read",
+      "schemaname": "public",
+      "with_check": null
+    },
+    {
+      "cmd": "ALL",
+      "qual": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))",
+      "roles": [
+        "anon",
+        "authenticated"
+      ],
+      "tablename": "support_tickets",
+      "permissive": "RESTRICTIVE",
+      "policyname": "active_account_access",
+      "schemaname": "public",
+      "with_check": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))"
+    },
+    {
+      "cmd": "INSERT",
+      "qual": null,
+      "roles": [
+        "authenticated"
+      ],
+      "tablename": "support_tickets",
+      "permissive": "PERMISSIVE",
+      "policyname": "support_ticket_owner_create",
+      "schemaname": "public",
+      "with_check": "(requester_id = ( SELECT auth.uid() AS uid))"
+    },
+    {
+      "cmd": "SELECT",
+      "qual": "((requester_id = ( SELECT auth.uid() AS uid)) OR ( SELECT is_admin() AS is_admin))",
+      "roles": [
+        "authenticated"
+      ],
+      "tablename": "support_tickets",
+      "permissive": "PERMISSIVE",
+      "policyname": "support_ticket_owner_read",
+      "schemaname": "public",
+      "with_check": null
+    },
+    {
+      "cmd": "ALL",
+      "qual": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))",
+      "roles": [
+        "anon",
+        "authenticated"
+      ],
+      "tablename": "vendor_payouts",
+      "permissive": "RESTRICTIVE",
+      "policyname": "active_account_access",
+      "schemaname": "public",
+      "with_check": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))"
+    },
+    {
+      "cmd": "SELECT",
+      "qual": "(private.is_admin() OR (vendor_id = private.current_vendor_id()))",
+      "roles": [
+        "authenticated"
+      ],
+      "tablename": "vendor_payouts",
+      "permissive": "PERMISSIVE",
+      "policyname": "payout_read",
+      "schemaname": "public",
+      "with_check": null
+    },
+    {
+      "cmd": "ALL",
+      "qual": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))",
+      "roles": [
+        "anon",
+        "authenticated"
+      ],
+      "tablename": "vendors",
+      "permissive": "RESTRICTIVE",
+      "policyname": "active_account_access",
+      "schemaname": "public",
+      "with_check": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))"
+    },
+    {
+      "cmd": "SELECT",
+      "qual": "(status = 'approved'::vendor_status)",
+      "roles": [
+        "anon"
+      ],
+      "tablename": "vendors",
+      "permissive": "PERMISSIVE",
+      "policyname": "staging_approved_vendor_catalog",
+      "schemaname": "public",
+      "with_check": null
+    },
+    {
+      "cmd": "SELECT",
+      "qual": "(private.vendor_orderable(id) OR (owner_id = ( SELECT auth.uid() AS uid)) OR ( SELECT private.is_admin() AS is_admin))",
+      "roles": [
+        "authenticated"
+      ],
+      "tablename": "vendors",
+      "permissive": "RESTRICTIVE",
+      "policyname": "vendors_orderable_members",
+      "schemaname": "public",
+      "with_check": null
+    },
+    {
+      "cmd": "SELECT",
+      "qual": "private.vendor_orderable(id)",
+      "roles": [
+        "anon"
+      ],
+      "tablename": "vendors",
+      "permissive": "RESTRICTIVE",
+      "policyname": "vendors_orderable_public",
+      "schemaname": "public",
+      "with_check": null
+    },
+    {
+      "cmd": "SELECT",
+      "qual": "((status = 'approved'::vendor_status) OR (owner_id = ( SELECT auth.uid() AS uid)) OR ( SELECT is_admin() AS is_admin))",
+      "roles": [
+        "authenticated"
+      ],
+      "tablename": "vendors",
+      "permissive": "PERMISSIVE",
+      "policyname": "vendors_owner_admin_select",
+      "schemaname": "public",
+      "with_check": null
+    },
+    {
+      "cmd": "UPDATE",
+      "qual": "((owner_id = ( SELECT auth.uid() AS uid)) OR ( SELECT is_admin() AS is_admin))",
+      "roles": [
+        "authenticated"
+      ],
+      "tablename": "vendors",
+      "permissive": "PERMISSIVE",
+      "policyname": "vendors_owner_admin_update",
+      "schemaname": "public",
+      "with_check": "((owner_id = ( SELECT auth.uid() AS uid)) OR ( SELECT is_admin() AS is_admin))"
+    }
+  ],
+  "functions": [
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "3fe39a6576f02f5f444dc0e100086cd9",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": false,
+      "signature": "accept_vendor_legal(uuid,jsonb,jsonb)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "e2e3935091e1dc210a2d3c86d59bed0e",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "admin_allocate_payout(uuid,uuid[],uuid)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "d1e214507109e599e54e3a0f6fea8fb7",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "admin_cancel_refunded_manual_order(uuid,text)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "481ea5d45e7b511321c059d78a079504",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "admin_classify_test_order(uuid,text,integer)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "fc3b1ce17addcfba0f3f2ac45646a2d7",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": false,
+      "signature": "admin_commercial_action(text,jsonb)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "8266b29119bd66dc97c5391d33b0159b",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "admin_configure_retention(integer,text)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "86becac45ee2d0703754b3b08c21bb78",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "admin_customer_favourite_counts()"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "f431042e696210bafd0f153fb732e9f9",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "admin_decide_delivery_origin(uuid,integer,text,text,double precision)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "a464857783e8d4135b9589b81c19618d",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "admin_decide_subscription(uuid,boolean,text)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "0b57d38275ae0d5b9509fcc1dc4f0da8",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "admin_delivery_origin_queue()"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "671437456db93b1ef05fcd6d403d7fc7",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "admin_manual_receivable_entry(uuid,text,numeric,text,numeric)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "7c0a398be18ece9e1940840fe692ea6c",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "admin_manual_settings(boolean,boolean,integer,numeric,text)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "842dae1f693bb01506172ac9a5515913",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": false,
+      "signature": "admin_preview_account_removal(text,uuid)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "e832176727cd1afbc93ec00b929b374e",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "admin_preview_retention()"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "09e5731486c363bb1a0489be770fc103",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "admin_preview_test_order(uuid)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "9874dba1afb7f6be1384b59e725a2e41",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "admin_recent_payments(integer)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "6e6db4428a93b61e56186518bb0d99c9",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "admin_reconcile_payout(uuid,text,text)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "dc4cf6155cb394cf05bed9ce5a266812",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "admin_record_historical_commission(uuid,numeric,text)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "authenticated=X/postgres",
+        "service_role=X/postgres"
+      ],
+      "md5": "b5ece6101803a0e4b15b0b04bad98c62",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "admin_reply_support_ticket(uuid,text,boolean)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "59f1a011872507b068c12464b52ed298",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "admin_save_delivery_hub(jsonb,text)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "482788f0f7a475694c0595321e08692b",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "admin_set_fee_policy(text,text)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "e37c990c140ee6eab92fe72ed39db620",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "admin_update_delivery_settings(boolean,double precision,double precision,double precision,double precision,numeric)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "dde32a7fed75f7dcd4e2eee96c6ef839",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "admin_update_payment_gateway(text,boolean,boolean,text)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "authenticated=X/postgres",
+        "service_role=X/postgres"
+      ],
+      "md5": "efd48729e992543efbe460e8f8ac6755",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "admin_update_support_ticket(uuid,support_status,support_priority,uuid)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres"
+      ],
+      "md5": "12c9e7edc408f5930e22ca58bf737594",
+      "owner": "postgres",
+      "config": [
+        "search_path=public"
+      ],
+      "definer": true,
+      "signature": "admin_verify_payment(uuid,boolean)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "2f06971d7648dc42e00ab2d14817bcae",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "approve_vendor_payment_profile(uuid,text)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "b1802814515d06adca1a636c26edf3f9",
+      "owner": "postgres",
+      "config": [
+        "search_path=public"
+      ],
+      "definer": true,
+      "signature": "become_vendor(text,text,text)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres"
+      ],
+      "md5": "65640d513e58dd844da51aaaa8eef7c9",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "begin_ozow_attempt(uuid,uuid,text,text,text)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres"
+      ],
+      "md5": "8338aa020a6484e689199e9b05f4c109",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "bind_ozow_payment(uuid,uuid,text)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres",
+        "anon=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "6a52338e78c097c55bb8721bbcf451fe",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "cancel_unpaid_order(uuid,text,text)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres"
+      ],
+      "md5": "5dd3ca6774fbe5699975d6447fba8bba",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "close_order_conversation_on_terminal_suborder()"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres"
+      ],
+      "md5": "f3f26702021482a6a8301ae71dceb65d",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "complete_account_removal(uuid,uuid)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres"
+      ],
+      "md5": "8e0b0463a1c84106374f38a29c953bda",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "confirm_payfast_payment(uuid,text,text,numeric,text,jsonb)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres",
+        "authenticated=X/postgres",
+        "anon=X/postgres"
+      ],
+      "md5": "c4dc553530f2998f26e91475b7503a5e",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "create_manual_order(uuid,text,text,text,date,text,jsonb,uuid,text,uuid)"
+    },
+    {
+      "acl": [
+        "=X/postgres",
+        "postgres=X/postgres",
+        "service_role=X/postgres",
+        "anon=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "e4d7dc3afcbfa9d453d08138326f862f",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": false,
+      "signature": "create_order_from_cart(uuid,text,text,text,date,text,jsonb)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "58af3cc0d5d3b2695b57a582af726226",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": false,
+      "signature": "create_support_ticket(text,text,text,text,text,text,uuid,jsonb,text)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "51d6486c167814b8e41aa870c16189ca",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "current_vendor_id()"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres"
+      ],
+      "md5": "925d0c9bf224bdac29f381aec1d750d5",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": false,
+      "signature": "enforce_order_status_transition()"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres"
+      ],
+      "md5": "df38311b761d539095c13bad560664b1",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "erase_expired_conversations()"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres"
+      ],
+      "md5": "5e0de6f3f82ed694cb4cef2ed5c64242",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "erase_old_conversations_legacy_staging()"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres"
+      ],
+      "md5": "edfdbe445212bf27e60e1267d6b26c08",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "erase_old_conversations()"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "9296f9e8fcc88cd6deab74024c768dc1",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "flag_manual_payment(uuid,text)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "36dbcbdecbf9e05efd65ccfd91d43e89",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "get_admin_category_demand(integer)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "53a8e4c3033e05bd2b5b550aca94d8a2",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "get_admin_platform_analytics(integer)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "f0f415a3cfb564fc0afcfa4a7f7edd3c",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": false,
+      "signature": "get_commercial_report(date,date)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "c75bafab847e55ad2403c6ba1a48ec07",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": false,
+      "signature": "get_commercial_workspace()"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres",
+        "anon=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "a48885ff2e4b216063ba9f2cd2d3d034",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "get_delivery_settings()"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "7715dbb09c620fa52aea9847659985a3",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "get_financial_report(uuid,date,date)"
+    },
+    {
+      "acl": [
+        "=X/postgres",
+        "postgres=X/postgres",
+        "service_role=X/postgres",
+        "anon=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "71734d468a9db74330cc37836e50904c",
+      "owner": "postgres",
+      "config": [
+        "search_path=public"
+      ],
+      "definer": true,
+      "signature": "get_guest_order_by_ticket_json(text,text)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "anon=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "97d0ab85a3c4d05cf9bdfa940960ab5d",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": false,
+      "signature": "get_legal_portal()"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres",
+        "authenticated=X/postgres",
+        "anon=X/postgres"
+      ],
+      "md5": "db07f517c41c47cbafc73b6f53cbd620",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "get_manual_payment(uuid,uuid)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres",
+        "anon=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "8a248d8f799e46518b5fe4818f5c82bb",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "get_nearby_vendors(double precision,double precision,integer)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "ac16787bc2956c3d8b53eac71494c6a8",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": false,
+      "signature": "get_order_customer_names(uuid[])"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres"
+      ],
+      "md5": "b4dc4a3c61648fab18debe2356d07f1a",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "get_ozow_attempt(text)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres",
+        "anon=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "13923f94c9ac9eb33a9780b022a4e326",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "get_payment_gateways()"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "7b72c297faceaff52aeea388547a9bbc",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "get_payout_ledger(uuid)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "authenticated=X/postgres",
+        "service_role=X/postgres"
+      ],
+      "md5": "4263fb205cf88b1a2d48eee0104eea76",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "get_vendor_analytics(uuid,integer)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "102b0d4c81291df386e9ef98f71f0c3f",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "get_vendor_dashboard_stats(uuid)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "989afd8ba9786f13ef0c0b8e1c338dde",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "get_vendor_delivery_origin(uuid)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres",
+        "authenticated=X/postgres",
+        "anon=X/postgres"
+      ],
+      "md5": "52ac2c375a04a31aa46470456260c929",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "get_vendor_manual_methods(uuid)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "9af4ba8d3be5f36775f0e3df445277c7",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "get_vendor_subscription(uuid)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres"
+      ],
+      "md5": "389319aa4e0b30ada46bc315e97afbad",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "guard_profile_privileged_fields()"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres"
+      ],
+      "md5": "405aaa6295945413607a5413a8d965a3",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "guard_vendor_privileged_fields()"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres"
+      ],
+      "md5": "086649c1a17a57fbcfde261ea7bdba6a",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "handle_new_user()"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "f8baecb91f947da91f391d09ac94be79",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "is_admin()"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "d2168fc50d73814fc7fb022f57f250b4",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "manual_payment_workspace(boolean)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres"
+      ],
+      "md5": "930939a8c50110580a554017e91a585a",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "notify_chat_recipient()"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres"
+      ],
+      "md5": "31c02b304e6ff20def53feddc3f17e86",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "notify_support_reply()"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres"
+      ],
+      "md5": "1185d494ac41ab09d2b83f3e263582cd",
+      "owner": "postgres",
+      "config": [
+        "search_path=public"
+      ],
+      "definer": true,
+      "signature": "order_to_json(orders)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres"
+      ],
+      "md5": "d502b91d95f5a41f56de7fa36fc96607",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "prepare_account_removal(uuid,text,uuid,text,text)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres"
+      ],
+      "md5": "3d7e8f14c5e513a2cc0a341cf4ecde4d",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "prepare_payfast_order(uuid,uuid,text)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "e9ead35d1634af1b31ba633e5adf7a7c",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": false,
+      "signature": "prepare_vendor_consent(jsonb,jsonb)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "4f77fba36a3c9cb6b8b5e16c194a877a",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "private.accept_vendor_legal(uuid,jsonb,jsonb)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "authenticated=X/postgres",
+        "service_role=X/postgres"
+      ],
+      "md5": "6b62375bf83d0a301c3fbe670f84878c",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "private.account_removal_preview(uuid,text,uuid)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres"
+      ],
+      "md5": "d0593edfa25f1b1f41db1ce3dc2e8dbf",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "private.acquisition_completed_event()"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres"
+      ],
+      "md5": "917a3038d6920e480b795bd8283451bd",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": false,
+      "signature": "private.acquisition_rate(bigint)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "anon=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "5bda4a148d4f52474014f31f90b49cdf",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "private.active_account()"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres"
+      ],
+      "md5": "4fc89abc8256435ddf4b73b3d117de78",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "private.audit_inactive_payment()"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres"
+      ],
+      "md5": "a3221dc683f93eacd4853cff0e47d0e6",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": false,
+      "signature": "private.block_marketplace_provider()"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres"
+      ],
+      "md5": "3fc6bfd6b23f71d2bc04609a5de5cdf0",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": false,
+      "signature": "private.block_provider_attempt()"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "2bd237b22b6c5157db5ed26e5f28bf12",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "private.commercial_admin_action(text,jsonb)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres"
+      ],
+      "md5": "877323d6e6470ee3ac570e1ed9052351",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "private.commercial_admin()"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres"
+      ],
+      "md5": "312415d4eec01961e8ca2767364d0459",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "private.commercial_business_ready()"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres"
+      ],
+      "md5": "76cb166d0e54ae47eff35a92674de807",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "private.commercial_documents()"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres"
+      ],
+      "md5": "b18085a75ea95e16ebf85045d5b8157b",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": false,
+      "signature": "private.commercial_immutable()"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres"
+      ],
+      "md5": "65947b9e744814712d469f5730a34b26",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "private.commercial_payout_hold()"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "4f7eb3f1d922443e495b7f2cee235485",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "private.commercial_report(date,date)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "0891ee736106dc94e80c8ef977a44a08",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "private.commercial_workspace()"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres"
+      ],
+      "md5": "2a4deae9cd4f10c95e36cde5c10877ec",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "private.compute_delivery(double precision,double precision,jsonb)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres"
+      ],
+      "md5": "7041163efebc96a5c6e43f00bcbe7bb4",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "private.conversation_retention_tick()"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres"
+      ],
+      "md5": "d66dff3346ea0241a989a2c060227236",
+      "owner": "postgres",
+      "config": [
+        "search_path=public"
+      ],
+      "definer": true,
+      "signature": "private.create_order_core(uuid,text,text,text,date,text,jsonb)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres"
+      ],
+      "md5": "36d73e384b63626498cbe054c1d5da31",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "private.create_order_with_delivery(uuid,text,text,text,date,text,jsonb,uuid)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "authenticated=X/postgres",
+        "service_role=X/postgres",
+        "anon=X/postgres"
+      ],
+      "md5": "9d2266be4d76f6ced5e7a4ada5578799",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "private.current_vendor_id()"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres"
+      ],
+      "md5": "dfcefbbe9bcb419e4f45644992637eb4",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": false,
+      "signature": "private.distance_km(double precision,double precision,double precision,double precision)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres"
+      ],
+      "md5": "da970a89529e65fb64e5cfe3a85778d8",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "private.enforce_vendor_consent()"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres"
+      ],
+      "md5": "b9a327a8640c62ed2ac76e0c56e74187",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": false,
+      "signature": "private.guard_delivery_snapshot()"
+    },
+    {
+      "acl": null,
+      "md5": "63dd72dac7cceec2c010efffe5513119",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "private.guard_paid_item_history()"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres"
+      ],
+      "md5": "c66f77ab9815c0d595ebbcf1e689a119",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "private.invalidate_vendor_delivery_origin()"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "authenticated=X/postgres",
+        "service_role=X/postgres",
+        "anon=X/postgres"
+      ],
+      "md5": "93249d9ae6b8bb281f34cace89cd763d",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "private.is_admin()"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "anon=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "7e515ae3cd7078eee6ff0b2a82be649d",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "private.legal_portal()"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres"
+      ],
+      "md5": "a6b75efb9534b4c4987e4f63353fe6a5",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": false,
+      "signature": "private.lock_corporate_contract()"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres"
+      ],
+      "md5": "951440343443b4049c529105adf8cea6",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "private.manual_fulfilment_hold()"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres"
+      ],
+      "md5": "ba32a14eefc6bfee43d81fed2a95436f",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": false,
+      "signature": "private.manual_immutable()"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres"
+      ],
+      "md5": "5ec02363887a14a2125a31c3ab534bd8",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "private.manual_operator(uuid)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres"
+      ],
+      "md5": "0440f9dd736d4e7546b0e275e5bd15f1",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": false,
+      "signature": "private.manual_profile_lock()"
+    },
+    {
+      "acl": null,
+      "md5": "0832871700213c20ab023b9544680a55",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "private.new_checkout_validation()"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "2fd9869cba840569df5109b0ddd4fb9a",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "private.order_customer_names(uuid[])"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres"
+      ],
+      "md5": "3924b4dc68d66a34536e4f07632cdc4b",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "private.origin_event(uuid,text,text)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres"
+      ],
+      "md5": "bb7cb492e73917e3f65e8d7572acd180",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "private.prepare_ozow_order_core(uuid,uuid,text)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres"
+      ],
+      "md5": "71a09443e94d63d772ef89b40d641ae9",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "private.prepare_payfast_order_before_ozow(uuid,uuid,text)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "af23f4af848eae5bef0c1f2c80a2d64d",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "private.prepare_vendor_consent(jsonb,jsonb)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres"
+      ],
+      "md5": "bac477cf1e0a3d0bf4aef3fdb8469b20",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "private.record_acquisition_refund(uuid,text,text,numeric)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres"
+      ],
+      "md5": "5f3d043c7c82452853568b1074073895",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "private.record_acquisition(uuid,uuid)"
+    },
+    {
+      "acl": null,
+      "md5": "59c4603029b0f20308fe921add2de75f",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "private.reject_inactive_write()"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres"
+      ],
+      "md5": "6ebfe07c586e87b7338206334bfe0504",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": false,
+      "signature": "private.reject_temporary_images()"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres"
+      ],
+      "md5": "5f5c15b444816954631ea295ec80106e",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "private.removal_blockers(uuid)"
+    },
+    {
+      "acl": null,
+      "md5": "650d9109b10cf69b52a8297189dade46",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "private.require_auth_identity_on_profile_insert()"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres"
+      ],
+      "md5": "a7e102bfe10f81b531f9246c16397444",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "private.require_fulfilment_on_insert()"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "de0710c7a6db2bfe92b6339151fdf653",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "private.respond_corporate_agreement(uuid,boolean)"
+    },
+    {
+      "acl": null,
+      "md5": "3b952c109592a3a37f714550c762476f",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "private.snapshot_order_item()"
+    },
+    {
+      "acl": null,
+      "md5": "2c9275f4b3b592c992b30cd5f8690d7a",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "private.snapshot_paid_commission()"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres"
+      ],
+      "md5": "60ec852e77ee4a2924978e5ea1904be9",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "private.standard_contract_event()"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres"
+      ],
+      "md5": "d2eb5e5aa985d2954e29aec81e00a32c",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": false,
+      "signature": "private.validate_booking_mobile()"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres"
+      ],
+      "md5": "bc34562461b5794e5eabc6da1c7f8fe0",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "private.validate_vendor_consent(jsonb,jsonb)"
+    },
+    {
+      "acl": null,
+      "md5": "4907f91c9ac06e2ce7d4d93a455ed67f",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": false,
+      "signature": "private.validate_vendor_mobile()"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "anon=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "fd243b8ab44a692848b69ce49a6c14b2",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "private.vendor_orderable(uuid)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres",
+        "anon=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "4f828e933d3c6def5bfa98e27118824c",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "quote_delivery(jsonb,jsonb,text)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "7996f9c65a3cf770c3eb91f7a2b650a2",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "record_manual_refund_status(uuid,text,numeric,numeric,text)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres"
+      ],
+      "md5": "4736649065fd9346e228cd5d76c6d932",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "record_ozow_transaction(jsonb,text,text)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres"
+      ],
+      "md5": "521dc8700e2cde4737834036af36e425",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "record_subscription_payment(uuid,text,numeric,text)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres",
+        "authenticated=X/postgres",
+        "anon=X/postgres"
+      ],
+      "md5": "d8b773ffaa285104d7ac2b118d219ce5",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "report_manual_payment(uuid,uuid)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "1e10f0cf0693aa0e21da83245520622a",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "request_vendor_delivery_origin(uuid,text,double precision,double precision)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "55ea37fe8bbf31610c65cbf316116177",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "request_vendor_subscription(uuid,text)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "e258761215d792096c170c84085d17cb",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "resolve_manual_payment_dispute(uuid,text)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "7a53300f029c46230c74f077b37207a0",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": false,
+      "signature": "respond_corporate_agreement(uuid,boolean)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres"
+      ],
+      "md5": "39aa98640f8243d2f9a24865af88dec5",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "sanitize_support_ticket_create()"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres"
+      ],
+      "md5": "113aa51c5dbe5b7ca482fd0d3b82a868",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "service_confirm_delivery_checks(integer,text)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres"
+      ],
+      "md5": "e732632b3b07753577f72dabaf806833",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "set_conversation_retention()"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres"
+      ],
+      "md5": "a5ebf42af58b6b7ec20ba56b79448f0e",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": false,
+      "signature": "submit_payment_proof(uuid,text)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "d9441343ed181cf11352b28604411db4",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "submit_vendor_payment_profile(uuid,jsonb,boolean,boolean)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres"
+      ],
+      "md5": "57d9bb59968d8abb061506d1d1e0a735",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "touch_support_ticket()"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres"
+      ],
+      "md5": "9cb6ae1590e4eb2cd4705d1ae4a8c219",
+      "owner": "postgres",
+      "config": [
+        "search_path=public"
+      ],
+      "definer": true,
+      "signature": "update_conversation_timestamp()"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "429194ce25e81fec4ed3535bad58b545",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "update_suborder_status_and_notify(uuid,text)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres",
+        "anon=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "e3303c7e00501a2682d1d5a232bc5dd6",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": false,
+      "signature": "valid_sa_mobile(text,text)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "9b7d58950d7f38c51874dd93dd359617",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "vendor_can_see_order(uuid)"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres",
+        "authenticated=X/postgres"
+      ],
+      "md5": "c35b9e7c3fecb979f70c81cda16938cb",
+      "owner": "postgres",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "signature": "verify_manual_payment(uuid,numeric,text,boolean)"
+    }
+  ],
+  "schema_acl": [
+    {
+      "acl": [
+        "pg_database_owner=UC/pg_database_owner",
+        "=U/pg_database_owner",
+        "postgres=U/pg_database_owner",
+        "service_role=U/pg_database_owner",
+        "anon=U/pg_database_owner",
+        "authenticated=U/pg_database_owner"
+      ],
+      "owner": "pg_database_owner",
+      "schema": "public"
+    },
+    {
+      "acl": [
+        "supabase_admin=UC/supabase_admin",
+        "postgres=U*/supabase_admin",
+        "anon=U/supabase_admin",
+        "authenticated=U/supabase_admin",
+        "service_role=U/supabase_admin",
+        "supabase_storage_admin=U*C*/supabase_admin",
+        "dashboard_user=UC/supabase_admin"
+      ],
+      "owner": "supabase_admin",
+      "schema": "storage"
+    },
+    {
+      "acl": [
+        "postgres=UC/postgres",
+        "authenticated=U/postgres",
+        "service_role=U/postgres",
+        "anon=U/postgres"
+      ],
+      "owner": "postgres",
+      "schema": "private"
+    }
+  ],
+  "default_acl": [
+    {
+      "acl": [
+        "postgres=rwU/supabase_admin",
+        "anon=rwU/supabase_admin",
+        "authenticated=rwU/supabase_admin",
+        "service_role=rwU/supabase_admin"
+      ],
+      "type": "S",
+      "owner": "supabase_admin",
+      "schema": "public"
+    },
+    {
+      "acl": [
+        "postgres=arwdDxtm/supabase_admin",
+        "anon=arwdDxtm/supabase_admin",
+        "authenticated=arwdDxtm/supabase_admin",
+        "service_role=arwdDxtm/supabase_admin"
+      ],
+      "type": "r",
+      "owner": "supabase_admin",
+      "schema": "public"
+    },
+    {
+      "acl": [
+        "postgres=X/supabase_admin",
+        "anon=X/supabase_admin",
+        "authenticated=X/supabase_admin",
+        "service_role=X/supabase_admin"
+      ],
+      "type": "f",
+      "owner": "supabase_admin",
+      "schema": "public"
+    },
+    {
+      "acl": [
+        "postgres=arwdDxtm/postgres",
+        "service_role=arwdDxtm/postgres"
+      ],
+      "type": "r",
+      "owner": "postgres",
+      "schema": "public"
+    },
+    {
+      "acl": [
+        "postgres=rwU/postgres",
+        "service_role=rwU/postgres"
+      ],
+      "type": "S",
+      "owner": "postgres",
+      "schema": "public"
+    },
+    {
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres"
+      ],
+      "type": "f",
+      "owner": "postgres",
+      "schema": "public"
+    }
+  ]
+}
+

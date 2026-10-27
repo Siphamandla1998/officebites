@@ -1,0 +1,6667 @@
+{
+  "columns": [
+    {
+      "type": "uuid",
+      "table": "account_removal_jobs",
+      "column": "id",
+      "schema": "private",
+      "default": "gen_random_uuid()",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "account_removal_jobs",
+      "column": "actor_id",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "account_removal_jobs",
+      "column": "target_user_id",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "account_removal_jobs",
+      "column": "kind",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "account_removal_jobs",
+      "column": "state",
+      "schema": "private",
+      "default": "'prepared'::text",
+      "not_null": true
+    },
+    {
+      "type": "jsonb",
+      "table": "account_removal_jobs",
+      "column": "manifest",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "account_removal_jobs",
+      "column": "created_at",
+      "schema": "private",
+      "default": "now()",
+      "not_null": true
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "account_removal_jobs",
+      "column": "completed_at",
+      "schema": "private",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "uuid",
+      "table": "acquisition_ledger",
+      "column": "id",
+      "schema": "private",
+      "default": "gen_random_uuid()",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "acquisition_ledger",
+      "column": "agreement_id",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "acquisition_ledger",
+      "column": "account_id",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "acquisition_ledger",
+      "column": "vendor_id",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "acquisition_ledger",
+      "column": "order_id",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "date",
+      "table": "acquisition_ledger",
+      "column": "week_start",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "bigint",
+      "table": "acquisition_ledger",
+      "column": "position",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "numeric",
+      "table": "acquisition_ledger",
+      "column": "rate",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "numeric(14,2)",
+      "table": "acquisition_ledger",
+      "column": "eligible_subtotal",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "numeric(14,2)",
+      "table": "acquisition_ledger",
+      "column": "amount",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "acquisition_ledger",
+      "column": "eligible_at",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "acquisition_ledger",
+      "column": "calculation_version",
+      "schema": "private",
+      "default": "'acquisition-progressive-v1'::text",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "business_audit",
+      "column": "id",
+      "schema": "private",
+      "default": "gen_random_uuid()",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "business_audit",
+      "column": "actor_id",
+      "schema": "private",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "text",
+      "table": "business_audit",
+      "column": "action",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "business_audit",
+      "column": "record_id",
+      "schema": "private",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "text",
+      "table": "business_audit",
+      "column": "reason",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "jsonb",
+      "table": "business_audit",
+      "column": "details",
+      "schema": "private",
+      "default": "'{}'::jsonb",
+      "not_null": true
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "business_audit",
+      "column": "created_at",
+      "schema": "private",
+      "default": "now()",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "commercial_audit",
+      "column": "id",
+      "schema": "private",
+      "default": "gen_random_uuid()",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "commercial_audit",
+      "column": "actor_id",
+      "schema": "private",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "text",
+      "table": "commercial_audit",
+      "column": "action",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "commercial_audit",
+      "column": "record_id",
+      "schema": "private",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "jsonb",
+      "table": "commercial_audit",
+      "column": "before_value",
+      "schema": "private",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "jsonb",
+      "table": "commercial_audit",
+      "column": "after_value",
+      "schema": "private",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "commercial_audit",
+      "column": "at",
+      "schema": "private",
+      "default": "clock_timestamp()",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "commercial_refund_adjustments",
+      "column": "id",
+      "schema": "private",
+      "default": "gen_random_uuid()",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "commercial_refund_adjustments",
+      "column": "entry_id",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "commercial_refund_adjustments",
+      "column": "provider",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "commercial_refund_adjustments",
+      "column": "provider_event_id",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "numeric(14,2)",
+      "table": "commercial_refund_adjustments",
+      "column": "refunded_subtotal",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "numeric(14,2)",
+      "table": "commercial_refund_adjustments",
+      "column": "acquisition_credit",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "commercial_refund_adjustments",
+      "column": "confirmed_at",
+      "schema": "private",
+      "default": "clock_timestamp()",
+      "not_null": true
+    },
+    {
+      "type": "boolean",
+      "table": "commercial_settings",
+      "column": "singleton",
+      "schema": "private",
+      "default": "true",
+      "not_null": true
+    },
+    {
+      "type": "boolean",
+      "table": "commercial_settings",
+      "column": "onboarding_enforced",
+      "schema": "private",
+      "default": "false",
+      "not_null": true
+    },
+    {
+      "type": "boolean",
+      "table": "commercial_settings",
+      "column": "acquisition_enabled",
+      "schema": "private",
+      "default": "false",
+      "not_null": true
+    },
+    {
+      "type": "boolean",
+      "table": "commercial_settings",
+      "column": "standard_breakdown_enabled",
+      "schema": "private",
+      "default": "false",
+      "not_null": true
+    },
+    {
+      "type": "jsonb",
+      "table": "commercial_settings",
+      "column": "business",
+      "schema": "private",
+      "default": "'{\"email\": \"officebites4@gmail.com\", \"website\": \"https://officebites.co.za\", \"legalName\": \"Officebites PTY LTD\", \"telephone\": \"0733716062\", \"tradingName\": \"OfficeBites\", \"vatTreatment\": \"\", \"businessAddress\": \"\", \"informationOfficer\": \"\", \"legalNoticeAddress\": \"\", \"registrationNumber\": \"K2026677349\", \"informationOfficerContact\": \"\"}'::jsonb",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "corporate_accounts",
+      "column": "id",
+      "schema": "private",
+      "default": "gen_random_uuid()",
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "corporate_accounts",
+      "column": "name",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "corporate_accounts",
+      "column": "internal_identifier",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "corporate_accounts",
+      "column": "contact_name",
+      "schema": "private",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "text",
+      "table": "corporate_accounts",
+      "column": "contact_email",
+      "schema": "private",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "text",
+      "table": "corporate_accounts",
+      "column": "contact_phone",
+      "schema": "private",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "text",
+      "table": "corporate_accounts",
+      "column": "location",
+      "schema": "private",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "integer",
+      "table": "corporate_accounts",
+      "column": "estimated_employees",
+      "schema": "private",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "text",
+      "table": "corporate_accounts",
+      "column": "notes",
+      "schema": "private",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "text",
+      "table": "corporate_accounts",
+      "column": "status",
+      "schema": "private",
+      "default": "'draft'::text",
+      "not_null": true
+    },
+    {
+      "type": "date",
+      "table": "corporate_accounts",
+      "column": "secured_at",
+      "schema": "private",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "corporate_accounts",
+      "column": "created_at",
+      "schema": "private",
+      "default": "clock_timestamp()",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "corporate_agreements",
+      "column": "id",
+      "schema": "private",
+      "default": "gen_random_uuid()",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "corporate_agreements",
+      "column": "account_id",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "corporate_agreements",
+      "column": "vendor_id",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "corporate_agreements",
+      "column": "document_id",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "corporate_agreements",
+      "column": "status",
+      "schema": "private",
+      "default": "'draft'::text",
+      "not_null": true
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "corporate_agreements",
+      "column": "starts_at",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "corporate_agreements",
+      "column": "ends_at",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "jsonb",
+      "table": "corporate_agreements",
+      "column": "terms",
+      "schema": "private",
+      "default": "'{\"base\": \"net product subtotal; delivery excluded\", \"week\": \"Africa/Johannesburg Monday\", \"rates\": [0.05, 0.075, 0.10], \"renewal\": \"none\", \"version\": \"acquisition-progressive-v1\", \"lastPositions\": [49, 99]}'::jsonb",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "corporate_agreements",
+      "column": "accepted_by",
+      "schema": "private",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "corporate_agreements",
+      "column": "accepted_at",
+      "schema": "private",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "corporate_agreements",
+      "column": "created_at",
+      "schema": "private",
+      "default": "clock_timestamp()",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "corporate_attributions",
+      "column": "order_id",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "corporate_attributions",
+      "column": "vendor_id",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "corporate_attributions",
+      "column": "agreement_id",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "corporate_attributions",
+      "column": "verified_by",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "corporate_attributions",
+      "column": "evidence",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "corporate_attributions",
+      "column": "verified_at",
+      "schema": "private",
+      "default": "clock_timestamp()",
+      "not_null": true
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "corporate_attributions",
+      "column": "disputed_at",
+      "schema": "private",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "uuid",
+      "table": "corporate_memberships",
+      "column": "account_id",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "corporate_memberships",
+      "column": "customer_id",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "corporate_memberships",
+      "column": "verified_by",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "corporate_memberships",
+      "column": "evidence",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "corporate_memberships",
+      "column": "verified_at",
+      "schema": "private",
+      "default": "clock_timestamp()",
+      "not_null": true
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "corporate_memberships",
+      "column": "revoked_at",
+      "schema": "private",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "uuid",
+      "table": "delivery_origin_history",
+      "column": "id",
+      "schema": "private",
+      "default": "gen_random_uuid()",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "delivery_origin_history",
+      "column": "vendor_id",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "delivery_origin_history",
+      "column": "actor_id",
+      "schema": "private",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "text",
+      "table": "delivery_origin_history",
+      "column": "action",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "delivery_origin_history",
+      "column": "reason",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "integer",
+      "table": "delivery_origin_history",
+      "column": "revision",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "jsonb",
+      "table": "delivery_origin_history",
+      "column": "details",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "delivery_origin_history",
+      "column": "created_at",
+      "schema": "private",
+      "default": "now()",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "delivery_quotes",
+      "column": "id",
+      "schema": "private",
+      "default": "gen_random_uuid()",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "delivery_quotes",
+      "column": "customer_id",
+      "schema": "private",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "text",
+      "table": "delivery_quotes",
+      "column": "guest_proof",
+      "schema": "private",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "text",
+      "table": "delivery_quotes",
+      "column": "items_hash",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "double precision",
+      "table": "delivery_quotes",
+      "column": "latitude",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "double precision",
+      "table": "delivery_quotes",
+      "column": "longitude",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "double precision",
+      "table": "delivery_quotes",
+      "column": "distance_km",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "numeric(12,2)",
+      "table": "delivery_quotes",
+      "column": "fee",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "integer",
+      "table": "delivery_quotes",
+      "column": "revision",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "delivery_quotes",
+      "column": "expires_at",
+      "schema": "private",
+      "default": "(now() + '00:05:00'::interval)",
+      "not_null": true
+    },
+    {
+      "type": "boolean",
+      "table": "delivery_quotes",
+      "column": "used",
+      "schema": "private",
+      "default": "false",
+      "not_null": true
+    },
+    {
+      "type": "jsonb",
+      "table": "delivery_quotes",
+      "column": "origin_details",
+      "schema": "private",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "boolean",
+      "table": "delivery_settings",
+      "column": "singleton",
+      "schema": "private",
+      "default": "true",
+      "not_null": true
+    },
+    {
+      "type": "boolean",
+      "table": "delivery_settings",
+      "column": "enabled",
+      "schema": "private",
+      "default": "false",
+      "not_null": true
+    },
+    {
+      "type": "double precision",
+      "table": "delivery_settings",
+      "column": "latitude",
+      "schema": "private",
+      "default": "'-29.721180'::numeric",
+      "not_null": true
+    },
+    {
+      "type": "double precision",
+      "table": "delivery_settings",
+      "column": "longitude",
+      "schema": "private",
+      "default": "31.071621",
+      "not_null": true
+    },
+    {
+      "type": "double precision",
+      "table": "delivery_settings",
+      "column": "free_radius_km",
+      "schema": "private",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "double precision",
+      "table": "delivery_settings",
+      "column": "max_radius_km",
+      "schema": "private",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "numeric(12,2)",
+      "table": "delivery_settings",
+      "column": "paid_fee",
+      "schema": "private",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "integer",
+      "table": "delivery_settings",
+      "column": "max_accuracy_m",
+      "schema": "private",
+      "default": "100",
+      "not_null": true
+    },
+    {
+      "type": "integer",
+      "table": "delivery_settings",
+      "column": "revision",
+      "schema": "private",
+      "default": "1",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "delivery_settings",
+      "column": "hub_id",
+      "schema": "private",
+      "default": "gen_random_uuid()",
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "delivery_settings",
+      "column": "hub_name",
+      "schema": "private",
+      "default": "'OfficeBites — Eduvos Umhlanga'::text",
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "delivery_settings",
+      "column": "hub_address",
+      "schema": "private",
+      "default": "'1D Lunar Row, Umhlanga Ridge Boulevard, Umhlanga New Town Centre, 4319'::text",
+      "not_null": true
+    },
+    {
+      "type": "boolean",
+      "table": "delivery_settings",
+      "column": "hub_pin_verified",
+      "schema": "private",
+      "default": "false",
+      "not_null": true
+    },
+    {
+      "type": "boolean",
+      "table": "delivery_settings",
+      "column": "fee_structure_confirmed",
+      "schema": "private",
+      "default": "false",
+      "not_null": true
+    },
+    {
+      "type": "boolean",
+      "table": "delivery_settings",
+      "column": "activation_ready",
+      "schema": "private",
+      "default": "false",
+      "not_null": true
+    },
+    {
+      "type": "boolean",
+      "table": "finance_settings",
+      "column": "singleton",
+      "schema": "private",
+      "default": "true",
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "finance_settings",
+      "column": "fee_policy",
+      "schema": "private",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "finance_settings",
+      "column": "updated_at",
+      "schema": "private",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "uuid",
+      "table": "finance_settings",
+      "column": "updated_by",
+      "schema": "private",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "text",
+      "table": "gateway_settings",
+      "column": "provider",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "boolean",
+      "table": "gateway_settings",
+      "column": "enabled",
+      "schema": "private",
+      "default": "false",
+      "not_null": true
+    },
+    {
+      "type": "boolean",
+      "table": "gateway_settings",
+      "column": "ready",
+      "schema": "private",
+      "default": "false",
+      "not_null": true
+    },
+    {
+      "type": "boolean",
+      "table": "gateway_settings",
+      "column": "maintenance",
+      "schema": "private",
+      "default": "false",
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "gateway_settings",
+      "column": "notice",
+      "schema": "private",
+      "default": "''::text",
+      "not_null": true
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "gateway_settings",
+      "column": "updated_at",
+      "schema": "private",
+      "default": "now()",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "gateway_settings",
+      "column": "updated_by",
+      "schema": "private",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "uuid",
+      "table": "legal_versions",
+      "column": "id",
+      "schema": "private",
+      "default": "gen_random_uuid()",
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "legal_versions",
+      "column": "kind",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "legal_versions",
+      "column": "version",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "legal_versions",
+      "column": "title",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "legal_versions",
+      "column": "content",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "legal_versions",
+      "column": "content_hash",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "legal_versions",
+      "column": "effective_at",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "legal_versions",
+      "column": "created_at",
+      "schema": "private",
+      "default": "clock_timestamp()",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "legal_versions",
+      "column": "created_by",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "legal_versions",
+      "column": "approved_at",
+      "schema": "private",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "uuid",
+      "table": "legal_versions",
+      "column": "approved_by",
+      "schema": "private",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "uuid",
+      "table": "manual_order_payments",
+      "column": "order_id",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "manual_order_payments",
+      "column": "vendor_id",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "manual_order_payments",
+      "column": "profile_id",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "jsonb",
+      "table": "manual_order_payments",
+      "column": "destination",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "manual_order_payments",
+      "column": "method",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "manual_order_payments",
+      "column": "token",
+      "schema": "private",
+      "default": "gen_random_uuid()",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "manual_order_payments",
+      "column": "request_id",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "manual_order_payments",
+      "column": "request_hash",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "numeric(12,2)",
+      "table": "manual_order_payments",
+      "column": "amount",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "manual_order_payments",
+      "column": "deadline",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "manual_order_payments",
+      "column": "reported_at",
+      "schema": "private",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "boolean",
+      "table": "manual_order_payments",
+      "column": "review_required",
+      "schema": "private",
+      "default": "false",
+      "not_null": true
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "manual_order_payments",
+      "column": "disputed_at",
+      "schema": "private",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "text",
+      "table": "manual_order_payments",
+      "column": "state",
+      "schema": "private",
+      "default": "'awaiting_payment'::text",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "manual_order_payments",
+      "column": "verified_by",
+      "schema": "private",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "manual_order_payments",
+      "column": "verified_at",
+      "schema": "private",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "numeric(12,2)",
+      "table": "manual_order_payments",
+      "column": "verified_amount",
+      "schema": "private",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "text",
+      "table": "manual_order_payments",
+      "column": "bank_reference",
+      "schema": "private",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "text",
+      "table": "manual_order_payments",
+      "column": "confirmation_source",
+      "schema": "private",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "uuid",
+      "table": "manual_payment_events",
+      "column": "id",
+      "schema": "private",
+      "default": "gen_random_uuid()",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "manual_payment_events",
+      "column": "order_id",
+      "schema": "private",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "uuid",
+      "table": "manual_payment_events",
+      "column": "profile_id",
+      "schema": "private",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "uuid",
+      "table": "manual_payment_events",
+      "column": "actor_id",
+      "schema": "private",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "text",
+      "table": "manual_payment_events",
+      "column": "action",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "manual_payment_events",
+      "column": "note",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "manual_payment_events",
+      "column": "created_at",
+      "schema": "private",
+      "default": "now()",
+      "not_null": true
+    },
+    {
+      "type": "boolean",
+      "table": "manual_payment_settings",
+      "column": "singleton",
+      "schema": "private",
+      "default": "true",
+      "not_null": true
+    },
+    {
+      "type": "integer",
+      "table": "manual_payment_settings",
+      "column": "deadline_minutes",
+      "schema": "private",
+      "default": "15",
+      "not_null": true
+    },
+    {
+      "type": "numeric(12,2)",
+      "table": "manual_payment_settings",
+      "column": "review_threshold",
+      "schema": "private",
+      "default": "500",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "manual_receivable_entries",
+      "column": "id",
+      "schema": "private",
+      "default": "gen_random_uuid()",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "manual_receivable_entries",
+      "column": "order_id",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "manual_receivable_entries",
+      "column": "kind",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "numeric(12,2)",
+      "table": "manual_receivable_entries",
+      "column": "amount",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "numeric(12,2)",
+      "table": "manual_receivable_entries",
+      "column": "commission_credit",
+      "schema": "private",
+      "default": "0",
+      "not_null": true
+    },
+    {
+      "type": "numeric(12,2)",
+      "table": "manual_receivable_entries",
+      "column": "product_refund",
+      "schema": "private",
+      "default": "0",
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "manual_receivable_entries",
+      "column": "evidence",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "manual_receivable_entries",
+      "column": "actor_id",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "manual_receivable_entries",
+      "column": "created_at",
+      "schema": "private",
+      "default": "now()",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "manual_receivables",
+      "column": "order_id",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "manual_receivables",
+      "column": "vendor_id",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "numeric(12,2)",
+      "table": "manual_receivables",
+      "column": "gross",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "numeric(12,2)",
+      "table": "manual_receivables",
+      "column": "product_subtotal",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "numeric(12,2)",
+      "table": "manual_receivables",
+      "column": "commission",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "manual_receivables",
+      "column": "created_at",
+      "schema": "private",
+      "default": "now()",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "manual_refund_events",
+      "column": "id",
+      "schema": "private",
+      "default": "gen_random_uuid()",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "manual_refund_events",
+      "column": "order_id",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "manual_refund_events",
+      "column": "status",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "numeric(12,2)",
+      "table": "manual_refund_events",
+      "column": "amount",
+      "schema": "private",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "text",
+      "table": "manual_refund_events",
+      "column": "evidence",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "manual_refund_events",
+      "column": "actor_id",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "manual_refund_events",
+      "column": "created_at",
+      "schema": "private",
+      "default": "now()",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "ozow_attempts",
+      "column": "id",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "ozow_attempts",
+      "column": "order_id",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "ozow_attempts",
+      "column": "reference",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "ozow_attempts",
+      "column": "site_code",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "ozow_attempts",
+      "column": "environment",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "numeric(12,2)",
+      "table": "ozow_attempts",
+      "column": "amount",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "ozow_attempts",
+      "column": "currency",
+      "schema": "private",
+      "default": "'ZAR'::text",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "ozow_attempts",
+      "column": "provider_payment_id",
+      "schema": "private",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "text",
+      "table": "ozow_attempts",
+      "column": "redirect_url",
+      "schema": "private",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "ozow_attempts",
+      "column": "created_at",
+      "schema": "private",
+      "default": "now()",
+      "not_null": true
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "ozow_attempts",
+      "column": "expires_at",
+      "schema": "private",
+      "default": "(now() + '00:20:00'::interval)",
+      "not_null": true
+    },
+    {
+      "type": "boolean",
+      "table": "ozow_attempts",
+      "column": "review_required",
+      "schema": "private",
+      "default": "false",
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "ozow_deliveries",
+      "column": "id",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "ozow_deliveries",
+      "column": "transaction_id",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "ozow_deliveries",
+      "column": "created_at",
+      "schema": "private",
+      "default": "now()",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "ozow_receipts",
+      "column": "transaction_id",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "ozow_receipts",
+      "column": "attempt_id",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "ozow_receipts",
+      "column": "status",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "numeric(12,2)",
+      "table": "ozow_receipts",
+      "column": "amount",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "ozow_receipts",
+      "column": "currency",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "ozow_receipts",
+      "column": "site_code",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "ozow_receipts",
+      "column": "reference",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "boolean",
+      "table": "ozow_receipts",
+      "column": "applied",
+      "schema": "private",
+      "default": "false",
+      "not_null": true
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "ozow_receipts",
+      "column": "created_at",
+      "schema": "private",
+      "default": "now()",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "payment_attempts",
+      "column": "id",
+      "schema": "private",
+      "default": "gen_random_uuid()",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "payment_attempts",
+      "column": "order_id",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "payment_attempts",
+      "column": "provider",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "payment_attempts",
+      "column": "state",
+      "schema": "private",
+      "default": "'issued'::text",
+      "not_null": true
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "payment_attempts",
+      "column": "created_at",
+      "schema": "private",
+      "default": "now()",
+      "not_null": true
+    },
+    {
+      "type": "boolean",
+      "table": "retention_settings",
+      "column": "singleton",
+      "schema": "private",
+      "default": "true",
+      "not_null": true
+    },
+    {
+      "type": "integer",
+      "table": "retention_settings",
+      "column": "days",
+      "schema": "private",
+      "default": "30",
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "retention_settings",
+      "column": "schedule",
+      "schema": "private",
+      "default": "'0 0 * * *'::text",
+      "not_null": true
+    },
+    {
+      "type": "boolean",
+      "table": "retention_settings",
+      "column": "enabled",
+      "schema": "private",
+      "default": "false",
+      "not_null": true
+    },
+    {
+      "type": "bigint",
+      "table": "retention_settings",
+      "column": "job_id",
+      "schema": "private",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "uuid",
+      "table": "standard_fee_ledger",
+      "column": "suborder_id",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "standard_fee_ledger",
+      "column": "acceptance_id",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "numeric(14,2)",
+      "table": "standard_fee_ledger",
+      "column": "gross_product_subtotal",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "numeric(14,2)",
+      "table": "standard_fee_ledger",
+      "column": "vendor_discount",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "numeric(14,2)",
+      "table": "standard_fee_ledger",
+      "column": "eligible_net_subtotal",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "numeric(14,2)",
+      "table": "standard_fee_ledger",
+      "column": "platform_amount",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "numeric(14,2)",
+      "table": "standard_fee_ledger",
+      "column": "internal_processing_amount",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "numeric(14,2)",
+      "table": "standard_fee_ledger",
+      "column": "combined_amount",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "numeric(14,2)",
+      "table": "standard_fee_ledger",
+      "column": "delivery_allocated",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "numeric(14,2)",
+      "table": "standard_fee_ledger",
+      "column": "net_before_acquisition_provider_tax",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "standard_fee_ledger",
+      "column": "tax_treatment",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "standard_fee_ledger",
+      "column": "calculation_version",
+      "schema": "private",
+      "default": "'standard-15-2-v1'::text",
+      "not_null": true
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "standard_fee_ledger",
+      "column": "recorded_at",
+      "schema": "private",
+      "default": "clock_timestamp()",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "standard_sale_contracts",
+      "column": "suborder_id",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "standard_sale_contracts",
+      "column": "acceptance_id",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "standard_sale_contracts",
+      "column": "created_at",
+      "schema": "private",
+      "default": "clock_timestamp()",
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "subscription_plans",
+      "column": "id",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "numeric(12,2)",
+      "table": "subscription_plans",
+      "column": "amount",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "subscription_plans",
+      "column": "currency",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "integer",
+      "table": "subscription_plans",
+      "column": "duration_days",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "jsonb",
+      "table": "subscription_plans",
+      "column": "benefits",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "subscription_plans",
+      "column": "refund_policy",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "boolean",
+      "table": "subscription_plans",
+      "column": "enabled",
+      "schema": "private",
+      "default": "false",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "vendor_consent_intents",
+      "column": "actor_id",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "jsonb",
+      "table": "vendor_consent_intents",
+      "column": "documents",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "jsonb",
+      "table": "vendor_consent_intents",
+      "column": "acknowledgements",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "vendor_consent_intents",
+      "column": "created_at",
+      "schema": "private",
+      "default": "clock_timestamp()",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "vendor_delivery_origins",
+      "column": "vendor_id",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "vendor_delivery_origins",
+      "column": "mode",
+      "schema": "private",
+      "default": "'CENTRAL'::text",
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "vendor_delivery_origins",
+      "column": "status",
+      "schema": "private",
+      "default": "'pending'::text",
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "vendor_delivery_origins",
+      "column": "address",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "double precision",
+      "table": "vendor_delivery_origins",
+      "column": "latitude",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "double precision",
+      "table": "vendor_delivery_origins",
+      "column": "longitude",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "vendor_delivery_origins",
+      "column": "origin_id",
+      "schema": "private",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "double precision",
+      "table": "vendor_delivery_origins",
+      "column": "service_radius_km",
+      "schema": "private",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "integer",
+      "table": "vendor_delivery_origins",
+      "column": "revision",
+      "schema": "private",
+      "default": "1",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "vendor_delivery_origins",
+      "column": "requested_by",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "vendor_delivery_origins",
+      "column": "requested_at",
+      "schema": "private",
+      "default": "now()",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "vendor_delivery_origins",
+      "column": "decided_by",
+      "schema": "private",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "vendor_delivery_origins",
+      "column": "decided_at",
+      "schema": "private",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "text",
+      "table": "vendor_delivery_origins",
+      "column": "reason",
+      "schema": "private",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "uuid",
+      "table": "vendor_legal_acceptances",
+      "column": "id",
+      "schema": "private",
+      "default": "gen_random_uuid()",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "vendor_legal_acceptances",
+      "column": "vendor_id",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "vendor_legal_acceptances",
+      "column": "actor_id",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "jsonb",
+      "table": "vendor_legal_acceptances",
+      "column": "documents",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "vendor_legal_acceptances",
+      "column": "fee_version",
+      "schema": "private",
+      "default": "'standard-15-2-v1'::text",
+      "not_null": true
+    },
+    {
+      "type": "jsonb",
+      "table": "vendor_legal_acceptances",
+      "column": "acknowledgements",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "vendor_legal_acceptances",
+      "column": "method",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "vendor_legal_acceptances",
+      "column": "accepted_at",
+      "schema": "private",
+      "default": "clock_timestamp()",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "vendor_payment_profiles",
+      "column": "id",
+      "schema": "private",
+      "default": "gen_random_uuid()",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "vendor_payment_profiles",
+      "column": "vendor_id",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "jsonb",
+      "table": "vendor_payment_profiles",
+      "column": "destination",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "boolean",
+      "table": "vendor_payment_profiles",
+      "column": "eft",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "boolean",
+      "table": "vendor_payment_profiles",
+      "column": "payshap",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "vendor_payment_profiles",
+      "column": "submitted_by",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "vendor_payment_profiles",
+      "column": "created_at",
+      "schema": "private",
+      "default": "now()",
+      "not_null": true
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "vendor_payment_profiles",
+      "column": "modified_at",
+      "schema": "private",
+      "default": "now()",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "vendor_payment_profiles",
+      "column": "approved_by",
+      "schema": "private",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "vendor_payment_profiles",
+      "column": "approved_at",
+      "schema": "private",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "text",
+      "table": "vendor_payment_profiles",
+      "column": "verification_evidence",
+      "schema": "private",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "uuid",
+      "table": "vendor_subscriptions",
+      "column": "id",
+      "schema": "private",
+      "default": "gen_random_uuid()",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "vendor_subscriptions",
+      "column": "vendor_id",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "vendor_subscriptions",
+      "column": "plan_id",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "numeric(12,2)",
+      "table": "vendor_subscriptions",
+      "column": "amount",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "vendor_subscriptions",
+      "column": "currency",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "integer",
+      "table": "vendor_subscriptions",
+      "column": "duration_days",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "jsonb",
+      "table": "vendor_subscriptions",
+      "column": "benefits",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "vendor_subscriptions",
+      "column": "refund_policy",
+      "schema": "private",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "vendor_subscriptions",
+      "column": "payment_status",
+      "schema": "private",
+      "default": "'unpaid'::text",
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "vendor_subscriptions",
+      "column": "approval_status",
+      "schema": "private",
+      "default": "'pending'::text",
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "vendor_subscriptions",
+      "column": "receipt_id",
+      "schema": "private",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "vendor_subscriptions",
+      "column": "paid_at",
+      "schema": "private",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "uuid",
+      "table": "vendor_subscriptions",
+      "column": "approved_by",
+      "schema": "private",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "vendor_subscriptions",
+      "column": "approved_at",
+      "schema": "private",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "vendor_subscriptions",
+      "column": "expires_at",
+      "schema": "private",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "vendor_subscriptions",
+      "column": "created_at",
+      "schema": "private",
+      "default": "now()",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "booking_pricing_rules",
+      "column": "id",
+      "schema": "public",
+      "default": "gen_random_uuid()",
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "booking_pricing_rules",
+      "column": "service_level",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "numeric(12,2)",
+      "table": "booking_pricing_rules",
+      "column": "per_person_fee",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "numeric(12,2)",
+      "table": "booking_pricing_rules",
+      "column": "minimum_fee",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "boolean",
+      "table": "booking_pricing_rules",
+      "column": "active",
+      "schema": "public",
+      "default": "true",
+      "not_null": true
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "booking_pricing_rules",
+      "column": "created_at",
+      "schema": "public",
+      "default": "now()",
+      "not_null": true
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "booking_pricing_rules",
+      "column": "updated_at",
+      "schema": "public",
+      "default": "now()",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "conversations",
+      "column": "id",
+      "schema": "public",
+      "default": "gen_random_uuid()",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "conversations",
+      "column": "customer_id",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "conversations",
+      "column": "vendor_id",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "conversations",
+      "column": "created_at",
+      "schema": "public",
+      "default": "now()",
+      "not_null": true
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "conversations",
+      "column": "updated_at",
+      "schema": "public",
+      "default": "now()",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "conversations",
+      "column": "order_id",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "conversations",
+      "column": "source",
+      "schema": "public",
+      "default": "'officebites'::text",
+      "not_null": true
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "conversations",
+      "column": "closed_at",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "conversations",
+      "column": "retain_until",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "uuid",
+      "table": "corporate_opportunities",
+      "column": "id",
+      "schema": "public",
+      "default": "gen_random_uuid()",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "corporate_opportunities",
+      "column": "booking_id",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "corporate_opportunities",
+      "column": "vendor_id",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "corporate_opportunities",
+      "column": "access_starts_at",
+      "schema": "public",
+      "default": "now()",
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "corporate_opportunities",
+      "column": "response_status",
+      "schema": "public",
+      "default": "'invited'::text",
+      "not_null": true
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "corporate_opportunities",
+      "column": "responded_at",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "corporate_opportunities",
+      "column": "created_at",
+      "schema": "public",
+      "default": "now()",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "event_booking_requests",
+      "column": "id",
+      "schema": "public",
+      "default": "gen_random_uuid()",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "event_booking_requests",
+      "column": "requester_id",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "text",
+      "table": "event_booking_requests",
+      "column": "business_name",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "event_booking_requests",
+      "column": "contact_name",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "event_booking_requests",
+      "column": "contact_email",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "text",
+      "table": "event_booking_requests",
+      "column": "contact_phone",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "event_booking_requests",
+      "column": "event_type",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "date",
+      "table": "event_booking_requests",
+      "column": "event_date",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "integer",
+      "table": "event_booking_requests",
+      "column": "guest_count",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "event_booking_requests",
+      "column": "location",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "event_booking_requests",
+      "column": "service_level",
+      "schema": "public",
+      "default": "'food_only'::text",
+      "not_null": true
+    },
+    {
+      "type": "numeric(12,2)",
+      "table": "event_booking_requests",
+      "column": "budget_per_person",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "text",
+      "table": "event_booking_requests",
+      "column": "dietary_requirements",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "text",
+      "table": "event_booking_requests",
+      "column": "notes",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "text",
+      "table": "event_booking_requests",
+      "column": "status",
+      "schema": "public",
+      "default": "'requested'::text",
+      "not_null": true
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "event_booking_requests",
+      "column": "created_at",
+      "schema": "public",
+      "default": "now()",
+      "not_null": true
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "event_booking_requests",
+      "column": "updated_at",
+      "schema": "public",
+      "default": "now()",
+      "not_null": true
+    },
+    {
+      "type": "numeric(12,2)",
+      "table": "event_booking_requests",
+      "column": "quote_food_total",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "numeric(12,2)",
+      "table": "event_booking_requests",
+      "column": "officebites_service_fee",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "numeric(12,2)",
+      "table": "event_booking_requests",
+      "column": "quoted_total",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "uuid",
+      "table": "event_booking_requests",
+      "column": "selected_vendor_id",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "uuid",
+      "table": "favourites",
+      "column": "profile_id",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "favourites",
+      "column": "meal_id",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "favourites",
+      "column": "created_at",
+      "schema": "public",
+      "default": "now()",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "feedback",
+      "column": "id",
+      "schema": "public",
+      "default": "gen_random_uuid()",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "feedback",
+      "column": "user_id",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "integer",
+      "table": "feedback",
+      "column": "rating",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "feedback",
+      "column": "comment",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "boolean",
+      "table": "feedback",
+      "column": "recommend",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "feedback",
+      "column": "created_at",
+      "schema": "public",
+      "default": "now()",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "help_articles",
+      "column": "id",
+      "schema": "public",
+      "default": "gen_random_uuid()",
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "help_articles",
+      "column": "slug",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "help_articles",
+      "column": "category",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "help_articles",
+      "column": "title",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "help_articles",
+      "column": "summary",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "text",
+      "table": "help_articles",
+      "column": "body",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "boolean",
+      "table": "help_articles",
+      "column": "published",
+      "schema": "public",
+      "default": "true",
+      "not_null": true
+    },
+    {
+      "type": "integer",
+      "table": "help_articles",
+      "column": "sort_order",
+      "schema": "public",
+      "default": "0",
+      "not_null": true
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "help_articles",
+      "column": "created_at",
+      "schema": "public",
+      "default": "now()",
+      "not_null": true
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "help_articles",
+      "column": "updated_at",
+      "schema": "public",
+      "default": "now()",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "meals",
+      "column": "id",
+      "schema": "public",
+      "default": "gen_random_uuid()",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "meals",
+      "column": "vendor_id",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "meals",
+      "column": "name",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "meals",
+      "column": "description",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "numeric(10,2)",
+      "table": "meals",
+      "column": "price",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "meals",
+      "column": "image",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "text",
+      "table": "meals",
+      "column": "category",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text[]",
+      "table": "meals",
+      "column": "tags",
+      "schema": "public",
+      "default": "'{}'::text[]",
+      "not_null": true
+    },
+    {
+      "type": "boolean",
+      "table": "meals",
+      "column": "available",
+      "schema": "public",
+      "default": "true",
+      "not_null": true
+    },
+    {
+      "type": "boolean",
+      "table": "meals",
+      "column": "featured",
+      "schema": "public",
+      "default": "false",
+      "not_null": true
+    },
+    {
+      "type": "integer",
+      "table": "meals",
+      "column": "preparation_time",
+      "schema": "public",
+      "default": "15",
+      "not_null": true
+    },
+    {
+      "type": "numeric(2,1)",
+      "table": "meals",
+      "column": "rating",
+      "schema": "public",
+      "default": "0",
+      "not_null": true
+    },
+    {
+      "type": "integer",
+      "table": "meals",
+      "column": "review_count",
+      "schema": "public",
+      "default": "0",
+      "not_null": true
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "meals",
+      "column": "created_at",
+      "schema": "public",
+      "default": "now()",
+      "not_null": true
+    },
+    {
+      "type": "smallint[]",
+      "table": "meals",
+      "column": "available_days",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "uuid",
+      "table": "messages",
+      "column": "id",
+      "schema": "public",
+      "default": "gen_random_uuid()",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "messages",
+      "column": "conversation_id",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "messages",
+      "column": "sender_id",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "messages",
+      "column": "text",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "boolean",
+      "table": "messages",
+      "column": "read",
+      "schema": "public",
+      "default": "false",
+      "not_null": true
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "messages",
+      "column": "created_at",
+      "schema": "public",
+      "default": "now()",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "notifications",
+      "column": "id",
+      "schema": "public",
+      "default": "gen_random_uuid()",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "notifications",
+      "column": "user_id",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "notifications",
+      "column": "type",
+      "schema": "public",
+      "default": "'general'::text",
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "notifications",
+      "column": "title",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "notifications",
+      "column": "body",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "boolean",
+      "table": "notifications",
+      "column": "read",
+      "schema": "public",
+      "default": "false",
+      "not_null": true
+    },
+    {
+      "type": "boolean",
+      "table": "notifications",
+      "column": "dismissed",
+      "schema": "public",
+      "default": "false",
+      "not_null": true
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "notifications",
+      "column": "created_at",
+      "schema": "public",
+      "default": "now()",
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "notifications",
+      "column": "action_url",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "jsonb",
+      "table": "notifications",
+      "column": "metadata",
+      "schema": "public",
+      "default": "'{}'::jsonb",
+      "not_null": true
+    },
+    {
+      "type": "order_status",
+      "table": "order_flow",
+      "column": "status",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "integer",
+      "table": "order_flow",
+      "column": "step",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "order_items",
+      "column": "id",
+      "schema": "public",
+      "default": "gen_random_uuid()",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "order_items",
+      "column": "suborder_id",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "order_items",
+      "column": "meal_id",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "text",
+      "table": "order_items",
+      "column": "meal_name",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "integer",
+      "table": "order_items",
+      "column": "qty",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "numeric(10,2)",
+      "table": "order_items",
+      "column": "price",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "order_items",
+      "column": "category_snapshot",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "uuid",
+      "table": "order_suborders",
+      "column": "id",
+      "schema": "public",
+      "default": "gen_random_uuid()",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "order_suborders",
+      "column": "order_id",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "order_suborders",
+      "column": "vendor_id",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "order_status",
+      "table": "order_suborders",
+      "column": "status",
+      "schema": "public",
+      "default": "'pending_payment'::order_status",
+      "not_null": true
+    },
+    {
+      "type": "payment_status",
+      "table": "order_suborders",
+      "column": "payment_status",
+      "schema": "public",
+      "default": "'unpaid'::payment_status",
+      "not_null": true
+    },
+    {
+      "type": "numeric(10,2)",
+      "table": "order_suborders",
+      "column": "subtotal",
+      "schema": "public",
+      "default": "0",
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "order_suborders",
+      "column": "collection_time",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "text",
+      "table": "order_suborders",
+      "column": "notes",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "numeric",
+      "table": "order_suborders",
+      "column": "commission_rate_snapshot",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "numeric(12,2)",
+      "table": "order_suborders",
+      "column": "commission_amount",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "order_suborders",
+      "column": "paid_at",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "text",
+      "table": "order_suborders",
+      "column": "vendor_name_snapshot",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "text",
+      "table": "order_suborders",
+      "column": "commission_evidence",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "jsonb",
+      "table": "order_suborders",
+      "column": "delivery_snapshot",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "uuid",
+      "table": "orders",
+      "column": "id",
+      "schema": "public",
+      "default": "gen_random_uuid()",
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "orders",
+      "column": "ticket_number",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "orders",
+      "column": "customer_id",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "text",
+      "table": "orders",
+      "column": "guest_name",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "text",
+      "table": "orders",
+      "column": "guest_contact",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "date",
+      "table": "orders",
+      "column": "delivery_date",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "order_status",
+      "table": "orders",
+      "column": "status",
+      "schema": "public",
+      "default": "'pending_payment'::order_status",
+      "not_null": true
+    },
+    {
+      "type": "numeric(10,2)",
+      "table": "orders",
+      "column": "total",
+      "schema": "public",
+      "default": "0",
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "orders",
+      "column": "payment_proof_url",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "orders",
+      "column": "created_at",
+      "schema": "public",
+      "default": "now()",
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "orders",
+      "column": "delivery_location",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "text",
+      "table": "orders",
+      "column": "guest_email",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "text",
+      "table": "orders",
+      "column": "payment_method",
+      "schema": "public",
+      "default": "'payfast'::text",
+      "not_null": true
+    },
+    {
+      "type": "boolean",
+      "table": "orders",
+      "column": "is_test",
+      "schema": "public",
+      "default": "false",
+      "not_null": true
+    },
+    {
+      "type": "integer",
+      "table": "orders",
+      "column": "classification_version",
+      "schema": "public",
+      "default": "0",
+      "not_null": true
+    },
+    {
+      "type": "integer",
+      "table": "orders",
+      "column": "checkout_revision",
+      "schema": "public",
+      "default": "0",
+      "not_null": true
+    },
+    {
+      "type": "numeric(12,2)",
+      "table": "orders",
+      "column": "delivery_fee",
+      "schema": "public",
+      "default": "0",
+      "not_null": true
+    },
+    {
+      "type": "double precision",
+      "table": "orders",
+      "column": "delivery_distance_km",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "double precision",
+      "table": "orders",
+      "column": "destination_latitude",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "double precision",
+      "table": "orders",
+      "column": "destination_longitude",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "uuid",
+      "table": "payfast_itn_log",
+      "column": "id",
+      "schema": "public",
+      "default": "gen_random_uuid()",
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "payfast_itn_log",
+      "column": "pf_payment_id",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "payfast_itn_log",
+      "column": "order_id",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "payfast_itn_log",
+      "column": "m_payment_id",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "numeric",
+      "table": "payfast_itn_log",
+      "column": "amount_gross",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "payfast_itn_log",
+      "column": "payment_status",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "jsonb",
+      "table": "payfast_itn_log",
+      "column": "raw_payload",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "payfast_itn_log",
+      "column": "processed_at",
+      "schema": "public",
+      "default": "now()",
+      "not_null": true
+    },
+    {
+      "type": "numeric(12,2)",
+      "table": "payfast_itn_log",
+      "column": "processor_fee",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "numeric(12,2)",
+      "table": "payfast_itn_log",
+      "column": "net_settlement",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "uuid",
+      "table": "payout_allocations",
+      "column": "id",
+      "schema": "public",
+      "default": "gen_random_uuid()",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "payout_allocations",
+      "column": "payout_id",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "payout_allocations",
+      "column": "suborder_id",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "numeric(12,2)",
+      "table": "payout_allocations",
+      "column": "gross",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "numeric(12,2)",
+      "table": "payout_allocations",
+      "column": "commission",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "numeric(12,2)",
+      "table": "payout_allocations",
+      "column": "processor_fee",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "numeric(12,2)",
+      "table": "payout_allocations",
+      "column": "payable",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "payout_allocations",
+      "column": "released_at",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "uuid",
+      "table": "profiles",
+      "column": "id",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "profiles",
+      "column": "name",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "profiles",
+      "column": "email",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "user_role",
+      "table": "profiles",
+      "column": "role",
+      "schema": "public",
+      "default": "'customer'::user_role",
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "profiles",
+      "column": "avatar_url",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "text",
+      "table": "profiles",
+      "column": "building",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "uuid",
+      "table": "profiles",
+      "column": "vendor_id",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "boolean",
+      "table": "profiles",
+      "column": "suspended",
+      "schema": "public",
+      "default": "false",
+      "not_null": true
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "profiles",
+      "column": "created_at",
+      "schema": "public",
+      "default": "now()",
+      "not_null": true
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "profiles",
+      "column": "deleted_at",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "uuid",
+      "table": "reviews",
+      "column": "id",
+      "schema": "public",
+      "default": "gen_random_uuid()",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "reviews",
+      "column": "vendor_id",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "reviews",
+      "column": "meal_id",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "uuid",
+      "table": "reviews",
+      "column": "customer_id",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "text",
+      "table": "reviews",
+      "column": "customer_name",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "integer",
+      "table": "reviews",
+      "column": "rating",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "reviews",
+      "column": "comment",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "reviews",
+      "column": "created_at",
+      "schema": "public",
+      "default": "now()",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "support_ticket_messages",
+      "column": "id",
+      "schema": "public",
+      "default": "gen_random_uuid()",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "support_ticket_messages",
+      "column": "ticket_id",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "support_ticket_messages",
+      "column": "sender_id",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "text",
+      "table": "support_ticket_messages",
+      "column": "sender_role",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "support_ticket_messages",
+      "column": "body",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "boolean",
+      "table": "support_ticket_messages",
+      "column": "internal",
+      "schema": "public",
+      "default": "false",
+      "not_null": true
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "support_ticket_messages",
+      "column": "created_at",
+      "schema": "public",
+      "default": "now()",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "support_tickets",
+      "column": "id",
+      "schema": "public",
+      "default": "gen_random_uuid()",
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "support_tickets",
+      "column": "ticket_number",
+      "schema": "public",
+      "default": "('SUP-'::text || upper(substr(replace((gen_random_uuid())::text, '-'::text, ''::text), 1, 8)))",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "support_tickets",
+      "column": "requester_id",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "text",
+      "table": "support_tickets",
+      "column": "requester_name",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "support_tickets",
+      "column": "requester_email",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "text",
+      "table": "support_tickets",
+      "column": "requester_contact",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "text",
+      "table": "support_tickets",
+      "column": "subject",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "support_tickets",
+      "column": "category",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "support_priority",
+      "table": "support_tickets",
+      "column": "priority",
+      "schema": "public",
+      "default": "'normal'::support_priority",
+      "not_null": true
+    },
+    {
+      "type": "support_status",
+      "table": "support_tickets",
+      "column": "status",
+      "schema": "public",
+      "default": "'open'::support_status",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "support_tickets",
+      "column": "order_id",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "uuid",
+      "table": "support_tickets",
+      "column": "assigned_to",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "jsonb",
+      "table": "support_tickets",
+      "column": "meta",
+      "schema": "public",
+      "default": "'{}'::jsonb",
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "support_tickets",
+      "column": "attachment_url",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "support_tickets",
+      "column": "first_response_at",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "support_tickets",
+      "column": "resolved_at",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "support_tickets",
+      "column": "created_at",
+      "schema": "public",
+      "default": "now()",
+      "not_null": true
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "support_tickets",
+      "column": "updated_at",
+      "schema": "public",
+      "default": "now()",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "vendor_payouts",
+      "column": "id",
+      "schema": "public",
+      "default": "gen_random_uuid()",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "vendor_payouts",
+      "column": "vendor_id",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "vendor_payouts",
+      "column": "request_id",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "vendor_payouts",
+      "column": "status",
+      "schema": "public",
+      "default": "'allocated'::text",
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "vendor_payouts",
+      "column": "fee_policy",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "numeric(12,2)",
+      "table": "vendor_payouts",
+      "column": "amount",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "vendor_payouts",
+      "column": "reference",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "uuid",
+      "table": "vendor_payouts",
+      "column": "created_by",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "vendor_payouts",
+      "column": "created_at",
+      "schema": "public",
+      "default": "now()",
+      "not_null": true
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "vendor_payouts",
+      "column": "reconciled_at",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "uuid",
+      "table": "vendors",
+      "column": "id",
+      "schema": "public",
+      "default": "gen_random_uuid()",
+      "not_null": true
+    },
+    {
+      "type": "uuid",
+      "table": "vendors",
+      "column": "owner_id",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "text",
+      "table": "vendors",
+      "column": "name",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "vendors",
+      "column": "tagline",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "text",
+      "table": "vendors",
+      "column": "category",
+      "schema": "public",
+      "default": null,
+      "not_null": true
+    },
+    {
+      "type": "numeric(2,1)",
+      "table": "vendors",
+      "column": "rating",
+      "schema": "public",
+      "default": "0",
+      "not_null": true
+    },
+    {
+      "type": "integer",
+      "table": "vendors",
+      "column": "review_count",
+      "schema": "public",
+      "default": "0",
+      "not_null": true
+    },
+    {
+      "type": "integer",
+      "table": "vendors",
+      "column": "prep_time_mins",
+      "schema": "public",
+      "default": "20",
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "vendors",
+      "column": "cover_image",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "text",
+      "table": "vendors",
+      "column": "logo",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "text",
+      "table": "vendors",
+      "column": "building",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "vendor_status",
+      "table": "vendors",
+      "column": "status",
+      "schema": "public",
+      "default": "'pending'::vendor_status",
+      "not_null": true
+    },
+    {
+      "type": "boolean",
+      "table": "vendors",
+      "column": "featured",
+      "schema": "public",
+      "default": "false",
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "vendors",
+      "column": "subscription_tier",
+      "schema": "public",
+      "default": "'basic'::text",
+      "not_null": true
+    },
+    {
+      "type": "text",
+      "table": "vendors",
+      "column": "contact_number",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "text",
+      "table": "vendors",
+      "column": "email",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "text",
+      "table": "vendors",
+      "column": "address",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "numeric",
+      "table": "vendors",
+      "column": "delivery_radius",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "text",
+      "table": "vendors",
+      "column": "operating_hours",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "vendors",
+      "column": "created_at",
+      "schema": "public",
+      "default": "now()",
+      "not_null": true
+    },
+    {
+      "type": "vendor_plan",
+      "table": "vendors",
+      "column": "plan",
+      "schema": "public",
+      "default": "'marketplace'::vendor_plan",
+      "not_null": true
+    },
+    {
+      "type": "numeric(5,4)",
+      "table": "vendors",
+      "column": "commission_rate",
+      "schema": "public",
+      "default": "0.17",
+      "not_null": true
+    },
+    {
+      "type": "boolean",
+      "table": "vendors",
+      "column": "analytics_enabled",
+      "schema": "public",
+      "default": "false",
+      "not_null": true
+    },
+    {
+      "type": "boolean",
+      "table": "vendors",
+      "column": "recommendations_enabled",
+      "schema": "public",
+      "default": "false",
+      "not_null": true
+    },
+    {
+      "type": "boolean",
+      "table": "vendors",
+      "column": "corporate_priority_enabled",
+      "schema": "public",
+      "default": "false",
+      "not_null": true
+    },
+    {
+      "type": "double precision",
+      "table": "vendors",
+      "column": "latitude",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "double precision",
+      "table": "vendors",
+      "column": "longitude",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    },
+    {
+      "type": "boolean",
+      "table": "vendors",
+      "column": "corporate_orders_enabled",
+      "schema": "public",
+      "default": "false",
+      "not_null": true
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "vendors",
+      "column": "archived_at",
+      "schema": "public",
+      "default": null,
+      "not_null": false
+    }
+  ],
+  "indexes": [
+    {
+      "name": "account_removal_jobs_pkey",
+      "table": "account_removal_jobs",
+      "schema": "private",
+      "definition": "CREATE UNIQUE INDEX account_removal_jobs_pkey ON private.account_removal_jobs USING btree (id)"
+    },
+    {
+      "name": "acquisition_ledger_agreement_id_vendor_id_week_start_positi_key",
+      "table": "acquisition_ledger",
+      "schema": "private",
+      "definition": "CREATE UNIQUE INDEX acquisition_ledger_agreement_id_vendor_id_week_start_positi_key ON private.acquisition_ledger USING btree (agreement_id, vendor_id, week_start, \"position\")"
+    },
+    {
+      "name": "acquisition_ledger_order_id_vendor_id_key",
+      "table": "acquisition_ledger",
+      "schema": "private",
+      "definition": "CREATE UNIQUE INDEX acquisition_ledger_order_id_vendor_id_key ON private.acquisition_ledger USING btree (order_id, vendor_id)"
+    },
+    {
+      "name": "acquisition_ledger_pkey",
+      "table": "acquisition_ledger",
+      "schema": "private",
+      "definition": "CREATE UNIQUE INDEX acquisition_ledger_pkey ON private.acquisition_ledger USING btree (id)"
+    },
+    {
+      "name": "acquisition_vendor_time",
+      "table": "acquisition_ledger",
+      "schema": "private",
+      "definition": "CREATE INDEX acquisition_vendor_time ON private.acquisition_ledger USING btree (vendor_id, eligible_at)"
+    },
+    {
+      "name": "business_audit_pkey",
+      "table": "business_audit",
+      "schema": "private",
+      "definition": "CREATE UNIQUE INDEX business_audit_pkey ON private.business_audit USING btree (id)"
+    },
+    {
+      "name": "commercial_audit_pkey",
+      "table": "commercial_audit",
+      "schema": "private",
+      "definition": "CREATE UNIQUE INDEX commercial_audit_pkey ON private.commercial_audit USING btree (id)"
+    },
+    {
+      "name": "commercial_refund_adjustments_pkey",
+      "table": "commercial_refund_adjustments",
+      "schema": "private",
+      "definition": "CREATE UNIQUE INDEX commercial_refund_adjustments_pkey ON private.commercial_refund_adjustments USING btree (id)"
+    },
+    {
+      "name": "commercial_refund_adjustments_provider_provider_event_id_en_key",
+      "table": "commercial_refund_adjustments",
+      "schema": "private",
+      "definition": "CREATE UNIQUE INDEX commercial_refund_adjustments_provider_provider_event_id_en_key ON private.commercial_refund_adjustments USING btree (provider, provider_event_id, entry_id)"
+    },
+    {
+      "name": "commercial_refund_entry",
+      "table": "commercial_refund_adjustments",
+      "schema": "private",
+      "definition": "CREATE INDEX commercial_refund_entry ON private.commercial_refund_adjustments USING btree (entry_id)"
+    },
+    {
+      "name": "commercial_settings_pkey",
+      "table": "commercial_settings",
+      "schema": "private",
+      "definition": "CREATE UNIQUE INDEX commercial_settings_pkey ON private.commercial_settings USING btree (singleton)"
+    },
+    {
+      "name": "corporate_accounts_internal_identifier_key",
+      "table": "corporate_accounts",
+      "schema": "private",
+      "definition": "CREATE UNIQUE INDEX corporate_accounts_internal_identifier_key ON private.corporate_accounts USING btree (internal_identifier)"
+    },
+    {
+      "name": "corporate_accounts_pkey",
+      "table": "corporate_accounts",
+      "schema": "private",
+      "definition": "CREATE UNIQUE INDEX corporate_accounts_pkey ON private.corporate_accounts USING btree (id)"
+    },
+    {
+      "name": "corporate_agreement_vendor",
+      "table": "corporate_agreements",
+      "schema": "private",
+      "definition": "CREATE INDEX corporate_agreement_vendor ON private.corporate_agreements USING btree (vendor_id, status, ends_at)"
+    },
+    {
+      "name": "corporate_agreements_pkey",
+      "table": "corporate_agreements",
+      "schema": "private",
+      "definition": "CREATE UNIQUE INDEX corporate_agreements_pkey ON private.corporate_agreements USING btree (id)"
+    },
+    {
+      "name": "corporate_agreements_scope",
+      "table": "corporate_agreements",
+      "schema": "private",
+      "definition": "CREATE INDEX corporate_agreements_scope ON private.corporate_agreements USING btree (account_id, vendor_id, starts_at, ends_at)"
+    },
+    {
+      "name": "corporate_attribution_agreement",
+      "table": "corporate_attributions",
+      "schema": "private",
+      "definition": "CREATE INDEX corporate_attribution_agreement ON private.corporate_attributions USING btree (agreement_id)"
+    },
+    {
+      "name": "corporate_attributions_pkey",
+      "table": "corporate_attributions",
+      "schema": "private",
+      "definition": "CREATE UNIQUE INDEX corporate_attributions_pkey ON private.corporate_attributions USING btree (order_id, vendor_id)"
+    },
+    {
+      "name": "corporate_memberships_pkey",
+      "table": "corporate_memberships",
+      "schema": "private",
+      "definition": "CREATE UNIQUE INDEX corporate_memberships_pkey ON private.corporate_memberships USING btree (account_id, customer_id)"
+    },
+    {
+      "name": "corporate_one_active_membership",
+      "table": "corporate_memberships",
+      "schema": "private",
+      "definition": "CREATE UNIQUE INDEX corporate_one_active_membership ON private.corporate_memberships USING btree (customer_id) WHERE (revoked_at IS NULL)"
+    },
+    {
+      "name": "delivery_origin_history_pkey",
+      "table": "delivery_origin_history",
+      "schema": "private",
+      "definition": "CREATE UNIQUE INDEX delivery_origin_history_pkey ON private.delivery_origin_history USING btree (id)"
+    },
+    {
+      "name": "delivery_origin_history_vendor",
+      "table": "delivery_origin_history",
+      "schema": "private",
+      "definition": "CREATE INDEX delivery_origin_history_vendor ON private.delivery_origin_history USING btree (vendor_id, created_at)"
+    },
+    {
+      "name": "delivery_quotes_pkey",
+      "table": "delivery_quotes",
+      "schema": "private",
+      "definition": "CREATE UNIQUE INDEX delivery_quotes_pkey ON private.delivery_quotes USING btree (id)"
+    },
+    {
+      "name": "delivery_settings_pkey",
+      "table": "delivery_settings",
+      "schema": "private",
+      "definition": "CREATE UNIQUE INDEX delivery_settings_pkey ON private.delivery_settings USING btree (singleton)"
+    },
+    {
+      "name": "finance_settings_pkey",
+      "table": "finance_settings",
+      "schema": "private",
+      "definition": "CREATE UNIQUE INDEX finance_settings_pkey ON private.finance_settings USING btree (singleton)"
+    },
+    {
+      "name": "gateway_settings_pkey",
+      "table": "gateway_settings",
+      "schema": "private",
+      "definition": "CREATE UNIQUE INDEX gateway_settings_pkey ON private.gateway_settings USING btree (provider)"
+    },
+    {
+      "name": "legal_versions_kind_version_key",
+      "table": "legal_versions",
+      "schema": "private",
+      "definition": "CREATE UNIQUE INDEX legal_versions_kind_version_key ON private.legal_versions USING btree (kind, version)"
+    },
+    {
+      "name": "legal_versions_pkey",
+      "table": "legal_versions",
+      "schema": "private",
+      "definition": "CREATE UNIQUE INDEX legal_versions_pkey ON private.legal_versions USING btree (id)"
+    },
+    {
+      "name": "manual_order_payments_pkey",
+      "table": "manual_order_payments",
+      "schema": "private",
+      "definition": "CREATE UNIQUE INDEX manual_order_payments_pkey ON private.manual_order_payments USING btree (order_id)"
+    },
+    {
+      "name": "manual_order_payments_request_id_key",
+      "table": "manual_order_payments",
+      "schema": "private",
+      "definition": "CREATE UNIQUE INDEX manual_order_payments_request_id_key ON private.manual_order_payments USING btree (request_id)"
+    },
+    {
+      "name": "manual_order_payments_token_key",
+      "table": "manual_order_payments",
+      "schema": "private",
+      "definition": "CREATE UNIQUE INDEX manual_order_payments_token_key ON private.manual_order_payments USING btree (token)"
+    },
+    {
+      "name": "manual_payment_vendor",
+      "table": "manual_order_payments",
+      "schema": "private",
+      "definition": "CREATE INDEX manual_payment_vendor ON private.manual_order_payments USING btree (vendor_id, deadline)"
+    },
+    {
+      "name": "manual_verified_bank_reference",
+      "table": "manual_order_payments",
+      "schema": "private",
+      "definition": "CREATE UNIQUE INDEX manual_verified_bank_reference ON private.manual_order_payments USING btree (vendor_id, upper(bank_reference)) WHERE (verified_at IS NOT NULL)"
+    },
+    {
+      "name": "manual_event_order",
+      "table": "manual_payment_events",
+      "schema": "private",
+      "definition": "CREATE INDEX manual_event_order ON private.manual_payment_events USING btree (order_id, created_at)"
+    },
+    {
+      "name": "manual_payment_events_pkey",
+      "table": "manual_payment_events",
+      "schema": "private",
+      "definition": "CREATE UNIQUE INDEX manual_payment_events_pkey ON private.manual_payment_events USING btree (id)"
+    },
+    {
+      "name": "manual_payment_settings_pkey",
+      "table": "manual_payment_settings",
+      "schema": "private",
+      "definition": "CREATE UNIQUE INDEX manual_payment_settings_pkey ON private.manual_payment_settings USING btree (singleton)"
+    },
+    {
+      "name": "manual_receivable_entries_pkey",
+      "table": "manual_receivable_entries",
+      "schema": "private",
+      "definition": "CREATE UNIQUE INDEX manual_receivable_entries_pkey ON private.manual_receivable_entries USING btree (id)"
+    },
+    {
+      "name": "manual_receivable_entry_order",
+      "table": "manual_receivable_entries",
+      "schema": "private",
+      "definition": "CREATE INDEX manual_receivable_entry_order ON private.manual_receivable_entries USING btree (order_id)"
+    },
+    {
+      "name": "manual_receivables_pkey",
+      "table": "manual_receivables",
+      "schema": "private",
+      "definition": "CREATE UNIQUE INDEX manual_receivables_pkey ON private.manual_receivables USING btree (order_id)"
+    },
+    {
+      "name": "manual_refund_events_pkey",
+      "table": "manual_refund_events",
+      "schema": "private",
+      "definition": "CREATE UNIQUE INDEX manual_refund_events_pkey ON private.manual_refund_events USING btree (id)"
+    },
+    {
+      "name": "manual_refund_order",
+      "table": "manual_refund_events",
+      "schema": "private",
+      "definition": "CREATE INDEX manual_refund_order ON private.manual_refund_events USING btree (order_id, created_at DESC)"
+    },
+    {
+      "name": "ozow_attempt_order",
+      "table": "ozow_attempts",
+      "schema": "private",
+      "definition": "CREATE INDEX ozow_attempt_order ON private.ozow_attempts USING btree (order_id)"
+    },
+    {
+      "name": "ozow_attempts_pkey",
+      "table": "ozow_attempts",
+      "schema": "private",
+      "definition": "CREATE UNIQUE INDEX ozow_attempts_pkey ON private.ozow_attempts USING btree (id)"
+    },
+    {
+      "name": "ozow_attempts_provider_payment_id_key",
+      "table": "ozow_attempts",
+      "schema": "private",
+      "definition": "CREATE UNIQUE INDEX ozow_attempts_provider_payment_id_key ON private.ozow_attempts USING btree (provider_payment_id)"
+    },
+    {
+      "name": "ozow_attempts_reference_key",
+      "table": "ozow_attempts",
+      "schema": "private",
+      "definition": "CREATE UNIQUE INDEX ozow_attempts_reference_key ON private.ozow_attempts USING btree (reference)"
+    },
+    {
+      "name": "ozow_deliveries_pkey",
+      "table": "ozow_deliveries",
+      "schema": "private",
+      "definition": "CREATE UNIQUE INDEX ozow_deliveries_pkey ON private.ozow_deliveries USING btree (id)"
+    },
+    {
+      "name": "ozow_receipts_pkey",
+      "table": "ozow_receipts",
+      "schema": "private",
+      "definition": "CREATE UNIQUE INDEX ozow_receipts_pkey ON private.ozow_receipts USING btree (transaction_id)"
+    },
+    {
+      "name": "payment_attempts_order",
+      "table": "payment_attempts",
+      "schema": "private",
+      "definition": "CREATE INDEX payment_attempts_order ON private.payment_attempts USING btree (order_id)"
+    },
+    {
+      "name": "payment_attempts_pkey",
+      "table": "payment_attempts",
+      "schema": "private",
+      "definition": "CREATE UNIQUE INDEX payment_attempts_pkey ON private.payment_attempts USING btree (id)"
+    },
+    {
+      "name": "retention_settings_pkey",
+      "table": "retention_settings",
+      "schema": "private",
+      "definition": "CREATE UNIQUE INDEX retention_settings_pkey ON private.retention_settings USING btree (singleton)"
+    },
+    {
+      "name": "standard_fee_ledger_pkey",
+      "table": "standard_fee_ledger",
+      "schema": "private",
+      "definition": "CREATE UNIQUE INDEX standard_fee_ledger_pkey ON private.standard_fee_ledger USING btree (suborder_id)"
+    },
+    {
+      "name": "standard_sale_contracts_pkey",
+      "table": "standard_sale_contracts",
+      "schema": "private",
+      "definition": "CREATE UNIQUE INDEX standard_sale_contracts_pkey ON private.standard_sale_contracts USING btree (suborder_id)"
+    },
+    {
+      "name": "subscription_plans_pkey",
+      "table": "subscription_plans",
+      "schema": "private",
+      "definition": "CREATE UNIQUE INDEX subscription_plans_pkey ON private.subscription_plans USING btree (id)"
+    },
+    {
+      "name": "vendor_consent_intents_pkey",
+      "table": "vendor_consent_intents",
+      "schema": "private",
+      "definition": "CREATE UNIQUE INDEX vendor_consent_intents_pkey ON private.vendor_consent_intents USING btree (actor_id)"
+    },
+    {
+      "name": "vendor_delivery_origins_pkey",
+      "table": "vendor_delivery_origins",
+      "schema": "private",
+      "definition": "CREATE UNIQUE INDEX vendor_delivery_origins_pkey ON private.vendor_delivery_origins USING btree (vendor_id)"
+    },
+    {
+      "name": "vendor_legal_acceptances_pkey",
+      "table": "vendor_legal_acceptances",
+      "schema": "private",
+      "definition": "CREATE UNIQUE INDEX vendor_legal_acceptances_pkey ON private.vendor_legal_acceptances USING btree (id)"
+    },
+    {
+      "name": "vendor_legal_acceptances_vendor",
+      "table": "vendor_legal_acceptances",
+      "schema": "private",
+      "definition": "CREATE INDEX vendor_legal_acceptances_vendor ON private.vendor_legal_acceptances USING btree (vendor_id, accepted_at DESC)"
+    },
+    {
+      "name": "vendor_payment_profile_versions",
+      "table": "vendor_payment_profiles",
+      "schema": "private",
+      "definition": "CREATE INDEX vendor_payment_profile_versions ON private.vendor_payment_profiles USING btree (vendor_id, created_at DESC)"
+    },
+    {
+      "name": "vendor_payment_profiles_id_vendor_id_key",
+      "table": "vendor_payment_profiles",
+      "schema": "private",
+      "definition": "CREATE UNIQUE INDEX vendor_payment_profiles_id_vendor_id_key ON private.vendor_payment_profiles USING btree (id, vendor_id)"
+    },
+    {
+      "name": "vendor_payment_profiles_pkey",
+      "table": "vendor_payment_profiles",
+      "schema": "private",
+      "definition": "CREATE UNIQUE INDEX vendor_payment_profiles_pkey ON private.vendor_payment_profiles USING btree (id)"
+    },
+    {
+      "name": "vendor_subscription_vendor",
+      "table": "vendor_subscriptions",
+      "schema": "private",
+      "definition": "CREATE INDEX vendor_subscription_vendor ON private.vendor_subscriptions USING btree (vendor_id)"
+    },
+    {
+      "name": "vendor_subscriptions_pkey",
+      "table": "vendor_subscriptions",
+      "schema": "private",
+      "definition": "CREATE UNIQUE INDEX vendor_subscriptions_pkey ON private.vendor_subscriptions USING btree (id)"
+    },
+    {
+      "name": "vendor_subscriptions_receipt_id_key",
+      "table": "vendor_subscriptions",
+      "schema": "private",
+      "definition": "CREATE UNIQUE INDEX vendor_subscriptions_receipt_id_key ON private.vendor_subscriptions USING btree (receipt_id)"
+    },
+    {
+      "name": "booking_pricing_rules_pkey",
+      "table": "booking_pricing_rules",
+      "schema": "public",
+      "definition": "CREATE UNIQUE INDEX booking_pricing_rules_pkey ON public.booking_pricing_rules USING btree (id)"
+    },
+    {
+      "name": "booking_pricing_rules_service_level_key",
+      "table": "booking_pricing_rules",
+      "schema": "public",
+      "definition": "CREATE UNIQUE INDEX booking_pricing_rules_service_level_key ON public.booking_pricing_rules USING btree (service_level)"
+    },
+    {
+      "name": "conversations_customer_id_idx",
+      "table": "conversations",
+      "schema": "public",
+      "definition": "CREATE INDEX conversations_customer_id_idx ON public.conversations USING btree (customer_id)"
+    },
+    {
+      "name": "conversations_order_id_idx",
+      "table": "conversations",
+      "schema": "public",
+      "definition": "CREATE INDEX conversations_order_id_idx ON public.conversations USING btree (order_id)"
+    },
+    {
+      "name": "conversations_order_vendor_customer_uq",
+      "table": "conversations",
+      "schema": "public",
+      "definition": "CREATE UNIQUE INDEX conversations_order_vendor_customer_uq ON public.conversations USING btree (order_id, vendor_id, customer_id) WHERE (order_id IS NOT NULL)"
+    },
+    {
+      "name": "conversations_pkey",
+      "table": "conversations",
+      "schema": "public",
+      "definition": "CREATE UNIQUE INDEX conversations_pkey ON public.conversations USING btree (id)"
+    },
+    {
+      "name": "conversations_vendor_id_idx",
+      "table": "conversations",
+      "schema": "public",
+      "definition": "CREATE INDEX conversations_vendor_id_idx ON public.conversations USING btree (vendor_id)"
+    },
+    {
+      "name": "corporate_opportunities_booking_id_vendor_id_key",
+      "table": "corporate_opportunities",
+      "schema": "public",
+      "definition": "CREATE UNIQUE INDEX corporate_opportunities_booking_id_vendor_id_key ON public.corporate_opportunities USING btree (booking_id, vendor_id)"
+    },
+    {
+      "name": "corporate_opportunities_pkey",
+      "table": "corporate_opportunities",
+      "schema": "public",
+      "definition": "CREATE UNIQUE INDEX corporate_opportunities_pkey ON public.corporate_opportunities USING btree (id)"
+    },
+    {
+      "name": "corporate_opportunities_vendor_idx",
+      "table": "corporate_opportunities",
+      "schema": "public",
+      "definition": "CREATE INDEX corporate_opportunities_vendor_idx ON public.corporate_opportunities USING btree (vendor_id, access_starts_at)"
+    },
+    {
+      "name": "event_booking_queue_idx",
+      "table": "event_booking_requests",
+      "schema": "public",
+      "definition": "CREATE INDEX event_booking_queue_idx ON public.event_booking_requests USING btree (status, event_date)"
+    },
+    {
+      "name": "event_booking_requester_idx",
+      "table": "event_booking_requests",
+      "schema": "public",
+      "definition": "CREATE INDEX event_booking_requester_idx ON public.event_booking_requests USING btree (requester_id)"
+    },
+    {
+      "name": "event_booking_requests_pkey",
+      "table": "event_booking_requests",
+      "schema": "public",
+      "definition": "CREATE UNIQUE INDEX event_booking_requests_pkey ON public.event_booking_requests USING btree (id)"
+    },
+    {
+      "name": "event_booking_selected_vendor_idx",
+      "table": "event_booking_requests",
+      "schema": "public",
+      "definition": "CREATE INDEX event_booking_selected_vendor_idx ON public.event_booking_requests USING btree (selected_vendor_id)"
+    },
+    {
+      "name": "favourites_meal_id_idx",
+      "table": "favourites",
+      "schema": "public",
+      "definition": "CREATE INDEX favourites_meal_id_idx ON public.favourites USING btree (meal_id)"
+    },
+    {
+      "name": "favourites_pkey",
+      "table": "favourites",
+      "schema": "public",
+      "definition": "CREATE UNIQUE INDEX favourites_pkey ON public.favourites USING btree (profile_id, meal_id)"
+    },
+    {
+      "name": "feedback_pkey",
+      "table": "feedback",
+      "schema": "public",
+      "definition": "CREATE UNIQUE INDEX feedback_pkey ON public.feedback USING btree (id)"
+    },
+    {
+      "name": "feedback_user_id_idx",
+      "table": "feedback",
+      "schema": "public",
+      "definition": "CREATE INDEX feedback_user_id_idx ON public.feedback USING btree (user_id)"
+    },
+    {
+      "name": "help_articles_pkey",
+      "table": "help_articles",
+      "schema": "public",
+      "definition": "CREATE UNIQUE INDEX help_articles_pkey ON public.help_articles USING btree (id)"
+    },
+    {
+      "name": "help_articles_slug_key",
+      "table": "help_articles",
+      "schema": "public",
+      "definition": "CREATE UNIQUE INDEX help_articles_slug_key ON public.help_articles USING btree (slug)"
+    },
+    {
+      "name": "meals_pkey",
+      "table": "meals",
+      "schema": "public",
+      "definition": "CREATE UNIQUE INDEX meals_pkey ON public.meals USING btree (id)"
+    },
+    {
+      "name": "meals_vendor_id_idx",
+      "table": "meals",
+      "schema": "public",
+      "definition": "CREATE INDEX meals_vendor_id_idx ON public.meals USING btree (vendor_id)"
+    },
+    {
+      "name": "messages_conversation_id_idx",
+      "table": "messages",
+      "schema": "public",
+      "definition": "CREATE INDEX messages_conversation_id_idx ON public.messages USING btree (conversation_id)"
+    },
+    {
+      "name": "messages_pkey",
+      "table": "messages",
+      "schema": "public",
+      "definition": "CREATE UNIQUE INDEX messages_pkey ON public.messages USING btree (id)"
+    },
+    {
+      "name": "messages_sender_id_idx",
+      "table": "messages",
+      "schema": "public",
+      "definition": "CREATE INDEX messages_sender_id_idx ON public.messages USING btree (sender_id)"
+    },
+    {
+      "name": "notifications_pkey",
+      "table": "notifications",
+      "schema": "public",
+      "definition": "CREATE UNIQUE INDEX notifications_pkey ON public.notifications USING btree (id)"
+    },
+    {
+      "name": "notifications_user_id_idx",
+      "table": "notifications",
+      "schema": "public",
+      "definition": "CREATE INDEX notifications_user_id_idx ON public.notifications USING btree (user_id)"
+    },
+    {
+      "name": "order_flow_pkey",
+      "table": "order_flow",
+      "schema": "public",
+      "definition": "CREATE UNIQUE INDEX order_flow_pkey ON public.order_flow USING btree (status)"
+    },
+    {
+      "name": "order_flow_step_key",
+      "table": "order_flow",
+      "schema": "public",
+      "definition": "CREATE UNIQUE INDEX order_flow_step_key ON public.order_flow USING btree (step)"
+    },
+    {
+      "name": "order_items_meal_id_idx",
+      "table": "order_items",
+      "schema": "public",
+      "definition": "CREATE INDEX order_items_meal_id_idx ON public.order_items USING btree (meal_id)"
+    },
+    {
+      "name": "order_items_pkey",
+      "table": "order_items",
+      "schema": "public",
+      "definition": "CREATE UNIQUE INDEX order_items_pkey ON public.order_items USING btree (id)"
+    },
+    {
+      "name": "order_items_suborder_id_idx",
+      "table": "order_items",
+      "schema": "public",
+      "definition": "CREATE INDEX order_items_suborder_id_idx ON public.order_items USING btree (suborder_id)"
+    },
+    {
+      "name": "order_suborders_order_id_vendor_id_key",
+      "table": "order_suborders",
+      "schema": "public",
+      "definition": "CREATE UNIQUE INDEX order_suborders_order_id_vendor_id_key ON public.order_suborders USING btree (order_id, vendor_id)"
+    },
+    {
+      "name": "order_suborders_pkey",
+      "table": "order_suborders",
+      "schema": "public",
+      "definition": "CREATE UNIQUE INDEX order_suborders_pkey ON public.order_suborders USING btree (id)"
+    },
+    {
+      "name": "order_suborders_vendor_id_idx",
+      "table": "order_suborders",
+      "schema": "public",
+      "definition": "CREATE INDEX order_suborders_vendor_id_idx ON public.order_suborders USING btree (vendor_id)"
+    },
+    {
+      "name": "orders_customer_id_idx",
+      "table": "orders",
+      "schema": "public",
+      "definition": "CREATE INDEX orders_customer_id_idx ON public.orders USING btree (customer_id)"
+    },
+    {
+      "name": "orders_pkey",
+      "table": "orders",
+      "schema": "public",
+      "definition": "CREATE UNIQUE INDEX orders_pkey ON public.orders USING btree (id)"
+    },
+    {
+      "name": "orders_ticket_number_key",
+      "table": "orders",
+      "schema": "public",
+      "definition": "CREATE UNIQUE INDEX orders_ticket_number_key ON public.orders USING btree (ticket_number)"
+    },
+    {
+      "name": "payfast_itn_log_order_id_idx",
+      "table": "payfast_itn_log",
+      "schema": "public",
+      "definition": "CREATE INDEX payfast_itn_log_order_id_idx ON public.payfast_itn_log USING btree (order_id)"
+    },
+    {
+      "name": "payfast_itn_log_pf_payment_id_key",
+      "table": "payfast_itn_log",
+      "schema": "public",
+      "definition": "CREATE UNIQUE INDEX payfast_itn_log_pf_payment_id_key ON public.payfast_itn_log USING btree (pf_payment_id)"
+    },
+    {
+      "name": "payfast_itn_log_pkey",
+      "table": "payfast_itn_log",
+      "schema": "public",
+      "definition": "CREATE UNIQUE INDEX payfast_itn_log_pkey ON public.payfast_itn_log USING btree (id)"
+    },
+    {
+      "name": "payout_allocations_payout_id_idx",
+      "table": "payout_allocations",
+      "schema": "public",
+      "definition": "CREATE INDEX payout_allocations_payout_id_idx ON public.payout_allocations USING btree (payout_id)"
+    },
+    {
+      "name": "payout_allocations_pkey",
+      "table": "payout_allocations",
+      "schema": "public",
+      "definition": "CREATE UNIQUE INDEX payout_allocations_pkey ON public.payout_allocations USING btree (id)"
+    },
+    {
+      "name": "payout_one_active_allocation",
+      "table": "payout_allocations",
+      "schema": "public",
+      "definition": "CREATE UNIQUE INDEX payout_one_active_allocation ON public.payout_allocations USING btree (suborder_id) WHERE (released_at IS NULL)"
+    },
+    {
+      "name": "profiles_pkey",
+      "table": "profiles",
+      "schema": "public",
+      "definition": "CREATE UNIQUE INDEX profiles_pkey ON public.profiles USING btree (id)"
+    },
+    {
+      "name": "profiles_vendor_id_idx",
+      "table": "profiles",
+      "schema": "public",
+      "definition": "CREATE INDEX profiles_vendor_id_idx ON public.profiles USING btree (vendor_id)"
+    },
+    {
+      "name": "reviews_customer_id_idx",
+      "table": "reviews",
+      "schema": "public",
+      "definition": "CREATE INDEX reviews_customer_id_idx ON public.reviews USING btree (customer_id)"
+    },
+    {
+      "name": "reviews_meal_id_idx",
+      "table": "reviews",
+      "schema": "public",
+      "definition": "CREATE INDEX reviews_meal_id_idx ON public.reviews USING btree (meal_id)"
+    },
+    {
+      "name": "reviews_pkey",
+      "table": "reviews",
+      "schema": "public",
+      "definition": "CREATE UNIQUE INDEX reviews_pkey ON public.reviews USING btree (id)"
+    },
+    {
+      "name": "reviews_vendor_id_idx",
+      "table": "reviews",
+      "schema": "public",
+      "definition": "CREATE INDEX reviews_vendor_id_idx ON public.reviews USING btree (vendor_id)"
+    },
+    {
+      "name": "support_ticket_messages_pkey",
+      "table": "support_ticket_messages",
+      "schema": "public",
+      "definition": "CREATE UNIQUE INDEX support_ticket_messages_pkey ON public.support_ticket_messages USING btree (id)"
+    },
+    {
+      "name": "support_ticket_messages_sender_idx",
+      "table": "support_ticket_messages",
+      "schema": "public",
+      "definition": "CREATE INDEX support_ticket_messages_sender_idx ON public.support_ticket_messages USING btree (sender_id)"
+    },
+    {
+      "name": "support_ticket_messages_ticket_idx",
+      "table": "support_ticket_messages",
+      "schema": "public",
+      "definition": "CREATE INDEX support_ticket_messages_ticket_idx ON public.support_ticket_messages USING btree (ticket_id, created_at)"
+    },
+    {
+      "name": "support_tickets_assigned_idx",
+      "table": "support_tickets",
+      "schema": "public",
+      "definition": "CREATE INDEX support_tickets_assigned_idx ON public.support_tickets USING btree (assigned_to)"
+    },
+    {
+      "name": "support_tickets_order_idx",
+      "table": "support_tickets",
+      "schema": "public",
+      "definition": "CREATE INDEX support_tickets_order_idx ON public.support_tickets USING btree (order_id)"
+    },
+    {
+      "name": "support_tickets_pkey",
+      "table": "support_tickets",
+      "schema": "public",
+      "definition": "CREATE UNIQUE INDEX support_tickets_pkey ON public.support_tickets USING btree (id)"
+    },
+    {
+      "name": "support_tickets_queue_idx",
+      "table": "support_tickets",
+      "schema": "public",
+      "definition": "CREATE INDEX support_tickets_queue_idx ON public.support_tickets USING btree (status, priority, updated_at DESC)"
+    },
+    {
+      "name": "support_tickets_requester_idx",
+      "table": "support_tickets",
+      "schema": "public",
+      "definition": "CREATE INDEX support_tickets_requester_idx ON public.support_tickets USING btree (requester_id)"
+    },
+    {
+      "name": "support_tickets_ticket_number_key",
+      "table": "support_tickets",
+      "schema": "public",
+      "definition": "CREATE UNIQUE INDEX support_tickets_ticket_number_key ON public.support_tickets USING btree (ticket_number)"
+    },
+    {
+      "name": "vendor_payouts_pkey",
+      "table": "vendor_payouts",
+      "schema": "public",
+      "definition": "CREATE UNIQUE INDEX vendor_payouts_pkey ON public.vendor_payouts USING btree (id)"
+    },
+    {
+      "name": "vendor_payouts_request_id_key",
+      "table": "vendor_payouts",
+      "schema": "public",
+      "definition": "CREATE UNIQUE INDEX vendor_payouts_request_id_key ON public.vendor_payouts USING btree (request_id)"
+    },
+    {
+      "name": "vendor_payouts_vendor_id_idx",
+      "table": "vendor_payouts",
+      "schema": "public",
+      "definition": "CREATE INDEX vendor_payouts_vendor_id_idx ON public.vendor_payouts USING btree (vendor_id)"
+    },
+    {
+      "name": "vendors_owner_id_idx",
+      "table": "vendors",
+      "schema": "public",
+      "definition": "CREATE INDEX vendors_owner_id_idx ON public.vendors USING btree (owner_id)"
+    },
+    {
+      "name": "vendors_pkey",
+      "table": "vendors",
+      "schema": "public",
+      "definition": "CREATE UNIQUE INDEX vendors_pkey ON public.vendors USING btree (id)"
+    }
+  ],
+  "constraints": [
+    {
+      "name": "account_removal_jobs_pkey",
+      "table": "account_removal_jobs",
+      "schema": "private",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "name": "acquisition_ledger_account_id_fkey",
+      "table": "acquisition_ledger",
+      "schema": "private",
+      "definition": "FOREIGN KEY (account_id) REFERENCES private.corporate_accounts(id)"
+    },
+    {
+      "name": "acquisition_ledger_agreement_id_fkey",
+      "table": "acquisition_ledger",
+      "schema": "private",
+      "definition": "FOREIGN KEY (agreement_id) REFERENCES private.corporate_agreements(id)"
+    },
+    {
+      "name": "acquisition_ledger_agreement_id_vendor_id_week_start_positi_key",
+      "table": "acquisition_ledger",
+      "schema": "private",
+      "definition": "UNIQUE (agreement_id, vendor_id, week_start, \"position\")"
+    },
+    {
+      "name": "acquisition_ledger_amount_check",
+      "table": "acquisition_ledger",
+      "schema": "private",
+      "definition": "CHECK ((amount >= (0)::numeric))"
+    },
+    {
+      "name": "acquisition_ledger_eligible_subtotal_check",
+      "table": "acquisition_ledger",
+      "schema": "private",
+      "definition": "CHECK ((eligible_subtotal > (0)::numeric))"
+    },
+    {
+      "name": "acquisition_ledger_order_id_fkey",
+      "table": "acquisition_ledger",
+      "schema": "private",
+      "definition": "FOREIGN KEY (order_id) REFERENCES orders(id)"
+    },
+    {
+      "name": "acquisition_ledger_order_id_vendor_id_key",
+      "table": "acquisition_ledger",
+      "schema": "private",
+      "definition": "UNIQUE (order_id, vendor_id)"
+    },
+    {
+      "name": "acquisition_ledger_pkey",
+      "table": "acquisition_ledger",
+      "schema": "private",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "name": "acquisition_ledger_position_check",
+      "table": "acquisition_ledger",
+      "schema": "private",
+      "definition": "CHECK ((\"position\" > 0))"
+    },
+    {
+      "name": "acquisition_ledger_rate_check",
+      "table": "acquisition_ledger",
+      "schema": "private",
+      "definition": "CHECK ((rate = ANY (ARRAY[0.05, 0.075, 0.10])))"
+    },
+    {
+      "name": "acquisition_ledger_vendor_id_fkey",
+      "table": "acquisition_ledger",
+      "schema": "private",
+      "definition": "FOREIGN KEY (vendor_id) REFERENCES vendors(id)"
+    },
+    {
+      "name": "business_audit_pkey",
+      "table": "business_audit",
+      "schema": "private",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "name": "commercial_audit_actor_id_fkey",
+      "table": "commercial_audit",
+      "schema": "private",
+      "definition": "FOREIGN KEY (actor_id) REFERENCES profiles(id)"
+    },
+    {
+      "name": "commercial_audit_pkey",
+      "table": "commercial_audit",
+      "schema": "private",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "name": "commercial_refund_adjustments_acquisition_credit_check",
+      "table": "commercial_refund_adjustments",
+      "schema": "private",
+      "definition": "CHECK ((acquisition_credit >= (0)::numeric))"
+    },
+    {
+      "name": "commercial_refund_adjustments_entry_id_fkey",
+      "table": "commercial_refund_adjustments",
+      "schema": "private",
+      "definition": "FOREIGN KEY (entry_id) REFERENCES private.acquisition_ledger(id)"
+    },
+    {
+      "name": "commercial_refund_adjustments_pkey",
+      "table": "commercial_refund_adjustments",
+      "schema": "private",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "name": "commercial_refund_adjustments_provider_check",
+      "table": "commercial_refund_adjustments",
+      "schema": "private",
+      "definition": "CHECK ((provider = ANY (ARRAY['payfast'::text, 'ozow'::text])))"
+    },
+    {
+      "name": "commercial_refund_adjustments_provider_provider_event_id_en_key",
+      "table": "commercial_refund_adjustments",
+      "schema": "private",
+      "definition": "UNIQUE (provider, provider_event_id, entry_id)"
+    },
+    {
+      "name": "commercial_refund_adjustments_refunded_subtotal_check",
+      "table": "commercial_refund_adjustments",
+      "schema": "private",
+      "definition": "CHECK ((refunded_subtotal > (0)::numeric))"
+    },
+    {
+      "name": "commercial_settings_acquisition_enabled_check",
+      "table": "commercial_settings",
+      "schema": "private",
+      "definition": "CHECK ((NOT acquisition_enabled))"
+    },
+    {
+      "name": "commercial_settings_pkey",
+      "table": "commercial_settings",
+      "schema": "private",
+      "definition": "PRIMARY KEY (singleton)"
+    },
+    {
+      "name": "commercial_settings_singleton_check",
+      "table": "commercial_settings",
+      "schema": "private",
+      "definition": "CHECK (singleton)"
+    },
+    {
+      "name": "commercial_settings_standard_breakdown_enabled_check",
+      "table": "commercial_settings",
+      "schema": "private",
+      "definition": "CHECK ((NOT standard_breakdown_enabled))"
+    },
+    {
+      "name": "corporate_accounts_estimated_employees_check",
+      "table": "corporate_accounts",
+      "schema": "private",
+      "definition": "CHECK ((estimated_employees >= 0))"
+    },
+    {
+      "name": "corporate_accounts_internal_identifier_key",
+      "table": "corporate_accounts",
+      "schema": "private",
+      "definition": "UNIQUE (internal_identifier)"
+    },
+    {
+      "name": "corporate_accounts_name_check",
+      "table": "corporate_accounts",
+      "schema": "private",
+      "definition": "CHECK (((length(TRIM(BOTH FROM name)) >= 2) AND (length(TRIM(BOTH FROM name)) <= 200)))"
+    },
+    {
+      "name": "corporate_accounts_pkey",
+      "table": "corporate_accounts",
+      "schema": "private",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "name": "corporate_accounts_status_check",
+      "table": "corporate_accounts",
+      "schema": "private",
+      "definition": "CHECK ((status = ANY (ARRAY['draft'::text, 'active'::text, 'suspended'::text, 'closed'::text])))"
+    },
+    {
+      "name": "corporate_agreements_accepted_by_fkey",
+      "table": "corporate_agreements",
+      "schema": "private",
+      "definition": "FOREIGN KEY (accepted_by) REFERENCES profiles(id)"
+    },
+    {
+      "name": "corporate_agreements_account_id_fkey",
+      "table": "corporate_agreements",
+      "schema": "private",
+      "definition": "FOREIGN KEY (account_id) REFERENCES private.corporate_accounts(id)"
+    },
+    {
+      "name": "corporate_agreements_check",
+      "table": "corporate_agreements",
+      "schema": "private",
+      "definition": "CHECK ((ends_at > starts_at))"
+    },
+    {
+      "name": "corporate_agreements_check1",
+      "table": "corporate_agreements",
+      "schema": "private",
+      "definition": "CHECK (((status <> ALL (ARRAY['accepted'::text, 'active'::text])) OR ((accepted_by IS NOT NULL) AND (accepted_at IS NOT NULL))))"
+    },
+    {
+      "name": "corporate_agreements_document_id_fkey",
+      "table": "corporate_agreements",
+      "schema": "private",
+      "definition": "FOREIGN KEY (document_id) REFERENCES private.legal_versions(id)"
+    },
+    {
+      "name": "corporate_agreements_pkey",
+      "table": "corporate_agreements",
+      "schema": "private",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "name": "corporate_agreements_status_check",
+      "table": "corporate_agreements",
+      "schema": "private",
+      "definition": "CHECK ((status = ANY (ARRAY['draft'::text, 'offered'::text, 'accepted'::text, 'active'::text, 'expired'::text, 'rejected'::text, 'terminated'::text])))"
+    },
+    {
+      "name": "corporate_agreements_vendor_id_fkey",
+      "table": "corporate_agreements",
+      "schema": "private",
+      "definition": "FOREIGN KEY (vendor_id) REFERENCES vendors(id)"
+    },
+    {
+      "name": "corporate_attributions_agreement_id_fkey",
+      "table": "corporate_attributions",
+      "schema": "private",
+      "definition": "FOREIGN KEY (agreement_id) REFERENCES private.corporate_agreements(id)"
+    },
+    {
+      "name": "corporate_attributions_evidence_check",
+      "table": "corporate_attributions",
+      "schema": "private",
+      "definition": "CHECK ((length(TRIM(BOTH FROM evidence)) >= 10))"
+    },
+    {
+      "name": "corporate_attributions_order_id_fkey",
+      "table": "corporate_attributions",
+      "schema": "private",
+      "definition": "FOREIGN KEY (order_id) REFERENCES orders(id)"
+    },
+    {
+      "name": "corporate_attributions_pkey",
+      "table": "corporate_attributions",
+      "schema": "private",
+      "definition": "PRIMARY KEY (order_id, vendor_id)"
+    },
+    {
+      "name": "corporate_attributions_vendor_id_fkey",
+      "table": "corporate_attributions",
+      "schema": "private",
+      "definition": "FOREIGN KEY (vendor_id) REFERENCES vendors(id)"
+    },
+    {
+      "name": "corporate_attributions_verified_by_fkey",
+      "table": "corporate_attributions",
+      "schema": "private",
+      "definition": "FOREIGN KEY (verified_by) REFERENCES profiles(id)"
+    },
+    {
+      "name": "corporate_memberships_account_id_fkey",
+      "table": "corporate_memberships",
+      "schema": "private",
+      "definition": "FOREIGN KEY (account_id) REFERENCES private.corporate_accounts(id)"
+    },
+    {
+      "name": "corporate_memberships_customer_id_fkey",
+      "table": "corporate_memberships",
+      "schema": "private",
+      "definition": "FOREIGN KEY (customer_id) REFERENCES profiles(id)"
+    },
+    {
+      "name": "corporate_memberships_evidence_check",
+      "table": "corporate_memberships",
+      "schema": "private",
+      "definition": "CHECK ((length(TRIM(BOTH FROM evidence)) >= 10))"
+    },
+    {
+      "name": "corporate_memberships_pkey",
+      "table": "corporate_memberships",
+      "schema": "private",
+      "definition": "PRIMARY KEY (account_id, customer_id)"
+    },
+    {
+      "name": "corporate_memberships_verified_by_fkey",
+      "table": "corporate_memberships",
+      "schema": "private",
+      "definition": "FOREIGN KEY (verified_by) REFERENCES profiles(id)"
+    },
+    {
+      "name": "delivery_origin_history_pkey",
+      "table": "delivery_origin_history",
+      "schema": "private",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "name": "delivery_origin_history_vendor_id_fkey",
+      "table": "delivery_origin_history",
+      "schema": "private",
+      "definition": "FOREIGN KEY (vendor_id) REFERENCES vendors(id)"
+    },
+    {
+      "name": "delivery_quotes_pkey",
+      "table": "delivery_quotes",
+      "schema": "private",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "name": "delivery_settings_check",
+      "table": "delivery_settings",
+      "schema": "private",
+      "definition": "CHECK (((NOT enabled) OR ((free_radius_km IS NOT NULL) AND (max_radius_km IS NOT NULL) AND (paid_fee IS NOT NULL) AND (free_radius_km >= (0)::double precision) AND (max_radius_km >= free_radius_km) AND (paid_fee >= (0)::numeric))))"
+    },
+    {
+      "name": "delivery_settings_latitude_check",
+      "table": "delivery_settings",
+      "schema": "private",
+      "definition": "CHECK (((latitude >= ('-90'::integer)::double precision) AND (latitude <= (90)::double precision)))"
+    },
+    {
+      "name": "delivery_settings_longitude_check",
+      "table": "delivery_settings",
+      "schema": "private",
+      "definition": "CHECK (((longitude >= ('-180'::integer)::double precision) AND (longitude <= (180)::double precision)))"
+    },
+    {
+      "name": "delivery_settings_max_accuracy_m_check",
+      "table": "delivery_settings",
+      "schema": "private",
+      "definition": "CHECK (((max_accuracy_m >= 1) AND (max_accuracy_m <= 1000)))"
+    },
+    {
+      "name": "delivery_settings_pkey",
+      "table": "delivery_settings",
+      "schema": "private",
+      "definition": "PRIMARY KEY (singleton)"
+    },
+    {
+      "name": "delivery_settings_singleton_check",
+      "table": "delivery_settings",
+      "schema": "private",
+      "definition": "CHECK (singleton)"
+    },
+    {
+      "name": "finance_settings_fee_policy_check",
+      "table": "finance_settings",
+      "schema": "private",
+      "definition": "CHECK ((fee_policy = ANY (ARRAY['platform_absorbs'::text, 'vendor_proportional'::text])))"
+    },
+    {
+      "name": "finance_settings_pkey",
+      "table": "finance_settings",
+      "schema": "private",
+      "definition": "PRIMARY KEY (singleton)"
+    },
+    {
+      "name": "finance_settings_singleton_check",
+      "table": "finance_settings",
+      "schema": "private",
+      "definition": "CHECK (singleton)"
+    },
+    {
+      "name": "gateway_settings_pkey",
+      "table": "gateway_settings",
+      "schema": "private",
+      "definition": "PRIMARY KEY (provider)"
+    },
+    {
+      "name": "gateway_settings_provider_check",
+      "table": "gateway_settings",
+      "schema": "private",
+      "definition": "CHECK ((provider = ANY (ARRAY['payfast'::text, 'ozow'::text, 'manual_eft'::text, 'manual_payshap'::text])))"
+    },
+    {
+      "name": "legal_versions_approved_by_fkey",
+      "table": "legal_versions",
+      "schema": "private",
+      "definition": "FOREIGN KEY (approved_by) REFERENCES profiles(id)"
+    },
+    {
+      "name": "legal_versions_content_check",
+      "table": "legal_versions",
+      "schema": "private",
+      "definition": "CHECK (((length(content) >= 50) AND (length(content) <= 200000)))"
+    },
+    {
+      "name": "legal_versions_created_by_fkey",
+      "table": "legal_versions",
+      "schema": "private",
+      "definition": "FOREIGN KEY (created_by) REFERENCES profiles(id)"
+    },
+    {
+      "name": "legal_versions_kind_check",
+      "table": "legal_versions",
+      "schema": "private",
+      "definition": "CHECK ((kind = ANY (ARRAY['terms'::text, 'privacy'::text, 'refund-policy'::text, 'vendor-agreement'::text, 'vendor-fees'::text])))"
+    },
+    {
+      "name": "legal_versions_kind_version_key",
+      "table": "legal_versions",
+      "schema": "private",
+      "definition": "UNIQUE (kind, version)"
+    },
+    {
+      "name": "legal_versions_pkey",
+      "table": "legal_versions",
+      "schema": "private",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "name": "legal_versions_version_check",
+      "table": "legal_versions",
+      "schema": "private",
+      "definition": "CHECK (((length(version) >= 1) AND (length(version) <= 60)))"
+    },
+    {
+      "name": "manual_order_payments_amount_check",
+      "table": "manual_order_payments",
+      "schema": "private",
+      "definition": "CHECK ((amount > (0)::numeric))"
+    },
+    {
+      "name": "manual_order_payments_confirmation_source_check",
+      "table": "manual_order_payments",
+      "schema": "private",
+      "definition": "CHECK ((confirmation_source = ANY (ARRAY['vendor_bank_receipt'::text, 'admin_bank_receipt'::text])))"
+    },
+    {
+      "name": "manual_order_payments_method_check",
+      "table": "manual_order_payments",
+      "schema": "private",
+      "definition": "CHECK ((method = ANY (ARRAY['manual_eft'::text, 'manual_payshap'::text])))"
+    },
+    {
+      "name": "manual_order_payments_order_id_fkey",
+      "table": "manual_order_payments",
+      "schema": "private",
+      "definition": "FOREIGN KEY (order_id) REFERENCES orders(id)"
+    },
+    {
+      "name": "manual_order_payments_pkey",
+      "table": "manual_order_payments",
+      "schema": "private",
+      "definition": "PRIMARY KEY (order_id)"
+    },
+    {
+      "name": "manual_order_payments_profile_id_vendor_id_fkey",
+      "table": "manual_order_payments",
+      "schema": "private",
+      "definition": "FOREIGN KEY (profile_id, vendor_id) REFERENCES private.vendor_payment_profiles(id, vendor_id)"
+    },
+    {
+      "name": "manual_order_payments_request_id_key",
+      "table": "manual_order_payments",
+      "schema": "private",
+      "definition": "UNIQUE (request_id)"
+    },
+    {
+      "name": "manual_order_payments_state_check",
+      "table": "manual_order_payments",
+      "schema": "private",
+      "definition": "CHECK ((state = ANY (ARRAY['awaiting_payment'::text, 'payment_reported'::text, 'under_review'::text, 'paid'::text, 'expired'::text, 'disputed'::text])))"
+    },
+    {
+      "name": "manual_order_payments_token_key",
+      "table": "manual_order_payments",
+      "schema": "private",
+      "definition": "UNIQUE (token)"
+    },
+    {
+      "name": "manual_order_payments_vendor_id_fkey",
+      "table": "manual_order_payments",
+      "schema": "private",
+      "definition": "FOREIGN KEY (vendor_id) REFERENCES vendors(id)"
+    },
+    {
+      "name": "manual_payment_events_order_id_fkey",
+      "table": "manual_payment_events",
+      "schema": "private",
+      "definition": "FOREIGN KEY (order_id) REFERENCES orders(id)"
+    },
+    {
+      "name": "manual_payment_events_pkey",
+      "table": "manual_payment_events",
+      "schema": "private",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "name": "manual_payment_events_profile_id_fkey",
+      "table": "manual_payment_events",
+      "schema": "private",
+      "definition": "FOREIGN KEY (profile_id) REFERENCES private.vendor_payment_profiles(id)"
+    },
+    {
+      "name": "manual_payment_settings_deadline_minutes_check",
+      "table": "manual_payment_settings",
+      "schema": "private",
+      "definition": "CHECK (((deadline_minutes >= 5) AND (deadline_minutes <= 60)))"
+    },
+    {
+      "name": "manual_payment_settings_pkey",
+      "table": "manual_payment_settings",
+      "schema": "private",
+      "definition": "PRIMARY KEY (singleton)"
+    },
+    {
+      "name": "manual_payment_settings_review_threshold_check",
+      "table": "manual_payment_settings",
+      "schema": "private",
+      "definition": "CHECK ((review_threshold > (0)::numeric))"
+    },
+    {
+      "name": "manual_payment_settings_singleton_check",
+      "table": "manual_payment_settings",
+      "schema": "private",
+      "definition": "CHECK (singleton)"
+    },
+    {
+      "name": "manual_receivable_entries_amount_check",
+      "table": "manual_receivable_entries",
+      "schema": "private",
+      "definition": "CHECK ((amount > (0)::numeric))"
+    },
+    {
+      "name": "manual_receivable_entries_commission_credit_check",
+      "table": "manual_receivable_entries",
+      "schema": "private",
+      "definition": "CHECK ((commission_credit >= (0)::numeric))"
+    },
+    {
+      "name": "manual_receivable_entries_kind_check",
+      "table": "manual_receivable_entries",
+      "schema": "private",
+      "definition": "CHECK ((kind = ANY (ARRAY['collection'::text, 'refund'::text, 'commission_return'::text])))"
+    },
+    {
+      "name": "manual_receivable_entries_order_id_fkey",
+      "table": "manual_receivable_entries",
+      "schema": "private",
+      "definition": "FOREIGN KEY (order_id) REFERENCES private.manual_receivables(order_id)"
+    },
+    {
+      "name": "manual_receivable_entries_pkey",
+      "table": "manual_receivable_entries",
+      "schema": "private",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "name": "manual_receivable_entries_product_refund_check",
+      "table": "manual_receivable_entries",
+      "schema": "private",
+      "definition": "CHECK ((product_refund >= (0)::numeric))"
+    },
+    {
+      "name": "manual_receivables_order_id_fkey",
+      "table": "manual_receivables",
+      "schema": "private",
+      "definition": "FOREIGN KEY (order_id) REFERENCES orders(id)"
+    },
+    {
+      "name": "manual_receivables_pkey",
+      "table": "manual_receivables",
+      "schema": "private",
+      "definition": "PRIMARY KEY (order_id)"
+    },
+    {
+      "name": "manual_receivables_vendor_id_fkey",
+      "table": "manual_receivables",
+      "schema": "private",
+      "definition": "FOREIGN KEY (vendor_id) REFERENCES vendors(id)"
+    },
+    {
+      "name": "manual_refund_events_order_id_fkey",
+      "table": "manual_refund_events",
+      "schema": "private",
+      "definition": "FOREIGN KEY (order_id) REFERENCES private.manual_order_payments(order_id)"
+    },
+    {
+      "name": "manual_refund_events_pkey",
+      "table": "manual_refund_events",
+      "schema": "private",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "name": "manual_refund_events_status_check",
+      "table": "manual_refund_events",
+      "schema": "private",
+      "definition": "CHECK ((status = ANY (ARRAY['requested'::text, 'vendor_processing'::text, 'completed'::text, 'declined'::text])))"
+    },
+    {
+      "name": "ozow_attempts_amount_check",
+      "table": "ozow_attempts",
+      "schema": "private",
+      "definition": "CHECK ((amount > (0)::numeric))"
+    },
+    {
+      "name": "ozow_attempts_currency_check",
+      "table": "ozow_attempts",
+      "schema": "private",
+      "definition": "CHECK ((currency = 'ZAR'::text))"
+    },
+    {
+      "name": "ozow_attempts_environment_check",
+      "table": "ozow_attempts",
+      "schema": "private",
+      "definition": "CHECK ((environment = ANY (ARRAY['staging'::text, 'production'::text])))"
+    },
+    {
+      "name": "ozow_attempts_id_fkey",
+      "table": "ozow_attempts",
+      "schema": "private",
+      "definition": "FOREIGN KEY (id) REFERENCES private.payment_attempts(id)"
+    },
+    {
+      "name": "ozow_attempts_order_id_fkey",
+      "table": "ozow_attempts",
+      "schema": "private",
+      "definition": "FOREIGN KEY (order_id) REFERENCES orders(id)"
+    },
+    {
+      "name": "ozow_attempts_pkey",
+      "table": "ozow_attempts",
+      "schema": "private",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "name": "ozow_attempts_provider_payment_id_key",
+      "table": "ozow_attempts",
+      "schema": "private",
+      "definition": "UNIQUE (provider_payment_id)"
+    },
+    {
+      "name": "ozow_attempts_reference_key",
+      "table": "ozow_attempts",
+      "schema": "private",
+      "definition": "UNIQUE (reference)"
+    },
+    {
+      "name": "ozow_deliveries_pkey",
+      "table": "ozow_deliveries",
+      "schema": "private",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "name": "ozow_deliveries_transaction_id_fkey",
+      "table": "ozow_deliveries",
+      "schema": "private",
+      "definition": "FOREIGN KEY (transaction_id) REFERENCES private.ozow_receipts(transaction_id)"
+    },
+    {
+      "name": "ozow_receipts_attempt_id_fkey",
+      "table": "ozow_receipts",
+      "schema": "private",
+      "definition": "FOREIGN KEY (attempt_id) REFERENCES private.ozow_attempts(id)"
+    },
+    {
+      "name": "ozow_receipts_pkey",
+      "table": "ozow_receipts",
+      "schema": "private",
+      "definition": "PRIMARY KEY (transaction_id)"
+    },
+    {
+      "name": "ozow_receipts_status_check",
+      "table": "ozow_receipts",
+      "schema": "private",
+      "definition": "CHECK ((status = ANY (ARRAY['Successful'::text, 'Incomplete'::text, 'Pending'::text, 'Error'::text, 'Refunded'::text])))"
+    },
+    {
+      "name": "payment_attempts_order_id_fkey",
+      "table": "payment_attempts",
+      "schema": "private",
+      "definition": "FOREIGN KEY (order_id) REFERENCES orders(id)"
+    },
+    {
+      "name": "payment_attempts_pkey",
+      "table": "payment_attempts",
+      "schema": "private",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "name": "payment_attempts_provider_check",
+      "table": "payment_attempts",
+      "schema": "private",
+      "definition": "CHECK ((provider = ANY (ARRAY['payfast'::text, 'ozow'::text])))"
+    },
+    {
+      "name": "payment_attempts_state_check",
+      "table": "payment_attempts",
+      "schema": "private",
+      "definition": "CHECK ((state = ANY (ARRAY['issued'::text, 'pending'::text, 'paid'::text, 'cancelled_verified'::text, 'failed_verified'::text])))"
+    },
+    {
+      "name": "retention_settings_days_check",
+      "table": "retention_settings",
+      "schema": "private",
+      "definition": "CHECK (((days >= 1) AND (days <= 3650)))"
+    },
+    {
+      "name": "retention_settings_pkey",
+      "table": "retention_settings",
+      "schema": "private",
+      "definition": "PRIMARY KEY (singleton)"
+    },
+    {
+      "name": "retention_settings_singleton_check",
+      "table": "retention_settings",
+      "schema": "private",
+      "definition": "CHECK (singleton)"
+    },
+    {
+      "name": "standard_fee_ledger_acceptance_id_fkey",
+      "table": "standard_fee_ledger",
+      "schema": "private",
+      "definition": "FOREIGN KEY (acceptance_id) REFERENCES private.vendor_legal_acceptances(id)"
+    },
+    {
+      "name": "standard_fee_ledger_check",
+      "table": "standard_fee_ledger",
+      "schema": "private",
+      "definition": "CHECK (((platform_amount + internal_processing_amount) = combined_amount))"
+    },
+    {
+      "name": "standard_fee_ledger_check1",
+      "table": "standard_fee_ledger",
+      "schema": "private",
+      "definition": "CHECK (((gross_product_subtotal - vendor_discount) = eligible_net_subtotal))"
+    },
+    {
+      "name": "standard_fee_ledger_pkey",
+      "table": "standard_fee_ledger",
+      "schema": "private",
+      "definition": "PRIMARY KEY (suborder_id)"
+    },
+    {
+      "name": "standard_fee_ledger_suborder_id_fkey",
+      "table": "standard_fee_ledger",
+      "schema": "private",
+      "definition": "FOREIGN KEY (suborder_id) REFERENCES order_suborders(id)"
+    },
+    {
+      "name": "standard_fee_ledger_vendor_discount_check",
+      "table": "standard_fee_ledger",
+      "schema": "private",
+      "definition": "CHECK ((vendor_discount = (0)::numeric))"
+    },
+    {
+      "name": "standard_sale_contracts_acceptance_id_fkey",
+      "table": "standard_sale_contracts",
+      "schema": "private",
+      "definition": "FOREIGN KEY (acceptance_id) REFERENCES private.vendor_legal_acceptances(id)"
+    },
+    {
+      "name": "standard_sale_contracts_pkey",
+      "table": "standard_sale_contracts",
+      "schema": "private",
+      "definition": "PRIMARY KEY (suborder_id)"
+    },
+    {
+      "name": "standard_sale_contracts_suborder_id_fkey",
+      "table": "standard_sale_contracts",
+      "schema": "private",
+      "definition": "FOREIGN KEY (suborder_id) REFERENCES order_suborders(id)"
+    },
+    {
+      "name": "subscription_plans_amount_check",
+      "table": "subscription_plans",
+      "schema": "private",
+      "definition": "CHECK ((amount > (0)::numeric))"
+    },
+    {
+      "name": "subscription_plans_currency_check",
+      "table": "subscription_plans",
+      "schema": "private",
+      "definition": "CHECK ((currency = 'ZAR'::text))"
+    },
+    {
+      "name": "subscription_plans_duration_days_check",
+      "table": "subscription_plans",
+      "schema": "private",
+      "definition": "CHECK ((duration_days > 0))"
+    },
+    {
+      "name": "subscription_plans_pkey",
+      "table": "subscription_plans",
+      "schema": "private",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "name": "subscription_plans_refund_policy_check",
+      "table": "subscription_plans",
+      "schema": "private",
+      "definition": "CHECK ((length(refund_policy) > 0))"
+    },
+    {
+      "name": "vendor_consent_intents_actor_id_fkey",
+      "table": "vendor_consent_intents",
+      "schema": "private",
+      "definition": "FOREIGN KEY (actor_id) REFERENCES profiles(id)"
+    },
+    {
+      "name": "vendor_consent_intents_pkey",
+      "table": "vendor_consent_intents",
+      "schema": "private",
+      "definition": "PRIMARY KEY (actor_id)"
+    },
+    {
+      "name": "vendor_delivery_origins_check",
+      "table": "vendor_delivery_origins",
+      "schema": "private",
+      "definition": "CHECK (((mode = 'CENTRAL'::text) OR ((status = 'approved'::text) AND (origin_id IS NOT NULL))))"
+    },
+    {
+      "name": "vendor_delivery_origins_latitude_check",
+      "table": "vendor_delivery_origins",
+      "schema": "private",
+      "definition": "CHECK (((latitude >= ('-90'::integer)::double precision) AND (latitude <= (90)::double precision)))"
+    },
+    {
+      "name": "vendor_delivery_origins_longitude_check",
+      "table": "vendor_delivery_origins",
+      "schema": "private",
+      "definition": "CHECK (((longitude >= ('-180'::integer)::double precision) AND (longitude <= (180)::double precision)))"
+    },
+    {
+      "name": "vendor_delivery_origins_mode_check",
+      "table": "vendor_delivery_origins",
+      "schema": "private",
+      "definition": "CHECK ((mode = ANY (ARRAY['CENTRAL'::text, 'VENDOR'::text])))"
+    },
+    {
+      "name": "vendor_delivery_origins_pkey",
+      "table": "vendor_delivery_origins",
+      "schema": "private",
+      "definition": "PRIMARY KEY (vendor_id)"
+    },
+    {
+      "name": "vendor_delivery_origins_service_radius_km_check",
+      "table": "vendor_delivery_origins",
+      "schema": "private",
+      "definition": "CHECK (((service_radius_km > (0)::double precision) AND (service_radius_km <= (1000)::double precision)))"
+    },
+    {
+      "name": "vendor_delivery_origins_status_check",
+      "table": "vendor_delivery_origins",
+      "schema": "private",
+      "definition": "CHECK ((status = ANY (ARRAY['pending'::text, 'approved'::text, 'rejected'::text, 'revoked'::text])))"
+    },
+    {
+      "name": "vendor_delivery_origins_vendor_id_fkey",
+      "table": "vendor_delivery_origins",
+      "schema": "private",
+      "definition": "FOREIGN KEY (vendor_id) REFERENCES vendors(id)"
+    },
+    {
+      "name": "vendor_legal_acceptances_actor_id_fkey",
+      "table": "vendor_legal_acceptances",
+      "schema": "private",
+      "definition": "FOREIGN KEY (actor_id) REFERENCES profiles(id)"
+    },
+    {
+      "name": "vendor_legal_acceptances_method_check",
+      "table": "vendor_legal_acceptances",
+      "schema": "private",
+      "definition": "CHECK ((method = ANY (ARRAY['application'::text, 'authenticated'::text])))"
+    },
+    {
+      "name": "vendor_legal_acceptances_pkey",
+      "table": "vendor_legal_acceptances",
+      "schema": "private",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "name": "vendor_legal_acceptances_vendor_id_fkey",
+      "table": "vendor_legal_acceptances",
+      "schema": "private",
+      "definition": "FOREIGN KEY (vendor_id) REFERENCES vendors(id)"
+    },
+    {
+      "name": "vendor_payment_profiles_check",
+      "table": "vendor_payment_profiles",
+      "schema": "private",
+      "definition": "CHECK (((approved_by IS NULL) = (approved_at IS NULL)))"
+    },
+    {
+      "name": "vendor_payment_profiles_id_vendor_id_key",
+      "table": "vendor_payment_profiles",
+      "schema": "private",
+      "definition": "UNIQUE (id, vendor_id)"
+    },
+    {
+      "name": "vendor_payment_profiles_pkey",
+      "table": "vendor_payment_profiles",
+      "schema": "private",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "name": "vendor_payment_profiles_vendor_id_fkey",
+      "table": "vendor_payment_profiles",
+      "schema": "private",
+      "definition": "FOREIGN KEY (vendor_id) REFERENCES vendors(id)"
+    },
+    {
+      "name": "vendor_subscriptions_approval_status_check",
+      "table": "vendor_subscriptions",
+      "schema": "private",
+      "definition": "CHECK ((approval_status = ANY (ARRAY['pending'::text, 'approved'::text, 'rejected'::text])))"
+    },
+    {
+      "name": "vendor_subscriptions_payment_status_check",
+      "table": "vendor_subscriptions",
+      "schema": "private",
+      "definition": "CHECK ((payment_status = ANY (ARRAY['unpaid'::text, 'paid'::text])))"
+    },
+    {
+      "name": "vendor_subscriptions_pkey",
+      "table": "vendor_subscriptions",
+      "schema": "private",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "name": "vendor_subscriptions_plan_id_fkey",
+      "table": "vendor_subscriptions",
+      "schema": "private",
+      "definition": "FOREIGN KEY (plan_id) REFERENCES private.subscription_plans(id)"
+    },
+    {
+      "name": "vendor_subscriptions_receipt_id_key",
+      "table": "vendor_subscriptions",
+      "schema": "private",
+      "definition": "UNIQUE (receipt_id)"
+    },
+    {
+      "name": "vendor_subscriptions_vendor_id_fkey",
+      "table": "vendor_subscriptions",
+      "schema": "private",
+      "definition": "FOREIGN KEY (vendor_id) REFERENCES vendors(id)"
+    },
+    {
+      "name": "booking_pricing_rules_minimum_fee_check",
+      "table": "booking_pricing_rules",
+      "schema": "public",
+      "definition": "CHECK ((minimum_fee >= (0)::numeric))"
+    },
+    {
+      "name": "booking_pricing_rules_per_person_fee_check",
+      "table": "booking_pricing_rules",
+      "schema": "public",
+      "definition": "CHECK ((per_person_fee >= (0)::numeric))"
+    },
+    {
+      "name": "booking_pricing_rules_pkey",
+      "table": "booking_pricing_rules",
+      "schema": "public",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "name": "booking_pricing_rules_service_level_check",
+      "table": "booking_pricing_rules",
+      "schema": "public",
+      "definition": "CHECK ((service_level = ANY (ARRAY['food_only'::text, 'delivered'::text, 'staffed'::text, 'managed'::text])))"
+    },
+    {
+      "name": "booking_pricing_rules_service_level_key",
+      "table": "booking_pricing_rules",
+      "schema": "public",
+      "definition": "UNIQUE (service_level)"
+    },
+    {
+      "name": "conversations_customer_id_fkey",
+      "table": "conversations",
+      "schema": "public",
+      "definition": "FOREIGN KEY (customer_id) REFERENCES profiles(id)"
+    },
+    {
+      "name": "conversations_order_id_fkey",
+      "table": "conversations",
+      "schema": "public",
+      "definition": "FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE SET NULL"
+    },
+    {
+      "name": "conversations_pkey",
+      "table": "conversations",
+      "schema": "public",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "name": "conversations_source_check",
+      "table": "conversations",
+      "schema": "public",
+      "definition": "CHECK ((source = ANY (ARRAY['officebites'::text, 'support_escalation'::text])))"
+    },
+    {
+      "name": "conversations_vendor_id_fkey",
+      "table": "conversations",
+      "schema": "public",
+      "definition": "FOREIGN KEY (vendor_id) REFERENCES vendors(id)"
+    },
+    {
+      "name": "corporate_opportunities_booking_id_fkey",
+      "table": "corporate_opportunities",
+      "schema": "public",
+      "definition": "FOREIGN KEY (booking_id) REFERENCES event_booking_requests(id) ON DELETE CASCADE"
+    },
+    {
+      "name": "corporate_opportunities_booking_id_vendor_id_key",
+      "table": "corporate_opportunities",
+      "schema": "public",
+      "definition": "UNIQUE (booking_id, vendor_id)"
+    },
+    {
+      "name": "corporate_opportunities_pkey",
+      "table": "corporate_opportunities",
+      "schema": "public",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "name": "corporate_opportunities_response_status_check",
+      "table": "corporate_opportunities",
+      "schema": "public",
+      "definition": "CHECK ((response_status = ANY (ARRAY['invited'::text, 'interested'::text, 'declined'::text, 'shortlisted'::text, 'selected'::text])))"
+    },
+    {
+      "name": "corporate_opportunities_vendor_id_fkey",
+      "table": "corporate_opportunities",
+      "schema": "public",
+      "definition": "FOREIGN KEY (vendor_id) REFERENCES vendors(id) ON DELETE CASCADE"
+    },
+    {
+      "name": "event_booking_requests_guest_count_check",
+      "table": "event_booking_requests",
+      "schema": "public",
+      "definition": "CHECK (((guest_count >= 10) AND (guest_count <= 10000)))"
+    },
+    {
+      "name": "event_booking_requests_pkey",
+      "table": "event_booking_requests",
+      "schema": "public",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "name": "event_booking_requests_requester_id_fkey",
+      "table": "event_booking_requests",
+      "schema": "public",
+      "definition": "FOREIGN KEY (requester_id) REFERENCES profiles(id) ON DELETE SET NULL"
+    },
+    {
+      "name": "event_booking_requests_selected_vendor_id_fkey",
+      "table": "event_booking_requests",
+      "schema": "public",
+      "definition": "FOREIGN KEY (selected_vendor_id) REFERENCES vendors(id) ON DELETE SET NULL"
+    },
+    {
+      "name": "event_booking_requests_service_level_check",
+      "table": "event_booking_requests",
+      "schema": "public",
+      "definition": "CHECK ((service_level = ANY (ARRAY['food_only'::text, 'delivered'::text, 'staffed'::text, 'managed'::text])))"
+    },
+    {
+      "name": "event_booking_requests_status_check",
+      "table": "event_booking_requests",
+      "schema": "public",
+      "definition": "CHECK ((status = ANY (ARRAY['requested'::text, 'reviewing'::text, 'quoted'::text, 'accepted'::text, 'declined'::text, 'cancelled'::text, 'completed'::text])))"
+    },
+    {
+      "name": "favourites_meal_id_fkey",
+      "table": "favourites",
+      "schema": "public",
+      "definition": "FOREIGN KEY (meal_id) REFERENCES meals(id) ON DELETE CASCADE"
+    },
+    {
+      "name": "favourites_pkey",
+      "table": "favourites",
+      "schema": "public",
+      "definition": "PRIMARY KEY (profile_id, meal_id)"
+    },
+    {
+      "name": "favourites_profile_id_fkey",
+      "table": "favourites",
+      "schema": "public",
+      "definition": "FOREIGN KEY (profile_id) REFERENCES profiles(id) ON DELETE CASCADE"
+    },
+    {
+      "name": "feedback_comment_check",
+      "table": "feedback",
+      "schema": "public",
+      "definition": "CHECK ((char_length(comment) <= 5000))"
+    },
+    {
+      "name": "feedback_pkey",
+      "table": "feedback",
+      "schema": "public",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "name": "feedback_rating_check",
+      "table": "feedback",
+      "schema": "public",
+      "definition": "CHECK (((rating >= 1) AND (rating <= 5)))"
+    },
+    {
+      "name": "feedback_user_id_fkey",
+      "table": "feedback",
+      "schema": "public",
+      "definition": "FOREIGN KEY (user_id) REFERENCES profiles(id) ON DELETE SET NULL"
+    },
+    {
+      "name": "help_articles_pkey",
+      "table": "help_articles",
+      "schema": "public",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "name": "help_articles_slug_key",
+      "table": "help_articles",
+      "schema": "public",
+      "definition": "UNIQUE (slug)"
+    },
+    {
+      "name": "meals_pkey",
+      "table": "meals",
+      "schema": "public",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "name": "meals_price_check",
+      "table": "meals",
+      "schema": "public",
+      "definition": "CHECK ((price >= (0)::numeric))"
+    },
+    {
+      "name": "meals_vendor_id_fkey",
+      "table": "meals",
+      "schema": "public",
+      "definition": "FOREIGN KEY (vendor_id) REFERENCES vendors(id) ON DELETE CASCADE"
+    },
+    {
+      "name": "messages_conversation_id_fkey",
+      "table": "messages",
+      "schema": "public",
+      "definition": "FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE CASCADE"
+    },
+    {
+      "name": "messages_pkey",
+      "table": "messages",
+      "schema": "public",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "name": "messages_sender_id_fkey",
+      "table": "messages",
+      "schema": "public",
+      "definition": "FOREIGN KEY (sender_id) REFERENCES profiles(id)"
+    },
+    {
+      "name": "notifications_pkey",
+      "table": "notifications",
+      "schema": "public",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "name": "notifications_user_id_fkey",
+      "table": "notifications",
+      "schema": "public",
+      "definition": "FOREIGN KEY (user_id) REFERENCES profiles(id)"
+    },
+    {
+      "name": "order_flow_pkey",
+      "table": "order_flow",
+      "schema": "public",
+      "definition": "PRIMARY KEY (status)"
+    },
+    {
+      "name": "order_flow_step_key",
+      "table": "order_flow",
+      "schema": "public",
+      "definition": "UNIQUE (step)"
+    },
+    {
+      "name": "order_items_meal_id_fkey",
+      "table": "order_items",
+      "schema": "public",
+      "definition": "FOREIGN KEY (meal_id) REFERENCES meals(id) ON DELETE SET NULL"
+    },
+    {
+      "name": "order_items_pkey",
+      "table": "order_items",
+      "schema": "public",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "name": "order_items_qty_check",
+      "table": "order_items",
+      "schema": "public",
+      "definition": "CHECK ((qty > 0))"
+    },
+    {
+      "name": "order_items_suborder_id_fkey",
+      "table": "order_items",
+      "schema": "public",
+      "definition": "FOREIGN KEY (suborder_id) REFERENCES order_suborders(id) ON DELETE CASCADE"
+    },
+    {
+      "name": "commission_snapshot_rate_range",
+      "table": "order_suborders",
+      "schema": "public",
+      "definition": "CHECK (((commission_rate_snapshot >= (0)::numeric) AND (commission_rate_snapshot <= (1)::numeric)))"
+    },
+    {
+      "name": "order_suborders_order_id_fkey",
+      "table": "order_suborders",
+      "schema": "public",
+      "definition": "FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE"
+    },
+    {
+      "name": "order_suborders_order_id_vendor_id_key",
+      "table": "order_suborders",
+      "schema": "public",
+      "definition": "UNIQUE (order_id, vendor_id)"
+    },
+    {
+      "name": "order_suborders_pkey",
+      "table": "order_suborders",
+      "schema": "public",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "name": "order_suborders_vendor_id_fkey",
+      "table": "order_suborders",
+      "schema": "public",
+      "definition": "FOREIGN KEY (vendor_id) REFERENCES vendors(id)"
+    },
+    {
+      "name": "orders_customer_id_fkey",
+      "table": "orders",
+      "schema": "public",
+      "definition": "FOREIGN KEY (customer_id) REFERENCES profiles(id) ON DELETE SET NULL"
+    },
+    {
+      "name": "orders_customer_or_guest",
+      "table": "orders",
+      "schema": "public",
+      "definition": "CHECK (((customer_id IS NOT NULL) OR (guest_name IS NOT NULL)))"
+    },
+    {
+      "name": "orders_delivery_fee_check",
+      "table": "orders",
+      "schema": "public",
+      "definition": "CHECK ((delivery_fee >= (0)::numeric))"
+    },
+    {
+      "name": "orders_payment_method_check",
+      "table": "orders",
+      "schema": "public",
+      "definition": "CHECK ((payment_method = ANY (ARRAY['payfast'::text, 'ozow'::text, 'manual_eft'::text, 'manual_payshap'::text])))"
+    },
+    {
+      "name": "orders_pkey",
+      "table": "orders",
+      "schema": "public",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "name": "orders_ticket_number_key",
+      "table": "orders",
+      "schema": "public",
+      "definition": "UNIQUE (ticket_number)"
+    },
+    {
+      "name": "payfast_itn_log_order_id_fkey",
+      "table": "payfast_itn_log",
+      "schema": "public",
+      "definition": "FOREIGN KEY (order_id) REFERENCES orders(id)"
+    },
+    {
+      "name": "payfast_itn_log_pkey",
+      "table": "payfast_itn_log",
+      "schema": "public",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "name": "payout_allocations_payable_check",
+      "table": "payout_allocations",
+      "schema": "public",
+      "definition": "CHECK ((payable >= (0)::numeric))"
+    },
+    {
+      "name": "payout_allocations_payout_id_fkey",
+      "table": "payout_allocations",
+      "schema": "public",
+      "definition": "FOREIGN KEY (payout_id) REFERENCES vendor_payouts(id)"
+    },
+    {
+      "name": "payout_allocations_pkey",
+      "table": "payout_allocations",
+      "schema": "public",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "name": "payout_allocations_suborder_id_fkey",
+      "table": "payout_allocations",
+      "schema": "public",
+      "definition": "FOREIGN KEY (suborder_id) REFERENCES order_suborders(id)"
+    },
+    {
+      "name": "profiles_pkey",
+      "table": "profiles",
+      "schema": "public",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "name": "profiles_vendor_id_fkey",
+      "table": "profiles",
+      "schema": "public",
+      "definition": "FOREIGN KEY (vendor_id) REFERENCES vendors(id) ON DELETE SET NULL"
+    },
+    {
+      "name": "reviews_customer_id_fkey",
+      "table": "reviews",
+      "schema": "public",
+      "definition": "FOREIGN KEY (customer_id) REFERENCES profiles(id) ON DELETE SET NULL"
+    },
+    {
+      "name": "reviews_meal_id_fkey",
+      "table": "reviews",
+      "schema": "public",
+      "definition": "FOREIGN KEY (meal_id) REFERENCES meals(id) ON DELETE SET NULL"
+    },
+    {
+      "name": "reviews_pkey",
+      "table": "reviews",
+      "schema": "public",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "name": "reviews_rating_check",
+      "table": "reviews",
+      "schema": "public",
+      "definition": "CHECK (((rating >= 1) AND (rating <= 5)))"
+    },
+    {
+      "name": "reviews_vendor_id_fkey",
+      "table": "reviews",
+      "schema": "public",
+      "definition": "FOREIGN KEY (vendor_id) REFERENCES vendors(id) ON DELETE CASCADE"
+    },
+    {
+      "name": "support_ticket_messages_body_check",
+      "table": "support_ticket_messages",
+      "schema": "public",
+      "definition": "CHECK (((length(btrim(body)) >= 1) AND (length(btrim(body)) <= 5000)))"
+    },
+    {
+      "name": "support_ticket_messages_pkey",
+      "table": "support_ticket_messages",
+      "schema": "public",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "name": "support_ticket_messages_sender_id_fkey",
+      "table": "support_ticket_messages",
+      "schema": "public",
+      "definition": "FOREIGN KEY (sender_id) REFERENCES profiles(id) ON DELETE SET NULL"
+    },
+    {
+      "name": "support_ticket_messages_sender_role_check",
+      "table": "support_ticket_messages",
+      "schema": "public",
+      "definition": "CHECK ((sender_role = ANY (ARRAY['customer'::text, 'support'::text])))"
+    },
+    {
+      "name": "support_ticket_messages_ticket_id_fkey",
+      "table": "support_ticket_messages",
+      "schema": "public",
+      "definition": "FOREIGN KEY (ticket_id) REFERENCES support_tickets(id) ON DELETE CASCADE"
+    },
+    {
+      "name": "support_tickets_assigned_to_fkey",
+      "table": "support_tickets",
+      "schema": "public",
+      "definition": "FOREIGN KEY (assigned_to) REFERENCES profiles(id) ON DELETE SET NULL"
+    },
+    {
+      "name": "support_tickets_category_check",
+      "table": "support_tickets",
+      "schema": "public",
+      "definition": "CHECK ((category = ANY (ARRAY['order'::text, 'payment'::text, 'account'::text, 'vendor'::text, 'technical'::text, 'other'::text])))"
+    },
+    {
+      "name": "support_tickets_order_id_fkey",
+      "table": "support_tickets",
+      "schema": "public",
+      "definition": "FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE SET NULL"
+    },
+    {
+      "name": "support_tickets_pkey",
+      "table": "support_tickets",
+      "schema": "public",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "name": "support_tickets_requester_id_fkey",
+      "table": "support_tickets",
+      "schema": "public",
+      "definition": "FOREIGN KEY (requester_id) REFERENCES profiles(id) ON DELETE SET NULL"
+    },
+    {
+      "name": "support_tickets_ticket_number_key",
+      "table": "support_tickets",
+      "schema": "public",
+      "definition": "UNIQUE (ticket_number)"
+    },
+    {
+      "name": "vendor_payouts_amount_check",
+      "table": "vendor_payouts",
+      "schema": "public",
+      "definition": "CHECK ((amount >= (0)::numeric))"
+    },
+    {
+      "name": "vendor_payouts_fee_policy_check",
+      "table": "vendor_payouts",
+      "schema": "public",
+      "definition": "CHECK ((fee_policy = ANY (ARRAY['platform_absorbs'::text, 'vendor_proportional'::text])))"
+    },
+    {
+      "name": "vendor_payouts_pkey",
+      "table": "vendor_payouts",
+      "schema": "public",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "name": "vendor_payouts_request_id_key",
+      "table": "vendor_payouts",
+      "schema": "public",
+      "definition": "UNIQUE (request_id)"
+    },
+    {
+      "name": "vendor_payouts_status_check",
+      "table": "vendor_payouts",
+      "schema": "public",
+      "definition": "CHECK ((status = ANY (ARRAY['allocated'::text, 'paid'::text, 'void'::text])))"
+    },
+    {
+      "name": "vendor_payouts_vendor_id_fkey",
+      "table": "vendor_payouts",
+      "schema": "public",
+      "definition": "FOREIGN KEY (vendor_id) REFERENCES vendors(id)"
+    },
+    {
+      "name": "archived_vendor_inactive",
+      "table": "vendors",
+      "schema": "public",
+      "definition": "CHECK (((archived_at IS NULL) OR (status = 'suspended'::vendor_status)))"
+    },
+    {
+      "name": "vendors_commission_rate_check",
+      "table": "vendors",
+      "schema": "public",
+      "definition": "CHECK (((commission_rate >= (0)::numeric) AND (commission_rate <= (1)::numeric)))"
+    },
+    {
+      "name": "vendors_latitude_check",
+      "table": "vendors",
+      "schema": "public",
+      "definition": "CHECK (((latitude IS NULL) OR ((latitude >= ('-90'::integer)::double precision) AND (latitude <= (90)::double precision))))"
+    },
+    {
+      "name": "vendors_longitude_check",
+      "table": "vendors",
+      "schema": "public",
+      "definition": "CHECK (((longitude IS NULL) OR ((longitude >= ('-180'::integer)::double precision) AND (longitude <= (180)::double precision))))"
+    },
+    {
+      "name": "vendors_owner_id_fkey",
+      "table": "vendors",
+      "schema": "public",
+      "definition": "FOREIGN KEY (owner_id) REFERENCES profiles(id) ON DELETE SET NULL"
+    },
+    {
+      "name": "vendors_pkey",
+      "table": "vendors",
+      "schema": "public",
+      "definition": "PRIMARY KEY (id)"
+    }
+  ],
+  "role_attributes": [
+    {
+      "role": "authenticated",
+      "login": false,
+      "inherit": true,
+      "superuser": false,
+      "bypass_rls": false
+    },
+    {
+      "role": "anon",
+      "login": false,
+      "inherit": true,
+      "superuser": false,
+      "bypass_rls": false
+    },
+    {
+      "role": "service_role",
+      "login": false,
+      "inherit": true,
+      "superuser": false,
+      "bypass_rls": true
+    },
+    {
+      "role": "postgres",
+      "login": true,
+      "inherit": true,
+      "superuser": false,
+      "bypass_rls": true
+    },
+    {
+      "role": "authenticator",
+      "login": true,
+      "inherit": false,
+      "superuser": false,
+      "bypass_rls": false
+    },
+    {
+      "role": "supabase_storage_admin",
+      "login": true,
+      "inherit": false,
+      "superuser": false,
+      "bypass_rls": false
+    }
+  ],
+  "role_memberships": [
+    {
+      "role": "pg_monitor",
+      "member": "postgres",
+      "admin_option": true
+    },
+    {
+      "role": "pg_signal_backend",
+      "member": "postgres",
+      "admin_option": true
+    },
+    {
+      "role": "pg_read_all_data",
+      "member": "postgres",
+      "admin_option": true
+    },
+    {
+      "role": "pg_create_subscription",
+      "member": "postgres",
+      "admin_option": true
+    },
+    {
+      "role": "anon",
+      "member": "postgres",
+      "admin_option": true
+    },
+    {
+      "role": "anon",
+      "member": "authenticator",
+      "admin_option": false
+    },
+    {
+      "role": "authenticated",
+      "member": "postgres",
+      "admin_option": true
+    },
+    {
+      "role": "authenticated",
+      "member": "authenticator",
+      "admin_option": false
+    },
+    {
+      "role": "service_role",
+      "member": "authenticator",
+      "admin_option": false
+    },
+    {
+      "role": "service_role",
+      "member": "postgres",
+      "admin_option": true
+    },
+    {
+      "role": "authenticator",
+      "member": "postgres",
+      "admin_option": true
+    },
+    {
+      "role": "supabase_privileged_role",
+      "member": "postgres",
+      "admin_option": false
+    }
+  ],
+  "ledger_privileges": {
+    "insert": true,
+    "select": true
+  },
+  "unsafe_table_privileges": null,
+  "private_direct_privileges": null
+}
+

@@ -1,0 +1,10 @@
+{
+  "observedUtc": "2026-10-27T12:47:09.761Z",
+  "result": "passed",
+  "tablesCompared": 13,
+  "allCountsAndDigestsMatch": true,
+  "closedPaymentFlags": true,
+  "historyCount": 56,
+  "type": "cold physical clone of disposable native PostgreSQL only",
+  "notVerified": "Hosted backup/PITR, RPO/RTO, Storage bytes, Auth/provider/Vercel configuration"
+}

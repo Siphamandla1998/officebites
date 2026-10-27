@@ -1,0 +1,40 @@
+[
+  {
+    "observed_utc": "2026-10-27 09:28:10.627173+00",
+    "gateways": [
+      {
+        "ready": true,
+        "enabled": false,
+        "provider": "manual_eft",
+        "maintenance": false
+      },
+      {
+        "ready": true,
+        "enabled": false,
+        "provider": "manual_payshap",
+        "maintenance": false
+      },
+      {
+        "ready": false,
+        "enabled": false,
+        "provider": "ozow",
+        "maintenance": true
+      },
+      {
+        "ready": true,
+        "enabled": false,
+        "provider": "payfast",
+        "maintenance": false
+      }
+    ],
+    "bank_profile_count": 0,
+    "approved_bank_profile_count": 0,
+    "manual_settings": [
+      {
+        "singleton": true,
+        "deadline_minutes": 15,
+        "review_threshold": 500
+      }
+    ]
+  }
+]

@@ -1,0 +1,18 @@
+{
+  "baseline": "4c4835db62b7db4c7a725c92d7a6294ca523fa57",
+  "fullProductionBaselineCertified": false,
+  "productionDeployment": "dpl_9mWoxNCL9NqX7DHKAUy7NCfBWGnt",
+  "productionReportedGitSha": "ee258d614e46eb3ae7a1957ffb11ff7a3c819180",
+  "fetchResult": "GitHub upload-pack: not our ref",
+  "matchingDeployedAndBaselineSha1": {
+    "package.json": "e397cd3f527772e0e1d1e567a058a7d5bd9558aa",
+    "src/routes/AppRoutes.jsx": "ed1b52751b5307ef8642381b00ef1ca480b6d36a",
+    "src/context/AuthContext.jsx": "358c972f960e3523841cbe87e6f64730558cb48f"
+  },
+  "orderService": {
+    "deployedFileTreeUid": "09749c8ab259594697c2e5004c403ceff54ce8ea",
+    "baselineSha1": "825bd1471db12f81b4e509937f5d3aa7ba017bc0",
+    "completeSourceRetrieval": false,
+    "reason": "Connector truncated base64 source response; do not decode or certify a partial archive"
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "observedUtc": "2026-10-27T12:42:18.939Z",
+  "captureUtc": "2026-10-26T13:20:08.96871+00:00",
+  "comparisons": [
+    {
+      "signature": "private.active_account()",
+      "captured": "5bda4a148d4f52474014f31f90b49cdf",
+      "reconstructed": "5bda4a148d4f52474014f31f90b49cdf",
+      "match": true
+    },
+    {
+      "signature": "private.create_order_core(uuid, text, text, text, date, text, jsonb)",
+      "captured": "d66dff3346ea0241a989a2c060227236",
+      "reconstructed": "d66dff3346ea0241a989a2c060227236",
+      "match": true
+    },
+    {
+      "signature": "private.create_order_with_delivery(uuid, text, text, text, date, text, jsonb, uuid)",
+      "captured": "36d73e384b63626498cbe054c1d5da31",
+      "reconstructed": "36d73e384b63626498cbe054c1d5da31",
+      "match": true
+    },
+    {
+      "signature": "public.admin_manual_settings(boolean, boolean, integer, numeric, text)",
+      "captured": "7c0a398be18ece9e1940840fe692ea6c",
+      "reconstructed": "7c0a398be18ece9e1940840fe692ea6c",
+      "match": true
+    },
+    {
+      "signature": "public.cancel_unpaid_order(uuid, text, text)",
+      "captured": "6a52338e78c097c55bb8721bbcf451fe",
+      "reconstructed": "6a52338e78c097c55bb8721bbcf451fe",
+      "match": true
+    },
+    {
+      "signature": "public.create_manual_order(uuid, text, text, text, date, text, jsonb, uuid, text, uuid)",
+      "captured": "c4dc553530f2998f26e91475b7503a5e",
+      "reconstructed": "c4dc553530f2998f26e91475b7503a5e",
+      "match": true
+    },
+    {
+      "signature": "public.get_vendor_manual_methods(uuid)",
+      "captured": "52ac2c375a04a31aa46470456260c929",
+      "reconstructed": "52ac2c375a04a31aa46470456260c929",
+      "match": true
+    },
+    {
+      "signature": "public.order_to_json(orders)",
+      "captured": "1185d494ac41ab09d2b83f3e263582cd",
+      "reconstructed": "1185d494ac41ab09d2b83f3e263582cd",
+      "match": true
+    },
+    {
+      "signature": "public.record_manual_refund_status(uuid, text, numeric, numeric, text)",
+      "captured": "7996f9c65a3cf770c3eb91f7a2b650a2",
+      "reconstructed": "7996f9c65a3cf770c3eb91f7a2b650a2",
+      "match": true
+    },
+    {
+      "signature": "public.verify_manual_payment(uuid, numeric, text, boolean)",
+      "captured": "c35b9e7c3fecb979f70c81cda16938cb",
+      "reconstructed": "c35b9e7c3fecb979f70c81cda16938cb",
+      "match": true
+    }
+  ]
+}

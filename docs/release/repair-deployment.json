@@ -1,0 +1,9 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"result\": {\n    \"deployment\": {\n      \"id\": \"dpl_6MGnguqN7HkhPMpsyGYvA7bcf2hm\",\n      \"name\": \"officebites\",\n      \"url\": \"officebites-flg3v3pky-sp24tg-6983s-projects.vercel.app\",\n      \"type\": \"LAMBDAS\",\n      \"state\": \"READY\",\n      \"createdAt\": 1793096658938,\n      \"creator\": {\n        \"uid\": \"iLVxiMya3sxavsU31H4Inddy\",\n        \"username\": \"sp24tg-6983\"\n      },\n      \"project\": {\n        \"id\": \"prj_bGDTykMMQufLAJ2CkjvnOAq4KQ71\",\n        \"name\": \"officebites\",\n        \"framework\": \"vite\"\n      },\n      \"meta\": {\n        \"githubCommitRef\": \"feat/vendor-direct-launch-payments\",\n        \"githubCommitSha\": \"4b94fbe89e8b5a672e4f308701df61c1224580fd\",\n        \"githubCommitMessage\": \"chore: prepare vendor-direct EFT staging implementation and readiness\",\n        \"githubRepo\": \"officebites\",\n        \"githubOrg\": \"Siphamandla1998\"\n      },\n      \"alias\": [\n        \"officebites.co.za\",\n        \"www.officebites.co.za\",\n        \"officebites-pi.vercel.app\",\n        \"officebites-git-feat-vendor-direct-79d899-sp24tg-6983s-projects.vercel.app\"\n      ],\n      \"target\": \"production\",\n      \"regions\": [\n        \"iad1\"\n      ],\n      \"buildingAt\": 1793096659939,\n      \"ready\": 1793096668893,\n      \"readyState\": \"READY\",\n      \"source\": \"redeploy\",\n      \"aliasError\": null\n    }\n  }\n}"
+    }
+  ],
+  "isError": false
+}

@@ -1,0 +1,23 @@
+[
+  {
+    "observed_utc": "2026-10-27 09:59:07.172284+00",
+    "order_status_counts": [
+      {
+        "count": 31,
+        "status": "pending_payment"
+      },
+      {
+        "count": 1,
+        "status": "preparing"
+      }
+    ],
+    "order_contracts": {
+      "count": 32,
+      "contract_digest": "ff5ca26d800c1e5017622ae46d116b98"
+    },
+    "financial_snapshots": {
+      "count": 33,
+      "financial_digest": "4afb70763cf6829192c9ede21e2eb0f4"
+    }
+  }
+]

@@ -1,0 +1,220 @@
+{
+  "migrations": [
+    {
+      "version": "20260922122323",
+      "name": "staging_access_lockdown"
+    },
+    {
+      "version": "20260922134757",
+      "name": "officebites_core_schema_locked"
+    },
+    {
+      "version": "20260922134905",
+      "name": "officebites_staging_schema_extensions_locked"
+    },
+    {
+      "version": "20260922135149",
+      "name": "staging_storage_buckets_private_by_default"
+    },
+    {
+      "version": "20260922135648",
+      "name": "staging_secure_identity_helpers"
+    },
+    {
+      "version": "20260922135827",
+      "name": "staging_safe_catalog_read_policies"
+    },
+    {
+      "version": "20260923071744",
+      "name": "payfast_only_staging_cleanup"
+    },
+    {
+      "version": "20260923072123",
+      "name": "secure_payfast_checkout_core"
+    },
+    {
+      "version": "20260923072143",
+      "name": "staging_secure_rls_and_auth"
+    },
+    {
+      "version": "20260923072202",
+      "name": "payfast_itn_idempotency"
+    },
+    {
+      "version": "20260923100207",
+      "name": "staging_privilege_escalation_guards"
+    },
+    {
+      "version": "20260923100311",
+      "name": "staging_secure_support_storage"
+    },
+    {
+      "version": "20260923100459",
+      "name": "staging_vendor_stats_and_chat_retention"
+    },
+    {
+      "version": "20260923100520",
+      "name": "staging_function_execution_lockdown"
+    },
+    {
+      "version": "20260923100530",
+      "name": "staging_foreign_key_indexes"
+    },
+    {
+      "version": "20260924131203",
+      "name": "optimize_staging_rls_policies"
+    },
+    {
+      "version": "20260924131215",
+      "name": "lock_chat_retention_to_service_role"
+    },
+    {
+      "version": "20260924131610",
+      "name": "efficient_support_core"
+    },
+    {
+      "version": "20260924132316",
+      "name": "order_linked_chat_governance"
+    },
+    {
+      "version": "20260924133248",
+      "name": "vendor_tiers_analytics_event_booking_foundation"
+    },
+    {
+      "version": "20260924134627",
+      "name": "corporate_booking_commercial_model_and_admin_chat_oversight"
+    },
+    {
+      "version": "20260924134648",
+      "name": "deduplicate_admin_chat_read_policies"
+    },
+    {
+      "version": "20260927153843",
+      "name": "customer_become_vendor"
+    },
+    {
+      "version": "20260927154258",
+      "name": "fix_customer_become_vendor_role_cast"
+    },
+    {
+      "version": "20260927170444",
+      "name": "allow_controlled_customer_vendor_profile_transition"
+    },
+    {
+      "version": "20260927171444",
+      "name": "secure_vendor_meal_image_storage"
+    },
+    {
+      "version": "20260927171507",
+      "name": "correct_vendor_meal_image_policy_path_reference"
+    },
+    {
+      "version": "20260927183936",
+      "name": "allow_vendor_to_read_own_meals"
+    },
+    {
+      "version": "20260928101907",
+      "name": "release_candidate_public_media_storage"
+    },
+    {
+      "version": "20260928101913",
+      "name": "release_candidate_trigger_function_lockdown"
+    },
+    {
+      "version": "20260928130222",
+      "name": "release_candidate_support_storage_fix"
+    },
+    {
+      "version": "20260928130441",
+      "name": "final_meals_policy_consolidation"
+    },
+    {
+      "version": "20260928130507",
+      "name": "restrict_helper_rpc_execution"
+    },
+    {
+      "version": "20261007125920",
+      "name": "secure_vendor_signup"
+    },
+    {
+      "version": "20261007132726",
+      "name": "restore_authenticated_admin_helper_access"
+    },
+    {
+      "version": "20261010092240",
+      "name": "staging_catalog_role_policy_repair"
+    },
+    {
+      "version": "20261010093654",
+      "name": "staging_backend_prerequisites"
+    },
+    {
+      "version": "20261010094130",
+      "name": "staging_order_chat_contract_alignment"
+    },
+    {
+      "version": "20261010094146",
+      "name": "staging_scoped_order_customer_names"
+    },
+    {
+      "version": "20261010094157",
+      "name": "staging_atomic_support_and_feedback"
+    },
+    {
+      "version": "20261010094228",
+      "name": "staging_launch_financial_ledger"
+    },
+    {
+      "version": "20261010094255",
+      "name": "staging_launch_account_security_retention"
+    },
+    {
+      "version": "20261010094332",
+      "name": "staging_production_audit_cleanup"
+    },
+    {
+      "version": "20261016080056",
+      "name": "checkout_recovery_mobile_delivery_gateways"
+    },
+    {
+      "version": "20261016081551",
+      "name": "booking_mobile_validation"
+    },
+    {
+      "version": "20261016084712",
+      "name": "ozow_attempts_subscription_approval"
+    },
+    {
+      "version": "20261016091616",
+      "name": "central_hub_vendor_origin_approval"
+    },
+    {
+      "version": "20261016092052",
+      "name": "central_hub_display_name_encoding"
+    },
+    {
+      "version": "20261016092635",
+      "name": "delivery_unenforced_order_snapshots"
+    },
+    {
+      "version": "20261016095620",
+      "name": "legal_corporate_framework"
+    },
+    {
+      "version": "20261016100710",
+      "name": "commercial_reporting_contract_locks"
+    },
+    {
+      "version": "20261016103515",
+      "name": "repair_order_policy_helper_access"
+    },
+    {
+      "version": "20261020100740",
+      "name": "vendor_direct_manual_payments"
+    },
+    {
+      "version": "20261021100655",
+      "name": "fix_admin_manual_settings_singleton"
+    }
+  ]
+}

@@ -1,0 +1,496 @@
+{
+  "observedStartUtc": "2026-10-27T13:01:49.270506+00:00",
+  "observedEndUtc": "2026-10-27T13:04:09.726061+00:00",
+  "timezone": "Africa/Johannesburg",
+  "project": {
+    "id": "eyhmarmekioovcjibcbr",
+    "name": "officebites-staging",
+    "region": "eu-west-1",
+    "status": "ACTIVE_HEALTHY",
+    "databaseHost": "db.eyhmarmekioovcjibcbr.supabase.co",
+    "databaseVersion": "17.6.1.166"
+  },
+  "scope": "Read-only SELECT catalog/settings/count queries and management reads; no application RPC invocation, hosted writes, production access or transport probes",
+  "baseline": {
+    "history": [
+      {
+        "name": "staging_access_lockdown",
+        "version": "20260922122323"
+      },
+      {
+        "name": "officebites_core_schema_locked",
+        "version": "20260922134757"
+      },
+      {
+        "name": "officebites_staging_schema_extensions_locked",
+        "version": "20260922134905"
+      },
+      {
+        "name": "staging_storage_buckets_private_by_default",
+        "version": "20260922135149"
+      },
+      {
+        "name": "staging_secure_identity_helpers",
+        "version": "20260922135648"
+      },
+      {
+        "name": "staging_safe_catalog_read_policies",
+        "version": "20260922135827"
+      },
+      {
+        "name": "payfast_only_staging_cleanup",
+        "version": "20260923071744"
+      },
+      {
+        "name": "secure_payfast_checkout_core",
+        "version": "20260923072123"
+      },
+      {
+        "name": "staging_secure_rls_and_auth",
+        "version": "20260923072143"
+      },
+      {
+        "name": "payfast_itn_idempotency",
+        "version": "20260923072202"
+      },
+      {
+        "name": "staging_privilege_escalation_guards",
+        "version": "20260923100207"
+      },
+      {
+        "name": "staging_secure_support_storage",
+        "version": "20260923100311"
+      },
+      {
+        "name": "staging_vendor_stats_and_chat_retention",
+        "version": "20260923100459"
+      },
+      {
+        "name": "staging_function_execution_lockdown",
+        "version": "20260923100520"
+      },
+      {
+        "name": "staging_foreign_key_indexes",
+        "version": "20260923100530"
+      },
+      {
+        "name": "optimize_staging_rls_policies",
+        "version": "20260924131203"
+      },
+      {
+        "name": "lock_chat_retention_to_service_role",
+        "version": "20260924131215"
+      },
+      {
+        "name": "efficient_support_core",
+        "version": "20260924131610"
+      },
+      {
+        "name": "order_linked_chat_governance",
+        "version": "20260924132316"
+      },
+      {
+        "name": "vendor_tiers_analytics_event_booking_foundation",
+        "version": "20260924133248"
+      },
+      {
+        "name": "corporate_booking_commercial_model_and_admin_chat_oversight",
+        "version": "20260924134627"
+      },
+      {
+        "name": "deduplicate_admin_chat_read_policies",
+        "version": "20260924134648"
+      },
+      {
+        "name": "customer_become_vendor",
+        "version": "20260927153843"
+      },
+      {
+        "name": "fix_customer_become_vendor_role_cast",
+        "version": "20260927154258"
+      },
+      {
+        "name": "allow_controlled_customer_vendor_profile_transition",
+        "version": "20260927170444"
+      },
+      {
+        "name": "secure_vendor_meal_image_storage",
+        "version": "20260927171444"
+      },
+      {
+        "name": "correct_vendor_meal_image_policy_path_reference",
+        "version": "20260927171507"
+      },
+      {
+        "name": "allow_vendor_to_read_own_meals",
+        "version": "20260927183936"
+      },
+      {
+        "name": "release_candidate_public_media_storage",
+        "version": "20260928101907"
+      },
+      {
+        "name": "release_candidate_trigger_function_lockdown",
+        "version": "20260928101913"
+      },
+      {
+        "name": "release_candidate_support_storage_fix",
+        "version": "20260928130222"
+      },
+      {
+        "name": "final_meals_policy_consolidation",
+        "version": "20260928130441"
+      },
+      {
+        "name": "restrict_helper_rpc_execution",
+        "version": "20260928130507"
+      },
+      {
+        "name": "secure_vendor_signup",
+        "version": "20261007125920"
+      },
+      {
+        "name": "restore_authenticated_admin_helper_access",
+        "version": "20261007132726"
+      },
+      {
+        "name": "staging_catalog_role_policy_repair",
+        "version": "20261010092240"
+      },
+      {
+        "name": "staging_backend_prerequisites",
+        "version": "20261010093654"
+      },
+      {
+        "name": "staging_order_chat_contract_alignment",
+        "version": "20261010094130"
+      },
+      {
+        "name": "staging_scoped_order_customer_names",
+        "version": "20261010094146"
+      },
+      {
+        "name": "staging_atomic_support_and_feedback",
+        "version": "20261010094157"
+      },
+      {
+        "name": "staging_launch_financial_ledger",
+        "version": "20261010094228"
+      },
+      {
+        "name": "staging_launch_account_security_retention",
+        "version": "20261010094255"
+      },
+      {
+        "name": "staging_production_audit_cleanup",
+        "version": "20261010094332"
+      },
+      {
+        "name": "checkout_recovery_mobile_delivery_gateways",
+        "version": "20261016080056"
+      },
+      {
+        "name": "booking_mobile_validation",
+        "version": "20261016081551"
+      },
+      {
+        "name": "ozow_attempts_subscription_approval",
+        "version": "20261016084712"
+      },
+      {
+        "name": "central_hub_vendor_origin_approval",
+        "version": "20261016091616"
+      },
+      {
+        "name": "central_hub_display_name_encoding",
+        "version": "20261016092052"
+      },
+      {
+        "name": "delivery_unenforced_order_snapshots",
+        "version": "20261016092635"
+      },
+      {
+        "name": "legal_corporate_framework",
+        "version": "20261016095620"
+      },
+      {
+        "name": "commercial_reporting_contract_locks",
+        "version": "20261016100710"
+      },
+      {
+        "name": "repair_order_policy_helper_access",
+        "version": "20261016103515"
+      },
+      {
+        "name": "vendor_direct_manual_payments",
+        "version": "20261020100740"
+      },
+      {
+        "name": "fix_admin_manual_settings_singleton",
+        "version": "20261021100655"
+      }
+    ],
+    "database": "postgres",
+    "executor": "postgres",
+    "gateways": [
+      {
+        "ready": true,
+        "enabled": false,
+        "provider": "manual_eft",
+        "maintenance": false
+      },
+      {
+        "ready": true,
+        "enabled": false,
+        "provider": "manual_payshap",
+        "maintenance": false
+      },
+      {
+        "ready": false,
+        "enabled": false,
+        "provider": "ozow",
+        "maintenance": true
+      },
+      {
+        "ready": true,
+        "enabled": false,
+        "provider": "payfast",
+        "maintenance": false
+      }
+    ],
+    "commercial": [
+      {
+        "acquisition_enabled": false,
+        "onboarding_enforced": false,
+        "standard_breakdown_enabled": false
+      }
+    ],
+    "bank_counts": {
+      "approved": 0,
+      "profiles": 0
+    },
+    "history_md5": "9befc9e98322a4517850501c61be9696",
+    "phase_roots": {
+      "B": false,
+      "C": false,
+      "D": false,
+      "E": false
+    },
+    "legal_counts": {
+      "approved": 0,
+      "versions": 0
+    },
+    "observed_utc": "2026-10-27T13:01:49.270506+00:00",
+    "history_count": 54,
+    "ledger_columns": [
+      {
+        "name": "version",
+        "type": "text",
+        "nullable": "NO"
+      },
+      {
+        "name": "statements",
+        "type": "ARRAY",
+        "nullable": "YES"
+      },
+      {
+        "name": "name",
+        "type": "text",
+        "nullable": "YES"
+      },
+      {
+        "name": "created_by",
+        "type": "text",
+        "nullable": "YES"
+      },
+      {
+        "name": "idempotency_key",
+        "type": "text",
+        "nullable": "YES"
+      },
+      {
+        "name": "rollback",
+        "type": "ARRAY",
+        "nullable": "YES"
+      }
+    ],
+    "server_version": "17.6",
+    "manual_settings": [
+      {
+        "deadline_minutes": 15,
+        "review_threshold": 500
+      }
+    ],
+    "checked_settings_exists": false
+  },
+  "fingerprintComparison": [
+    {
+      "signature": "private.active_account()",
+      "expected": "5bda4a148d4f52474014f31f90b49cdf",
+      "actual": "5bda4a148d4f52474014f31f90b49cdf",
+      "matches": true,
+      "owner": "postgres"
+    },
+    {
+      "signature": "private.create_order_core(uuid, text, text, text, date, text, jsonb)",
+      "expected": "d66dff3346ea0241a989a2c060227236",
+      "actual": "d66dff3346ea0241a989a2c060227236",
+      "matches": true,
+      "owner": "postgres"
+    },
+    {
+      "signature": "private.create_order_with_delivery(uuid, text, text, text, date, text, jsonb, uuid)",
+      "expected": "36d73e384b63626498cbe054c1d5da31",
+      "actual": "36d73e384b63626498cbe054c1d5da31",
+      "matches": true,
+      "owner": "postgres"
+    },
+    {
+      "signature": "public.admin_manual_settings(boolean, boolean, integer, numeric, text)",
+      "expected": "7c0a398be18ece9e1940840fe692ea6c",
+      "actual": "7c0a398be18ece9e1940840fe692ea6c",
+      "matches": true,
+      "owner": "postgres"
+    },
+    {
+      "signature": "public.cancel_unpaid_order(uuid, text, text)",
+      "expected": "6a52338e78c097c55bb8721bbcf451fe",
+      "actual": "6a52338e78c097c55bb8721bbcf451fe",
+      "matches": true,
+      "owner": "postgres"
+    },
+    {
+      "signature": "public.create_manual_order(uuid, text, text, text, date, text, jsonb, uuid, text, uuid)",
+      "expected": "c4dc553530f2998f26e91475b7503a5e",
+      "actual": "c4dc553530f2998f26e91475b7503a5e",
+      "matches": true,
+      "owner": "postgres"
+    },
+    {
+      "signature": "public.get_vendor_manual_methods(uuid)",
+      "expected": "52ac2c375a04a31aa46470456260c929",
+      "actual": "52ac2c375a04a31aa46470456260c929",
+      "matches": true,
+      "owner": "postgres"
+    },
+    {
+      "signature": "public.order_to_json(orders)",
+      "expected": "1185d494ac41ab09d2b83f3e263582cd",
+      "actual": "1185d494ac41ab09d2b83f3e263582cd",
+      "matches": true,
+      "owner": "postgres"
+    },
+    {
+      "signature": "public.record_manual_refund_status(uuid, text, numeric, numeric, text)",
+      "expected": "7996f9c65a3cf770c3eb91f7a2b650a2",
+      "actual": "7996f9c65a3cf770c3eb91f7a2b650a2",
+      "matches": true,
+      "owner": "postgres"
+    },
+    {
+      "signature": "public.verify_manual_payment(uuid, numeric, text, boolean)",
+      "expected": "c35b9e7c3fecb979f70c81cda16938cb",
+      "actual": "c35b9e7c3fecb979f70c81cda16938cb",
+      "matches": true,
+      "owner": "postgres"
+    },
+    {
+      "signature": "public.handle_new_user()",
+      "expected": "086649c1a17a57fbcfde261ea7bdba6a",
+      "actual": "086649c1a17a57fbcfde261ea7bdba6a",
+      "matches": true,
+      "owner": "postgres"
+    },
+    {
+      "signature": "public.guard_vendor_privileged_fields()",
+      "expected": "405aaa6295945413607a5413a8d965a3",
+      "actual": "405aaa6295945413607a5413a8d965a3",
+      "matches": true,
+      "owner": "postgres"
+    },
+    {
+      "signature": "public.guard_profile_privileged_fields()",
+      "expected": "389319aa4e0b30ada46bc315e97afbad",
+      "actual": "389319aa4e0b30ada46bc315e97afbad",
+      "matches": true,
+      "owner": "postgres"
+    }
+  ],
+  "edgeFunctions": [
+    {
+      "slug": "payfast-initiate",
+      "status": "ACTIVE",
+      "version": 22,
+      "verify_jwt": false,
+      "sourceBundleSha256": "e6382b5feffa0f31135ae6bcea1d5fcd3f4816443a239e7b3242e9e5eadec3a7"
+    },
+    {
+      "slug": "payfast-notify",
+      "status": "ACTIVE",
+      "version": 20,
+      "verify_jwt": false,
+      "sourceBundleSha256": "24717ba295a6473125d27b4b9f0b612c72699383521f139d48751ff158f81218"
+    },
+    {
+      "slug": "admin-account-removal",
+      "status": "ACTIVE",
+      "version": 3,
+      "verify_jwt": true,
+      "sourceBundleSha256": "f69c6c421363bb19e083c934fc8ad1dd6d63d4a5c32a08a519e30dbe0ffc6ca0"
+    },
+    {
+      "slug": "ozow-initiate",
+      "status": "ACTIVE",
+      "version": 4,
+      "verify_jwt": false,
+      "sourceBundleSha256": "9b5f5475ad983f13bc46ed11e7f8908ffb1b2a5c1cc77286531034d7eb7e2d84"
+    },
+    {
+      "slug": "ozow-webhook",
+      "status": "ACTIVE",
+      "version": 4,
+      "verify_jwt": false,
+      "sourceBundleSha256": "49cd6408eaad82ad4cc10dff1c029fbe38cb2c73b7e35c878a3229efa7a1bc2c"
+    },
+    {
+      "slug": "ozow-reconcile",
+      "status": "ACTIVE",
+      "version": 4,
+      "verify_jwt": true,
+      "sourceBundleSha256": "ba834e8ea24452c61b59e062c2a4cd9a33af341f0a4af50749eb309e02aa1385"
+    }
+  ],
+  "securityAdvisors": [
+    {
+      "name": "rls_enabled_no_policy",
+      "title": "RLS Enabled No Policy",
+      "level": "INFO",
+      "count": 31,
+      "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy"
+    },
+    {
+      "name": "anon_security_definer_function_executable",
+      "title": "Public Can Execute SECURITY DEFINER Function",
+      "level": "WARN",
+      "count": 10,
+      "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0028_anon_security_definer_function_executable"
+    },
+    {
+      "name": "authenticated_security_definer_function_executable",
+      "title": "Signed-In Users Can Execute SECURITY DEFINER Function",
+      "level": "WARN",
+      "count": 53,
+      "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable"
+    },
+    {
+      "name": "auth_leaked_password_protection",
+      "title": "Leaked Password Protection Disabled",
+      "level": "WARN",
+      "count": 1,
+      "remediation": "https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection"
+    }
+  ],
+  "recoveryEvidence": "No read-only backup/PITR retrieval capability in connected tools. Hosted recovery remains UNKNOWN; prior local recovery evidence is not hosted recovery proof.",
+  "effectiveServices": "UNKNOWN; no PostgREST/Auth/Storage transport or notification isolation tests performed"
+}
+

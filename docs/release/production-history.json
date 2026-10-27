@@ -1,0 +1,156 @@
+{
+  "migrations": [
+    {
+      "version": "0001",
+      "name": "core_schema"
+    },
+    {
+      "version": "0002",
+      "name": "auth_trigger_and_storage"
+    },
+    {
+      "version": "0003",
+      "name": "chat_and_notifications"
+    },
+    {
+      "version": "0004",
+      "name": "support"
+    },
+    {
+      "version": "0005",
+      "name": "guest_order_security"
+    },
+    {
+      "version": "0006",
+      "name": "payfast"
+    },
+    {
+      "version": "0007",
+      "name": "vendor_dashboard_stats"
+    },
+    {
+      "version": "0008",
+      "name": "fix_payment_status_transition"
+    },
+    {
+      "version": "0009",
+      "name": "fix_payment_submitted_transition"
+    },
+    {
+      "version": "20260928133449",
+      "name": "release_candidate_phase1_schema_extensions"
+    },
+    {
+      "version": "20260928133600",
+      "name": "release_candidate_phase2_feature_tables"
+    },
+    {
+      "version": "20260928133934",
+      "name": "release_candidate_phase3_guards_triggers"
+    },
+    {
+      "version": "20260928133947",
+      "name": "remove_legacy_duplicate_message_timestamp_trigger"
+    },
+    {
+      "version": "20260928134403",
+      "name": "phase4_orders_remove_legacy_insert_policies"
+    },
+    {
+      "version": "20260928134413",
+      "name": "phase4_orders_replace_read_update_policies"
+    },
+    {
+      "version": "20260928134428",
+      "name": "phase4_profiles_vendors_meals_policies"
+    },
+    {
+      "version": "20260928134440",
+      "name": "phase4_chat_notification_policies"
+    },
+    {
+      "version": "20260928134448",
+      "name": "phase4_feature_table_policies"
+    },
+    {
+      "version": "20260928134456",
+      "name": "phase4_favourites_reviews_policies"
+    },
+    {
+      "version": "20260928134517",
+      "name": "phase4_restrict_sensitive_rpc_execution"
+    },
+    {
+      "version": "20260928134634",
+      "name": "phase5_storage_buckets_and_vendor_policies"
+    },
+    {
+      "version": "20260928134642",
+      "name": "phase5_payment_proof_storage_hardening"
+    },
+    {
+      "version": "20260929061811",
+      "name": "release_candidate_final_db_hardening"
+    },
+    {
+      "version": "20260929061841",
+      "name": "release_candidate_remaining_fk_indexes"
+    },
+    {
+      "version": "20260929072504",
+      "name": "move_rls_auth_helpers_to_private_schema"
+    },
+    {
+      "version": "20260929073627",
+      "name": "release_candidate_rpc_parity"
+    },
+    {
+      "version": "20260929075701",
+      "name": "fix_orders_rls_vendor_helper"
+    },
+    {
+      "version": "20260929090105",
+      "name": "harden_vendor_status_rpc_private_helper"
+    },
+    {
+      "version": "20260929095315",
+      "name": "fix_vendor_guard_private_admin_helper"
+    },
+    {
+      "version": "20260929113957",
+      "name": "fix_profile_guard_private_admin_helper"
+    },
+    {
+      "version": "20260929121550",
+      "name": "admin_paid_orders_today"
+    },
+    {
+      "version": "20261007133210",
+      "name": "secure_vendor_signup"
+    },
+    {
+      "version": "20261007141325",
+      "name": "harden_live_order_and_chat_permissions"
+    },
+    {
+      "version": "20261007152430",
+      "name": "scoped_order_customer_names"
+    },
+    {
+      "version": "20261007153218",
+      "name": "support_atomic_create_and_feedback"
+    },
+    {
+      "version": "20261008134310",
+      "name": "launch_financial_ledger"
+    },
+    {
+      "version": "20261008134402",
+      "name": "launch_account_security_retention"
+    },
+    {
+      "version": "20261010101910",
+      "name": "production_audit_cleanup"
+    }
+  ]
+}

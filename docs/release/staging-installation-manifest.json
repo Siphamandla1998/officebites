@@ -1,0 +1,54 @@
+{
+  "preparedUtc": "2026-10-27T12:39:54.526Z",
+  "target": "eyhmarmekioovcjibcbr",
+  "hostedSqlExecuted": false,
+  "evidenceFreshness": "Retained SQL captures only; refresh forbidden during this task",
+  "baselineHistoryCount": 54,
+  "baselineHistoryMd5": "9befc9e98322a4517850501c61be9696",
+  "baselineFunctionEvidence": "2026-10-26T13:20:08.96871+00:00",
+  "sourceProductionPackage": [
+    {
+      "file": "release/production-candidates/20261027093453_production_launch_browser_grants.sql",
+      "sha256": "73dbb7a10a46ddc21cc39388265a29b8d587f83611c1a65d968d38b24d005bc7"
+    },
+    {
+      "file": "release/production-candidates/20261027112327_production_minimum_manual_legal_foundation.sql",
+      "sha256": "74362e1b0d82e1b735a37fc1601e489191d5c524ab60c1ee692969fca3850eb6"
+    },
+    {
+      "file": "release/production-candidates/20261027112437_production_checked_settings.sql",
+      "sha256": "5ee05523511454535c4269318516e76fcce08b5f5b591de7ff4aa8529f41ea48"
+    },
+    {
+      "file": "release/production-candidates/20261027115843_production_compliance_storage_owner_policies.sql",
+      "sha256": "ec1baecc87f38a9d1ca40099cb509f66ae8acdd2b766ccae5eb99dfab3a5dc45"
+    }
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "version": "20261027123110",
+      "name": "staging_integrated_vendor_legal_payments",
+      "sql": "release/staging-candidates/20261027123110_staging_integrated_vendor_legal_payments.sql",
+      "sha256": "094bb368b642668e5b7fc55e2a8e1c07ada1c4450dfc62d721b5ce3121cae695",
+      "installationBundle": "release/staging-candidates/20261027123110_staging_integrated_vendor_legal_payments.installation.sql",
+      "bundleSha256": "e97b3d1a71d939173917f0a936ed8adb648b783f6d6013981def720994ed4ed4",
+      "executor": "postgres",
+      "requires": "Exact guarded 54-history/13-function preimage, rollout closed"
+    },
+    {
+      "order": 2,
+      "version": "20261027123115",
+      "name": "staging_compliance_storage_policies",
+      "sql": "release/staging-candidates/20261027123115_staging_compliance_storage_policies.sql",
+      "sha256": "14341ece653a76ec2bdf510effda2f54347d6361dff02f490c49cec6abe078e1",
+      "installationBundle": "release/staging-candidates/20261027123115_staging_compliance_storage_policies.installation.sql",
+      "bundleSha256": "b6ca7f74d9ecb20bb3089f048ee6f5a00fe326370787fe50879b62f78bd42c9d",
+      "executor": "postgres with verified policy delegation; provider-managed owner only if separately supported",
+      "requires": "Step 1 recorded; approved private bucket settings; supported policy execution"
+    }
+  ],
+  "expectedFinalHistoryCount": 56,
+  "approvedForHostedInstallation": false,
+  "productionPackageApplicable": false
+}

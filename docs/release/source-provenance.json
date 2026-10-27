@@ -1,0 +1,566 @@
+{
+  "prepared": "2026-10-27",
+  "status": "NOT_AN_INSTALLER",
+  "baseline": "4c4835db62b7db4c7a725c92d7a6294ca523fa57",
+  "productionCompatibility": "NOT_CERTIFIED",
+  "files": [
+    {
+      "sourceWorktree": "payment-4b94fbe",
+      "source": "src/components/features/AdminPaymentProfileForm.jsx",
+      "destination": "src/components/features/AdminPaymentProfileForm.jsx",
+      "sha256": "92e0ac01800ec090c715eb42454e17a24a69e50ef048a5c9bf3b3d2683b38e4d"
+    },
+    {
+      "sourceWorktree": "payment-4b94fbe",
+      "source": "src/components/features/ManualSettingsForm.jsx",
+      "destination": "src/components/features/ManualSettingsForm.jsx",
+      "sha256": "3f819c9b485497db4e637bda7149dc0284e14fcb0a29e9392bcf7050fbb4f032"
+    },
+    {
+      "sourceWorktree": "payment-4b94fbe",
+      "source": "src/components/features/ManualPaymentStatus.jsx",
+      "destination": "src/components/features/ManualPaymentStatus.jsx",
+      "sha256": "f82f4e197a998fb12411de07eccea571f6bd82335fd6b33a5538d21047284b5d"
+    },
+    {
+      "sourceWorktree": "payment-4b94fbe",
+      "source": "src/components/features/ManualPaymentWorkspace.jsx",
+      "destination": "src/components/features/ManualPaymentWorkspace.jsx",
+      "sha256": "6caede8e3819a955815ebdb7f576803141c1b530c919ec72e1c0e3817b1c288c"
+    },
+    {
+      "sourceWorktree": "payment-4b94fbe",
+      "source": "src/components/features/OrderCard.jsx",
+      "destination": "src/components/features/OrderCard.jsx",
+      "sha256": "db97ff6795b2f48fed9a577a2e3495045f9fba885325c0442cad0795195c7469"
+    },
+    {
+      "sourceWorktree": "payment-4b94fbe",
+      "source": "src/components/features/TicketCard.jsx",
+      "destination": "src/components/features/TicketCard.jsx",
+      "sha256": "65aa4bb2b70a8e29ac3939495155a18169b23db26dfbe4e2987ee78db2081354"
+    },
+    {
+      "sourceWorktree": "payment-4b94fbe",
+      "source": "src/components/features/CommercialStatement.jsx",
+      "destination": "src/components/features/CommercialStatement.jsx",
+      "sha256": "4c74a7d42ae24965b186ab7d55b3710f194a1063aacb499f7947cccb72570f78"
+    },
+    {
+      "sourceWorktree": "payment-4b94fbe",
+      "source": "src/components/layout/LegalLinks.jsx",
+      "destination": "src/components/layout/LegalLinks.jsx",
+      "sha256": "4481d9d3fec8b65b6d1a0e43cf99c11fbbeeff95ba46554857c25ec011d89d45"
+    },
+    {
+      "sourceWorktree": "payment-4b94fbe",
+      "source": "src/layouts/AdminLayout.jsx",
+      "destination": "src/layouts/AdminLayout.jsx",
+      "sha256": "0b99b3523a14eba1b9fde268d394529f187c349946a7af873b9f56ce410d41f6"
+    },
+    {
+      "sourceWorktree": "payment-4b94fbe",
+      "source": "src/layouts/AuthLayout.jsx",
+      "destination": "src/layouts/AuthLayout.jsx",
+      "sha256": "54beeec63dc0ca21c1df6816fb0fa50b1afb1884aeb05c0e66040892e84d14ae"
+    },
+    {
+      "sourceWorktree": "payment-4b94fbe",
+      "source": "src/layouts/CustomerLayout.jsx",
+      "destination": "src/layouts/CustomerLayout.jsx",
+      "sha256": "eae618cb62fbdb80f203a2d39e5b8371b2da58b711db4bc165795e73ff95db06"
+    },
+    {
+      "sourceWorktree": "payment-4b94fbe",
+      "source": "src/layouts/PublicLayout.jsx",
+      "destination": "src/layouts/PublicLayout.jsx",
+      "sha256": "23cddc5e9075eb0a50daecc9de876d622cad2a44af80c06f49a4323e2c65547e"
+    },
+    {
+      "sourceWorktree": "payment-4b94fbe",
+      "source": "src/pages/admin/AdminPayments.jsx",
+      "destination": "src/pages/admin/AdminPayments.jsx",
+      "sha256": "7ee86d7220393e1be9df313af8e7df3a18c1e2dc99ad05c1e9f0e4762762597f"
+    },
+    {
+      "sourceWorktree": "payment-4b94fbe",
+      "source": "src/pages/customer/OrderTracking.jsx",
+      "destination": "src/pages/customer/OrderTracking.jsx",
+      "sha256": "1ddb8523c8f178d45cba084bc2b679649227473c5d97af730facb3ce0fcf769d"
+    },
+    {
+      "sourceWorktree": "payment-4b94fbe",
+      "source": "src/pages/customer/TicketConfirmation.jsx",
+      "destination": "src/pages/customer/TicketConfirmation.jsx",
+      "sha256": "97f09c11d0c82dd550fdf7a0c3b610897564a00dcf0acafa82aa536596b448fc"
+    },
+    {
+      "sourceWorktree": "payment-4b94fbe",
+      "source": "src/pages/vendor/VendorOrders.jsx",
+      "destination": "src/pages/vendor/VendorOrders.jsx",
+      "sha256": "576079717874c66052fed406fec59f81e842982f912095327ba271c108c4d51d"
+    },
+    {
+      "sourceWorktree": "payment-4b94fbe",
+      "source": "src/pages/vendor/VendorRevenue.jsx",
+      "destination": "src/pages/vendor/VendorRevenue.jsx",
+      "sha256": "bb2cc7085a6718e3124e46f96f91d6a73d06e6e96422819d924a963b38ee01ed"
+    },
+    {
+      "sourceWorktree": "payment-4b94fbe",
+      "source": "src/services/api/mappers.js",
+      "destination": "src/services/api/mappers.js",
+      "sha256": "35fa9fc5ebd87d1cc2167548b2b2d27a621d249a387ab70cad5e05d91314e78e"
+    },
+    {
+      "sourceWorktree": "payment-4b94fbe",
+      "source": "src/services/authService.js",
+      "destination": "src/services/authService.js",
+      "sha256": "40713df726c1e893a3c24247977c05214339850e1c361473b3ff3ccf6ee9842a"
+    },
+    {
+      "sourceWorktree": "payment-4b94fbe",
+      "source": "src/services/checkoutService.js",
+      "destination": "src/services/checkoutService.js",
+      "sha256": "1f46287e49301776720f9467d26ee449ca64e195e35aed7dbe865191cff086f6"
+    },
+    {
+      "sourceWorktree": "payment-4b94fbe",
+      "source": "src/services/commercialService.js",
+      "destination": "src/services/commercialService.js",
+      "sha256": "8c8b817a7aa8312e3dde1eb76618a6e7e0358b2a2bd78a5413da064b6da83326"
+    },
+    {
+      "sourceWorktree": "payment-4b94fbe",
+      "source": "src/services/manualPaymentService.js",
+      "destination": "src/services/manualPaymentService.js",
+      "sha256": "5b39c2becdeb8f5b9b5b3185c105c94f5d36892485e2b9b1659d37a30d643e67"
+    },
+    {
+      "sourceWorktree": "payment-4b94fbe",
+      "source": "src/services/orderService.js",
+      "destination": "src/services/orderService.js",
+      "sha256": "91523f0d0ac29d1d65bd920eb6197988de9e8452f8a3ed2aad74861dfd749da1"
+    },
+    {
+      "sourceWorktree": "payment-4b94fbe",
+      "source": "src/services/paymentService.js",
+      "destination": "src/services/paymentService.js",
+      "sha256": "27681d98c3a0b89f7114fed795240b0c900ba24bfa0c1d8bde4ddad9e0584d50"
+    },
+    {
+      "sourceWorktree": "payment-4b94fbe",
+      "source": "src/services/vendorService.js",
+      "destination": "src/services/vendorService.js",
+      "sha256": "2cc09172ca8b177a1f8b2d8ed2c4ac7a649c9041c24f2fa1a446b5408e13e22c"
+    },
+    {
+      "sourceWorktree": "payment-4b94fbe",
+      "source": "src/utils/authError.js",
+      "destination": "src/utils/authError.js",
+      "sha256": "467611818be3d88a977b59f3c8948678f2c49e4ea3fedd6f5d1f2a11ce4ddd46"
+    },
+    {
+      "sourceWorktree": "payment-4b94fbe",
+      "source": "src/utils/checkoutError.js",
+      "destination": "src/utils/checkoutError.js",
+      "sha256": "6c8d25484860ab30ba9ec57613117629180d8d1cba8d70ae102fe62e353433ad"
+    },
+    {
+      "sourceWorktree": "payment-4b94fbe",
+      "source": "src/utils/constants.js",
+      "destination": "src/utils/constants.js",
+      "sha256": "a1e09820080b1374d1c7c3709c0b1ac4358b4cf1bbcc078f1ca5905aaa69a53c"
+    },
+    {
+      "sourceWorktree": "payment-4b94fbe",
+      "source": "src/utils/delivery.js",
+      "destination": "src/utils/delivery.js",
+      "sha256": "e0d5d385fe0598b60b1373d987c21a82ae3917e89bdb4a650d23dfc6aed17d97"
+    },
+    {
+      "sourceWorktree": "payment-4b94fbe",
+      "source": "src/utils/manualSettingsError.js",
+      "destination": "src/utils/manualSettingsError.js",
+      "sha256": "7be63e5d8c683aa9d1a63df8d1484baaefbd05dc84c2586b186f5b795c1ffeff"
+    },
+    {
+      "sourceWorktree": "payment-4b94fbe",
+      "source": "src/utils/mobile.js",
+      "destination": "src/utils/mobile.js",
+      "sha256": "ab12c34a09a281af1294e8e23ad514fb2c1a767685f42e80d659a1b258d4d1b4"
+    },
+    {
+      "sourceWorktree": "payment-4b94fbe",
+      "source": "src/utils/orderState.js",
+      "destination": "src/utils/orderState.js",
+      "sha256": "774bf26d0187b6081579a3656bc9f45e46e61066e7fac667c4580a30d781d5f5"
+    },
+    {
+      "sourceWorktree": "payment-4b94fbe",
+      "source": "src/utils/subscriptionRules.js",
+      "destination": "src/utils/subscriptionRules.js",
+      "sha256": "e57ac2cb47e494f637e2a2385e349c576037cc45dd10ca32fe7db866ec1776cf"
+    },
+    {
+      "sourceWorktree": "legal-local-B-E",
+      "source": "src/components/features/AgreementDocuments.jsx",
+      "destination": "src/components/features/AgreementDocuments.jsx",
+      "sha256": "14136c87749bbcebecf6c7ec788a0049a8efb8e32e3872fe008a4a75f37673b1"
+    },
+    {
+      "sourceWorktree": "legal-local-B-E",
+      "source": "src/components/features/ComplianceAssignmentForm.jsx",
+      "destination": "src/components/features/ComplianceAssignmentForm.jsx",
+      "sha256": "42482b58bda17d74da47dc5a6782981a70f02918d4642117bfb86598584fb452"
+    },
+    {
+      "sourceWorktree": "legal-local-B-E",
+      "source": "src/components/features/CustomerLegalReview.jsx",
+      "destination": "src/components/features/CustomerLegalReview.jsx",
+      "sha256": "842afa88ceafa41a40a1cec2671c5a70a21887d9bc12c9bacca8da1cc7004cef"
+    },
+    {
+      "sourceWorktree": "legal-local-B-E",
+      "source": "src/components/features/LegalPublicationReview.jsx",
+      "destination": "src/components/features/LegalPublicationReview.jsx",
+      "sha256": "4d2529c84911e41657deed205cf2d8eec5c1ac467e895354b596bf37485f8e01"
+    },
+    {
+      "sourceWorktree": "legal-local-B-E",
+      "source": "src/components/features/VendorCompliancePanel.jsx",
+      "destination": "src/components/features/VendorCompliancePanel.jsx",
+      "sha256": "2372cd3b9b62d926300a08d1a7f92e26055229f97d0e4bc11a91e660173a21ab"
+    },
+    {
+      "sourceWorktree": "legal-local-B-E",
+      "source": "src/components/features/VendorConsent.jsx",
+      "destination": "src/components/features/VendorConsent.jsx",
+      "sha256": "7a5bda784beabcd86834f33d4fdc207a9fd11dbe5e38b9fa3d4821e9a858685f"
+    },
+    {
+      "sourceWorktree": "legal-local-B-E",
+      "source": "src/components/layout/LegalLinks.jsx",
+      "destination": "src/components/layout/LegalLinks.jsx",
+      "sha256": "8f362b95b8cb896c3e8d010e5a0bafa07c73023612a36b637d732bf55170e614"
+    },
+    {
+      "sourceWorktree": "legal-local-B-E",
+      "source": "src/layouts/VendorLayout.jsx",
+      "destination": "src/layouts/VendorLayout.jsx",
+      "sha256": "c4e6ffef307c93183e733210458f0fa606b471236f3a1b1a2dc2302ca9904d0a"
+    },
+    {
+      "sourceWorktree": "legal-local-B-E",
+      "source": "src/pages/admin/AdminVendors.jsx",
+      "destination": "src/pages/admin/AdminVendors.jsx",
+      "sha256": "1e8ca73f662dbdef0ea0f04855c979d4625dd5cd458626ff785388add768c225"
+    },
+    {
+      "sourceWorktree": "legal-local-B-E",
+      "source": "src/pages/admin/AdminVendorCompliance.jsx",
+      "destination": "src/pages/admin/AdminVendorCompliance.jsx",
+      "sha256": "7ccdc8d43d89a478c9c9cf77accf82f8e02bff644af9bfa3c97890f51be8e146"
+    },
+    {
+      "sourceWorktree": "legal-local-B-E",
+      "source": "src/pages/auth/Login.jsx",
+      "destination": "src/pages/auth/Login.jsx",
+      "sha256": "e7fc4a7d02a43b1e1e97b1ae1ed36224a34e6c08177544dc73aca7851fe250b4"
+    },
+    {
+      "sourceWorktree": "legal-local-B-E",
+      "source": "src/pages/auth/Register.jsx",
+      "destination": "src/pages/auth/Register.jsx",
+      "sha256": "4528f1eabf9fa29ac4280ff5a509a740978ecb82b7efe33fa50e961455012db2"
+    },
+    {
+      "sourceWorktree": "legal-local-B-E",
+      "source": "src/pages/customer/BecomeVendor.jsx",
+      "destination": "src/pages/customer/BecomeVendor.jsx",
+      "sha256": "ac947d8de51fea339582c4ecb6dfb7649b3fe5a3208cea2baa50d89bd1fc91fa"
+    },
+    {
+      "sourceWorktree": "legal-local-B-E",
+      "source": "src/pages/customer/Checkout.jsx",
+      "destination": "src/pages/customer/Checkout.jsx",
+      "sha256": "258994cb264be7e0425f92457d7bb7ac851eb5b8c4159d5abbbdc1572c4f0cb5"
+    },
+    {
+      "sourceWorktree": "legal-local-B-E",
+      "source": "src/pages/customer/PaymentUpload.jsx",
+      "destination": "src/pages/customer/PaymentUpload.jsx",
+      "sha256": "7e922dad7d1427b711bccdc8c3a42578b3c48daecf7ce0dd0893acd5cc3d13c0"
+    },
+    {
+      "sourceWorktree": "legal-local-B-E",
+      "source": "src/pages/help/HelpHome.jsx",
+      "destination": "src/pages/help/HelpHome.jsx",
+      "sha256": "bf2b2052ac150f0c31ce89a5600fe0c6e85bb3efe9b34b3989641f1fb58ec5b4"
+    },
+    {
+      "sourceWorktree": "legal-local-B-E",
+      "source": "src/pages/help/LegalDocument.jsx",
+      "destination": "src/pages/help/LegalDocument.jsx",
+      "sha256": "01aa3f40b53da81210f417ec997ea8634c11080a8bc8facef032ae6fe80587a2"
+    },
+    {
+      "sourceWorktree": "legal-local-B-E",
+      "source": "src/pages/help/OrderLegalReceipt.jsx",
+      "destination": "src/pages/help/OrderLegalReceipt.jsx",
+      "sha256": "73148b3eeb61e7361d5c8785c4cfca040140964b4134a0478772bb2fd85c6f46"
+    },
+    {
+      "sourceWorktree": "legal-local-B-E",
+      "source": "src/pages/help/Privacy.jsx",
+      "destination": "src/pages/help/Privacy.jsx",
+      "sha256": "b3af94bfe01bfef6949850c5eefaa3f22ce8955fe86ff12ddb7b9ff89dede184"
+    },
+    {
+      "sourceWorktree": "legal-local-B-E",
+      "source": "src/pages/help/RefundPolicy.jsx",
+      "destination": "src/pages/help/RefundPolicy.jsx",
+      "sha256": "bf53ec7bab647763c888a8b53ec55a76b0a2f5296f8aaf7762016a0915192e2b"
+    },
+    {
+      "sourceWorktree": "legal-local-B-E",
+      "source": "src/pages/help/Terms.jsx",
+      "destination": "src/pages/help/Terms.jsx",
+      "sha256": "2671de882f3c7909a7feea5428f75a89d1fd838ab4adc57e133d266a969e4769"
+    },
+    {
+      "sourceWorktree": "legal-local-B-E",
+      "source": "src/pages/shared/CommercialWorkspace.jsx",
+      "destination": "src/pages/shared/CommercialWorkspace.jsx",
+      "sha256": "c332b0719b47a03407586b55f44f7a549ada9f1bd6b24b9cdd40197b64ddd96a"
+    },
+    {
+      "sourceWorktree": "legal-local-B-E",
+      "source": "src/pages/vendor/VendorAgreement.jsx",
+      "destination": "src/pages/vendor/VendorAgreement.jsx",
+      "sha256": "0471b0c8592f31075733c0220ffd7c7a62ee3bba836026cb77350c4b3b24c609"
+    },
+    {
+      "sourceWorktree": "legal-local-B-E",
+      "source": "src/pages/vendor/VendorCompliance.jsx",
+      "destination": "src/pages/vendor/VendorCompliance.jsx",
+      "sha256": "8554dfb741a7f8d70274d3fa562214279705e8d6ec50bb2f1d5667c7a2786ceb"
+    },
+    {
+      "sourceWorktree": "legal-local-B-E",
+      "source": "src/pages/vendor/VendorSettings.jsx",
+      "destination": "src/pages/vendor/VendorSettings.jsx",
+      "sha256": "ce9d6aaa06cc1b9ba2c94f79a2eff92e7286fbf0a5442c5a3546c5f9be01aa29"
+    },
+    {
+      "sourceWorktree": "legal-local-B-E",
+      "source": "src/routes/AppRoutes.jsx",
+      "destination": "src/routes/AppRoutes.jsx",
+      "sha256": "61e204b3acc38eca3fdafd40703f5f5d508700dcc6c529114469a33405ba35cf"
+    },
+    {
+      "sourceWorktree": "legal-local-B-E",
+      "source": "src/routes/routeComponents.js",
+      "destination": "src/routes/routeComponents.js",
+      "sha256": "4c8aff8932aaca61fdc5d00ac9658a2f251f1f4f5ed30b81475b1a012aaf586f"
+    },
+    {
+      "sourceWorktree": "legal-local-B-E",
+      "source": "src/services/commercialService.js",
+      "destination": "src/services/commercialService.js",
+      "sha256": "d8d32b4124be7d274a39a44f6b0c2e35effd1020d100a801b9212d7bf31d1f19"
+    },
+    {
+      "sourceWorktree": "legal-local-B-E",
+      "source": "src/services/orderService.js",
+      "destination": "src/services/orderService.js",
+      "sha256": "7d4db81fa502243edbaa13c2db050fa48176012aa9083d2727d3800367431932"
+    },
+    {
+      "sourceWorktree": "legal-local-B-E",
+      "source": "src/services/vendorAgreementService.js",
+      "destination": "src/services/vendorAgreementService.js",
+      "sha256": "57628e23d4dd82ce5d651d91288695a82c0c4f3ad7747f5b237e7741cea0b1bb"
+    },
+    {
+      "sourceWorktree": "legal-local-B-E",
+      "source": "src/services/vendorComplianceService.js",
+      "destination": "src/services/vendorComplianceService.js",
+      "sha256": "2688a795d80ee3da4839bf18d1de89bec4fb719f97af2499b0689bb1ed537d33"
+    },
+    {
+      "sourceWorktree": "legal-local-B-E",
+      "source": "src/utils/customerLegal.js",
+      "destination": "src/utils/customerLegal.js",
+      "sha256": "2e9d16797eb2bc17fa038e2c98f6d5e33bdfe11948c1b7226e5e88691225a422"
+    },
+    {
+      "sourceWorktree": "legal-local-B-E",
+      "source": "src/utils/vendorAgreement.js",
+      "destination": "src/utils/vendorAgreement.js",
+      "sha256": "fbfd2a8ac34ea1f95e0940c5a0401b5b4b34d7f857daf1760f7648a30080eb5b"
+    },
+    {
+      "sourceWorktree": "legal-local-B-E",
+      "source": "src/utils/vendorCompliance.js",
+      "destination": "src/utils/vendorCompliance.js",
+      "sha256": "20ebb59fa5567f693793e7ff9b2da0e0a17467f7685b69e4f5a10b70ebc9d7f4"
+    },
+    {
+      "sourceWorktree": "payment-4b94fbe",
+      "source": "supabase/migrations/20261016074256_checkout_recovery_mobile_delivery_gateways.sql",
+      "destination": "release/source-candidates/payment/20261016074256_checkout_recovery_mobile_delivery_gateways.sql",
+      "sha256": "860677751db9b090934f83bf12dea384d38f7a04564628cb853aa7557ffc3bc5"
+    },
+    {
+      "sourceWorktree": "payment-4b94fbe",
+      "source": "supabase/migrations/20261016083644_ozow_attempts_subscription_approval.sql",
+      "destination": "release/source-candidates/payment/20261016083644_ozow_attempts_subscription_approval.sql",
+      "sha256": "4c35f3b4e41b35e7879795de2607b624212c249bb15a975c9d77cb9c9cafb211"
+    },
+    {
+      "sourceWorktree": "payment-4b94fbe",
+      "source": "supabase/migrations/20261016090258_central_hub_vendor_origin_approval.sql",
+      "destination": "release/source-candidates/payment/20261016090258_central_hub_vendor_origin_approval.sql",
+      "sha256": "dedf5802f553362d70e5493fb7714c43f95e0d092d7bc14a21eeea1761c23e28"
+    },
+    {
+      "sourceWorktree": "payment-4b94fbe",
+      "source": "supabase/migrations/20261016092359_delivery_unenforced_order_snapshots.sql",
+      "destination": "release/source-candidates/payment/20261016092359_delivery_unenforced_order_snapshots.sql",
+      "sha256": "8360b8e4f477710ef96490956fac11692bf2d8c32650280eba4974eefc98ef93"
+    },
+    {
+      "sourceWorktree": "payment-4b94fbe",
+      "source": "supabase/migrations/20261016094201_legal_corporate_framework.sql",
+      "destination": "release/source-candidates/payment/20261016094201_legal_corporate_framework.sql",
+      "sha256": "e726b27c5b78fce2cc27309d450667e5c30e3a4e5ff45547a8fd98bf127a7337"
+    },
+    {
+      "sourceWorktree": "payment-4b94fbe",
+      "source": "supabase/migrations/20261016100142_commercial_reporting_contract_locks.sql",
+      "destination": "release/source-candidates/payment/20261016100142_commercial_reporting_contract_locks.sql",
+      "sha256": "968fd58c3df6e1ad516ff61a1482706038661e916e1fb25ee7d6844f091cd855"
+    },
+    {
+      "sourceWorktree": "payment-4b94fbe",
+      "source": "supabase/migrations/20261016101707_repair_order_policy_helper_access.sql",
+      "destination": "release/source-candidates/payment/20261016101707_repair_order_policy_helper_access.sql",
+      "sha256": "41bd829d986c265b465453045a57403b9fd2b93e1c1f0308928905ea048020b6"
+    },
+    {
+      "sourceWorktree": "payment-4b94fbe",
+      "source": "supabase/migrations/20261020090841_vendor_direct_manual_payments.sql",
+      "destination": "release/source-candidates/payment/20261020090841_vendor_direct_manual_payments.sql",
+      "sha256": "b5e3ebbea124fa394c2fd71dba82c24963cb7a02bfeaa0f09b856f833f6e1af3"
+    },
+    {
+      "sourceWorktree": "payment-4b94fbe",
+      "source": "supabase/migrations/20261021094956_fix_admin_manual_settings_singleton.sql",
+      "destination": "release/source-candidates/payment/20261021094956_fix_admin_manual_settings_singleton.sql",
+      "sha256": "2530d923433e0643f1fa138b21dfcd357bfa5952136d71ebefb8e2d92d67958f"
+    },
+    {
+      "sourceWorktree": "legal-local-B-E",
+      "source": "supabase/migrations/20261026073911_phase_b_vendor_security_activation.sql",
+      "destination": "release/source-candidates/legal/20261026073911_phase_b_vendor_security_activation.sql",
+      "sha256": "b71b3741d329717c68e7f7a12d6d4067b94e37000115766649088c89358b5ac6"
+    },
+    {
+      "sourceWorktree": "legal-local-B-E",
+      "source": "supabase/migrations/20261026091408_phase_c_vendor_agreement_assignments.sql",
+      "destination": "release/source-candidates/legal/20261026091408_phase_c_vendor_agreement_assignments.sql",
+      "sha256": "2d5d496a2224d00e766d7459883471c334a91e0419fda2431dd65cb48c078e1d"
+    },
+    {
+      "sourceWorktree": "legal-local-B-E",
+      "source": "supabase/migrations/20261026101346_phase_d_vendor_compliance.sql",
+      "destination": "release/source-candidates/legal/20261026101346_phase_d_vendor_compliance.sql",
+      "sha256": "7512b5c18bbc4204fd579672861dbff480a1f93a1309110848166a76fe2c4784"
+    },
+    {
+      "sourceWorktree": "legal-local-B-E",
+      "source": "supabase/migrations/20261026112602_phase_e_legal_publication_checkout_evidence.sql",
+      "destination": "release/source-candidates/legal/20261026112602_phase_e_legal_publication_checkout_evidence.sql",
+      "sha256": "ad0884f964131a3419c03cc30ce2a3be092e0f4fb07c4dd04ff9fcb4bca35cee"
+    },
+    {
+      "sourceWorktree": "payment-4b94fbe",
+      "source": "checks/manual-settings-concurrency-candidate.sql",
+      "destination": "release/source-candidates/payment/manual-settings-concurrency-candidate.sql",
+      "sha256": "453bddc5adc15a471877adc9fdeb101a28313296574d8b5fae0894c6c32f1110"
+    },
+    {
+      "sourceWorktree": "payment-4b94fbe",
+      "source": "checks/browser-harness.html",
+      "destination": "checks/browser-harness.html",
+      "sha256": "12402a7024865ad61ba7ced6f635092a7b5977a82c5cbc4ac031a9e5159d6c50"
+    },
+    {
+      "sourceWorktree": "payment-4b94fbe",
+      "source": "checks/vite.browser.config.mjs",
+      "destination": "checks/vite.browser.config.mjs",
+      "sha256": "3ee8fa40aaaf39de2a63e869d3d3c68f7f689edb4b4317bac65ddd7039b159b5"
+    },
+    {
+      "sourceWorktree": "payment-4b94fbe",
+      "source": "checks/admin-settings-browser.spec.mjs",
+      "destination": "checks/admin-settings-browser.spec.mjs",
+      "sha256": "4ea205761c0637a0f8f8e143f20136a30a3bea447b9e0b08342b81db67910bec"
+    },
+    {
+      "sourceWorktree": "payment-4b94fbe",
+      "source": "checks/manual-profile-browser.spec.mjs",
+      "destination": "checks/manual-profile-browser.spec.mjs",
+      "sha256": "681c300423c43d8ac8a6b05e90b71db82adfb7c33490fdf19a79da6d08eb4a64"
+    },
+    {
+      "sourceWorktree": "payment-4b94fbe",
+      "source": "checks/manual-payments-browser.spec.mjs",
+      "destination": "checks/manual-payments-browser.spec.mjs",
+      "sha256": "43cae373b55082c957d6a99de8290cdddbc891b28450592351b63f87f6a622cf"
+    },
+    {
+      "sourceWorktree": "legal-local-B-E",
+      "source": "checks/browser-harness.jsx",
+      "destination": "checks/browser-harness.jsx",
+      "sha256": "6615ca42a2ad21a739b8091f1ac207ee86460fdd93d4a76070b199c7fcf72c01"
+    },
+    {
+      "sourceWorktree": "legal-local-B-E",
+      "source": "checks/legal-readiness-browser.spec.mjs",
+      "destination": "checks/legal-readiness-browser.spec.mjs",
+      "sha256": "e970e6021b17ab7002e38c69bd709189b8fff4b5d23e514f98fd13526bebb9f5"
+    },
+    {
+      "sourceWorktree": "legal-local-B-E",
+      "source": "checks/vendor-agreement-browser.spec.mjs",
+      "destination": "checks/vendor-agreement-browser.spec.mjs",
+      "sha256": "b0d1b3d6745635ed75bd98e9f23df8b15fadfd77c806bf4870da2ea63da45402"
+    },
+    {
+      "sourceWorktree": "legal-local-B-E",
+      "source": "checks/vendor-compliance-browser.spec.mjs",
+      "destination": "checks/vendor-compliance-browser.spec.mjs",
+      "sha256": "02dcf072ff4f8afa4230182236b75c61f09187cfd750d30b1e418739bef7784e"
+    },
+    {
+      "sourceWorktree": "legal-local-B-E",
+      "source": "checks/phase-e-service.mjs",
+      "destination": "checks/phase-e-service.mjs",
+      "sha256": "50677565161461be091f9bc302be4ca1f63d008fdd59eead524f30f975e4e5ec"
+    },
+    {
+      "sourceWorktree": "legal-local-B-E",
+      "source": "checks/frontend-public-config.mjs",
+      "destination": "checks/frontend-public-config.mjs",
+      "sha256": "d0b3774c0635a2b8610531a3c09b69147fccb269396963a62dac33b57f94328a"
+    },
+    {
+      "sourceWorktree": "legal-local-B-E",
+      "source": "playwright.config.mjs",
+      "destination": "playwright.config.mjs",
+      "sha256": "2c24f1b4e6ae8f364b25d4cdb4436f041c89a136815800d1071b5006aba51685"
+    }
+  ]
+}

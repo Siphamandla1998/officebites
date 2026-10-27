@@ -1,0 +1,30 @@
+// Pure local regression tests. No runner, credentials, network, database or Docker.
+import fs from 'node:fs';import assert from 'node:assert/strict';
+import {parse} from 'yaml';
+import {PROJECT,sourceIdentity,validateScope,cleanEnvironment,compareRows,sha} from './staging-backup.mjs';
+let checks=0;const eq=(a,b)=>{assert.deepEqual(a,b);checks++;};const no=fn=>{assert.throws(fn);checks++;};
+const env={GITHUB_ACTIONS:'true',GITHUB_EVENT_NAME:'workflow_dispatch',GITHUB_REF:'refs/heads/release/vendor-eft-legal-launch',GITHUB_SHA:'a'.repeat(40),OB_BACKUP_APPROVED_SHA:'a'.repeat(40),OB_CONFIRM_PROJECT:PROJECT,OB_ROLE_FREEZE_CONFIRMED:'true',OB_RESTORE_IMAGE:'public.ecr.aws/supabase/postgres@sha256:'+'b'.repeat(64),OB_AGE_RECIPIENT:'age1'+'q'.repeat(58),GITHUB_RUN_ID:'123',GITHUB_RUN_ATTEMPT:'1'};
+eq(validateScope(env),true);
+for(const [key,value]of Object.entries({GITHUB_ACTIONS:'false',GITHUB_EVENT_NAME:'pull_request',GITHUB_REF:'refs/heads/main',OB_BACKUP_APPROVED_SHA:'b'.repeat(40),OB_CONFIRM_PROJECT:'gfzhdkitdyqftealgqfi',OB_ROLE_FREEZE_CONFIRMED:'false',OB_RESTORE_IMAGE:'supabase/postgres:latest',OB_AGE_RECIPIENT:'not-a-recipient',GITHUB_RUN_ID:'../escape'}))no(()=>validateScope({...env,[key]:value}));
+eq(sourceIdentity('db.'+PROJECT+'.supabase.co'),{host:'db.'+PROJECT+'.supabase.co',user:'postgres'});
+eq(sourceIdentity('aws-1-eu-west-1.pooler.supabase.com').user,'postgres.'+PROJECT);
+for(const host of ['db.gfzhdkitdyqftealgqfi.supabase.co','127.0.0.1','malicious.invalid','db.'+PROJECT+'.supabase.co.evil.invalid','aws-1-eu-west-1.pooler.supabase.com\n'])no(()=>sourceIdentity(host));
+eq(cleanEnvironment({PATH:'safe',HOME:'/safe',PGPASSWORD:'synthetic',OB_STAGING_DB_PASSWORD:'synthetic',GITHUB_TOKEN:'synthetic',DATABASE_URL:'synthetic'}),{PATH:'safe',HOME:'/safe'});
+compareRows([{kind:'count',value:2}],[{kind:'count',value:2}]);checks++;
+no(()=>compareRows([{value:2}],[{value:3}]));eq(sha(Buffer.from('a')),sha(Buffer.from('a')));
+const workflow=parse(fs.readFileSync('.github/workflows/staging-backup-restore.yml','utf8'));
+eq(Object.keys(workflow.on),['workflow_dispatch']);eq(workflow.permissions,{contents:'read'});
+eq(workflow.jobs.backup.environment,'officebites-staging-backup');eq(workflow.jobs.backup['runs-on'],'ubuntu-24.04');
+const steps=workflow.jobs.backup.steps;const uses=steps.filter(s=>s.uses);
+eq(uses.length,2);for(const s of uses){assert.match(s.uses,/@[a-f0-9]{40}$/);checks++;}
+eq(steps.find(s=>s.uses?.startsWith('actions/checkout')).with['persist-credentials'],false);
+const upload=steps.find(s=>s.uses?.startsWith('actions/upload-artifact'));
+eq(upload.with.path.trim().split('\n'),['${{ steps.encrypt.outputs.ciphertext }}','${{ steps.encrypt.outputs.ciphertext_hash }}']);
+eq(upload.with['retention-days'],7);
+eq(steps.filter(s=>Object.keys(s.env??{}).some(k=>k.startsWith('OB_STAGING_DB_'))).map(s=>s.id),['export']);
+const code=fs.readFileSync('checks/cloud/staging-backup.mjs','utf8');
+assert.ok(code.includes("'--network','none'"));checks++;
+assert.ok(code.includes('default_transaction_read_only=on'));checks++;
+assert.ok(!code.includes('console.error(error')&&!code.includes('console.log(process.env'));checks++;
+assert.ok(!code.includes('apply_migration')&&!code.includes('db push'));checks++;
+console.log(checks+' cloud-workflow scope, secret separation, encryption upload and negative-input assertions passed. No workflow executed.');

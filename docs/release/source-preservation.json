@@ -1,0 +1,12 @@
+{
+  "observedUtc": "2026-10-27T10:12:30.901Z",
+  "reviewedInputFiles": 93,
+  "sourceHashMismatches": [],
+  "paymentHead": "4b94fbe89e8b5a672e4f308701df61c1224580fd",
+  "paymentBranch": "feat/vendor-direct-launch-payments",
+  "paymentStatus": "",
+  "legalHead": "4cac836a35ef0e75e589a2640772f775ca1a260c",
+  "legalBranch": "feat/legal-pages-vendor-clickwrap",
+  "releaseBranch": "release/vendor-eft-legal-launch",
+  "scope": "Original source inputs compared; new disposable cluster stopped. No source-worktree writes were performed."
+}

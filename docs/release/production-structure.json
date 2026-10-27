@@ -1,0 +1,4364 @@
+[
+  {
+    "observed_utc": "2026-10-27 09:15:29.677714+00",
+    "columns": [
+      {
+        "type": "uuid",
+        "not_null": true,
+        "table_name": "account_removal_jobs",
+        "column_name": "id",
+        "schema_name": "private",
+        "default_expr": "gen_random_uuid()",
+        "ordinal_position": 1
+      },
+      {
+        "type": "uuid",
+        "not_null": true,
+        "table_name": "account_removal_jobs",
+        "column_name": "actor_id",
+        "schema_name": "private",
+        "default_expr": null,
+        "ordinal_position": 2
+      },
+      {
+        "type": "uuid",
+        "not_null": true,
+        "table_name": "account_removal_jobs",
+        "column_name": "target_user_id",
+        "schema_name": "private",
+        "default_expr": null,
+        "ordinal_position": 3
+      },
+      {
+        "type": "text",
+        "not_null": true,
+        "table_name": "account_removal_jobs",
+        "column_name": "kind",
+        "schema_name": "private",
+        "default_expr": null,
+        "ordinal_position": 4
+      },
+      {
+        "type": "text",
+        "not_null": true,
+        "table_name": "account_removal_jobs",
+        "column_name": "state",
+        "schema_name": "private",
+        "default_expr": "'prepared'::text",
+        "ordinal_position": 5
+      },
+      {
+        "type": "jsonb",
+        "not_null": true,
+        "table_name": "account_removal_jobs",
+        "column_name": "manifest",
+        "schema_name": "private",
+        "default_expr": null,
+        "ordinal_position": 6
+      },
+      {
+        "type": "timestamp with time zone",
+        "not_null": true,
+        "table_name": "account_removal_jobs",
+        "column_name": "created_at",
+        "schema_name": "private",
+        "default_expr": "now()",
+        "ordinal_position": 7
+      },
+      {
+        "type": "timestamp with time zone",
+        "not_null": false,
+        "table_name": "account_removal_jobs",
+        "column_name": "completed_at",
+        "schema_name": "private",
+        "default_expr": null,
+        "ordinal_position": 8
+      },
+      {
+        "type": "uuid",
+        "not_null": true,
+        "table_name": "business_audit",
+        "column_name": "id",
+        "schema_name": "private",
+        "default_expr": "gen_random_uuid()",
+        "ordinal_position": 1
+      },
+      {
+        "type": "uuid",
+        "not_null": false,
+        "table_name": "business_audit",
+        "column_name": "actor_id",
+        "schema_name": "private",
+        "default_expr": null,
+        "ordinal_position": 2
+      },
+      {
+        "type": "text",
+        "not_null": true,
+        "table_name": "business_audit",
+        "column_name": "action",
+        "schema_name": "private",
+        "default_expr": null,
+        "ordinal_position": 3
+      },
+      {
+        "type": "uuid",
+        "not_null": false,
+        "table_name": "business_audit",
+        "column_name": "record_id",
+        "schema_name": "private",
+        "default_expr": null,
+        "ordinal_position": 4
+      },
+      {
+        "type": "text",
+        "not_null": true,
+        "table_name": "business_audit",
+        "column_name": "reason",
+        "schema_name": "private",
+        "default_expr": null,
+        "ordinal_position": 5
+      },
+      {
+        "type": "jsonb",
+        "not_null": true,
+        "table_name": "business_audit",
+        "column_name": "details",
+        "schema_name": "private",
+        "default_expr": "'{}'::jsonb",
+        "ordinal_position": 6
+      },
+      {
+        "type": "timestamp with time zone",
+        "not_null": true,
+        "table_name": "business_audit",
+        "column_name": "created_at",
+        "schema_name": "private",
+        "default_expr": "now()",
+        "ordinal_position": 7
+      },
+      {
+        "type": "boolean",
+        "not_null": true,
+        "table_name": "finance_settings",
+        "column_name": "singleton",
+        "schema_name": "private",
+        "default_expr": "true",
+        "ordinal_position": 1
+      },
+      {
+        "type": "text",
+        "not_null": false,
+        "table_name": "finance_settings",
+        "column_name": "fee_policy",
+        "schema_name": "private",
+        "default_expr": null,
+        "ordinal_position": 2
+      },
+      {
+        "type": "timestamp with time zone",
+        "not_null": false,
+        "table_name": "finance_settings",
+        "column_name": "updated_at",
+        "schema_name": "private",
+        "default_expr": null,
+        "ordinal_position": 3
+      },
+      {
+        "type": "uuid",
+        "not_null": false,
+        "table_name": "finance_settings",
+        "column_name": "updated_by",
+        "schema_name": "private",
+        "default_expr": null,
+        "ordinal_position": 4
+      },
+      {
+        "type": "boolean",
+        "not_null": true,
+        "table_name": "retention_settings",
+        "column_name": "singleton",
+        "schema_name": "private",
+        "default_expr": "true",
+        "ordinal_position": 1
+      },
+      {
+        "type": "integer",
+        "not_null": true,
+        "table_name": "retention_settings",
+        "column_name": "days",
+        "schema_name": "private",
+        "default_expr": "30",
+        "ordinal_position": 2
+      },
+      {
+        "type": "text",
+        "not_null": true,
+        "table_name": "retention_settings",
+        "column_name": "schedule",
+        "schema_name": "private",
+        "default_expr": "'0 0 * * *'::text",
+        "ordinal_position": 3
+      },
+      {
+        "type": "boolean",
+        "not_null": true,
+        "table_name": "retention_settings",
+        "column_name": "enabled",
+        "schema_name": "private",
+        "default_expr": "false",
+        "ordinal_position": 4
+      },
+      {
+        "type": "bigint",
+        "not_null": false,
+        "table_name": "retention_settings",
+        "column_name": "job_id",
+        "schema_name": "private",
+        "default_expr": null,
+        "ordinal_position": 5
+      },
+      {
+        "type": "uuid",
+        "not_null": true,
+        "table_name": "booking_pricing_rules",
+        "column_name": "id",
+        "schema_name": "public",
+        "default_expr": "gen_random_uuid()",
+        "ordinal_position": 1
+      },
+      {
+        "type": "text",
+        "not_null": true,
+        "table_name": "booking_pricing_rules",
+        "column_name": "service_level",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 2
+      },
+      {
+        "type": "numeric",
+        "not_null": true,
+        "table_name": "booking_pricing_rules",
+        "column_name": "per_person_fee",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 3
+      },
+      {
+        "type": "numeric",
+        "not_null": true,
+        "table_name": "booking_pricing_rules",
+        "column_name": "minimum_fee",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 4
+      },
+      {
+        "type": "boolean",
+        "not_null": true,
+        "table_name": "booking_pricing_rules",
+        "column_name": "active",
+        "schema_name": "public",
+        "default_expr": "true",
+        "ordinal_position": 5
+      },
+      {
+        "type": "timestamp with time zone",
+        "not_null": true,
+        "table_name": "booking_pricing_rules",
+        "column_name": "created_at",
+        "schema_name": "public",
+        "default_expr": "now()",
+        "ordinal_position": 6
+      },
+      {
+        "type": "timestamp with time zone",
+        "not_null": true,
+        "table_name": "booking_pricing_rules",
+        "column_name": "updated_at",
+        "schema_name": "public",
+        "default_expr": "now()",
+        "ordinal_position": 7
+      },
+      {
+        "type": "uuid",
+        "not_null": true,
+        "table_name": "conversations",
+        "column_name": "id",
+        "schema_name": "public",
+        "default_expr": "gen_random_uuid()",
+        "ordinal_position": 1
+      },
+      {
+        "type": "uuid",
+        "not_null": true,
+        "table_name": "conversations",
+        "column_name": "customer_id",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 2
+      },
+      {
+        "type": "uuid",
+        "not_null": true,
+        "table_name": "conversations",
+        "column_name": "vendor_id",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 3
+      },
+      {
+        "type": "timestamp with time zone",
+        "not_null": true,
+        "table_name": "conversations",
+        "column_name": "created_at",
+        "schema_name": "public",
+        "default_expr": "now()",
+        "ordinal_position": 4
+      },
+      {
+        "type": "timestamp with time zone",
+        "not_null": true,
+        "table_name": "conversations",
+        "column_name": "updated_at",
+        "schema_name": "public",
+        "default_expr": "now()",
+        "ordinal_position": 5
+      },
+      {
+        "type": "uuid",
+        "not_null": false,
+        "table_name": "conversations",
+        "column_name": "order_id",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 6
+      },
+      {
+        "type": "text",
+        "not_null": true,
+        "table_name": "conversations",
+        "column_name": "source",
+        "schema_name": "public",
+        "default_expr": "'order'::text",
+        "ordinal_position": 7
+      },
+      {
+        "type": "timestamp with time zone",
+        "not_null": false,
+        "table_name": "conversations",
+        "column_name": "closed_at",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 8
+      },
+      {
+        "type": "timestamp with time zone",
+        "not_null": false,
+        "table_name": "conversations",
+        "column_name": "retain_until",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 9
+      },
+      {
+        "type": "uuid",
+        "not_null": true,
+        "table_name": "corporate_opportunities",
+        "column_name": "id",
+        "schema_name": "public",
+        "default_expr": "gen_random_uuid()",
+        "ordinal_position": 1
+      },
+      {
+        "type": "uuid",
+        "not_null": true,
+        "table_name": "corporate_opportunities",
+        "column_name": "booking_id",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 2
+      },
+      {
+        "type": "uuid",
+        "not_null": true,
+        "table_name": "corporate_opportunities",
+        "column_name": "vendor_id",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 3
+      },
+      {
+        "type": "timestamp with time zone",
+        "not_null": true,
+        "table_name": "corporate_opportunities",
+        "column_name": "access_starts_at",
+        "schema_name": "public",
+        "default_expr": "now()",
+        "ordinal_position": 4
+      },
+      {
+        "type": "text",
+        "not_null": true,
+        "table_name": "corporate_opportunities",
+        "column_name": "response_status",
+        "schema_name": "public",
+        "default_expr": "'invited'::text",
+        "ordinal_position": 5
+      },
+      {
+        "type": "timestamp with time zone",
+        "not_null": false,
+        "table_name": "corporate_opportunities",
+        "column_name": "responded_at",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 6
+      },
+      {
+        "type": "timestamp with time zone",
+        "not_null": true,
+        "table_name": "corporate_opportunities",
+        "column_name": "created_at",
+        "schema_name": "public",
+        "default_expr": "now()",
+        "ordinal_position": 7
+      },
+      {
+        "type": "uuid",
+        "not_null": true,
+        "table_name": "event_booking_requests",
+        "column_name": "id",
+        "schema_name": "public",
+        "default_expr": "gen_random_uuid()",
+        "ordinal_position": 1
+      },
+      {
+        "type": "uuid",
+        "not_null": false,
+        "table_name": "event_booking_requests",
+        "column_name": "requester_id",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 2
+      },
+      {
+        "type": "text",
+        "not_null": true,
+        "table_name": "event_booking_requests",
+        "column_name": "business_name",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 3
+      },
+      {
+        "type": "text",
+        "not_null": true,
+        "table_name": "event_booking_requests",
+        "column_name": "contact_name",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 4
+      },
+      {
+        "type": "text",
+        "not_null": false,
+        "table_name": "event_booking_requests",
+        "column_name": "contact_email",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 5
+      },
+      {
+        "type": "text",
+        "not_null": true,
+        "table_name": "event_booking_requests",
+        "column_name": "contact_phone",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 6
+      },
+      {
+        "type": "text",
+        "not_null": true,
+        "table_name": "event_booking_requests",
+        "column_name": "event_type",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 7
+      },
+      {
+        "type": "date",
+        "not_null": true,
+        "table_name": "event_booking_requests",
+        "column_name": "event_date",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 8
+      },
+      {
+        "type": "integer",
+        "not_null": true,
+        "table_name": "event_booking_requests",
+        "column_name": "guest_count",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 9
+      },
+      {
+        "type": "text",
+        "not_null": true,
+        "table_name": "event_booking_requests",
+        "column_name": "location",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 10
+      },
+      {
+        "type": "text",
+        "not_null": true,
+        "table_name": "event_booking_requests",
+        "column_name": "service_level",
+        "schema_name": "public",
+        "default_expr": "'food_only'::text",
+        "ordinal_position": 11
+      },
+      {
+        "type": "numeric",
+        "not_null": false,
+        "table_name": "event_booking_requests",
+        "column_name": "budget_per_person",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 12
+      },
+      {
+        "type": "text",
+        "not_null": false,
+        "table_name": "event_booking_requests",
+        "column_name": "dietary_requirements",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 13
+      },
+      {
+        "type": "text",
+        "not_null": false,
+        "table_name": "event_booking_requests",
+        "column_name": "notes",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 14
+      },
+      {
+        "type": "text",
+        "not_null": true,
+        "table_name": "event_booking_requests",
+        "column_name": "status",
+        "schema_name": "public",
+        "default_expr": "'requested'::text",
+        "ordinal_position": 15
+      },
+      {
+        "type": "timestamp with time zone",
+        "not_null": true,
+        "table_name": "event_booking_requests",
+        "column_name": "created_at",
+        "schema_name": "public",
+        "default_expr": "now()",
+        "ordinal_position": 16
+      },
+      {
+        "type": "timestamp with time zone",
+        "not_null": true,
+        "table_name": "event_booking_requests",
+        "column_name": "updated_at",
+        "schema_name": "public",
+        "default_expr": "now()",
+        "ordinal_position": 17
+      },
+      {
+        "type": "numeric",
+        "not_null": false,
+        "table_name": "event_booking_requests",
+        "column_name": "quote_food_total",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 18
+      },
+      {
+        "type": "numeric",
+        "not_null": false,
+        "table_name": "event_booking_requests",
+        "column_name": "officebites_service_fee",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 19
+      },
+      {
+        "type": "numeric",
+        "not_null": false,
+        "table_name": "event_booking_requests",
+        "column_name": "quoted_total",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 20
+      },
+      {
+        "type": "uuid",
+        "not_null": false,
+        "table_name": "event_booking_requests",
+        "column_name": "selected_vendor_id",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 21
+      },
+      {
+        "type": "uuid",
+        "not_null": true,
+        "table_name": "favourites",
+        "column_name": "profile_id",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 1
+      },
+      {
+        "type": "uuid",
+        "not_null": true,
+        "table_name": "favourites",
+        "column_name": "meal_id",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 2
+      },
+      {
+        "type": "timestamp with time zone",
+        "not_null": true,
+        "table_name": "favourites",
+        "column_name": "created_at",
+        "schema_name": "public",
+        "default_expr": "now()",
+        "ordinal_position": 3
+      },
+      {
+        "type": "uuid",
+        "not_null": true,
+        "table_name": "feedback",
+        "column_name": "id",
+        "schema_name": "public",
+        "default_expr": "gen_random_uuid()",
+        "ordinal_position": 1
+      },
+      {
+        "type": "uuid",
+        "not_null": false,
+        "table_name": "feedback",
+        "column_name": "user_id",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 2
+      },
+      {
+        "type": "integer",
+        "not_null": true,
+        "table_name": "feedback",
+        "column_name": "rating",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 3
+      },
+      {
+        "type": "text",
+        "not_null": false,
+        "table_name": "feedback",
+        "column_name": "comment",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 4
+      },
+      {
+        "type": "boolean",
+        "not_null": false,
+        "table_name": "feedback",
+        "column_name": "recommend",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 5
+      },
+      {
+        "type": "timestamp with time zone",
+        "not_null": true,
+        "table_name": "feedback",
+        "column_name": "created_at",
+        "schema_name": "public",
+        "default_expr": "now()",
+        "ordinal_position": 6
+      },
+      {
+        "type": "uuid",
+        "not_null": true,
+        "table_name": "help_articles",
+        "column_name": "id",
+        "schema_name": "public",
+        "default_expr": "gen_random_uuid()",
+        "ordinal_position": 1
+      },
+      {
+        "type": "text",
+        "not_null": true,
+        "table_name": "help_articles",
+        "column_name": "slug",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 2
+      },
+      {
+        "type": "text",
+        "not_null": true,
+        "table_name": "help_articles",
+        "column_name": "category",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 3
+      },
+      {
+        "type": "text",
+        "not_null": true,
+        "table_name": "help_articles",
+        "column_name": "title",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 4
+      },
+      {
+        "type": "text",
+        "not_null": false,
+        "table_name": "help_articles",
+        "column_name": "summary",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 5
+      },
+      {
+        "type": "text",
+        "not_null": true,
+        "table_name": "help_articles",
+        "column_name": "body",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 6
+      },
+      {
+        "type": "boolean",
+        "not_null": true,
+        "table_name": "help_articles",
+        "column_name": "published",
+        "schema_name": "public",
+        "default_expr": "true",
+        "ordinal_position": 7
+      },
+      {
+        "type": "integer",
+        "not_null": true,
+        "table_name": "help_articles",
+        "column_name": "sort_order",
+        "schema_name": "public",
+        "default_expr": "0",
+        "ordinal_position": 8
+      },
+      {
+        "type": "timestamp with time zone",
+        "not_null": true,
+        "table_name": "help_articles",
+        "column_name": "created_at",
+        "schema_name": "public",
+        "default_expr": "now()",
+        "ordinal_position": 9
+      },
+      {
+        "type": "timestamp with time zone",
+        "not_null": true,
+        "table_name": "help_articles",
+        "column_name": "updated_at",
+        "schema_name": "public",
+        "default_expr": "now()",
+        "ordinal_position": 10
+      },
+      {
+        "type": "uuid",
+        "not_null": true,
+        "table_name": "meals",
+        "column_name": "id",
+        "schema_name": "public",
+        "default_expr": "gen_random_uuid()",
+        "ordinal_position": 1
+      },
+      {
+        "type": "uuid",
+        "not_null": true,
+        "table_name": "meals",
+        "column_name": "vendor_id",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 2
+      },
+      {
+        "type": "text",
+        "not_null": true,
+        "table_name": "meals",
+        "column_name": "name",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 3
+      },
+      {
+        "type": "text",
+        "not_null": false,
+        "table_name": "meals",
+        "column_name": "description",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 4
+      },
+      {
+        "type": "numeric(10,2)",
+        "not_null": true,
+        "table_name": "meals",
+        "column_name": "price",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 5
+      },
+      {
+        "type": "text",
+        "not_null": false,
+        "table_name": "meals",
+        "column_name": "image",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 6
+      },
+      {
+        "type": "text",
+        "not_null": true,
+        "table_name": "meals",
+        "column_name": "category",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 7
+      },
+      {
+        "type": "text[]",
+        "not_null": true,
+        "table_name": "meals",
+        "column_name": "tags",
+        "schema_name": "public",
+        "default_expr": "'{}'::text[]",
+        "ordinal_position": 8
+      },
+      {
+        "type": "boolean",
+        "not_null": true,
+        "table_name": "meals",
+        "column_name": "available",
+        "schema_name": "public",
+        "default_expr": "true",
+        "ordinal_position": 9
+      },
+      {
+        "type": "boolean",
+        "not_null": true,
+        "table_name": "meals",
+        "column_name": "featured",
+        "schema_name": "public",
+        "default_expr": "false",
+        "ordinal_position": 10
+      },
+      {
+        "type": "integer",
+        "not_null": true,
+        "table_name": "meals",
+        "column_name": "preparation_time",
+        "schema_name": "public",
+        "default_expr": "15",
+        "ordinal_position": 11
+      },
+      {
+        "type": "numeric(2,1)",
+        "not_null": true,
+        "table_name": "meals",
+        "column_name": "rating",
+        "schema_name": "public",
+        "default_expr": "0",
+        "ordinal_position": 12
+      },
+      {
+        "type": "integer",
+        "not_null": true,
+        "table_name": "meals",
+        "column_name": "review_count",
+        "schema_name": "public",
+        "default_expr": "0",
+        "ordinal_position": 13
+      },
+      {
+        "type": "timestamp with time zone",
+        "not_null": true,
+        "table_name": "meals",
+        "column_name": "created_at",
+        "schema_name": "public",
+        "default_expr": "now()",
+        "ordinal_position": 14
+      },
+      {
+        "type": "smallint[]",
+        "not_null": false,
+        "table_name": "meals",
+        "column_name": "available_days",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 15
+      },
+      {
+        "type": "uuid",
+        "not_null": true,
+        "table_name": "messages",
+        "column_name": "id",
+        "schema_name": "public",
+        "default_expr": "gen_random_uuid()",
+        "ordinal_position": 1
+      },
+      {
+        "type": "uuid",
+        "not_null": true,
+        "table_name": "messages",
+        "column_name": "conversation_id",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 2
+      },
+      {
+        "type": "uuid",
+        "not_null": true,
+        "table_name": "messages",
+        "column_name": "sender_id",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 3
+      },
+      {
+        "type": "text",
+        "not_null": true,
+        "table_name": "messages",
+        "column_name": "text",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 4
+      },
+      {
+        "type": "boolean",
+        "not_null": true,
+        "table_name": "messages",
+        "column_name": "read",
+        "schema_name": "public",
+        "default_expr": "false",
+        "ordinal_position": 5
+      },
+      {
+        "type": "timestamp with time zone",
+        "not_null": true,
+        "table_name": "messages",
+        "column_name": "created_at",
+        "schema_name": "public",
+        "default_expr": "now()",
+        "ordinal_position": 6
+      },
+      {
+        "type": "uuid",
+        "not_null": true,
+        "table_name": "notifications",
+        "column_name": "id",
+        "schema_name": "public",
+        "default_expr": "gen_random_uuid()",
+        "ordinal_position": 1
+      },
+      {
+        "type": "uuid",
+        "not_null": true,
+        "table_name": "notifications",
+        "column_name": "user_id",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 2
+      },
+      {
+        "type": "text",
+        "not_null": true,
+        "table_name": "notifications",
+        "column_name": "type",
+        "schema_name": "public",
+        "default_expr": "'general'::text",
+        "ordinal_position": 3
+      },
+      {
+        "type": "text",
+        "not_null": true,
+        "table_name": "notifications",
+        "column_name": "title",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 4
+      },
+      {
+        "type": "text",
+        "not_null": true,
+        "table_name": "notifications",
+        "column_name": "body",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 5
+      },
+      {
+        "type": "boolean",
+        "not_null": true,
+        "table_name": "notifications",
+        "column_name": "read",
+        "schema_name": "public",
+        "default_expr": "false",
+        "ordinal_position": 6
+      },
+      {
+        "type": "boolean",
+        "not_null": true,
+        "table_name": "notifications",
+        "column_name": "dismissed",
+        "schema_name": "public",
+        "default_expr": "false",
+        "ordinal_position": 7
+      },
+      {
+        "type": "timestamp with time zone",
+        "not_null": true,
+        "table_name": "notifications",
+        "column_name": "created_at",
+        "schema_name": "public",
+        "default_expr": "now()",
+        "ordinal_position": 8
+      },
+      {
+        "type": "text",
+        "not_null": false,
+        "table_name": "notifications",
+        "column_name": "action_url",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 9
+      },
+      {
+        "type": "jsonb",
+        "not_null": true,
+        "table_name": "notifications",
+        "column_name": "metadata",
+        "schema_name": "public",
+        "default_expr": "'{}'::jsonb",
+        "ordinal_position": 10
+      },
+      {
+        "type": "order_status",
+        "not_null": true,
+        "table_name": "order_flow",
+        "column_name": "status",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 1
+      },
+      {
+        "type": "integer",
+        "not_null": true,
+        "table_name": "order_flow",
+        "column_name": "step",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 2
+      },
+      {
+        "type": "uuid",
+        "not_null": true,
+        "table_name": "order_items",
+        "column_name": "id",
+        "schema_name": "public",
+        "default_expr": "gen_random_uuid()",
+        "ordinal_position": 1
+      },
+      {
+        "type": "uuid",
+        "not_null": true,
+        "table_name": "order_items",
+        "column_name": "suborder_id",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 2
+      },
+      {
+        "type": "uuid",
+        "not_null": false,
+        "table_name": "order_items",
+        "column_name": "meal_id",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 3
+      },
+      {
+        "type": "text",
+        "not_null": true,
+        "table_name": "order_items",
+        "column_name": "meal_name",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 4
+      },
+      {
+        "type": "integer",
+        "not_null": true,
+        "table_name": "order_items",
+        "column_name": "qty",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 5
+      },
+      {
+        "type": "numeric(10,2)",
+        "not_null": true,
+        "table_name": "order_items",
+        "column_name": "price",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 6
+      },
+      {
+        "type": "text",
+        "not_null": false,
+        "table_name": "order_items",
+        "column_name": "category_snapshot",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 7
+      },
+      {
+        "type": "uuid",
+        "not_null": true,
+        "table_name": "order_suborders",
+        "column_name": "id",
+        "schema_name": "public",
+        "default_expr": "gen_random_uuid()",
+        "ordinal_position": 1
+      },
+      {
+        "type": "uuid",
+        "not_null": true,
+        "table_name": "order_suborders",
+        "column_name": "order_id",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 2
+      },
+      {
+        "type": "uuid",
+        "not_null": true,
+        "table_name": "order_suborders",
+        "column_name": "vendor_id",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 3
+      },
+      {
+        "type": "order_status",
+        "not_null": true,
+        "table_name": "order_suborders",
+        "column_name": "status",
+        "schema_name": "public",
+        "default_expr": "'pending_payment'::order_status",
+        "ordinal_position": 4
+      },
+      {
+        "type": "payment_status",
+        "not_null": true,
+        "table_name": "order_suborders",
+        "column_name": "payment_status",
+        "schema_name": "public",
+        "default_expr": "'unpaid'::payment_status",
+        "ordinal_position": 5
+      },
+      {
+        "type": "numeric(10,2)",
+        "not_null": true,
+        "table_name": "order_suborders",
+        "column_name": "subtotal",
+        "schema_name": "public",
+        "default_expr": "0",
+        "ordinal_position": 6
+      },
+      {
+        "type": "text",
+        "not_null": false,
+        "table_name": "order_suborders",
+        "column_name": "collection_time",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 7
+      },
+      {
+        "type": "text",
+        "not_null": false,
+        "table_name": "order_suborders",
+        "column_name": "notes",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 8
+      },
+      {
+        "type": "numeric",
+        "not_null": false,
+        "table_name": "order_suborders",
+        "column_name": "commission_rate_snapshot",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 9
+      },
+      {
+        "type": "numeric(12,2)",
+        "not_null": false,
+        "table_name": "order_suborders",
+        "column_name": "commission_amount",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 10
+      },
+      {
+        "type": "timestamp with time zone",
+        "not_null": false,
+        "table_name": "order_suborders",
+        "column_name": "paid_at",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 11
+      },
+      {
+        "type": "text",
+        "not_null": false,
+        "table_name": "order_suborders",
+        "column_name": "vendor_name_snapshot",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 12
+      },
+      {
+        "type": "text",
+        "not_null": false,
+        "table_name": "order_suborders",
+        "column_name": "commission_evidence",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 13
+      },
+      {
+        "type": "uuid",
+        "not_null": true,
+        "table_name": "orders",
+        "column_name": "id",
+        "schema_name": "public",
+        "default_expr": "gen_random_uuid()",
+        "ordinal_position": 1
+      },
+      {
+        "type": "text",
+        "not_null": true,
+        "table_name": "orders",
+        "column_name": "ticket_number",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 2
+      },
+      {
+        "type": "uuid",
+        "not_null": false,
+        "table_name": "orders",
+        "column_name": "customer_id",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 3
+      },
+      {
+        "type": "text",
+        "not_null": false,
+        "table_name": "orders",
+        "column_name": "guest_name",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 4
+      },
+      {
+        "type": "text",
+        "not_null": false,
+        "table_name": "orders",
+        "column_name": "guest_contact",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 5
+      },
+      {
+        "type": "date",
+        "not_null": true,
+        "table_name": "orders",
+        "column_name": "delivery_date",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 6
+      },
+      {
+        "type": "order_status",
+        "not_null": true,
+        "table_name": "orders",
+        "column_name": "status",
+        "schema_name": "public",
+        "default_expr": "'pending_payment'::order_status",
+        "ordinal_position": 7
+      },
+      {
+        "type": "numeric(10,2)",
+        "not_null": true,
+        "table_name": "orders",
+        "column_name": "total",
+        "schema_name": "public",
+        "default_expr": "0",
+        "ordinal_position": 8
+      },
+      {
+        "type": "text",
+        "not_null": false,
+        "table_name": "orders",
+        "column_name": "payment_proof_url",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 9
+      },
+      {
+        "type": "timestamp with time zone",
+        "not_null": true,
+        "table_name": "orders",
+        "column_name": "created_at",
+        "schema_name": "public",
+        "default_expr": "now()",
+        "ordinal_position": 10
+      },
+      {
+        "type": "text",
+        "not_null": false,
+        "table_name": "orders",
+        "column_name": "delivery_location",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 11
+      },
+      {
+        "type": "text",
+        "not_null": false,
+        "table_name": "orders",
+        "column_name": "guest_email",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 12
+      },
+      {
+        "type": "text",
+        "not_null": true,
+        "table_name": "orders",
+        "column_name": "payment_method",
+        "schema_name": "public",
+        "default_expr": "'payfast'::text",
+        "ordinal_position": 13
+      },
+      {
+        "type": "boolean",
+        "not_null": true,
+        "table_name": "orders",
+        "column_name": "is_test",
+        "schema_name": "public",
+        "default_expr": "false",
+        "ordinal_position": 14
+      },
+      {
+        "type": "integer",
+        "not_null": true,
+        "table_name": "orders",
+        "column_name": "classification_version",
+        "schema_name": "public",
+        "default_expr": "0",
+        "ordinal_position": 15
+      },
+      {
+        "type": "uuid",
+        "not_null": true,
+        "table_name": "payfast_itn_log",
+        "column_name": "id",
+        "schema_name": "public",
+        "default_expr": "gen_random_uuid()",
+        "ordinal_position": 1
+      },
+      {
+        "type": "text",
+        "not_null": true,
+        "table_name": "payfast_itn_log",
+        "column_name": "pf_payment_id",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 2
+      },
+      {
+        "type": "uuid",
+        "not_null": true,
+        "table_name": "payfast_itn_log",
+        "column_name": "order_id",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 3
+      },
+      {
+        "type": "text",
+        "not_null": true,
+        "table_name": "payfast_itn_log",
+        "column_name": "m_payment_id",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 4
+      },
+      {
+        "type": "numeric(10,2)",
+        "not_null": true,
+        "table_name": "payfast_itn_log",
+        "column_name": "amount_gross",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 5
+      },
+      {
+        "type": "text",
+        "not_null": true,
+        "table_name": "payfast_itn_log",
+        "column_name": "payment_status",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 6
+      },
+      {
+        "type": "jsonb",
+        "not_null": true,
+        "table_name": "payfast_itn_log",
+        "column_name": "raw_payload",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 7
+      },
+      {
+        "type": "timestamp with time zone",
+        "not_null": true,
+        "table_name": "payfast_itn_log",
+        "column_name": "processed_at",
+        "schema_name": "public",
+        "default_expr": "now()",
+        "ordinal_position": 8
+      },
+      {
+        "type": "numeric",
+        "not_null": false,
+        "table_name": "payfast_itn_log",
+        "column_name": "processor_fee",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 9
+      },
+      {
+        "type": "numeric",
+        "not_null": false,
+        "table_name": "payfast_itn_log",
+        "column_name": "net_settlement",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 10
+      },
+      {
+        "type": "uuid",
+        "not_null": true,
+        "table_name": "payout_allocations",
+        "column_name": "id",
+        "schema_name": "public",
+        "default_expr": "gen_random_uuid()",
+        "ordinal_position": 1
+      },
+      {
+        "type": "uuid",
+        "not_null": true,
+        "table_name": "payout_allocations",
+        "column_name": "payout_id",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 2
+      },
+      {
+        "type": "uuid",
+        "not_null": true,
+        "table_name": "payout_allocations",
+        "column_name": "suborder_id",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 3
+      },
+      {
+        "type": "numeric(12,2)",
+        "not_null": true,
+        "table_name": "payout_allocations",
+        "column_name": "gross",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 4
+      },
+      {
+        "type": "numeric(12,2)",
+        "not_null": true,
+        "table_name": "payout_allocations",
+        "column_name": "commission",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 5
+      },
+      {
+        "type": "numeric(12,2)",
+        "not_null": true,
+        "table_name": "payout_allocations",
+        "column_name": "processor_fee",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 6
+      },
+      {
+        "type": "numeric(12,2)",
+        "not_null": true,
+        "table_name": "payout_allocations",
+        "column_name": "payable",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 7
+      },
+      {
+        "type": "timestamp with time zone",
+        "not_null": false,
+        "table_name": "payout_allocations",
+        "column_name": "released_at",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 8
+      },
+      {
+        "type": "uuid",
+        "not_null": true,
+        "table_name": "profiles",
+        "column_name": "id",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 1
+      },
+      {
+        "type": "text",
+        "not_null": true,
+        "table_name": "profiles",
+        "column_name": "name",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 2
+      },
+      {
+        "type": "text",
+        "not_null": true,
+        "table_name": "profiles",
+        "column_name": "email",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 3
+      },
+      {
+        "type": "user_role",
+        "not_null": true,
+        "table_name": "profiles",
+        "column_name": "role",
+        "schema_name": "public",
+        "default_expr": "'customer'::user_role",
+        "ordinal_position": 4
+      },
+      {
+        "type": "text",
+        "not_null": false,
+        "table_name": "profiles",
+        "column_name": "avatar_url",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 5
+      },
+      {
+        "type": "text",
+        "not_null": false,
+        "table_name": "profiles",
+        "column_name": "building",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 6
+      },
+      {
+        "type": "uuid",
+        "not_null": false,
+        "table_name": "profiles",
+        "column_name": "vendor_id",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 7
+      },
+      {
+        "type": "boolean",
+        "not_null": true,
+        "table_name": "profiles",
+        "column_name": "suspended",
+        "schema_name": "public",
+        "default_expr": "false",
+        "ordinal_position": 8
+      },
+      {
+        "type": "timestamp with time zone",
+        "not_null": true,
+        "table_name": "profiles",
+        "column_name": "created_at",
+        "schema_name": "public",
+        "default_expr": "now()",
+        "ordinal_position": 9
+      },
+      {
+        "type": "timestamp with time zone",
+        "not_null": false,
+        "table_name": "profiles",
+        "column_name": "deleted_at",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 10
+      },
+      {
+        "type": "uuid",
+        "not_null": true,
+        "table_name": "reviews",
+        "column_name": "id",
+        "schema_name": "public",
+        "default_expr": "gen_random_uuid()",
+        "ordinal_position": 1
+      },
+      {
+        "type": "uuid",
+        "not_null": true,
+        "table_name": "reviews",
+        "column_name": "vendor_id",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 2
+      },
+      {
+        "type": "uuid",
+        "not_null": false,
+        "table_name": "reviews",
+        "column_name": "meal_id",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 3
+      },
+      {
+        "type": "uuid",
+        "not_null": false,
+        "table_name": "reviews",
+        "column_name": "customer_id",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 4
+      },
+      {
+        "type": "text",
+        "not_null": true,
+        "table_name": "reviews",
+        "column_name": "customer_name",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 5
+      },
+      {
+        "type": "integer",
+        "not_null": true,
+        "table_name": "reviews",
+        "column_name": "rating",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 6
+      },
+      {
+        "type": "text",
+        "not_null": false,
+        "table_name": "reviews",
+        "column_name": "comment",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 7
+      },
+      {
+        "type": "timestamp with time zone",
+        "not_null": true,
+        "table_name": "reviews",
+        "column_name": "created_at",
+        "schema_name": "public",
+        "default_expr": "now()",
+        "ordinal_position": 8
+      },
+      {
+        "type": "uuid",
+        "not_null": true,
+        "table_name": "support_ticket_messages",
+        "column_name": "id",
+        "schema_name": "public",
+        "default_expr": "gen_random_uuid()",
+        "ordinal_position": 1
+      },
+      {
+        "type": "uuid",
+        "not_null": true,
+        "table_name": "support_ticket_messages",
+        "column_name": "ticket_id",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 2
+      },
+      {
+        "type": "uuid",
+        "not_null": false,
+        "table_name": "support_ticket_messages",
+        "column_name": "sender_id",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 3
+      },
+      {
+        "type": "text",
+        "not_null": true,
+        "table_name": "support_ticket_messages",
+        "column_name": "sender_role",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 4
+      },
+      {
+        "type": "text",
+        "not_null": true,
+        "table_name": "support_ticket_messages",
+        "column_name": "body",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 5
+      },
+      {
+        "type": "boolean",
+        "not_null": true,
+        "table_name": "support_ticket_messages",
+        "column_name": "internal",
+        "schema_name": "public",
+        "default_expr": "false",
+        "ordinal_position": 6
+      },
+      {
+        "type": "timestamp with time zone",
+        "not_null": true,
+        "table_name": "support_ticket_messages",
+        "column_name": "created_at",
+        "schema_name": "public",
+        "default_expr": "now()",
+        "ordinal_position": 7
+      },
+      {
+        "type": "uuid",
+        "not_null": true,
+        "table_name": "support_tickets",
+        "column_name": "id",
+        "schema_name": "public",
+        "default_expr": "gen_random_uuid()",
+        "ordinal_position": 1
+      },
+      {
+        "type": "text",
+        "not_null": true,
+        "table_name": "support_tickets",
+        "column_name": "ticket_number",
+        "schema_name": "public",
+        "default_expr": "('SUP-'::text || upper(substr(replace((gen_random_uuid())::text, '-'::text, ''::text), 1, 8)))",
+        "ordinal_position": 2
+      },
+      {
+        "type": "uuid",
+        "not_null": false,
+        "table_name": "support_tickets",
+        "column_name": "requester_id",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 3
+      },
+      {
+        "type": "text",
+        "not_null": true,
+        "table_name": "support_tickets",
+        "column_name": "requester_name",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 4
+      },
+      {
+        "type": "text",
+        "not_null": false,
+        "table_name": "support_tickets",
+        "column_name": "requester_email",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 5
+      },
+      {
+        "type": "text",
+        "not_null": false,
+        "table_name": "support_tickets",
+        "column_name": "requester_contact",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 6
+      },
+      {
+        "type": "text",
+        "not_null": true,
+        "table_name": "support_tickets",
+        "column_name": "subject",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 7
+      },
+      {
+        "type": "text",
+        "not_null": true,
+        "table_name": "support_tickets",
+        "column_name": "category",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 8
+      },
+      {
+        "type": "support_priority",
+        "not_null": true,
+        "table_name": "support_tickets",
+        "column_name": "priority",
+        "schema_name": "public",
+        "default_expr": "'normal'::support_priority",
+        "ordinal_position": 9
+      },
+      {
+        "type": "support_status",
+        "not_null": true,
+        "table_name": "support_tickets",
+        "column_name": "status",
+        "schema_name": "public",
+        "default_expr": "'open'::support_status",
+        "ordinal_position": 10
+      },
+      {
+        "type": "uuid",
+        "not_null": false,
+        "table_name": "support_tickets",
+        "column_name": "order_id",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 11
+      },
+      {
+        "type": "uuid",
+        "not_null": false,
+        "table_name": "support_tickets",
+        "column_name": "assigned_to",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 12
+      },
+      {
+        "type": "jsonb",
+        "not_null": true,
+        "table_name": "support_tickets",
+        "column_name": "meta",
+        "schema_name": "public",
+        "default_expr": "'{}'::jsonb",
+        "ordinal_position": 13
+      },
+      {
+        "type": "text",
+        "not_null": false,
+        "table_name": "support_tickets",
+        "column_name": "attachment_url",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 14
+      },
+      {
+        "type": "timestamp with time zone",
+        "not_null": false,
+        "table_name": "support_tickets",
+        "column_name": "first_response_at",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 15
+      },
+      {
+        "type": "timestamp with time zone",
+        "not_null": false,
+        "table_name": "support_tickets",
+        "column_name": "resolved_at",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 16
+      },
+      {
+        "type": "timestamp with time zone",
+        "not_null": true,
+        "table_name": "support_tickets",
+        "column_name": "created_at",
+        "schema_name": "public",
+        "default_expr": "now()",
+        "ordinal_position": 17
+      },
+      {
+        "type": "timestamp with time zone",
+        "not_null": true,
+        "table_name": "support_tickets",
+        "column_name": "updated_at",
+        "schema_name": "public",
+        "default_expr": "now()",
+        "ordinal_position": 18
+      },
+      {
+        "type": "uuid",
+        "not_null": true,
+        "table_name": "vendor_payouts",
+        "column_name": "id",
+        "schema_name": "public",
+        "default_expr": "gen_random_uuid()",
+        "ordinal_position": 1
+      },
+      {
+        "type": "uuid",
+        "not_null": true,
+        "table_name": "vendor_payouts",
+        "column_name": "vendor_id",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 2
+      },
+      {
+        "type": "uuid",
+        "not_null": true,
+        "table_name": "vendor_payouts",
+        "column_name": "request_id",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 3
+      },
+      {
+        "type": "text",
+        "not_null": true,
+        "table_name": "vendor_payouts",
+        "column_name": "status",
+        "schema_name": "public",
+        "default_expr": "'allocated'::text",
+        "ordinal_position": 4
+      },
+      {
+        "type": "text",
+        "not_null": true,
+        "table_name": "vendor_payouts",
+        "column_name": "fee_policy",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 5
+      },
+      {
+        "type": "numeric(12,2)",
+        "not_null": true,
+        "table_name": "vendor_payouts",
+        "column_name": "amount",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 6
+      },
+      {
+        "type": "text",
+        "not_null": false,
+        "table_name": "vendor_payouts",
+        "column_name": "reference",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 7
+      },
+      {
+        "type": "uuid",
+        "not_null": true,
+        "table_name": "vendor_payouts",
+        "column_name": "created_by",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 8
+      },
+      {
+        "type": "timestamp with time zone",
+        "not_null": true,
+        "table_name": "vendor_payouts",
+        "column_name": "created_at",
+        "schema_name": "public",
+        "default_expr": "now()",
+        "ordinal_position": 9
+      },
+      {
+        "type": "timestamp with time zone",
+        "not_null": false,
+        "table_name": "vendor_payouts",
+        "column_name": "reconciled_at",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 10
+      },
+      {
+        "type": "uuid",
+        "not_null": true,
+        "table_name": "vendors",
+        "column_name": "id",
+        "schema_name": "public",
+        "default_expr": "gen_random_uuid()",
+        "ordinal_position": 1
+      },
+      {
+        "type": "uuid",
+        "not_null": false,
+        "table_name": "vendors",
+        "column_name": "owner_id",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 2
+      },
+      {
+        "type": "text",
+        "not_null": true,
+        "table_name": "vendors",
+        "column_name": "name",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 3
+      },
+      {
+        "type": "text",
+        "not_null": false,
+        "table_name": "vendors",
+        "column_name": "tagline",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 4
+      },
+      {
+        "type": "text",
+        "not_null": true,
+        "table_name": "vendors",
+        "column_name": "category",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 5
+      },
+      {
+        "type": "numeric(2,1)",
+        "not_null": true,
+        "table_name": "vendors",
+        "column_name": "rating",
+        "schema_name": "public",
+        "default_expr": "0",
+        "ordinal_position": 6
+      },
+      {
+        "type": "integer",
+        "not_null": true,
+        "table_name": "vendors",
+        "column_name": "review_count",
+        "schema_name": "public",
+        "default_expr": "0",
+        "ordinal_position": 7
+      },
+      {
+        "type": "integer",
+        "not_null": true,
+        "table_name": "vendors",
+        "column_name": "prep_time_mins",
+        "schema_name": "public",
+        "default_expr": "20",
+        "ordinal_position": 8
+      },
+      {
+        "type": "text",
+        "not_null": false,
+        "table_name": "vendors",
+        "column_name": "cover_image",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 9
+      },
+      {
+        "type": "text",
+        "not_null": false,
+        "table_name": "vendors",
+        "column_name": "logo",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 10
+      },
+      {
+        "type": "text",
+        "not_null": false,
+        "table_name": "vendors",
+        "column_name": "building",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 11
+      },
+      {
+        "type": "vendor_status",
+        "not_null": true,
+        "table_name": "vendors",
+        "column_name": "status",
+        "schema_name": "public",
+        "default_expr": "'pending'::vendor_status",
+        "ordinal_position": 12
+      },
+      {
+        "type": "boolean",
+        "not_null": true,
+        "table_name": "vendors",
+        "column_name": "featured",
+        "schema_name": "public",
+        "default_expr": "false",
+        "ordinal_position": 13
+      },
+      {
+        "type": "text",
+        "not_null": true,
+        "table_name": "vendors",
+        "column_name": "subscription_tier",
+        "schema_name": "public",
+        "default_expr": "'basic'::text",
+        "ordinal_position": 14
+      },
+      {
+        "type": "text",
+        "not_null": false,
+        "table_name": "vendors",
+        "column_name": "contact_number",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 15
+      },
+      {
+        "type": "text",
+        "not_null": false,
+        "table_name": "vendors",
+        "column_name": "email",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 16
+      },
+      {
+        "type": "text",
+        "not_null": false,
+        "table_name": "vendors",
+        "column_name": "address",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 17
+      },
+      {
+        "type": "numeric",
+        "not_null": false,
+        "table_name": "vendors",
+        "column_name": "delivery_radius",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 18
+      },
+      {
+        "type": "text",
+        "not_null": false,
+        "table_name": "vendors",
+        "column_name": "operating_hours",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 19
+      },
+      {
+        "type": "timestamp with time zone",
+        "not_null": true,
+        "table_name": "vendors",
+        "column_name": "created_at",
+        "schema_name": "public",
+        "default_expr": "now()",
+        "ordinal_position": 20
+      },
+      {
+        "type": "vendor_plan",
+        "not_null": true,
+        "table_name": "vendors",
+        "column_name": "plan",
+        "schema_name": "public",
+        "default_expr": "'marketplace'::vendor_plan",
+        "ordinal_position": 21
+      },
+      {
+        "type": "numeric",
+        "not_null": true,
+        "table_name": "vendors",
+        "column_name": "commission_rate",
+        "schema_name": "public",
+        "default_expr": "0.17",
+        "ordinal_position": 22
+      },
+      {
+        "type": "boolean",
+        "not_null": true,
+        "table_name": "vendors",
+        "column_name": "analytics_enabled",
+        "schema_name": "public",
+        "default_expr": "false",
+        "ordinal_position": 23
+      },
+      {
+        "type": "boolean",
+        "not_null": true,
+        "table_name": "vendors",
+        "column_name": "recommendations_enabled",
+        "schema_name": "public",
+        "default_expr": "false",
+        "ordinal_position": 24
+      },
+      {
+        "type": "boolean",
+        "not_null": true,
+        "table_name": "vendors",
+        "column_name": "corporate_orders_enabled",
+        "schema_name": "public",
+        "default_expr": "false",
+        "ordinal_position": 25
+      },
+      {
+        "type": "double precision",
+        "not_null": false,
+        "table_name": "vendors",
+        "column_name": "latitude",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 26
+      },
+      {
+        "type": "double precision",
+        "not_null": false,
+        "table_name": "vendors",
+        "column_name": "longitude",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 27
+      },
+      {
+        "type": "timestamp with time zone",
+        "not_null": false,
+        "table_name": "vendors",
+        "column_name": "archived_at",
+        "schema_name": "public",
+        "default_expr": null,
+        "ordinal_position": 28
+      }
+    ],
+    "constraints": [
+      {
+        "name": "account_removal_jobs_pkey",
+        "definition": "PRIMARY KEY (id)",
+        "table_name": "account_removal_jobs",
+        "schema_name": "private"
+      },
+      {
+        "name": "business_audit_pkey",
+        "definition": "PRIMARY KEY (id)",
+        "table_name": "business_audit",
+        "schema_name": "private"
+      },
+      {
+        "name": "finance_settings_fee_policy_check",
+        "definition": "CHECK (fee_policy = ANY (ARRAY['platform_absorbs'::text, 'vendor_proportional'::text]))",
+        "table_name": "finance_settings",
+        "schema_name": "private"
+      },
+      {
+        "name": "finance_settings_pkey",
+        "definition": "PRIMARY KEY (singleton)",
+        "table_name": "finance_settings",
+        "schema_name": "private"
+      },
+      {
+        "name": "finance_settings_singleton_check",
+        "definition": "CHECK (singleton)",
+        "table_name": "finance_settings",
+        "schema_name": "private"
+      },
+      {
+        "name": "retention_settings_days_check",
+        "definition": "CHECK (days >= 1 AND days <= 3650)",
+        "table_name": "retention_settings",
+        "schema_name": "private"
+      },
+      {
+        "name": "retention_settings_pkey",
+        "definition": "PRIMARY KEY (singleton)",
+        "table_name": "retention_settings",
+        "schema_name": "private"
+      },
+      {
+        "name": "retention_settings_singleton_check",
+        "definition": "CHECK (singleton)",
+        "table_name": "retention_settings",
+        "schema_name": "private"
+      },
+      {
+        "name": "booking_pricing_rules_minimum_fee_check",
+        "definition": "CHECK (minimum_fee >= 0::numeric)",
+        "table_name": "booking_pricing_rules",
+        "schema_name": "public"
+      },
+      {
+        "name": "booking_pricing_rules_per_person_fee_check",
+        "definition": "CHECK (per_person_fee >= 0::numeric)",
+        "table_name": "booking_pricing_rules",
+        "schema_name": "public"
+      },
+      {
+        "name": "booking_pricing_rules_pkey",
+        "definition": "PRIMARY KEY (id)",
+        "table_name": "booking_pricing_rules",
+        "schema_name": "public"
+      },
+      {
+        "name": "booking_pricing_rules_service_level_check",
+        "definition": "CHECK (service_level = ANY (ARRAY['food_only'::text, 'delivered'::text, 'staffed'::text, 'managed'::text]))",
+        "table_name": "booking_pricing_rules",
+        "schema_name": "public"
+      },
+      {
+        "name": "booking_pricing_rules_service_level_key",
+        "definition": "UNIQUE (service_level)",
+        "table_name": "booking_pricing_rules",
+        "schema_name": "public"
+      },
+      {
+        "name": "conversations_customer_id_fkey",
+        "definition": "FOREIGN KEY (customer_id) REFERENCES profiles(id) ON DELETE CASCADE",
+        "table_name": "conversations",
+        "schema_name": "public"
+      },
+      {
+        "name": "conversations_customer_id_vendor_id_key",
+        "definition": "UNIQUE (customer_id, vendor_id)",
+        "table_name": "conversations",
+        "schema_name": "public"
+      },
+      {
+        "name": "conversations_order_id_fkey",
+        "definition": "FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE",
+        "table_name": "conversations",
+        "schema_name": "public"
+      },
+      {
+        "name": "conversations_pkey",
+        "definition": "PRIMARY KEY (id)",
+        "table_name": "conversations",
+        "schema_name": "public"
+      },
+      {
+        "name": "conversations_vendor_id_fkey",
+        "definition": "FOREIGN KEY (vendor_id) REFERENCES vendors(id) ON DELETE CASCADE",
+        "table_name": "conversations",
+        "schema_name": "public"
+      },
+      {
+        "name": "corporate_opportunities_booking_id_fkey",
+        "definition": "FOREIGN KEY (booking_id) REFERENCES event_booking_requests(id) ON DELETE CASCADE",
+        "table_name": "corporate_opportunities",
+        "schema_name": "public"
+      },
+      {
+        "name": "corporate_opportunities_booking_id_vendor_id_key",
+        "definition": "UNIQUE (booking_id, vendor_id)",
+        "table_name": "corporate_opportunities",
+        "schema_name": "public"
+      },
+      {
+        "name": "corporate_opportunities_pkey",
+        "definition": "PRIMARY KEY (id)",
+        "table_name": "corporate_opportunities",
+        "schema_name": "public"
+      },
+      {
+        "name": "corporate_opportunities_response_status_check",
+        "definition": "CHECK (response_status = ANY (ARRAY['invited'::text, 'interested'::text, 'declined'::text, 'shortlisted'::text, 'selected'::text]))",
+        "table_name": "corporate_opportunities",
+        "schema_name": "public"
+      },
+      {
+        "name": "corporate_opportunities_vendor_id_fkey",
+        "definition": "FOREIGN KEY (vendor_id) REFERENCES vendors(id) ON DELETE CASCADE",
+        "table_name": "corporate_opportunities",
+        "schema_name": "public"
+      },
+      {
+        "name": "event_booking_requests_guest_count_check",
+        "definition": "CHECK (guest_count >= 10 AND guest_count <= 10000)",
+        "table_name": "event_booking_requests",
+        "schema_name": "public"
+      },
+      {
+        "name": "event_booking_requests_pkey",
+        "definition": "PRIMARY KEY (id)",
+        "table_name": "event_booking_requests",
+        "schema_name": "public"
+      },
+      {
+        "name": "event_booking_requests_requester_id_fkey",
+        "definition": "FOREIGN KEY (requester_id) REFERENCES profiles(id) ON DELETE SET NULL",
+        "table_name": "event_booking_requests",
+        "schema_name": "public"
+      },
+      {
+        "name": "event_booking_requests_selected_vendor_id_fkey",
+        "definition": "FOREIGN KEY (selected_vendor_id) REFERENCES vendors(id) ON DELETE SET NULL",
+        "table_name": "event_booking_requests",
+        "schema_name": "public"
+      },
+      {
+        "name": "event_booking_requests_service_level_check",
+        "definition": "CHECK (service_level = ANY (ARRAY['food_only'::text, 'delivered'::text, 'staffed'::text, 'managed'::text]))",
+        "table_name": "event_booking_requests",
+        "schema_name": "public"
+      },
+      {
+        "name": "event_booking_requests_status_check",
+        "definition": "CHECK (status = ANY (ARRAY['requested'::text, 'reviewing'::text, 'quoted'::text, 'accepted'::text, 'declined'::text, 'cancelled'::text, 'completed'::text]))",
+        "table_name": "event_booking_requests",
+        "schema_name": "public"
+      },
+      {
+        "name": "favourites_meal_id_fkey",
+        "definition": "FOREIGN KEY (meal_id) REFERENCES meals(id) ON DELETE CASCADE",
+        "table_name": "favourites",
+        "schema_name": "public"
+      },
+      {
+        "name": "favourites_pkey",
+        "definition": "PRIMARY KEY (profile_id, meal_id)",
+        "table_name": "favourites",
+        "schema_name": "public"
+      },
+      {
+        "name": "favourites_profile_id_fkey",
+        "definition": "FOREIGN KEY (profile_id) REFERENCES profiles(id) ON DELETE CASCADE",
+        "table_name": "favourites",
+        "schema_name": "public"
+      },
+      {
+        "name": "feedback_comment_check",
+        "definition": "CHECK (char_length(comment) <= 5000)",
+        "table_name": "feedback",
+        "schema_name": "public"
+      },
+      {
+        "name": "feedback_pkey",
+        "definition": "PRIMARY KEY (id)",
+        "table_name": "feedback",
+        "schema_name": "public"
+      },
+      {
+        "name": "feedback_rating_check",
+        "definition": "CHECK (rating >= 1 AND rating <= 5)",
+        "table_name": "feedback",
+        "schema_name": "public"
+      },
+      {
+        "name": "feedback_user_id_fkey",
+        "definition": "FOREIGN KEY (user_id) REFERENCES profiles(id) ON DELETE SET NULL",
+        "table_name": "feedback",
+        "schema_name": "public"
+      },
+      {
+        "name": "help_articles_pkey",
+        "definition": "PRIMARY KEY (id)",
+        "table_name": "help_articles",
+        "schema_name": "public"
+      },
+      {
+        "name": "help_articles_slug_key",
+        "definition": "UNIQUE (slug)",
+        "table_name": "help_articles",
+        "schema_name": "public"
+      },
+      {
+        "name": "meals_pkey",
+        "definition": "PRIMARY KEY (id)",
+        "table_name": "meals",
+        "schema_name": "public"
+      },
+      {
+        "name": "meals_price_check",
+        "definition": "CHECK (price >= 0::numeric)",
+        "table_name": "meals",
+        "schema_name": "public"
+      },
+      {
+        "name": "meals_vendor_id_fkey",
+        "definition": "FOREIGN KEY (vendor_id) REFERENCES vendors(id) ON DELETE CASCADE",
+        "table_name": "meals",
+        "schema_name": "public"
+      },
+      {
+        "name": "messages_conversation_id_fkey",
+        "definition": "FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE CASCADE",
+        "table_name": "messages",
+        "schema_name": "public"
+      },
+      {
+        "name": "messages_pkey",
+        "definition": "PRIMARY KEY (id)",
+        "table_name": "messages",
+        "schema_name": "public"
+      },
+      {
+        "name": "messages_sender_id_fkey",
+        "definition": "FOREIGN KEY (sender_id) REFERENCES profiles(id) ON DELETE CASCADE",
+        "table_name": "messages",
+        "schema_name": "public"
+      },
+      {
+        "name": "notifications_pkey",
+        "definition": "PRIMARY KEY (id)",
+        "table_name": "notifications",
+        "schema_name": "public"
+      },
+      {
+        "name": "notifications_user_id_fkey",
+        "definition": "FOREIGN KEY (user_id) REFERENCES profiles(id) ON DELETE CASCADE",
+        "table_name": "notifications",
+        "schema_name": "public"
+      },
+      {
+        "name": "order_flow_pkey",
+        "definition": "PRIMARY KEY (status)",
+        "table_name": "order_flow",
+        "schema_name": "public"
+      },
+      {
+        "name": "order_flow_step_key",
+        "definition": "UNIQUE (step)",
+        "table_name": "order_flow",
+        "schema_name": "public"
+      },
+      {
+        "name": "order_items_meal_id_fkey",
+        "definition": "FOREIGN KEY (meal_id) REFERENCES meals(id) ON DELETE SET NULL",
+        "table_name": "order_items",
+        "schema_name": "public"
+      },
+      {
+        "name": "order_items_pkey",
+        "definition": "PRIMARY KEY (id)",
+        "table_name": "order_items",
+        "schema_name": "public"
+      },
+      {
+        "name": "order_items_qty_check",
+        "definition": "CHECK (qty > 0)",
+        "table_name": "order_items",
+        "schema_name": "public"
+      },
+      {
+        "name": "order_items_suborder_id_fkey",
+        "definition": "FOREIGN KEY (suborder_id) REFERENCES order_suborders(id) ON DELETE CASCADE",
+        "table_name": "order_items",
+        "schema_name": "public"
+      },
+      {
+        "name": "commission_snapshot_rate_range",
+        "definition": "CHECK (commission_rate_snapshot >= 0::numeric AND commission_rate_snapshot <= 1::numeric)",
+        "table_name": "order_suborders",
+        "schema_name": "public"
+      },
+      {
+        "name": "order_suborders_order_id_fkey",
+        "definition": "FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE",
+        "table_name": "order_suborders",
+        "schema_name": "public"
+      },
+      {
+        "name": "order_suborders_order_id_vendor_id_key",
+        "definition": "UNIQUE (order_id, vendor_id)",
+        "table_name": "order_suborders",
+        "schema_name": "public"
+      },
+      {
+        "name": "order_suborders_pkey",
+        "definition": "PRIMARY KEY (id)",
+        "table_name": "order_suborders",
+        "schema_name": "public"
+      },
+      {
+        "name": "order_suborders_vendor_id_fkey",
+        "definition": "FOREIGN KEY (vendor_id) REFERENCES vendors(id)",
+        "table_name": "order_suborders",
+        "schema_name": "public"
+      },
+      {
+        "name": "orders_customer_id_fkey",
+        "definition": "FOREIGN KEY (customer_id) REFERENCES profiles(id) ON DELETE SET NULL",
+        "table_name": "orders",
+        "schema_name": "public"
+      },
+      {
+        "name": "orders_customer_or_guest",
+        "definition": "CHECK (customer_id IS NOT NULL OR guest_name IS NOT NULL)",
+        "table_name": "orders",
+        "schema_name": "public"
+      },
+      {
+        "name": "orders_payment_method_check",
+        "definition": "CHECK (payment_method = ANY (ARRAY['manual_eft'::text, 'payfast'::text]))",
+        "table_name": "orders",
+        "schema_name": "public"
+      },
+      {
+        "name": "orders_pkey",
+        "definition": "PRIMARY KEY (id)",
+        "table_name": "orders",
+        "schema_name": "public"
+      },
+      {
+        "name": "orders_ticket_number_key",
+        "definition": "UNIQUE (ticket_number)",
+        "table_name": "orders",
+        "schema_name": "public"
+      },
+      {
+        "name": "payfast_itn_log_order_id_fkey",
+        "definition": "FOREIGN KEY (order_id) REFERENCES orders(id)",
+        "table_name": "payfast_itn_log",
+        "schema_name": "public"
+      },
+      {
+        "name": "payfast_itn_log_pf_payment_id_key",
+        "definition": "UNIQUE (pf_payment_id)",
+        "table_name": "payfast_itn_log",
+        "schema_name": "public"
+      },
+      {
+        "name": "payfast_itn_log_pkey",
+        "definition": "PRIMARY KEY (id)",
+        "table_name": "payfast_itn_log",
+        "schema_name": "public"
+      },
+      {
+        "name": "payout_allocations_payable_check",
+        "definition": "CHECK (payable >= 0::numeric)",
+        "table_name": "payout_allocations",
+        "schema_name": "public"
+      },
+      {
+        "name": "payout_allocations_payout_id_fkey",
+        "definition": "FOREIGN KEY (payout_id) REFERENCES vendor_payouts(id)",
+        "table_name": "payout_allocations",
+        "schema_name": "public"
+      },
+      {
+        "name": "payout_allocations_pkey",
+        "definition": "PRIMARY KEY (id)",
+        "table_name": "payout_allocations",
+        "schema_name": "public"
+      },
+      {
+        "name": "payout_allocations_suborder_id_fkey",
+        "definition": "FOREIGN KEY (suborder_id) REFERENCES order_suborders(id)",
+        "table_name": "payout_allocations",
+        "schema_name": "public"
+      },
+      {
+        "name": "profiles_pkey",
+        "definition": "PRIMARY KEY (id)",
+        "table_name": "profiles",
+        "schema_name": "public"
+      },
+      {
+        "name": "profiles_vendor_id_fkey",
+        "definition": "FOREIGN KEY (vendor_id) REFERENCES vendors(id) ON DELETE SET NULL",
+        "table_name": "profiles",
+        "schema_name": "public"
+      },
+      {
+        "name": "reviews_customer_id_fkey",
+        "definition": "FOREIGN KEY (customer_id) REFERENCES profiles(id) ON DELETE SET NULL",
+        "table_name": "reviews",
+        "schema_name": "public"
+      },
+      {
+        "name": "reviews_meal_id_fkey",
+        "definition": "FOREIGN KEY (meal_id) REFERENCES meals(id) ON DELETE SET NULL",
+        "table_name": "reviews",
+        "schema_name": "public"
+      },
+      {
+        "name": "reviews_pkey",
+        "definition": "PRIMARY KEY (id)",
+        "table_name": "reviews",
+        "schema_name": "public"
+      },
+      {
+        "name": "reviews_rating_check",
+        "definition": "CHECK (rating >= 1 AND rating <= 5)",
+        "table_name": "reviews",
+        "schema_name": "public"
+      },
+      {
+        "name": "reviews_vendor_id_fkey",
+        "definition": "FOREIGN KEY (vendor_id) REFERENCES vendors(id) ON DELETE CASCADE",
+        "table_name": "reviews",
+        "schema_name": "public"
+      },
+      {
+        "name": "support_ticket_messages_body_check",
+        "definition": "CHECK (length(btrim(body)) >= 1 AND length(btrim(body)) <= 5000)",
+        "table_name": "support_ticket_messages",
+        "schema_name": "public"
+      },
+      {
+        "name": "support_ticket_messages_pkey",
+        "definition": "PRIMARY KEY (id)",
+        "table_name": "support_ticket_messages",
+        "schema_name": "public"
+      },
+      {
+        "name": "support_ticket_messages_sender_id_fkey",
+        "definition": "FOREIGN KEY (sender_id) REFERENCES profiles(id) ON DELETE SET NULL",
+        "table_name": "support_ticket_messages",
+        "schema_name": "public"
+      },
+      {
+        "name": "support_ticket_messages_sender_role_check",
+        "definition": "CHECK (sender_role = ANY (ARRAY['customer'::text, 'support'::text]))",
+        "table_name": "support_ticket_messages",
+        "schema_name": "public"
+      },
+      {
+        "name": "support_ticket_messages_ticket_id_fkey",
+        "definition": "FOREIGN KEY (ticket_id) REFERENCES support_tickets(id) ON DELETE CASCADE",
+        "table_name": "support_ticket_messages",
+        "schema_name": "public"
+      },
+      {
+        "name": "support_tickets_assigned_to_fkey",
+        "definition": "FOREIGN KEY (assigned_to) REFERENCES profiles(id) ON DELETE SET NULL",
+        "table_name": "support_tickets",
+        "schema_name": "public"
+      },
+      {
+        "name": "support_tickets_category_check",
+        "definition": "CHECK (category = ANY (ARRAY['order'::text, 'payment'::text, 'account'::text, 'vendor'::text, 'technical'::text, 'other'::text]))",
+        "table_name": "support_tickets",
+        "schema_name": "public"
+      },
+      {
+        "name": "support_tickets_order_id_fkey",
+        "definition": "FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE SET NULL",
+        "table_name": "support_tickets",
+        "schema_name": "public"
+      },
+      {
+        "name": "support_tickets_pkey",
+        "definition": "PRIMARY KEY (id)",
+        "table_name": "support_tickets",
+        "schema_name": "public"
+      },
+      {
+        "name": "support_tickets_requester_id_fkey",
+        "definition": "FOREIGN KEY (requester_id) REFERENCES profiles(id) ON DELETE SET NULL",
+        "table_name": "support_tickets",
+        "schema_name": "public"
+      },
+      {
+        "name": "support_tickets_ticket_number_key",
+        "definition": "UNIQUE (ticket_number)",
+        "table_name": "support_tickets",
+        "schema_name": "public"
+      },
+      {
+        "name": "vendor_payouts_amount_check",
+        "definition": "CHECK (amount >= 0::numeric)",
+        "table_name": "vendor_payouts",
+        "schema_name": "public"
+      },
+      {
+        "name": "vendor_payouts_fee_policy_check",
+        "definition": "CHECK (fee_policy = ANY (ARRAY['platform_absorbs'::text, 'vendor_proportional'::text]))",
+        "table_name": "vendor_payouts",
+        "schema_name": "public"
+      },
+      {
+        "name": "vendor_payouts_pkey",
+        "definition": "PRIMARY KEY (id)",
+        "table_name": "vendor_payouts",
+        "schema_name": "public"
+      },
+      {
+        "name": "vendor_payouts_request_id_key",
+        "definition": "UNIQUE (request_id)",
+        "table_name": "vendor_payouts",
+        "schema_name": "public"
+      },
+      {
+        "name": "vendor_payouts_status_check",
+        "definition": "CHECK (status = ANY (ARRAY['allocated'::text, 'paid'::text, 'void'::text]))",
+        "table_name": "vendor_payouts",
+        "schema_name": "public"
+      },
+      {
+        "name": "vendor_payouts_vendor_id_fkey",
+        "definition": "FOREIGN KEY (vendor_id) REFERENCES vendors(id)",
+        "table_name": "vendor_payouts",
+        "schema_name": "public"
+      },
+      {
+        "name": "archived_vendor_inactive",
+        "definition": "CHECK (archived_at IS NULL OR status = 'suspended'::vendor_status)",
+        "table_name": "vendors",
+        "schema_name": "public"
+      },
+      {
+        "name": "vendors_owner_id_fkey",
+        "definition": "FOREIGN KEY (owner_id) REFERENCES profiles(id) ON DELETE SET NULL",
+        "table_name": "vendors",
+        "schema_name": "public"
+      },
+      {
+        "name": "vendors_pkey",
+        "definition": "PRIMARY KEY (id)",
+        "table_name": "vendors",
+        "schema_name": "public"
+      }
+    ],
+    "enums": [
+      {
+        "name": "order_status",
+        "labels": [
+          "pending_payment",
+          "payment_submitted",
+          "confirmed",
+          "accepted",
+          "preparing",
+          "ready",
+          "collected",
+          "completed",
+          "cancelled"
+        ],
+        "schema_name": "public"
+      },
+      {
+        "name": "payment_status",
+        "labels": [
+          "unpaid",
+          "verifying",
+          "paid"
+        ],
+        "schema_name": "public"
+      },
+      {
+        "name": "support_priority",
+        "labels": [
+          "low",
+          "normal",
+          "high",
+          "urgent"
+        ],
+        "schema_name": "public"
+      },
+      {
+        "name": "support_status",
+        "labels": [
+          "open",
+          "waiting_customer",
+          "in_progress",
+          "resolved",
+          "closed"
+        ],
+        "schema_name": "public"
+      },
+      {
+        "name": "user_role",
+        "labels": [
+          "customer",
+          "vendor",
+          "admin"
+        ],
+        "schema_name": "public"
+      },
+      {
+        "name": "vendor_plan",
+        "labels": [
+          "marketplace",
+          "growth"
+        ],
+        "schema_name": "public"
+      },
+      {
+        "name": "vendor_status",
+        "labels": [
+          "pending",
+          "approved",
+          "suspended",
+          "rejected"
+        ],
+        "schema_name": "public"
+      }
+    ],
+    "triggers": [
+      {
+        "name": "active_account_write",
+        "definition": "CREATE TRIGGER active_account_write BEFORE INSERT OR DELETE OR UPDATE ON booking_pricing_rules FOR EACH ROW EXECUTE FUNCTION private.reject_inactive_write()",
+        "table_name": "booking_pricing_rules",
+        "schema_name": "public"
+      },
+      {
+        "name": "active_account_write",
+        "definition": "CREATE TRIGGER active_account_write BEFORE INSERT OR DELETE OR UPDATE ON conversations FOR EACH ROW EXECUTE FUNCTION private.reject_inactive_write()",
+        "table_name": "conversations",
+        "schema_name": "public"
+      },
+      {
+        "name": "conversations_set_retention",
+        "definition": "CREATE TRIGGER conversations_set_retention BEFORE INSERT OR UPDATE ON conversations FOR EACH ROW EXECUTE FUNCTION set_conversation_retention()",
+        "table_name": "conversations",
+        "schema_name": "public"
+      },
+      {
+        "name": "active_account_write",
+        "definition": "CREATE TRIGGER active_account_write BEFORE INSERT OR DELETE OR UPDATE ON corporate_opportunities FOR EACH ROW EXECUTE FUNCTION private.reject_inactive_write()",
+        "table_name": "corporate_opportunities",
+        "schema_name": "public"
+      },
+      {
+        "name": "active_account_write",
+        "definition": "CREATE TRIGGER active_account_write BEFORE INSERT OR DELETE OR UPDATE ON event_booking_requests FOR EACH ROW EXECUTE FUNCTION private.reject_inactive_write()",
+        "table_name": "event_booking_requests",
+        "schema_name": "public"
+      },
+      {
+        "name": "active_account_write",
+        "definition": "CREATE TRIGGER active_account_write BEFORE INSERT OR DELETE OR UPDATE ON favourites FOR EACH ROW EXECUTE FUNCTION private.reject_inactive_write()",
+        "table_name": "favourites",
+        "schema_name": "public"
+      },
+      {
+        "name": "active_account_write",
+        "definition": "CREATE TRIGGER active_account_write BEFORE INSERT OR DELETE OR UPDATE ON feedback FOR EACH ROW EXECUTE FUNCTION private.reject_inactive_write()",
+        "table_name": "feedback",
+        "schema_name": "public"
+      },
+      {
+        "name": "active_account_write",
+        "definition": "CREATE TRIGGER active_account_write BEFORE INSERT OR DELETE OR UPDATE ON help_articles FOR EACH ROW EXECUTE FUNCTION private.reject_inactive_write()",
+        "table_name": "help_articles",
+        "schema_name": "public"
+      },
+      {
+        "name": "active_account_write",
+        "definition": "CREATE TRIGGER active_account_write BEFORE INSERT OR DELETE OR UPDATE ON meals FOR EACH ROW EXECUTE FUNCTION private.reject_inactive_write()",
+        "table_name": "meals",
+        "schema_name": "public"
+      },
+      {
+        "name": "active_account_write",
+        "definition": "CREATE TRIGGER active_account_write BEFORE INSERT OR DELETE OR UPDATE ON messages FOR EACH ROW EXECUTE FUNCTION private.reject_inactive_write()",
+        "table_name": "messages",
+        "schema_name": "public"
+      },
+      {
+        "name": "messages_notify_recipient",
+        "definition": "CREATE TRIGGER messages_notify_recipient AFTER INSERT ON messages FOR EACH ROW EXECUTE FUNCTION notify_chat_recipient()",
+        "table_name": "messages",
+        "schema_name": "public"
+      },
+      {
+        "name": "messages_touch_conversation",
+        "definition": "CREATE TRIGGER messages_touch_conversation AFTER INSERT ON messages FOR EACH ROW EXECUTE FUNCTION update_conversation_timestamp()",
+        "table_name": "messages",
+        "schema_name": "public"
+      },
+      {
+        "name": "active_account_write",
+        "definition": "CREATE TRIGGER active_account_write BEFORE INSERT OR DELETE OR UPDATE ON notifications FOR EACH ROW EXECUTE FUNCTION private.reject_inactive_write()",
+        "table_name": "notifications",
+        "schema_name": "public"
+      },
+      {
+        "name": "active_account_write",
+        "definition": "CREATE TRIGGER active_account_write BEFORE INSERT OR DELETE OR UPDATE ON order_flow FOR EACH ROW EXECUTE FUNCTION private.reject_inactive_write()",
+        "table_name": "order_flow",
+        "schema_name": "public"
+      },
+      {
+        "name": "active_account_write",
+        "definition": "CREATE TRIGGER active_account_write BEFORE INSERT OR DELETE OR UPDATE ON order_items FOR EACH ROW EXECUTE FUNCTION private.reject_inactive_write()",
+        "table_name": "order_items",
+        "schema_name": "public"
+      },
+      {
+        "name": "guard_paid_item_history",
+        "definition": "CREATE TRIGGER guard_paid_item_history BEFORE UPDATE ON order_items FOR EACH ROW EXECUTE FUNCTION private.guard_paid_item_history()",
+        "table_name": "order_items",
+        "schema_name": "public"
+      },
+      {
+        "name": "snapshot_order_item",
+        "definition": "CREATE TRIGGER snapshot_order_item BEFORE INSERT ON order_items FOR EACH ROW EXECUTE FUNCTION private.snapshot_order_item()",
+        "table_name": "order_items",
+        "schema_name": "public"
+      },
+      {
+        "name": "active_account_write",
+        "definition": "CREATE TRIGGER active_account_write BEFORE INSERT OR DELETE OR UPDATE ON order_suborders FOR EACH ROW EXECUTE FUNCTION private.reject_inactive_write()",
+        "table_name": "order_suborders",
+        "schema_name": "public"
+      },
+      {
+        "name": "order_suborders_close_conversation",
+        "definition": "CREATE TRIGGER order_suborders_close_conversation AFTER UPDATE ON order_suborders FOR EACH ROW EXECUTE FUNCTION close_order_conversation_on_terminal_suborder()",
+        "table_name": "order_suborders",
+        "schema_name": "public"
+      },
+      {
+        "name": "order_suborders_status_guard",
+        "definition": "CREATE TRIGGER order_suborders_status_guard BEFORE UPDATE ON order_suborders FOR EACH ROW EXECUTE FUNCTION enforce_order_status_transition()",
+        "table_name": "order_suborders",
+        "schema_name": "public"
+      },
+      {
+        "name": "require_fulfilment",
+        "definition": "CREATE TRIGGER require_fulfilment BEFORE INSERT ON order_suborders FOR EACH ROW EXECUTE FUNCTION private.require_fulfilment_on_insert()",
+        "table_name": "order_suborders",
+        "schema_name": "public"
+      },
+      {
+        "name": "snapshot_paid_commission",
+        "definition": "CREATE TRIGGER snapshot_paid_commission BEFORE INSERT OR UPDATE ON order_suborders FOR EACH ROW EXECUTE FUNCTION private.snapshot_paid_commission()",
+        "table_name": "order_suborders",
+        "schema_name": "public"
+      },
+      {
+        "name": "active_account_write",
+        "definition": "CREATE TRIGGER active_account_write BEFORE INSERT OR DELETE OR UPDATE ON orders FOR EACH ROW EXECUTE FUNCTION private.reject_inactive_write()",
+        "table_name": "orders",
+        "schema_name": "public"
+      },
+      {
+        "name": "require_fulfilment",
+        "definition": "CREATE TRIGGER require_fulfilment BEFORE INSERT ON orders FOR EACH ROW EXECUTE FUNCTION private.require_fulfilment_on_insert()",
+        "table_name": "orders",
+        "schema_name": "public"
+      },
+      {
+        "name": "active_account_write",
+        "definition": "CREATE TRIGGER active_account_write BEFORE INSERT OR DELETE OR UPDATE ON payfast_itn_log FOR EACH ROW EXECUTE FUNCTION private.reject_inactive_write()",
+        "table_name": "payfast_itn_log",
+        "schema_name": "public"
+      },
+      {
+        "name": "audit_inactive_payment",
+        "definition": "CREATE TRIGGER audit_inactive_payment AFTER INSERT OR UPDATE ON payfast_itn_log FOR EACH ROW EXECUTE FUNCTION private.audit_inactive_payment()",
+        "table_name": "payfast_itn_log",
+        "schema_name": "public"
+      },
+      {
+        "name": "active_account_write",
+        "definition": "CREATE TRIGGER active_account_write BEFORE INSERT OR DELETE OR UPDATE ON payout_allocations FOR EACH ROW EXECUTE FUNCTION private.reject_inactive_write()",
+        "table_name": "payout_allocations",
+        "schema_name": "public"
+      },
+      {
+        "name": "active_account_write",
+        "definition": "CREATE TRIGGER active_account_write BEFORE INSERT OR DELETE OR UPDATE ON profiles FOR EACH ROW EXECUTE FUNCTION private.reject_inactive_write()",
+        "table_name": "profiles",
+        "schema_name": "public"
+      },
+      {
+        "name": "guard_profile_privileged_fields",
+        "definition": "CREATE TRIGGER guard_profile_privileged_fields BEFORE UPDATE ON profiles FOR EACH ROW EXECUTE FUNCTION guard_profile_privileged_fields()",
+        "table_name": "profiles",
+        "schema_name": "public"
+      },
+      {
+        "name": "require_auth_identity",
+        "definition": "CREATE TRIGGER require_auth_identity BEFORE INSERT ON profiles FOR EACH ROW EXECUTE FUNCTION private.require_auth_identity_on_profile_insert()",
+        "table_name": "profiles",
+        "schema_name": "public"
+      },
+      {
+        "name": "active_account_write",
+        "definition": "CREATE TRIGGER active_account_write BEFORE INSERT OR DELETE OR UPDATE ON reviews FOR EACH ROW EXECUTE FUNCTION private.reject_inactive_write()",
+        "table_name": "reviews",
+        "schema_name": "public"
+      },
+      {
+        "name": "active_account_write",
+        "definition": "CREATE TRIGGER active_account_write BEFORE INSERT OR DELETE OR UPDATE ON support_ticket_messages FOR EACH ROW EXECUTE FUNCTION private.reject_inactive_write()",
+        "table_name": "support_ticket_messages",
+        "schema_name": "public"
+      },
+      {
+        "name": "support_messages_notify_requester",
+        "definition": "CREATE TRIGGER support_messages_notify_requester AFTER INSERT ON support_ticket_messages FOR EACH ROW EXECUTE FUNCTION notify_support_reply()",
+        "table_name": "support_ticket_messages",
+        "schema_name": "public"
+      },
+      {
+        "name": "support_ticket_message_touch",
+        "definition": "CREATE TRIGGER support_ticket_message_touch AFTER INSERT ON support_ticket_messages FOR EACH ROW EXECUTE FUNCTION touch_support_ticket()",
+        "table_name": "support_ticket_messages",
+        "schema_name": "public"
+      },
+      {
+        "name": "active_account_write",
+        "definition": "CREATE TRIGGER active_account_write BEFORE INSERT OR DELETE OR UPDATE ON support_tickets FOR EACH ROW EXECUTE FUNCTION private.reject_inactive_write()",
+        "table_name": "support_tickets",
+        "schema_name": "public"
+      },
+      {
+        "name": "support_ticket_sanitize_create",
+        "definition": "CREATE TRIGGER support_ticket_sanitize_create BEFORE INSERT ON support_tickets FOR EACH ROW EXECUTE FUNCTION sanitize_support_ticket_create()",
+        "table_name": "support_tickets",
+        "schema_name": "public"
+      },
+      {
+        "name": "active_account_write",
+        "definition": "CREATE TRIGGER active_account_write BEFORE INSERT OR DELETE OR UPDATE ON vendor_payouts FOR EACH ROW EXECUTE FUNCTION private.reject_inactive_write()",
+        "table_name": "vendor_payouts",
+        "schema_name": "public"
+      },
+      {
+        "name": "active_account_write",
+        "definition": "CREATE TRIGGER active_account_write BEFORE INSERT OR DELETE OR UPDATE ON vendors FOR EACH ROW EXECUTE FUNCTION private.reject_inactive_write()",
+        "table_name": "vendors",
+        "schema_name": "public"
+      },
+      {
+        "name": "guard_vendor_privileged_fields",
+        "definition": "CREATE TRIGGER guard_vendor_privileged_fields BEFORE UPDATE ON vendors FOR EACH ROW EXECUTE FUNCTION guard_vendor_privileged_fields()",
+        "table_name": "vendors",
+        "schema_name": "public"
+      }
+    ],
+    "policies": [
+      {
+        "cmd": "ALL",
+        "qual": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))",
+        "roles": [
+          "anon",
+          "authenticated"
+        ],
+        "tablename": "booking_pricing_rules",
+        "permissive": "RESTRICTIVE",
+        "policyname": "active_account_access",
+        "schemaname": "public",
+        "with_check": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))"
+      },
+      {
+        "cmd": "SELECT",
+        "qual": "((active = true) OR ( SELECT private.is_admin() AS is_admin))",
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "booking_pricing_rules",
+        "permissive": "PERMISSIVE",
+        "policyname": "booking_pricing_authenticated_read",
+        "schemaname": "public",
+        "with_check": null
+      },
+      {
+        "cmd": "ALL",
+        "qual": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))",
+        "roles": [
+          "anon",
+          "authenticated"
+        ],
+        "tablename": "conversations",
+        "permissive": "RESTRICTIVE",
+        "policyname": "active_account_access",
+        "schemaname": "public",
+        "with_check": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))"
+      },
+      {
+        "cmd": "DELETE",
+        "qual": "( SELECT private.is_admin() AS is_admin)",
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "conversations",
+        "permissive": "PERMISSIVE",
+        "policyname": "conversations_admin_delete",
+        "schemaname": "public",
+        "with_check": null
+      },
+      {
+        "cmd": "INSERT",
+        "qual": null,
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "conversations",
+        "permissive": "PERMISSIVE",
+        "policyname": "conversations_order_participant_insert",
+        "schemaname": "public",
+        "with_check": "((order_id IS NOT NULL) AND (EXISTS ( SELECT 1\n   FROM (orders o\n     JOIN order_suborders so ON ((so.order_id = o.id)))\n  WHERE ((o.id = conversations.order_id) AND (o.customer_id = conversations.customer_id) AND (so.vendor_id = conversations.vendor_id) AND ((conversations.customer_id = ( SELECT auth.uid() AS uid)) OR (conversations.vendor_id = ( SELECT private.current_vendor_id() AS current_vendor_id)))))))"
+      },
+      {
+        "cmd": "SELECT",
+        "qual": "((customer_id = ( SELECT auth.uid() AS uid)) OR (vendor_id = ( SELECT private.current_vendor_id() AS current_vendor_id)) OR ( SELECT private.is_admin() AS is_admin))",
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "conversations",
+        "permissive": "PERMISSIVE",
+        "policyname": "conversations_participants_select",
+        "schemaname": "public",
+        "with_check": null
+      },
+      {
+        "cmd": "ALL",
+        "qual": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))",
+        "roles": [
+          "anon",
+          "authenticated"
+        ],
+        "tablename": "corporate_opportunities",
+        "permissive": "RESTRICTIVE",
+        "policyname": "active_account_access",
+        "schemaname": "public",
+        "with_check": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))"
+      },
+      {
+        "cmd": "SELECT",
+        "qual": "((vendor_id = ( SELECT private.current_vendor_id() AS current_vendor_id)) OR ( SELECT private.is_admin() AS is_admin))",
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "corporate_opportunities",
+        "permissive": "PERMISSIVE",
+        "policyname": "corporate_opportunity_vendor_read",
+        "schemaname": "public",
+        "with_check": null
+      },
+      {
+        "cmd": "UPDATE",
+        "qual": "((vendor_id = ( SELECT private.current_vendor_id() AS current_vendor_id)) OR ( SELECT private.is_admin() AS is_admin))",
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "corporate_opportunities",
+        "permissive": "PERMISSIVE",
+        "policyname": "corporate_opportunity_vendor_update",
+        "schemaname": "public",
+        "with_check": "((vendor_id = ( SELECT private.current_vendor_id() AS current_vendor_id)) OR ( SELECT private.is_admin() AS is_admin))"
+      },
+      {
+        "cmd": "ALL",
+        "qual": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))",
+        "roles": [
+          "anon",
+          "authenticated"
+        ],
+        "tablename": "event_booking_requests",
+        "permissive": "RESTRICTIVE",
+        "policyname": "active_account_access",
+        "schemaname": "public",
+        "with_check": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))"
+      },
+      {
+        "cmd": "INSERT",
+        "qual": null,
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "event_booking_requests",
+        "permissive": "PERMISSIVE",
+        "policyname": "event_booking_own_insert",
+        "schemaname": "public",
+        "with_check": "(requester_id = ( SELECT auth.uid() AS uid))"
+      },
+      {
+        "cmd": "SELECT",
+        "qual": "((requester_id = ( SELECT auth.uid() AS uid)) OR ( SELECT private.is_admin() AS is_admin))",
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "event_booking_requests",
+        "permissive": "PERMISSIVE",
+        "policyname": "event_booking_own_select",
+        "schemaname": "public",
+        "with_check": null
+      },
+      {
+        "cmd": "ALL",
+        "qual": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))",
+        "roles": [
+          "anon",
+          "authenticated"
+        ],
+        "tablename": "favourites",
+        "permissive": "RESTRICTIVE",
+        "policyname": "active_account_access",
+        "schemaname": "public",
+        "with_check": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))"
+      },
+      {
+        "cmd": "ALL",
+        "qual": "(profile_id = ( SELECT auth.uid() AS uid))",
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "favourites",
+        "permissive": "PERMISSIVE",
+        "policyname": "favourites_own_all",
+        "schemaname": "public",
+        "with_check": "(profile_id = ( SELECT auth.uid() AS uid))"
+      },
+      {
+        "cmd": "ALL",
+        "qual": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))",
+        "roles": [
+          "anon",
+          "authenticated"
+        ],
+        "tablename": "feedback",
+        "permissive": "RESTRICTIVE",
+        "policyname": "active_account_access",
+        "schemaname": "public",
+        "with_check": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))"
+      },
+      {
+        "cmd": "SELECT",
+        "qual": "((user_id = ( SELECT auth.uid() AS uid)) OR ( SELECT private.is_admin() AS is_admin))",
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "feedback",
+        "permissive": "PERMISSIVE",
+        "policyname": "feedback_read",
+        "schemaname": "public",
+        "with_check": null
+      },
+      {
+        "cmd": "INSERT",
+        "qual": null,
+        "roles": [
+          "anon",
+          "authenticated"
+        ],
+        "tablename": "feedback",
+        "permissive": "PERMISSIVE",
+        "policyname": "feedback_submit",
+        "schemaname": "public",
+        "with_check": "(NOT (user_id IS DISTINCT FROM ( SELECT auth.uid() AS uid)))"
+      },
+      {
+        "cmd": "ALL",
+        "qual": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))",
+        "roles": [
+          "anon",
+          "authenticated"
+        ],
+        "tablename": "help_articles",
+        "permissive": "RESTRICTIVE",
+        "policyname": "active_account_access",
+        "schemaname": "public",
+        "with_check": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))"
+      },
+      {
+        "cmd": "SELECT",
+        "qual": "(published = true)",
+        "roles": [
+          "anon",
+          "authenticated"
+        ],
+        "tablename": "help_articles",
+        "permissive": "PERMISSIVE",
+        "policyname": "help_articles_public_read",
+        "schemaname": "public",
+        "with_check": null
+      },
+      {
+        "cmd": "ALL",
+        "qual": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))",
+        "roles": [
+          "anon",
+          "authenticated"
+        ],
+        "tablename": "meals",
+        "permissive": "RESTRICTIVE",
+        "policyname": "active_account_access",
+        "schemaname": "public",
+        "with_check": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))"
+      },
+      {
+        "cmd": "SELECT",
+        "qual": "(((available = true) AND (EXISTS ( SELECT 1\n   FROM vendors v\n  WHERE ((v.id = meals.vendor_id) AND (v.status = 'approved'::vendor_status))))) OR ((( SELECT auth.uid() AS uid) IS NOT NULL) AND (( SELECT private.is_admin() AS is_admin) OR (vendor_id = ( SELECT private.current_vendor_id() AS current_vendor_id)))))",
+        "roles": [
+          "anon",
+          "authenticated"
+        ],
+        "tablename": "meals",
+        "permissive": "PERMISSIVE",
+        "policyname": "meals_catalog_and_owner_select",
+        "schemaname": "public",
+        "with_check": null
+      },
+      {
+        "cmd": "DELETE",
+        "qual": "(private.is_admin() OR (vendor_id = private.current_vendor_id()))",
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "meals",
+        "permissive": "PERMISSIVE",
+        "policyname": "meals_owner_admin_delete",
+        "schemaname": "public",
+        "with_check": null
+      },
+      {
+        "cmd": "INSERT",
+        "qual": null,
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "meals",
+        "permissive": "PERMISSIVE",
+        "policyname": "meals_owner_admin_insert",
+        "schemaname": "public",
+        "with_check": "(private.is_admin() OR (vendor_id = private.current_vendor_id()))"
+      },
+      {
+        "cmd": "UPDATE",
+        "qual": "(private.is_admin() OR (vendor_id = private.current_vendor_id()))",
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "meals",
+        "permissive": "PERMISSIVE",
+        "policyname": "meals_owner_admin_update",
+        "schemaname": "public",
+        "with_check": "(private.is_admin() OR (vendor_id = private.current_vendor_id()))"
+      },
+      {
+        "cmd": "ALL",
+        "qual": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))",
+        "roles": [
+          "anon",
+          "authenticated"
+        ],
+        "tablename": "messages",
+        "permissive": "RESTRICTIVE",
+        "policyname": "active_account_access",
+        "schemaname": "public",
+        "with_check": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))"
+      },
+      {
+        "cmd": "INSERT",
+        "qual": null,
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "messages",
+        "permissive": "PERMISSIVE",
+        "policyname": "messages_participants_insert",
+        "schemaname": "public",
+        "with_check": "((sender_id = ( SELECT auth.uid() AS uid)) AND (read = false) AND (length(TRIM(BOTH FROM text)) > 0) AND (EXISTS ( SELECT 1\n   FROM conversations c\n  WHERE ((c.id = messages.conversation_id) AND (c.closed_at IS NULL) AND ((c.customer_id = ( SELECT auth.uid() AS uid)) OR (c.vendor_id = ( SELECT private.current_vendor_id() AS current_vendor_id)))))))"
+      },
+      {
+        "cmd": "SELECT",
+        "qual": "(EXISTS ( SELECT 1\n   FROM conversations c\n  WHERE ((c.id = messages.conversation_id) AND ((c.customer_id = ( SELECT auth.uid() AS uid)) OR (c.vendor_id = ( SELECT private.current_vendor_id() AS current_vendor_id)) OR ( SELECT private.is_admin() AS is_admin)))))",
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "messages",
+        "permissive": "PERMISSIVE",
+        "policyname": "messages_participants_select",
+        "schemaname": "public",
+        "with_check": null
+      },
+      {
+        "cmd": "UPDATE",
+        "qual": "(EXISTS ( SELECT 1\n   FROM conversations c\n  WHERE ((c.id = messages.conversation_id) AND ((c.customer_id = ( SELECT auth.uid() AS uid)) OR (c.vendor_id = ( SELECT private.current_vendor_id() AS current_vendor_id))))))",
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "messages",
+        "permissive": "PERMISSIVE",
+        "policyname": "messages_participants_update",
+        "schemaname": "public",
+        "with_check": "(EXISTS ( SELECT 1\n   FROM conversations c\n  WHERE ((c.id = messages.conversation_id) AND ((c.customer_id = ( SELECT auth.uid() AS uid)) OR (c.vendor_id = ( SELECT private.current_vendor_id() AS current_vendor_id))))))"
+      },
+      {
+        "cmd": "ALL",
+        "qual": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))",
+        "roles": [
+          "anon",
+          "authenticated"
+        ],
+        "tablename": "notifications",
+        "permissive": "RESTRICTIVE",
+        "policyname": "active_account_access",
+        "schemaname": "public",
+        "with_check": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))"
+      },
+      {
+        "cmd": "SELECT",
+        "qual": "((user_id = ( SELECT auth.uid() AS uid)) OR ( SELECT private.is_admin() AS is_admin))",
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "notifications",
+        "permissive": "PERMISSIVE",
+        "policyname": "notifications_own_select",
+        "schemaname": "public",
+        "with_check": null
+      },
+      {
+        "cmd": "UPDATE",
+        "qual": "((user_id = ( SELECT auth.uid() AS uid)) OR ( SELECT private.is_admin() AS is_admin))",
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "notifications",
+        "permissive": "PERMISSIVE",
+        "policyname": "notifications_own_update",
+        "schemaname": "public",
+        "with_check": "((user_id = ( SELECT auth.uid() AS uid)) OR ( SELECT private.is_admin() AS is_admin))"
+      },
+      {
+        "cmd": "ALL",
+        "qual": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))",
+        "roles": [
+          "anon",
+          "authenticated"
+        ],
+        "tablename": "order_flow",
+        "permissive": "RESTRICTIVE",
+        "policyname": "active_account_access",
+        "schemaname": "public",
+        "with_check": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))"
+      },
+      {
+        "cmd": "ALL",
+        "qual": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))",
+        "roles": [
+          "anon",
+          "authenticated"
+        ],
+        "tablename": "order_items",
+        "permissive": "RESTRICTIVE",
+        "policyname": "active_account_access",
+        "schemaname": "public",
+        "with_check": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))"
+      },
+      {
+        "cmd": "SELECT",
+        "qual": "(EXISTS ( SELECT 1\n   FROM (order_suborders so\n     JOIN orders o ON ((o.id = so.order_id)))\n  WHERE ((so.id = order_items.suborder_id) AND (( SELECT private.is_admin() AS is_admin) OR (so.vendor_id = ( SELECT private.current_vendor_id() AS current_vendor_id)) OR (o.customer_id = ( SELECT auth.uid() AS uid))))))",
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "order_items",
+        "permissive": "PERMISSIVE",
+        "policyname": "items_related_select",
+        "schemaname": "public",
+        "with_check": null
+      },
+      {
+        "cmd": "ALL",
+        "qual": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))",
+        "roles": [
+          "anon",
+          "authenticated"
+        ],
+        "tablename": "order_suborders",
+        "permissive": "RESTRICTIVE",
+        "policyname": "active_account_access",
+        "schemaname": "public",
+        "with_check": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))"
+      },
+      {
+        "cmd": "SELECT",
+        "qual": "(( SELECT private.is_admin() AS is_admin) OR (vendor_id = ( SELECT private.current_vendor_id() AS current_vendor_id)) OR (EXISTS ( SELECT 1\n   FROM orders o\n  WHERE ((o.id = order_suborders.order_id) AND (o.customer_id = ( SELECT auth.uid() AS uid))))))",
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "order_suborders",
+        "permissive": "PERMISSIVE",
+        "policyname": "suborders_related_select",
+        "schemaname": "public",
+        "with_check": null
+      },
+      {
+        "cmd": "UPDATE",
+        "qual": "((vendor_id = private.current_vendor_id()) OR private.is_admin())",
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "order_suborders",
+        "permissive": "PERMISSIVE",
+        "policyname": "suborders_vendor_notes_update",
+        "schemaname": "public",
+        "with_check": "((vendor_id = private.current_vendor_id()) OR private.is_admin())"
+      },
+      {
+        "cmd": "ALL",
+        "qual": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))",
+        "roles": [
+          "anon",
+          "authenticated"
+        ],
+        "tablename": "orders",
+        "permissive": "RESTRICTIVE",
+        "policyname": "active_account_access",
+        "schemaname": "public",
+        "with_check": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))"
+      },
+      {
+        "cmd": "SELECT",
+        "qual": "((customer_id = ( SELECT auth.uid() AS uid)) OR ( SELECT private.is_admin() AS is_admin) OR ( SELECT private.vendor_can_see_order(orders.id) AS vendor_can_see_order))",
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "orders",
+        "permissive": "PERMISSIVE",
+        "policyname": "orders_customer_admin_vendor_select",
+        "schemaname": "public",
+        "with_check": null
+      },
+      {
+        "cmd": "ALL",
+        "qual": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))",
+        "roles": [
+          "anon",
+          "authenticated"
+        ],
+        "tablename": "payfast_itn_log",
+        "permissive": "RESTRICTIVE",
+        "policyname": "active_account_access",
+        "schemaname": "public",
+        "with_check": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))"
+      },
+      {
+        "cmd": "ALL",
+        "qual": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))",
+        "roles": [
+          "anon",
+          "authenticated"
+        ],
+        "tablename": "payout_allocations",
+        "permissive": "RESTRICTIVE",
+        "policyname": "active_account_access",
+        "schemaname": "public",
+        "with_check": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))"
+      },
+      {
+        "cmd": "SELECT",
+        "qual": "(EXISTS ( SELECT 1\n   FROM vendor_payouts p\n  WHERE (p.id = payout_allocations.payout_id)))",
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "payout_allocations",
+        "permissive": "PERMISSIVE",
+        "policyname": "allocation_read",
+        "schemaname": "public",
+        "with_check": null
+      },
+      {
+        "cmd": "ALL",
+        "qual": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))",
+        "roles": [
+          "anon",
+          "authenticated"
+        ],
+        "tablename": "profiles",
+        "permissive": "RESTRICTIVE",
+        "policyname": "active_account_access",
+        "schemaname": "public",
+        "with_check": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))"
+      },
+      {
+        "cmd": "SELECT",
+        "qual": "((id = ( SELECT auth.uid() AS uid)) OR ( SELECT private.is_admin() AS is_admin))",
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "profiles",
+        "permissive": "PERMISSIVE",
+        "policyname": "profiles_self_select",
+        "schemaname": "public",
+        "with_check": null
+      },
+      {
+        "cmd": "UPDATE",
+        "qual": "((id = ( SELECT auth.uid() AS uid)) OR ( SELECT private.is_admin() AS is_admin))",
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "profiles",
+        "permissive": "PERMISSIVE",
+        "policyname": "profiles_self_update",
+        "schemaname": "public",
+        "with_check": "((id = ( SELECT auth.uid() AS uid)) OR ( SELECT private.is_admin() AS is_admin))"
+      },
+      {
+        "cmd": "ALL",
+        "qual": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))",
+        "roles": [
+          "anon",
+          "authenticated"
+        ],
+        "tablename": "reviews",
+        "permissive": "RESTRICTIVE",
+        "policyname": "active_account_access",
+        "schemaname": "public",
+        "with_check": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))"
+      },
+      {
+        "cmd": "INSERT",
+        "qual": null,
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "reviews",
+        "permissive": "PERMISSIVE",
+        "policyname": "reviews_customer_insert",
+        "schemaname": "public",
+        "with_check": "(customer_id = ( SELECT auth.uid() AS uid))"
+      },
+      {
+        "cmd": "SELECT",
+        "qual": "true",
+        "roles": [
+          "anon",
+          "authenticated"
+        ],
+        "tablename": "reviews",
+        "permissive": "PERMISSIVE",
+        "policyname": "reviews_public_read",
+        "schemaname": "public",
+        "with_check": null
+      },
+      {
+        "cmd": "ALL",
+        "qual": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))",
+        "roles": [
+          "anon",
+          "authenticated"
+        ],
+        "tablename": "support_ticket_messages",
+        "permissive": "RESTRICTIVE",
+        "policyname": "active_account_access",
+        "schemaname": "public",
+        "with_check": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))"
+      },
+      {
+        "cmd": "INSERT",
+        "qual": null,
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "support_ticket_messages",
+        "permissive": "PERMISSIVE",
+        "policyname": "support_message_customer_create",
+        "schemaname": "public",
+        "with_check": "((sender_id = ( SELECT auth.uid() AS uid)) AND (sender_role = 'customer'::text) AND (internal = false) AND (EXISTS ( SELECT 1\n   FROM support_tickets t\n  WHERE ((t.id = support_ticket_messages.ticket_id) AND (t.requester_id = ( SELECT auth.uid() AS uid))))))"
+      },
+      {
+        "cmd": "SELECT",
+        "qual": "(( SELECT private.is_admin() AS is_admin) OR ((internal = false) AND (EXISTS ( SELECT 1\n   FROM support_tickets t\n  WHERE ((t.id = support_ticket_messages.ticket_id) AND (t.requester_id = ( SELECT auth.uid() AS uid)))))))",
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "support_ticket_messages",
+        "permissive": "PERMISSIVE",
+        "policyname": "support_message_read",
+        "schemaname": "public",
+        "with_check": null
+      },
+      {
+        "cmd": "ALL",
+        "qual": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))",
+        "roles": [
+          "anon",
+          "authenticated"
+        ],
+        "tablename": "support_tickets",
+        "permissive": "RESTRICTIVE",
+        "policyname": "active_account_access",
+        "schemaname": "public",
+        "with_check": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))"
+      },
+      {
+        "cmd": "INSERT",
+        "qual": null,
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "support_tickets",
+        "permissive": "PERMISSIVE",
+        "policyname": "support_ticket_owner_create",
+        "schemaname": "public",
+        "with_check": "(requester_id = ( SELECT auth.uid() AS uid))"
+      },
+      {
+        "cmd": "SELECT",
+        "qual": "((requester_id = ( SELECT auth.uid() AS uid)) OR ( SELECT private.is_admin() AS is_admin))",
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "support_tickets",
+        "permissive": "PERMISSIVE",
+        "policyname": "support_ticket_owner_read",
+        "schemaname": "public",
+        "with_check": null
+      },
+      {
+        "cmd": "ALL",
+        "qual": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))",
+        "roles": [
+          "anon",
+          "authenticated"
+        ],
+        "tablename": "vendor_payouts",
+        "permissive": "RESTRICTIVE",
+        "policyname": "active_account_access",
+        "schemaname": "public",
+        "with_check": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))"
+      },
+      {
+        "cmd": "SELECT",
+        "qual": "(private.is_admin() OR (vendor_id = private.current_vendor_id()))",
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "vendor_payouts",
+        "permissive": "PERMISSIVE",
+        "policyname": "payout_read",
+        "schemaname": "public",
+        "with_check": null
+      },
+      {
+        "cmd": "ALL",
+        "qual": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))",
+        "roles": [
+          "anon",
+          "authenticated"
+        ],
+        "tablename": "vendors",
+        "permissive": "RESTRICTIVE",
+        "policyname": "active_account_access",
+        "schemaname": "public",
+        "with_check": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))"
+      },
+      {
+        "cmd": "SELECT",
+        "qual": "(status = 'approved'::vendor_status)",
+        "roles": [
+          "anon"
+        ],
+        "tablename": "vendors",
+        "permissive": "PERMISSIVE",
+        "policyname": "staging_approved_vendor_catalog",
+        "schemaname": "public",
+        "with_check": null
+      },
+      {
+        "cmd": "SELECT",
+        "qual": "((status = 'approved'::vendor_status) OR (owner_id = ( SELECT auth.uid() AS uid)) OR ( SELECT private.is_admin() AS is_admin))",
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "vendors",
+        "permissive": "PERMISSIVE",
+        "policyname": "vendors_owner_admin_select",
+        "schemaname": "public",
+        "with_check": null
+      },
+      {
+        "cmd": "UPDATE",
+        "qual": "((owner_id = ( SELECT auth.uid() AS uid)) OR ( SELECT private.is_admin() AS is_admin))",
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "vendors",
+        "permissive": "PERMISSIVE",
+        "policyname": "vendors_owner_admin_update",
+        "schemaname": "public",
+        "with_check": "((owner_id = ( SELECT auth.uid() AS uid)) OR ( SELECT private.is_admin() AS is_admin))"
+      },
+      {
+        "cmd": "ALL",
+        "qual": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))",
+        "roles": [
+          "anon",
+          "authenticated"
+        ],
+        "tablename": "objects",
+        "permissive": "RESTRICTIVE",
+        "policyname": "active_account_storage",
+        "schemaname": "storage",
+        "with_check": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))"
+      },
+      {
+        "cmd": "INSERT",
+        "qual": null,
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "objects",
+        "permissive": "PERMISSIVE",
+        "policyname": "authenticated_upload_payment_proof",
+        "schemaname": "storage",
+        "with_check": "((bucket_id = 'payment-proofs'::text) AND ((storage.foldername(name))[1] = (( SELECT auth.uid() AS uid))::text))"
+      },
+      {
+        "cmd": "INSERT",
+        "qual": null,
+        "roles": [
+          "public"
+        ],
+        "tablename": "objects",
+        "permissive": "PERMISSIVE",
+        "policyname": "authenticated_write_avatars",
+        "schemaname": "storage",
+        "with_check": "((bucket_id = 'avatars'::text) AND (auth.role() = 'authenticated'::text))"
+      },
+      {
+        "cmd": "DELETE",
+        "qual": "((bucket_id = 'payment-proofs'::text) AND (((storage.foldername(name))[1] = (( SELECT auth.uid() AS uid))::text) OR private.is_admin()))",
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "objects",
+        "permissive": "PERMISSIVE",
+        "policyname": "own_or_admin_delete_payment_proof",
+        "schemaname": "storage",
+        "with_check": null
+      },
+      {
+        "cmd": "SELECT",
+        "qual": "((bucket_id = 'payment-proofs'::text) AND (((storage.foldername(name))[1] = (( SELECT auth.uid() AS uid))::text) OR private.is_admin()))",
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "objects",
+        "permissive": "PERMISSIVE",
+        "policyname": "own_or_admin_read_payment_proof",
+        "schemaname": "storage",
+        "with_check": null
+      },
+      {
+        "cmd": "SELECT",
+        "qual": "(bucket_id = 'avatars'::text)",
+        "roles": [
+          "public"
+        ],
+        "tablename": "objects",
+        "permissive": "PERMISSIVE",
+        "policyname": "public_read_avatars",
+        "schemaname": "storage",
+        "with_check": null
+      },
+      {
+        "cmd": "SELECT",
+        "qual": "(bucket_id = 'meal-images'::text)",
+        "roles": [
+          "public"
+        ],
+        "tablename": "objects",
+        "permissive": "PERMISSIVE",
+        "policyname": "public_read_meal_images",
+        "schemaname": "storage",
+        "with_check": null
+      },
+      {
+        "cmd": "SELECT",
+        "qual": "(bucket_id = 'vendor-images'::text)",
+        "roles": [
+          "public"
+        ],
+        "tablename": "objects",
+        "permissive": "PERMISSIVE",
+        "policyname": "public_read_vendor_images",
+        "schemaname": "storage",
+        "with_check": null
+      },
+      {
+        "cmd": "DELETE",
+        "qual": "((bucket_id = 'support-attachments'::text) AND (((storage.foldername(name))[1] = (( SELECT auth.uid() AS uid))::text) OR private.is_admin()))",
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "objects",
+        "permissive": "PERMISSIVE",
+        "policyname": "staging_support_delete_own",
+        "schemaname": "storage",
+        "with_check": null
+      },
+      {
+        "cmd": "SELECT",
+        "qual": "((bucket_id = 'support-attachments'::text) AND (((storage.foldername(name))[1] = (( SELECT auth.uid() AS uid))::text) OR private.is_admin()))",
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "objects",
+        "permissive": "PERMISSIVE",
+        "policyname": "staging_support_read_own",
+        "schemaname": "storage",
+        "with_check": null
+      },
+      {
+        "cmd": "INSERT",
+        "qual": null,
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "objects",
+        "permissive": "PERMISSIVE",
+        "policyname": "staging_support_upload_own",
+        "schemaname": "storage",
+        "with_check": "((bucket_id = 'support-attachments'::text) AND ((storage.foldername(name))[1] = (( SELECT auth.uid() AS uid))::text))"
+      },
+      {
+        "cmd": "DELETE",
+        "qual": "((bucket_id = 'meal-images'::text) AND (EXISTS ( SELECT 1\n   FROM vendors v\n  WHERE (((v.id)::text = (storage.foldername(objects.name))[1]) AND (v.owner_id = ( SELECT auth.uid() AS uid))))))",
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "objects",
+        "permissive": "PERMISSIVE",
+        "policyname": "vendor_delete_own_meal_images",
+        "schemaname": "storage",
+        "with_check": null
+      },
+      {
+        "cmd": "DELETE",
+        "qual": "((bucket_id = 'vendor-images'::text) AND (EXISTS ( SELECT 1\n   FROM vendors v\n  WHERE (((v.id)::text = (storage.foldername(objects.name))[1]) AND (v.owner_id = ( SELECT auth.uid() AS uid))))))",
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "objects",
+        "permissive": "PERMISSIVE",
+        "policyname": "vendor_delete_own_vendor_images",
+        "schemaname": "storage",
+        "with_check": null
+      },
+      {
+        "cmd": "SELECT",
+        "qual": "((bucket_id = 'meal-images'::text) AND (EXISTS ( SELECT 1\n   FROM vendors v\n  WHERE (((v.id)::text = (storage.foldername(objects.name))[1]) AND (v.owner_id = ( SELECT auth.uid() AS uid))))))",
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "objects",
+        "permissive": "PERMISSIVE",
+        "policyname": "vendor_read_own_meal_images",
+        "schemaname": "storage",
+        "with_check": null
+      },
+      {
+        "cmd": "UPDATE",
+        "qual": "((bucket_id = 'meal-images'::text) AND (EXISTS ( SELECT 1\n   FROM vendors v\n  WHERE (((v.id)::text = (storage.foldername(objects.name))[1]) AND (v.owner_id = ( SELECT auth.uid() AS uid))))))",
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "objects",
+        "permissive": "PERMISSIVE",
+        "policyname": "vendor_update_own_meal_images",
+        "schemaname": "storage",
+        "with_check": "((bucket_id = 'meal-images'::text) AND (EXISTS ( SELECT 1\n   FROM vendors v\n  WHERE (((v.id)::text = (storage.foldername(objects.name))[1]) AND (v.owner_id = ( SELECT auth.uid() AS uid))))))"
+      },
+      {
+        "cmd": "UPDATE",
+        "qual": "((bucket_id = 'vendor-images'::text) AND (EXISTS ( SELECT 1\n   FROM vendors v\n  WHERE (((v.id)::text = (storage.foldername(objects.name))[1]) AND (v.owner_id = ( SELECT auth.uid() AS uid))))))",
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "objects",
+        "permissive": "PERMISSIVE",
+        "policyname": "vendor_update_own_vendor_images",
+        "schemaname": "storage",
+        "with_check": "((bucket_id = 'vendor-images'::text) AND (EXISTS ( SELECT 1\n   FROM vendors v\n  WHERE (((v.id)::text = (storage.foldername(objects.name))[1]) AND (v.owner_id = ( SELECT auth.uid() AS uid))))))"
+      },
+      {
+        "cmd": "INSERT",
+        "qual": null,
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "objects",
+        "permissive": "PERMISSIVE",
+        "policyname": "vendor_upload_own_meal_images",
+        "schemaname": "storage",
+        "with_check": "((bucket_id = 'meal-images'::text) AND (EXISTS ( SELECT 1\n   FROM vendors v\n  WHERE (((v.id)::text = (storage.foldername(objects.name))[1]) AND (v.owner_id = ( SELECT auth.uid() AS uid))))))"
+      },
+      {
+        "cmd": "INSERT",
+        "qual": null,
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "objects",
+        "permissive": "PERMISSIVE",
+        "policyname": "vendor_upload_own_vendor_images",
+        "schemaname": "storage",
+        "with_check": "((bucket_id = 'vendor-images'::text) AND (EXISTS ( SELECT 1\n   FROM vendors v\n  WHERE (((v.id)::text = (storage.foldername(objects.name))[1]) AND (v.owner_id = ( SELECT auth.uid() AS uid))))))"
+      }
+    ],
+    "objects": [
+      {
+        "acl": "{postgres=arwdDxtm/postgres}",
+        "rls": false,
+        "owner": "postgres",
+        "force_rls": false,
+        "table_name": "account_removal_jobs",
+        "schema_name": "private"
+      },
+      {
+        "acl": "{postgres=arwdDxtm/postgres}",
+        "rls": false,
+        "owner": "postgres",
+        "force_rls": false,
+        "table_name": "business_audit",
+        "schema_name": "private"
+      },
+      {
+        "acl": "{postgres=arwdDxtm/postgres}",
+        "rls": false,
+        "owner": "postgres",
+        "force_rls": false,
+        "table_name": "finance_settings",
+        "schema_name": "private"
+      },
+      {
+        "acl": "{postgres=arwdDxtm/postgres}",
+        "rls": false,
+        "owner": "postgres",
+        "force_rls": false,
+        "table_name": "financial_sales",
+        "schema_name": "private"
+      },
+      {
+        "acl": "{postgres=arwdDxtm/postgres}",
+        "rls": false,
+        "owner": "postgres",
+        "force_rls": false,
+        "table_name": "retention_settings",
+        "schema_name": "private"
+      },
+      {
+        "acl": "{postgres=arwdDxtm/postgres,anon=arwdDxtm/postgres,authenticated=arwdDxtm/postgres,service_role=arwdDxtm/postgres}",
+        "rls": true,
+        "owner": "postgres",
+        "force_rls": false,
+        "table_name": "booking_pricing_rules",
+        "schema_name": "public"
+      },
+      {
+        "acl": "{postgres=arwdDxtm/postgres,anon=arwdDxtm/postgres,authenticated=arwdDxtm/postgres,service_role=arwdDxtm/postgres}",
+        "rls": true,
+        "owner": "postgres",
+        "force_rls": false,
+        "table_name": "conversations",
+        "schema_name": "public"
+      },
+      {
+        "acl": "{postgres=arwdDxtm/postgres,anon=arwdDxtm/postgres,authenticated=arwdDxtm/postgres,service_role=arwdDxtm/postgres}",
+        "rls": true,
+        "owner": "postgres",
+        "force_rls": false,
+        "table_name": "corporate_opportunities",
+        "schema_name": "public"
+      },
+      {
+        "acl": "{postgres=arwdDxtm/postgres,anon=arwdDxtm/postgres,authenticated=arwdDxtm/postgres,service_role=arwdDxtm/postgres}",
+        "rls": true,
+        "owner": "postgres",
+        "force_rls": false,
+        "table_name": "event_booking_requests",
+        "schema_name": "public"
+      },
+      {
+        "acl": "{postgres=arwdDxtm/postgres,anon=arwdDxtm/postgres,authenticated=arwdDxtm/postgres,service_role=arwdDxtm/postgres}",
+        "rls": true,
+        "owner": "postgres",
+        "force_rls": false,
+        "table_name": "favourites",
+        "schema_name": "public"
+      },
+      {
+        "acl": "{postgres=arwdDxtm/postgres,service_role=arwdDxtm/postgres,authenticated=r/postgres}",
+        "rls": true,
+        "owner": "postgres",
+        "force_rls": false,
+        "table_name": "feedback",
+        "schema_name": "public"
+      },
+      {
+        "acl": "{postgres=arwdDxtm/postgres,anon=arwdDxtm/postgres,authenticated=arwdDxtm/postgres,service_role=arwdDxtm/postgres}",
+        "rls": true,
+        "owner": "postgres",
+        "force_rls": false,
+        "table_name": "help_articles",
+        "schema_name": "public"
+      },
+      {
+        "acl": "{postgres=arwdDxtm/postgres,anon=arwdDxtm/postgres,authenticated=arwdDxtm/postgres,service_role=arwdDxtm/postgres}",
+        "rls": true,
+        "owner": "postgres",
+        "force_rls": false,
+        "table_name": "meals",
+        "schema_name": "public"
+      },
+      {
+        "acl": "{postgres=arwdDxtm/postgres,anon=arwdDxtm/postgres,authenticated=ardDxtm/postgres,service_role=arwdDxtm/postgres}",
+        "rls": true,
+        "owner": "postgres",
+        "force_rls": false,
+        "table_name": "messages",
+        "schema_name": "public"
+      },
+      {
+        "acl": "{postgres=arwdDxtm/postgres,anon=arwdDxtm/postgres,authenticated=ardDxtm/postgres,service_role=arwdDxtm/postgres}",
+        "rls": true,
+        "owner": "postgres",
+        "force_rls": false,
+        "table_name": "notifications",
+        "schema_name": "public"
+      },
+      {
+        "acl": "{postgres=arwdDxtm/postgres,anon=arwdDxtm/postgres,authenticated=arwdDxtm/postgres,service_role=arwdDxtm/postgres}",
+        "rls": true,
+        "owner": "postgres",
+        "force_rls": false,
+        "table_name": "order_flow",
+        "schema_name": "public"
+      },
+      {
+        "acl": "{postgres=arwdDxtm/postgres,anon=arDxtm/postgres,authenticated=arDxtm/postgres,service_role=arwdDxtm/postgres}",
+        "rls": true,
+        "owner": "postgres",
+        "force_rls": false,
+        "table_name": "order_items",
+        "schema_name": "public"
+      },
+      {
+        "acl": "{postgres=arwdDxtm/postgres,anon=arwDxtm/postgres,authenticated=arDxtm/postgres,service_role=arwdDxtm/postgres}",
+        "rls": true,
+        "owner": "postgres",
+        "force_rls": false,
+        "table_name": "order_suborders",
+        "schema_name": "public"
+      },
+      {
+        "acl": "{postgres=arwdDxtm/postgres,anon=arDxtm/postgres,authenticated=arDxtm/postgres,service_role=arwdDxtm/postgres}",
+        "rls": true,
+        "owner": "postgres",
+        "force_rls": false,
+        "table_name": "orders",
+        "schema_name": "public"
+      },
+      {
+        "acl": "{postgres=arwdDxtm/postgres,anon=arwDxtm/postgres,authenticated=arwDxtm/postgres,service_role=arwdDxtm/postgres}",
+        "rls": true,
+        "owner": "postgres",
+        "force_rls": false,
+        "table_name": "payfast_itn_log",
+        "schema_name": "public"
+      },
+      {
+        "acl": "{postgres=arwdDxtm/postgres,service_role=arwdDxtm/postgres,authenticated=r/postgres}",
+        "rls": true,
+        "owner": "postgres",
+        "force_rls": false,
+        "table_name": "payout_allocations",
+        "schema_name": "public"
+      },
+      {
+        "acl": "{postgres=arwdDxtm/postgres,anon=arwdDxtm/postgres,authenticated=arwdDxtm/postgres,service_role=arwdDxtm/postgres}",
+        "rls": true,
+        "owner": "postgres",
+        "force_rls": false,
+        "table_name": "profiles",
+        "schema_name": "public"
+      },
+      {
+        "acl": "{postgres=arwdDxtm/postgres,anon=arwdDxtm/postgres,authenticated=arwdDxtm/postgres,service_role=arwdDxtm/postgres}",
+        "rls": true,
+        "owner": "postgres",
+        "force_rls": false,
+        "table_name": "reviews",
+        "schema_name": "public"
+      },
+      {
+        "acl": "{postgres=arwdDxtm/postgres,anon=arwdDxtm/postgres,authenticated=arwdDxtm/postgres,service_role=arwdDxtm/postgres}",
+        "rls": true,
+        "owner": "postgres",
+        "force_rls": false,
+        "table_name": "support_ticket_messages",
+        "schema_name": "public"
+      },
+      {
+        "acl": "{postgres=arwdDxtm/postgres,anon=arwdDxtm/postgres,authenticated=arwdDxtm/postgres,service_role=arwdDxtm/postgres}",
+        "rls": true,
+        "owner": "postgres",
+        "force_rls": false,
+        "table_name": "support_tickets",
+        "schema_name": "public"
+      },
+      {
+        "acl": "{postgres=arwdDxtm/postgres,service_role=arwdDxtm/postgres,authenticated=r/postgres}",
+        "rls": true,
+        "owner": "postgres",
+        "force_rls": false,
+        "table_name": "vendor_payouts",
+        "schema_name": "public"
+      },
+      {
+        "acl": "{postgres=arwdDxtm/postgres,anon=arwdDxtm/postgres,authenticated=arwdDxtm/postgres,service_role=arwdDxtm/postgres}",
+        "rls": true,
+        "owner": "postgres",
+        "force_rls": false,
+        "table_name": "vendors",
+        "schema_name": "public"
+      }
+    ]
+  }
+]

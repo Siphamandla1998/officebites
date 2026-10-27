@@ -1,0 +1,264 @@
+{
+  "contract": {
+    "observed_utc": "2026-10-27T13:03:47.626995+00:00",
+    "rpc_contract": [
+      {
+        "name": "admin_manual_settings",
+        "owner": "postgres",
+        "schema": "public",
+        "returns": "void",
+        "arguments": "p_eft boolean, p_payshap boolean, p_minutes integer, p_threshold numeric, p_reason text",
+        "anon_execute": false,
+        "service_execute": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "approve_vendor_payment_profile",
+        "owner": "postgres",
+        "schema": "public",
+        "returns": "void",
+        "arguments": "p_profile_id uuid, p_evidence text",
+        "anon_execute": false,
+        "service_execute": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "become_vendor",
+        "owner": "postgres",
+        "schema": "public",
+        "returns": "jsonb",
+        "arguments": "p_business_name text, p_business_category text, p_building text DEFAULT NULL::text",
+        "anon_execute": false,
+        "service_execute": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "create_manual_order",
+        "owner": "postgres",
+        "schema": "public",
+        "returns": "jsonb",
+        "arguments": "p_customer_id uuid, p_guest_name text, p_guest_contact text, p_guest_email text, p_delivery_date date, p_delivery_location text, p_items jsonb, p_quote_id uuid, p_method text, p_request_id uuid",
+        "anon_execute": true,
+        "service_execute": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "get_manual_payment",
+        "owner": "postgres",
+        "schema": "public",
+        "returns": "jsonb",
+        "arguments": "p_order_id uuid, p_token uuid DEFAULT NULL::uuid",
+        "anon_execute": true,
+        "service_execute": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "get_payment_gateways",
+        "owner": "postgres",
+        "schema": "public",
+        "returns": "jsonb",
+        "arguments": "",
+        "anon_execute": true,
+        "service_execute": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "get_vendor_manual_methods",
+        "owner": "postgres",
+        "schema": "public",
+        "returns": "jsonb",
+        "arguments": "p_vendor_id uuid",
+        "anon_execute": true,
+        "service_execute": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "manual_payment_workspace",
+        "owner": "postgres",
+        "schema": "public",
+        "returns": "jsonb",
+        "arguments": "p_test_only boolean DEFAULT false",
+        "anon_execute": false,
+        "service_execute": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "report_manual_payment",
+        "owner": "postgres",
+        "schema": "public",
+        "returns": "void",
+        "arguments": "p_order_id uuid, p_token uuid DEFAULT NULL::uuid",
+        "anon_execute": true,
+        "service_execute": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "submit_vendor_payment_profile",
+        "owner": "postgres",
+        "schema": "public",
+        "returns": "uuid",
+        "arguments": "p_vendor_id uuid, p_destination jsonb, p_eft boolean, p_payshap boolean",
+        "anon_execute": false,
+        "service_execute": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "verify_manual_payment",
+        "owner": "postgres",
+        "schema": "public",
+        "returns": "text",
+        "arguments": "p_order_id uuid, p_amount numeric, p_bank_reference text, p_suspicious boolean DEFAULT false",
+        "anon_execute": false,
+        "service_execute": true,
+        "authenticated_execute": true
+      }
+    ],
+    "ledger_triggers": null,
+    "singleton_counts": {
+      "gateway_rows": 4,
+      "manual_settings": 1,
+      "commercial_settings": 1
+    },
+    "ledger_constraints": [
+      {
+        "name": "schema_migrations_idempotency_key_key",
+        "definition": "UNIQUE (idempotency_key)"
+      },
+      {
+        "name": "schema_migrations_pkey",
+        "definition": "PRIMARY KEY (version)"
+      }
+    ],
+    "storage_delegation": {
+      "shared_preload_supautils": false,
+      "postgres_configured_for_objects": true
+    },
+    "private_ungranted_functions": [
+      "private.reject_inactive_write()",
+      "private.is_admin()",
+      "private.order_customer_names(uuid[])",
+      "private.snapshot_order_item()",
+      "private.snapshot_paid_commission()",
+      "private.guard_paid_item_history()",
+      "private.require_auth_identity_on_profile_insert()",
+      "private.active_account()",
+      "private.current_vendor_id()",
+      "private.account_removal_preview(uuid,text,uuid)",
+      "private.new_checkout_validation()",
+      "private.validate_vendor_mobile()",
+      "private.accept_vendor_legal(uuid,jsonb,jsonb)",
+      "private.legal_portal()",
+      "private.prepare_vendor_consent(jsonb,jsonb)",
+      "private.commercial_admin_action(text,jsonb)",
+      "private.respond_corporate_agreement(uuid,boolean)",
+      "private.commercial_workspace()",
+      "private.commercial_report(date,date)",
+      "private.vendor_orderable(uuid)"
+    ]
+  },
+  "delegation": {
+    "observed_utc": "2026-10-27T13:04:09.726061+00:00",
+    "preload_declared": {
+      "local_has_supautils": false,
+      "shared_has_supautils": false,
+      "session_has_supautils": true
+    },
+    "policy_grants_registered": [
+      {
+        "name": "supautils.policy_grants",
+        "source": "configuration file",
+        "context": "sighup",
+        "vartype": "string",
+        "pending_restart": false
+      }
+    ],
+    "privileged_private_execute": [
+      {
+        "acl": [
+          "postgres=X/postgres",
+          "authenticated=X/postgres"
+        ],
+        "anon": false,
+        "definer": true,
+        "signature": "private.accept_vendor_legal(uuid,jsonb,jsonb)",
+        "authenticated": true
+      },
+      {
+        "acl": [
+          "postgres=X/postgres",
+          "authenticated=X/postgres",
+          "service_role=X/postgres"
+        ],
+        "anon": false,
+        "definer": true,
+        "signature": "private.account_removal_preview(uuid,text,uuid)",
+        "authenticated": true
+      },
+      {
+        "acl": [
+          "postgres=X/postgres",
+          "authenticated=X/postgres"
+        ],
+        "anon": false,
+        "definer": true,
+        "signature": "private.commercial_admin_action(text,jsonb)",
+        "authenticated": true
+      },
+      {
+        "acl": [
+          "postgres=X/postgres",
+          "authenticated=X/postgres"
+        ],
+        "anon": false,
+        "definer": true,
+        "signature": "private.commercial_report(date,date)",
+        "authenticated": true
+      },
+      {
+        "acl": [
+          "postgres=X/postgres",
+          "authenticated=X/postgres"
+        ],
+        "anon": false,
+        "definer": true,
+        "signature": "private.commercial_workspace()",
+        "authenticated": true
+      },
+      {
+        "acl": [
+          "postgres=X/postgres",
+          "authenticated=X/postgres"
+        ],
+        "anon": false,
+        "definer": true,
+        "signature": "private.prepare_vendor_consent(jsonb,jsonb)",
+        "authenticated": true
+      },
+      {
+        "acl": null,
+        "anon": true,
+        "definer": true,
+        "signature": "private.reject_inactive_write()",
+        "authenticated": true
+      },
+      {
+        "acl": [
+          "postgres=X/postgres",
+          "authenticated=X/postgres"
+        ],
+        "anon": false,
+        "definer": true,
+        "signature": "private.respond_corporate_agreement(uuid,boolean)",
+        "authenticated": true
+      },
+      {
+        "acl": null,
+        "anon": true,
+        "definer": true,
+        "signature": "private.snapshot_paid_commission()",
+        "authenticated": true
+      }
+    ]
+  }
+}
+

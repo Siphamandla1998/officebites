@@ -1,0 +1,736 @@
+[
+  {
+    "observed_utc": "2026-10-27 09:27:58.216988+00",
+    "indexes": [
+      {
+        "indexdef": "CREATE UNIQUE INDEX account_removal_jobs_pkey ON private.account_removal_jobs USING btree (id)",
+        "indexname": "account_removal_jobs_pkey",
+        "tablename": "account_removal_jobs",
+        "schemaname": "private"
+      },
+      {
+        "indexdef": "CREATE UNIQUE INDEX business_audit_pkey ON private.business_audit USING btree (id)",
+        "indexname": "business_audit_pkey",
+        "tablename": "business_audit",
+        "schemaname": "private"
+      },
+      {
+        "indexdef": "CREATE UNIQUE INDEX finance_settings_pkey ON private.finance_settings USING btree (singleton)",
+        "indexname": "finance_settings_pkey",
+        "tablename": "finance_settings",
+        "schemaname": "private"
+      },
+      {
+        "indexdef": "CREATE UNIQUE INDEX retention_settings_pkey ON private.retention_settings USING btree (singleton)",
+        "indexname": "retention_settings_pkey",
+        "tablename": "retention_settings",
+        "schemaname": "private"
+      },
+      {
+        "indexdef": "CREATE UNIQUE INDEX booking_pricing_rules_pkey ON public.booking_pricing_rules USING btree (id)",
+        "indexname": "booking_pricing_rules_pkey",
+        "tablename": "booking_pricing_rules",
+        "schemaname": "public"
+      },
+      {
+        "indexdef": "CREATE UNIQUE INDEX booking_pricing_rules_service_level_key ON public.booking_pricing_rules USING btree (service_level)",
+        "indexname": "booking_pricing_rules_service_level_key",
+        "tablename": "booking_pricing_rules",
+        "schemaname": "public"
+      },
+      {
+        "indexdef": "CREATE INDEX conversations_customer_id_idx ON public.conversations USING btree (customer_id)",
+        "indexname": "conversations_customer_id_idx",
+        "tablename": "conversations",
+        "schemaname": "public"
+      },
+      {
+        "indexdef": "CREATE UNIQUE INDEX conversations_customer_id_vendor_id_key ON public.conversations USING btree (customer_id, vendor_id)",
+        "indexname": "conversations_customer_id_vendor_id_key",
+        "tablename": "conversations",
+        "schemaname": "public"
+      },
+      {
+        "indexdef": "CREATE UNIQUE INDEX conversations_pkey ON public.conversations USING btree (id)",
+        "indexname": "conversations_pkey",
+        "tablename": "conversations",
+        "schemaname": "public"
+      },
+      {
+        "indexdef": "CREATE INDEX conversations_vendor_id_idx ON public.conversations USING btree (vendor_id)",
+        "indexname": "conversations_vendor_id_idx",
+        "tablename": "conversations",
+        "schemaname": "public"
+      },
+      {
+        "indexdef": "CREATE INDEX idx_conversations_order_id ON public.conversations USING btree (order_id)",
+        "indexname": "idx_conversations_order_id",
+        "tablename": "conversations",
+        "schemaname": "public"
+      },
+      {
+        "indexdef": "CREATE UNIQUE INDEX corporate_opportunities_booking_id_vendor_id_key ON public.corporate_opportunities USING btree (booking_id, vendor_id)",
+        "indexname": "corporate_opportunities_booking_id_vendor_id_key",
+        "tablename": "corporate_opportunities",
+        "schemaname": "public"
+      },
+      {
+        "indexdef": "CREATE UNIQUE INDEX corporate_opportunities_pkey ON public.corporate_opportunities USING btree (id)",
+        "indexname": "corporate_opportunities_pkey",
+        "tablename": "corporate_opportunities",
+        "schemaname": "public"
+      },
+      {
+        "indexdef": "CREATE INDEX idx_corporate_opportunities_vendor_id ON public.corporate_opportunities USING btree (vendor_id)",
+        "indexname": "idx_corporate_opportunities_vendor_id",
+        "tablename": "corporate_opportunities",
+        "schemaname": "public"
+      },
+      {
+        "indexdef": "CREATE UNIQUE INDEX event_booking_requests_pkey ON public.event_booking_requests USING btree (id)",
+        "indexname": "event_booking_requests_pkey",
+        "tablename": "event_booking_requests",
+        "schemaname": "public"
+      },
+      {
+        "indexdef": "CREATE INDEX idx_event_booking_requests_requester_id ON public.event_booking_requests USING btree (requester_id)",
+        "indexname": "idx_event_booking_requests_requester_id",
+        "tablename": "event_booking_requests",
+        "schemaname": "public"
+      },
+      {
+        "indexdef": "CREATE INDEX idx_event_booking_selected_vendor_id ON public.event_booking_requests USING btree (selected_vendor_id)",
+        "indexname": "idx_event_booking_selected_vendor_id",
+        "tablename": "event_booking_requests",
+        "schemaname": "public"
+      },
+      {
+        "indexdef": "CREATE UNIQUE INDEX favourites_pkey ON public.favourites USING btree (profile_id, meal_id)",
+        "indexname": "favourites_pkey",
+        "tablename": "favourites",
+        "schemaname": "public"
+      },
+      {
+        "indexdef": "CREATE INDEX idx_favourites_meal_id ON public.favourites USING btree (meal_id)",
+        "indexname": "idx_favourites_meal_id",
+        "tablename": "favourites",
+        "schemaname": "public"
+      },
+      {
+        "indexdef": "CREATE UNIQUE INDEX feedback_pkey ON public.feedback USING btree (id)",
+        "indexname": "feedback_pkey",
+        "tablename": "feedback",
+        "schemaname": "public"
+      },
+      {
+        "indexdef": "CREATE INDEX feedback_user_id_idx ON public.feedback USING btree (user_id)",
+        "indexname": "feedback_user_id_idx",
+        "tablename": "feedback",
+        "schemaname": "public"
+      },
+      {
+        "indexdef": "CREATE UNIQUE INDEX help_articles_pkey ON public.help_articles USING btree (id)",
+        "indexname": "help_articles_pkey",
+        "tablename": "help_articles",
+        "schemaname": "public"
+      },
+      {
+        "indexdef": "CREATE UNIQUE INDEX help_articles_slug_key ON public.help_articles USING btree (slug)",
+        "indexname": "help_articles_slug_key",
+        "tablename": "help_articles",
+        "schemaname": "public"
+      },
+      {
+        "indexdef": "CREATE INDEX idx_meals_vendor_id ON public.meals USING btree (vendor_id)",
+        "indexname": "idx_meals_vendor_id",
+        "tablename": "meals",
+        "schemaname": "public"
+      },
+      {
+        "indexdef": "CREATE UNIQUE INDEX meals_pkey ON public.meals USING btree (id)",
+        "indexname": "meals_pkey",
+        "tablename": "meals",
+        "schemaname": "public"
+      },
+      {
+        "indexdef": "CREATE INDEX idx_messages_sender_id ON public.messages USING btree (sender_id)",
+        "indexname": "idx_messages_sender_id",
+        "tablename": "messages",
+        "schemaname": "public"
+      },
+      {
+        "indexdef": "CREATE INDEX messages_conversation_id_idx ON public.messages USING btree (conversation_id)",
+        "indexname": "messages_conversation_id_idx",
+        "tablename": "messages",
+        "schemaname": "public"
+      },
+      {
+        "indexdef": "CREATE INDEX messages_created_at_idx ON public.messages USING btree (created_at)",
+        "indexname": "messages_created_at_idx",
+        "tablename": "messages",
+        "schemaname": "public"
+      },
+      {
+        "indexdef": "CREATE UNIQUE INDEX messages_pkey ON public.messages USING btree (id)",
+        "indexname": "messages_pkey",
+        "tablename": "messages",
+        "schemaname": "public"
+      },
+      {
+        "indexdef": "CREATE INDEX notifications_created_at_idx ON public.notifications USING btree (created_at DESC)",
+        "indexname": "notifications_created_at_idx",
+        "tablename": "notifications",
+        "schemaname": "public"
+      },
+      {
+        "indexdef": "CREATE UNIQUE INDEX notifications_pkey ON public.notifications USING btree (id)",
+        "indexname": "notifications_pkey",
+        "tablename": "notifications",
+        "schemaname": "public"
+      },
+      {
+        "indexdef": "CREATE INDEX notifications_user_id_idx ON public.notifications USING btree (user_id)",
+        "indexname": "notifications_user_id_idx",
+        "tablename": "notifications",
+        "schemaname": "public"
+      },
+      {
+        "indexdef": "CREATE UNIQUE INDEX order_flow_pkey ON public.order_flow USING btree (status)",
+        "indexname": "order_flow_pkey",
+        "tablename": "order_flow",
+        "schemaname": "public"
+      },
+      {
+        "indexdef": "CREATE UNIQUE INDEX order_flow_step_key ON public.order_flow USING btree (step)",
+        "indexname": "order_flow_step_key",
+        "tablename": "order_flow",
+        "schemaname": "public"
+      },
+      {
+        "indexdef": "CREATE INDEX idx_order_items_meal_id ON public.order_items USING btree (meal_id)",
+        "indexname": "idx_order_items_meal_id",
+        "tablename": "order_items",
+        "schemaname": "public"
+      },
+      {
+        "indexdef": "CREATE INDEX idx_order_items_suborder_id ON public.order_items USING btree (suborder_id)",
+        "indexname": "idx_order_items_suborder_id",
+        "tablename": "order_items",
+        "schemaname": "public"
+      },
+      {
+        "indexdef": "CREATE UNIQUE INDEX order_items_pkey ON public.order_items USING btree (id)",
+        "indexname": "order_items_pkey",
+        "tablename": "order_items",
+        "schemaname": "public"
+      },
+      {
+        "indexdef": "CREATE INDEX idx_order_suborders_vendor_id ON public.order_suborders USING btree (vendor_id)",
+        "indexname": "idx_order_suborders_vendor_id",
+        "tablename": "order_suborders",
+        "schemaname": "public"
+      },
+      {
+        "indexdef": "CREATE UNIQUE INDEX order_suborders_order_id_vendor_id_key ON public.order_suborders USING btree (order_id, vendor_id)",
+        "indexname": "order_suborders_order_id_vendor_id_key",
+        "tablename": "order_suborders",
+        "schemaname": "public"
+      },
+      {
+        "indexdef": "CREATE UNIQUE INDEX order_suborders_pkey ON public.order_suborders USING btree (id)",
+        "indexname": "order_suborders_pkey",
+        "tablename": "order_suborders",
+        "schemaname": "public"
+      },
+      {
+        "indexdef": "CREATE INDEX idx_orders_customer_id ON public.orders USING btree (customer_id)",
+        "indexname": "idx_orders_customer_id",
+        "tablename": "orders",
+        "schemaname": "public"
+      },
+      {
+        "indexdef": "CREATE UNIQUE INDEX orders_pkey ON public.orders USING btree (id)",
+        "indexname": "orders_pkey",
+        "tablename": "orders",
+        "schemaname": "public"
+      },
+      {
+        "indexdef": "CREATE UNIQUE INDEX orders_ticket_number_key ON public.orders USING btree (ticket_number)",
+        "indexname": "orders_ticket_number_key",
+        "tablename": "orders",
+        "schemaname": "public"
+      },
+      {
+        "indexdef": "CREATE INDEX idx_payfast_itn_log_order_id ON public.payfast_itn_log USING btree (order_id)",
+        "indexname": "idx_payfast_itn_log_order_id",
+        "tablename": "payfast_itn_log",
+        "schemaname": "public"
+      },
+      {
+        "indexdef": "CREATE UNIQUE INDEX payfast_itn_log_pf_payment_id_key ON public.payfast_itn_log USING btree (pf_payment_id)",
+        "indexname": "payfast_itn_log_pf_payment_id_key",
+        "tablename": "payfast_itn_log",
+        "schemaname": "public"
+      },
+      {
+        "indexdef": "CREATE UNIQUE INDEX payfast_itn_log_pkey ON public.payfast_itn_log USING btree (id)",
+        "indexname": "payfast_itn_log_pkey",
+        "tablename": "payfast_itn_log",
+        "schemaname": "public"
+      },
+      {
+        "indexdef": "CREATE INDEX payout_allocations_payout_id_idx ON public.payout_allocations USING btree (payout_id)",
+        "indexname": "payout_allocations_payout_id_idx",
+        "tablename": "payout_allocations",
+        "schemaname": "public"
+      },
+      {
+        "indexdef": "CREATE UNIQUE INDEX payout_allocations_pkey ON public.payout_allocations USING btree (id)",
+        "indexname": "payout_allocations_pkey",
+        "tablename": "payout_allocations",
+        "schemaname": "public"
+      },
+      {
+        "indexdef": "CREATE UNIQUE INDEX payout_one_active_allocation ON public.payout_allocations USING btree (suborder_id) WHERE (released_at IS NULL)",
+        "indexname": "payout_one_active_allocation",
+        "tablename": "payout_allocations",
+        "schemaname": "public"
+      },
+      {
+        "indexdef": "CREATE INDEX idx_profiles_vendor_id ON public.profiles USING btree (vendor_id)",
+        "indexname": "idx_profiles_vendor_id",
+        "tablename": "profiles",
+        "schemaname": "public"
+      },
+      {
+        "indexdef": "CREATE UNIQUE INDEX profiles_pkey ON public.profiles USING btree (id)",
+        "indexname": "profiles_pkey",
+        "tablename": "profiles",
+        "schemaname": "public"
+      },
+      {
+        "indexdef": "CREATE INDEX idx_reviews_customer_id ON public.reviews USING btree (customer_id)",
+        "indexname": "idx_reviews_customer_id",
+        "tablename": "reviews",
+        "schemaname": "public"
+      },
+      {
+        "indexdef": "CREATE INDEX idx_reviews_meal_id ON public.reviews USING btree (meal_id)",
+        "indexname": "idx_reviews_meal_id",
+        "tablename": "reviews",
+        "schemaname": "public"
+      },
+      {
+        "indexdef": "CREATE INDEX idx_reviews_vendor_id ON public.reviews USING btree (vendor_id)",
+        "indexname": "idx_reviews_vendor_id",
+        "tablename": "reviews",
+        "schemaname": "public"
+      },
+      {
+        "indexdef": "CREATE UNIQUE INDEX reviews_pkey ON public.reviews USING btree (id)",
+        "indexname": "reviews_pkey",
+        "tablename": "reviews",
+        "schemaname": "public"
+      },
+      {
+        "indexdef": "CREATE INDEX idx_support_ticket_messages_sender_id ON public.support_ticket_messages USING btree (sender_id)",
+        "indexname": "idx_support_ticket_messages_sender_id",
+        "tablename": "support_ticket_messages",
+        "schemaname": "public"
+      },
+      {
+        "indexdef": "CREATE INDEX idx_support_ticket_messages_ticket_id ON public.support_ticket_messages USING btree (ticket_id)",
+        "indexname": "idx_support_ticket_messages_ticket_id",
+        "tablename": "support_ticket_messages",
+        "schemaname": "public"
+      },
+      {
+        "indexdef": "CREATE UNIQUE INDEX support_ticket_messages_pkey ON public.support_ticket_messages USING btree (id)",
+        "indexname": "support_ticket_messages_pkey",
+        "tablename": "support_ticket_messages",
+        "schemaname": "public"
+      },
+      {
+        "indexdef": "CREATE INDEX idx_support_tickets_assigned_to ON public.support_tickets USING btree (assigned_to)",
+        "indexname": "idx_support_tickets_assigned_to",
+        "tablename": "support_tickets",
+        "schemaname": "public"
+      },
+      {
+        "indexdef": "CREATE INDEX idx_support_tickets_order_id ON public.support_tickets USING btree (order_id)",
+        "indexname": "idx_support_tickets_order_id",
+        "tablename": "support_tickets",
+        "schemaname": "public"
+      },
+      {
+        "indexdef": "CREATE INDEX idx_support_tickets_requester_id ON public.support_tickets USING btree (requester_id)",
+        "indexname": "idx_support_tickets_requester_id",
+        "tablename": "support_tickets",
+        "schemaname": "public"
+      },
+      {
+        "indexdef": "CREATE UNIQUE INDEX support_tickets_pkey ON public.support_tickets USING btree (id)",
+        "indexname": "support_tickets_pkey",
+        "tablename": "support_tickets",
+        "schemaname": "public"
+      },
+      {
+        "indexdef": "CREATE UNIQUE INDEX support_tickets_ticket_number_key ON public.support_tickets USING btree (ticket_number)",
+        "indexname": "support_tickets_ticket_number_key",
+        "tablename": "support_tickets",
+        "schemaname": "public"
+      },
+      {
+        "indexdef": "CREATE UNIQUE INDEX vendor_payouts_pkey ON public.vendor_payouts USING btree (id)",
+        "indexname": "vendor_payouts_pkey",
+        "tablename": "vendor_payouts",
+        "schemaname": "public"
+      },
+      {
+        "indexdef": "CREATE UNIQUE INDEX vendor_payouts_request_id_key ON public.vendor_payouts USING btree (request_id)",
+        "indexname": "vendor_payouts_request_id_key",
+        "tablename": "vendor_payouts",
+        "schemaname": "public"
+      },
+      {
+        "indexdef": "CREATE INDEX vendor_payouts_vendor_id_idx ON public.vendor_payouts USING btree (vendor_id)",
+        "indexname": "vendor_payouts_vendor_id_idx",
+        "tablename": "vendor_payouts",
+        "schemaname": "public"
+      },
+      {
+        "indexdef": "CREATE INDEX idx_vendors_owner_id ON public.vendors USING btree (owner_id)",
+        "indexname": "idx_vendors_owner_id",
+        "tablename": "vendors",
+        "schemaname": "public"
+      },
+      {
+        "indexdef": "CREATE UNIQUE INDEX vendors_pkey ON public.vendors USING btree (id)",
+        "indexname": "vendors_pkey",
+        "tablename": "vendors",
+        "schemaname": "public"
+      }
+    ],
+    "defaults": [
+      {
+        "acl": "{postgres=rwU/postgres,anon=rwU/postgres,authenticated=rwU/postgres,service_role=rwU/postgres}",
+        "owner": "postgres",
+        "object_type": "S",
+        "schema_name": "public"
+      },
+      {
+        "acl": "{postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+        "owner": "postgres",
+        "object_type": "f",
+        "schema_name": "public"
+      },
+      {
+        "acl": "{postgres=arwdDxtm/postgres,anon=arwdDxtm/postgres,authenticated=arwdDxtm/postgres,service_role=arwdDxtm/postgres}",
+        "owner": "postgres",
+        "object_type": "r",
+        "schema_name": "public"
+      },
+      {
+        "acl": "{postgres=rwU/postgres,anon=rwU/postgres,authenticated=rwU/postgres,service_role=rwU/postgres}",
+        "owner": "postgres",
+        "object_type": "S",
+        "schema_name": "storage"
+      },
+      {
+        "acl": "{postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+        "owner": "postgres",
+        "object_type": "f",
+        "schema_name": "storage"
+      },
+      {
+        "acl": "{postgres=arwdDxtm/postgres,anon=arwdDxtm/postgres,authenticated=arwdDxtm/postgres,service_role=arwdDxtm/postgres}",
+        "owner": "postgres",
+        "object_type": "r",
+        "schema_name": "storage"
+      },
+      {
+        "acl": "{postgres=r*w*U*/supabase_admin}",
+        "owner": "supabase_admin",
+        "object_type": "S",
+        "schema_name": "extensions"
+      },
+      {
+        "acl": "{postgres=X*/supabase_admin}",
+        "owner": "supabase_admin",
+        "object_type": "f",
+        "schema_name": "extensions"
+      },
+      {
+        "acl": "{postgres=a*r*w*d*D*x*t*m*/supabase_admin}",
+        "owner": "supabase_admin",
+        "object_type": "r",
+        "schema_name": "extensions"
+      },
+      {
+        "acl": "{postgres=rwU/supabase_admin,anon=rwU/supabase_admin,authenticated=rwU/supabase_admin,service_role=rwU/supabase_admin}",
+        "owner": "supabase_admin",
+        "object_type": "S",
+        "schema_name": "graphql"
+      },
+      {
+        "acl": "{postgres=X/supabase_admin,anon=X/supabase_admin,authenticated=X/supabase_admin,service_role=X/supabase_admin}",
+        "owner": "supabase_admin",
+        "object_type": "f",
+        "schema_name": "graphql"
+      },
+      {
+        "acl": "{postgres=arwdDxtm/supabase_admin,anon=arwdDxtm/supabase_admin,authenticated=arwdDxtm/supabase_admin,service_role=arwdDxtm/supabase_admin}",
+        "owner": "supabase_admin",
+        "object_type": "r",
+        "schema_name": "graphql"
+      },
+      {
+        "acl": "{postgres=rwU/supabase_admin,anon=rwU/supabase_admin,authenticated=rwU/supabase_admin,service_role=rwU/supabase_admin}",
+        "owner": "supabase_admin",
+        "object_type": "S",
+        "schema_name": "graphql_public"
+      },
+      {
+        "acl": "{postgres=X/supabase_admin,anon=X/supabase_admin,authenticated=X/supabase_admin,service_role=X/supabase_admin}",
+        "owner": "supabase_admin",
+        "object_type": "f",
+        "schema_name": "graphql_public"
+      },
+      {
+        "acl": "{postgres=arwdDxtm/supabase_admin,anon=arwdDxtm/supabase_admin,authenticated=arwdDxtm/supabase_admin,service_role=arwdDxtm/supabase_admin}",
+        "owner": "supabase_admin",
+        "object_type": "r",
+        "schema_name": "graphql_public"
+      },
+      {
+        "acl": "{postgres=rwU/supabase_admin,anon=rwU/supabase_admin,authenticated=rwU/supabase_admin,service_role=rwU/supabase_admin}",
+        "owner": "supabase_admin",
+        "object_type": "S",
+        "schema_name": "public"
+      },
+      {
+        "acl": "{postgres=X/supabase_admin,anon=X/supabase_admin,authenticated=X/supabase_admin,service_role=X/supabase_admin}",
+        "owner": "supabase_admin",
+        "object_type": "f",
+        "schema_name": "public"
+      },
+      {
+        "acl": "{postgres=arwdDxtm/supabase_admin,anon=arwdDxtm/supabase_admin,authenticated=arwdDxtm/supabase_admin,service_role=arwdDxtm/supabase_admin}",
+        "owner": "supabase_admin",
+        "object_type": "r",
+        "schema_name": "public"
+      },
+      {
+        "acl": "{postgres=rwU/supabase_admin,dashboard_user=rwU/supabase_admin}",
+        "owner": "supabase_admin",
+        "object_type": "S",
+        "schema_name": "realtime"
+      },
+      {
+        "acl": "{postgres=X/supabase_admin,dashboard_user=X/supabase_admin}",
+        "owner": "supabase_admin",
+        "object_type": "f",
+        "schema_name": "realtime"
+      },
+      {
+        "acl": "{postgres=a*r*wdDxtm/supabase_admin,dashboard_user=arwdDxtm/supabase_admin}",
+        "owner": "supabase_admin",
+        "object_type": "r",
+        "schema_name": "realtime"
+      },
+      {
+        "acl": "{postgres=rwU/supabase_auth_admin,dashboard_user=rwU/supabase_auth_admin}",
+        "owner": "supabase_auth_admin",
+        "object_type": "S",
+        "schema_name": "auth"
+      },
+      {
+        "acl": "{postgres=X/supabase_auth_admin,dashboard_user=X/supabase_auth_admin}",
+        "owner": "supabase_auth_admin",
+        "object_type": "f",
+        "schema_name": "auth"
+      },
+      {
+        "acl": "{postgres=arwdDxtm/supabase_auth_admin,dashboard_user=arwdDxtm/supabase_auth_admin}",
+        "owner": "supabase_auth_admin",
+        "object_type": "r",
+        "schema_name": "auth"
+      }
+    ],
+    "roles": [
+      {
+        "rolname": "anon",
+        "rolsuper": false,
+        "rolinherit": true,
+        "rolcanlogin": false,
+        "rolcreatedb": false,
+        "rolbypassrls": false,
+        "rolcreaterole": false
+      },
+      {
+        "rolname": "authenticated",
+        "rolsuper": false,
+        "rolinherit": true,
+        "rolcanlogin": false,
+        "rolcreatedb": false,
+        "rolbypassrls": false,
+        "rolcreaterole": false
+      },
+      {
+        "rolname": "authenticator",
+        "rolsuper": false,
+        "rolinherit": false,
+        "rolcanlogin": true,
+        "rolcreatedb": false,
+        "rolbypassrls": false,
+        "rolcreaterole": false
+      },
+      {
+        "rolname": "postgres",
+        "rolsuper": false,
+        "rolinherit": true,
+        "rolcanlogin": true,
+        "rolcreatedb": true,
+        "rolbypassrls": true,
+        "rolcreaterole": true
+      },
+      {
+        "rolname": "service_role",
+        "rolsuper": false,
+        "rolinherit": true,
+        "rolcanlogin": false,
+        "rolcreatedb": false,
+        "rolbypassrls": true,
+        "rolcreaterole": false
+      }
+    ],
+    "memberships": [
+      {
+        "role_name": "anon",
+        "member_name": "authenticator",
+        "admin_option": false
+      },
+      {
+        "role_name": "anon",
+        "member_name": "postgres",
+        "admin_option": true
+      },
+      {
+        "role_name": "anon",
+        "member_name": "supabase_realtime_admin",
+        "admin_option": false
+      },
+      {
+        "role_name": "authenticated",
+        "member_name": "authenticator",
+        "admin_option": false
+      },
+      {
+        "role_name": "authenticated",
+        "member_name": "postgres",
+        "admin_option": true
+      },
+      {
+        "role_name": "authenticated",
+        "member_name": "supabase_realtime_admin",
+        "admin_option": false
+      },
+      {
+        "role_name": "authenticator",
+        "member_name": "postgres",
+        "admin_option": true
+      },
+      {
+        "role_name": "authenticator",
+        "member_name": "supabase_storage_admin",
+        "admin_option": false
+      },
+      {
+        "role_name": "pg_create_subscription",
+        "member_name": "postgres",
+        "admin_option": true
+      },
+      {
+        "role_name": "pg_monitor",
+        "member_name": "postgres",
+        "admin_option": true
+      },
+      {
+        "role_name": "pg_monitor",
+        "member_name": "supabase_etl_admin",
+        "admin_option": false
+      },
+      {
+        "role_name": "pg_monitor",
+        "member_name": "supabase_read_only_user",
+        "admin_option": false
+      },
+      {
+        "role_name": "pg_read_all_data",
+        "member_name": "postgres",
+        "admin_option": true
+      },
+      {
+        "role_name": "pg_read_all_data",
+        "member_name": "supabase_etl_admin",
+        "admin_option": false
+      },
+      {
+        "role_name": "pg_read_all_data",
+        "member_name": "supabase_read_only_user",
+        "admin_option": false
+      },
+      {
+        "role_name": "pg_read_all_settings",
+        "member_name": "pg_monitor",
+        "admin_option": false
+      },
+      {
+        "role_name": "pg_read_all_stats",
+        "member_name": "pg_monitor",
+        "admin_option": false
+      },
+      {
+        "role_name": "pg_signal_backend",
+        "member_name": "postgres",
+        "admin_option": true
+      },
+      {
+        "role_name": "pg_stat_scan_tables",
+        "member_name": "pg_monitor",
+        "admin_option": false
+      },
+      {
+        "role_name": "postgres",
+        "member_name": "cli_login_postgres",
+        "admin_option": false
+      },
+      {
+        "role_name": "service_role",
+        "member_name": "authenticator",
+        "admin_option": false
+      },
+      {
+        "role_name": "service_role",
+        "member_name": "postgres",
+        "admin_option": true
+      },
+      {
+        "role_name": "service_role",
+        "member_name": "supabase_realtime_admin",
+        "admin_option": false
+      },
+      {
+        "role_name": "supabase_privileged_role",
+        "member_name": "postgres",
+        "admin_option": false
+      },
+      {
+        "role_name": "supabase_privileged_role",
+        "member_name": "supabase_etl_admin",
+        "admin_option": false
+      }
+    ],
+    "declared_api_settings": null
+  }
+]

@@ -1,0 +1,2060 @@
+{
+  "observedUtc": "2026-10-27T12:06:36.648Z",
+  "source": "native disposable final catalog",
+  "functions": [
+    {
+      "schema_name": "private",
+      "proname": "accept_assigned_vendor_agreement",
+      "arguments": "p_assignment uuid, p_acknowledged boolean",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "definition_md5": "38c4af5b433ad1103c419f78e7cded2b"
+    },
+    {
+      "schema_name": "private",
+      "proname": "accept_vendor_legal",
+      "arguments": "p_vendor uuid, p_documents jsonb, p_ack jsonb",
+      "returns": "uuid",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "definition_md5": "222898c9941d83daba16653cee93bf16"
+    },
+    {
+      "schema_name": "private",
+      "proname": "account_removal_preview",
+      "arguments": "p_actor uuid, p_kind text, p_id uuid",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+      "definition_md5": "6b62375bf83d0a301c3fbe670f84878c"
+    },
+    {
+      "schema_name": "private",
+      "proname": "active_account",
+      "arguments": "",
+      "returns": "boolean",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,anon=X/postgres,authenticated=X/postgres}",
+      "definition_md5": "5bda4a148d4f52474014f31f90b49cdf"
+    },
+    {
+      "schema_name": "private",
+      "proname": "admin_vendor_compliance",
+      "arguments": "p_vendor uuid, p_action text, p_value jsonb",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "definition_md5": "c1b0a7f220f2f3109a88a32063a61251"
+    },
+    {
+      "schema_name": "private",
+      "proname": "agreement_vendor",
+      "arguments": "",
+      "returns": "uuid",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres}",
+      "definition_md5": "818c0a42ea4cfad8e3d39e1407262827"
+    },
+    {
+      "schema_name": "private",
+      "proname": "audit_inactive_payment",
+      "arguments": "",
+      "returns": "trigger",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres}",
+      "definition_md5": "4fc89abc8256435ddf4b73b3d117de78"
+    },
+    {
+      "schema_name": "private",
+      "proname": "bank_compliance_valid",
+      "arguments": "p_vendor uuid, p_profile uuid",
+      "returns": "boolean",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres}",
+      "definition_md5": "71bdd0a7c97de2e6deb23f9f7372733c"
+    },
+    {
+      "schema_name": "private",
+      "proname": "block_marketplace_provider",
+      "arguments": "",
+      "returns": "trigger",
+      "owner": "postgres",
+      "security_definer": false,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres}",
+      "definition_md5": "a3221dc683f93eacd4853cff0e47d0e6"
+    },
+    {
+      "schema_name": "private",
+      "proname": "block_provider_attempt",
+      "arguments": "",
+      "returns": "trigger",
+      "owner": "postgres",
+      "security_definer": false,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres}",
+      "definition_md5": "3fc6bfd6b23f71d2bc04609a5de5cdf0"
+    },
+    {
+      "schema_name": "private",
+      "proname": "check_vendor_assignment",
+      "arguments": "",
+      "returns": "trigger",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres}",
+      "definition_md5": "095b1047cb418fa65db182235bb8a94d"
+    },
+    {
+      "schema_name": "private",
+      "proname": "commercial_admin",
+      "arguments": "",
+      "returns": "void",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres}",
+      "definition_md5": "877323d6e6470ee3ac570e1ed9052351"
+    },
+    {
+      "schema_name": "private",
+      "proname": "commercial_admin_action",
+      "arguments": "p_action text, p_value jsonb",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "definition_md5": "5227957aebd48cd695e442227f6f4b46"
+    },
+    {
+      "schema_name": "private",
+      "proname": "commercial_admin_action_phase_d",
+      "arguments": "p_action text, p_value jsonb",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres}",
+      "definition_md5": "8395b467316a9fd9b3fd6c7d108e036e"
+    },
+    {
+      "schema_name": "private",
+      "proname": "commercial_business_ready",
+      "arguments": "",
+      "returns": "boolean",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres}",
+      "definition_md5": "57084004f1c20aac7dcc903ae559bbe9"
+    },
+    {
+      "schema_name": "private",
+      "proname": "commercial_documents",
+      "arguments": "",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres}",
+      "definition_md5": "63488fba736a461266d318b5ca3f4373"
+    },
+    {
+      "schema_name": "private",
+      "proname": "commercial_immutable",
+      "arguments": "",
+      "returns": "trigger",
+      "owner": "postgres",
+      "security_definer": false,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres}",
+      "definition_md5": "b18085a75ea95e16ebf85045d5b8157b"
+    },
+    {
+      "schema_name": "private",
+      "proname": "commercial_workspace",
+      "arguments": "",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "definition_md5": "c2c33dea4ab4fc7cf02005a9a1704ebe"
+    },
+    {
+      "schema_name": "private",
+      "proname": "commercial_workspace_phase_d",
+      "arguments": "",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres}",
+      "definition_md5": "cef8054cafe11eca7a1357853c483757"
+    },
+    {
+      "schema_name": "private",
+      "proname": "compliance_access",
+      "arguments": "p_vendor uuid, p_admin boolean",
+      "returns": "boolean",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "definition_md5": "89553c74b2af6c8a6ce21d307b0202af"
+    },
+    {
+      "schema_name": "private",
+      "proname": "compliance_legacy_approval_guard",
+      "arguments": "",
+      "returns": "trigger",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres}",
+      "definition_md5": "6c0a3b62b854dcef0f964dd28b7ff43a"
+    },
+    {
+      "schema_name": "private",
+      "proname": "compliance_new_order_guard",
+      "arguments": "",
+      "returns": "trigger",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres}",
+      "definition_md5": "6f83da9f78c6af26af9455908d9e4f13"
+    },
+    {
+      "schema_name": "private",
+      "proname": "compliance_storage_access",
+      "arguments": "p_name text, p_write boolean",
+      "returns": "boolean",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres,supabase_storage_admin=X/postgres}",
+      "definition_md5": "fe7b776ab239094f3f29e8c0c297875b"
+    },
+    {
+      "schema_name": "private",
+      "proname": "conversation_retention_tick",
+      "arguments": "",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres}",
+      "definition_md5": "7041163efebc96a5c6e43f00bcbe7bb4"
+    },
+    {
+      "schema_name": "private",
+      "proname": "create_order_core",
+      "arguments": "p_customer_id uuid, p_guest_name text, p_guest_contact text, p_guest_email text, p_delivery_date date, p_delivery_location text, p_items jsonb",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres}",
+      "definition_md5": "a9710809077e6f6c97597d2fffca5758"
+    },
+    {
+      "schema_name": "private",
+      "proname": "create_order_with_delivery",
+      "arguments": "p_customer_id uuid, p_guest_name text, p_guest_contact text, p_guest_email text, p_delivery_date date, p_delivery_location text, p_items jsonb, p_quote_id uuid",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres}",
+      "definition_md5": "be9db4d6e7f04e4b35a9335825c3b9f1"
+    },
+    {
+      "schema_name": "private",
+      "proname": "create_order_with_legal",
+      "arguments": "p_order jsonb, p_legal jsonb",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,anon=X/postgres,authenticated=X/postgres}",
+      "definition_md5": "055da92c582bd8f52c0019f82dad48a1"
+    },
+    {
+      "schema_name": "private",
+      "proname": "create_order_with_legal_before_launch_gate",
+      "arguments": "p_order jsonb, p_legal jsonb",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres}",
+      "definition_md5": "f6f15107271b5cf1e8cdaeefcde80e91"
+    },
+    {
+      "schema_name": "private",
+      "proname": "current_vendor_assignment",
+      "arguments": "p_vendor uuid, p_owner uuid",
+      "returns": "uuid",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres}",
+      "definition_md5": "9623bc1a526fa759ae02150dedd417a7"
+    },
+    {
+      "schema_name": "private",
+      "proname": "current_vendor_id",
+      "arguments": "",
+      "returns": "uuid",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,service_role=X/postgres,anon=X/postgres,authenticated=X/postgres}",
+      "definition_md5": "9d2266be4d76f6ced5e7a4ada5578799"
+    },
+    {
+      "schema_name": "private",
+      "proname": "customer_legal_documents",
+      "arguments": "",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres}",
+      "definition_md5": "b41181f29b3c1db12e6c12dda6799054"
+    },
+    {
+      "schema_name": "private",
+      "proname": "customer_legal_state",
+      "arguments": "",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,anon=X/postgres,authenticated=X/postgres}",
+      "definition_md5": "329b3a8b37669bb78257d72f70d885b2"
+    },
+    {
+      "schema_name": "private",
+      "proname": "enforce_vendor_consent",
+      "arguments": "",
+      "returns": "trigger",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres}",
+      "definition_md5": "da970a89529e65fb64e5cfe3a85778d8"
+    },
+    {
+      "schema_name": "private",
+      "proname": "enroll_vendor_activation",
+      "arguments": "",
+      "returns": "trigger",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres}",
+      "definition_md5": "b5b57f91a923022f9386144516792275"
+    },
+    {
+      "schema_name": "private",
+      "proname": "finalize_vendor_evidence",
+      "arguments": "p_submission uuid",
+      "returns": "void",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "definition_md5": "512b6dadb1e4702ae781fc758ea95e2a"
+    },
+    {
+      "schema_name": "private",
+      "proname": "guard_paid_item_history",
+      "arguments": "",
+      "returns": "trigger",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,=X/postgres}",
+      "definition_md5": "63dd72dac7cceec2c010efffe5513119"
+    },
+    {
+      "schema_name": "private",
+      "proname": "guard_vendor_assignment",
+      "arguments": "",
+      "returns": "trigger",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres}",
+      "definition_md5": "59ff916dbda7c93d0af1fbe234226a3c"
+    },
+    {
+      "schema_name": "private",
+      "proname": "guard_vendor_creation_activation",
+      "arguments": "",
+      "returns": "trigger",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres}",
+      "definition_md5": "2b35e3427fc827939f2f157e0325f1bf"
+    },
+    {
+      "schema_name": "private",
+      "proname": "is_admin",
+      "arguments": "",
+      "returns": "boolean",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,service_role=X/postgres,anon=X/postgres,authenticated=X/postgres}",
+      "definition_md5": "93249d9ae6b8bb281f34cace89cd763d"
+    },
+    {
+      "schema_name": "private",
+      "proname": "latest_compliance_events",
+      "arguments": "p_vendor uuid, p_owner uuid",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres}",
+      "definition_md5": "7c9b0217aaae0000a3229c60d9e13def"
+    },
+    {
+      "schema_name": "private",
+      "proname": "legal_approval_guard",
+      "arguments": "",
+      "returns": "trigger",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres}",
+      "definition_md5": "75942aedeb0ba8c1c2efddd0926fcc45"
+    },
+    {
+      "schema_name": "private",
+      "proname": "legal_portal",
+      "arguments": "",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,anon=X/postgres,authenticated=X/postgres}",
+      "definition_md5": "7e515ae3cd7078eee6ff0b2a82be649d"
+    },
+    {
+      "schema_name": "private",
+      "proname": "legal_text_complete",
+      "arguments": "p_text text",
+      "returns": "boolean",
+      "owner": "postgres",
+      "security_definer": false,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres}",
+      "definition_md5": "8b7291af401ef7ded97af78a6dd80528"
+    },
+    {
+      "schema_name": "private",
+      "proname": "manual_contract_snapshot",
+      "arguments": "",
+      "returns": "trigger",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres}",
+      "definition_md5": "30c15bc81295282c49a99d10416ac61a"
+    },
+    {
+      "schema_name": "private",
+      "proname": "manual_creation_readiness_guard",
+      "arguments": "",
+      "returns": "trigger",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres}",
+      "definition_md5": "837ab89a21a32d3c3f2d06238604aca7"
+    },
+    {
+      "schema_name": "private",
+      "proname": "manual_fulfilment_hold",
+      "arguments": "",
+      "returns": "trigger",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres}",
+      "definition_md5": "951440343443b4049c529105adf8cea6"
+    },
+    {
+      "schema_name": "private",
+      "proname": "manual_immutable",
+      "arguments": "",
+      "returns": "trigger",
+      "owner": "postgres",
+      "security_definer": false,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres}",
+      "definition_md5": "ba32a14eefc6bfee43d81fed2a95436f"
+    },
+    {
+      "schema_name": "private",
+      "proname": "manual_operator",
+      "arguments": "p_vendor uuid",
+      "returns": "boolean",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres}",
+      "definition_md5": "5ec02363887a14a2125a31c3ab534bd8"
+    },
+    {
+      "schema_name": "private",
+      "proname": "manual_paid_receipt_guard",
+      "arguments": "",
+      "returns": "trigger",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres}",
+      "definition_md5": "36ca4399cf05ff9cc985d49a5836dd56"
+    },
+    {
+      "schema_name": "private",
+      "proname": "manual_profile_lock",
+      "arguments": "",
+      "returns": "trigger",
+      "owner": "postgres",
+      "security_definer": false,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres}",
+      "definition_md5": "0440f9dd736d4e7546b0e275e5bd15f1"
+    },
+    {
+      "schema_name": "private",
+      "proname": "manual_settings_revision",
+      "arguments": "",
+      "returns": "text",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres}",
+      "definition_md5": "a921a77db8d9742a38f360bdd59c3caa"
+    },
+    {
+      "schema_name": "private",
+      "proname": "manual_settings_revision_guard",
+      "arguments": "",
+      "returns": "trigger",
+      "owner": "postgres",
+      "security_definer": false,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres}",
+      "definition_md5": "7e09ecdf495afc3427bc1e54a9ea9b91"
+    },
+    {
+      "schema_name": "private",
+      "proname": "new_checkout_validation",
+      "arguments": "",
+      "returns": "trigger",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres}",
+      "definition_md5": "0832871700213c20ab023b9544680a55"
+    },
+    {
+      "schema_name": "private",
+      "proname": "order_customer_names",
+      "arguments": "p_order_ids uuid[]",
+      "returns": "TABLE(order_id uuid, customer_name text)",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "definition_md5": "2fd9869cba840569df5109b0ddd4fb9a"
+    },
+    {
+      "schema_name": "private",
+      "proname": "order_legal_receipt",
+      "arguments": "p_order uuid, p_token uuid",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,anon=X/postgres,authenticated=X/postgres}",
+      "definition_md5": "0a218d29b0e29991dbd1fcf2d387da48"
+    },
+    {
+      "schema_name": "private",
+      "proname": "order_legal_required",
+      "arguments": "",
+      "returns": "trigger",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres}",
+      "definition_md5": "645d63715f91836d4e26b111e028a369"
+    },
+    {
+      "schema_name": "private",
+      "proname": "prepare_vendor_consent",
+      "arguments": "p_documents jsonb, p_ack jsonb",
+      "returns": "void",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "definition_md5": "af23f4af848eae5bef0c1f2c80a2d64d"
+    },
+    {
+      "schema_name": "private",
+      "proname": "reject_inactive_write",
+      "arguments": "",
+      "returns": "trigger",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,=X/postgres}",
+      "definition_md5": "59c4603029b0f20308fe921add2de75f"
+    },
+    {
+      "schema_name": "private",
+      "proname": "removal_blockers",
+      "arguments": "p_target uuid",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres}",
+      "definition_md5": "5f5c15b444816954631ea295ec80106e"
+    },
+    {
+      "schema_name": "private",
+      "proname": "require_auth_identity_on_profile_insert",
+      "arguments": "",
+      "returns": "trigger",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,=X/postgres}",
+      "definition_md5": "650d9109b10cf69b52a8297189dade46"
+    },
+    {
+      "schema_name": "private",
+      "proname": "require_fulfilment_on_insert",
+      "arguments": "",
+      "returns": "trigger",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres}",
+      "definition_md5": "a7e102bfe10f81b531f9246c16397444"
+    },
+    {
+      "schema_name": "private",
+      "proname": "reserve_vendor_evidence",
+      "arguments": "p_kind text, p_note text",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "definition_md5": "a0f84227abcb595d2db1d7c14c684c1a"
+    },
+    {
+      "schema_name": "private",
+      "proname": "snapshot_order_item",
+      "arguments": "",
+      "returns": "trigger",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,=X/postgres}",
+      "definition_md5": "3b952c109592a3a37f714550c762476f"
+    },
+    {
+      "schema_name": "private",
+      "proname": "snapshot_paid_commission",
+      "arguments": "",
+      "returns": "trigger",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,=X/postgres}",
+      "definition_md5": "3f43d429fe581e1463459ed7590c53a1"
+    },
+    {
+      "schema_name": "private",
+      "proname": "validate_vendor_consent",
+      "arguments": "p_documents jsonb, p_ack jsonb",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres}",
+      "definition_md5": "bc34562461b5794e5eabc6da1c7f8fe0"
+    },
+    {
+      "schema_name": "private",
+      "proname": "vendor_activation_ready",
+      "arguments": "p_vendor uuid, p_owner uuid",
+      "returns": "boolean",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres}",
+      "definition_md5": "99e81c47af4c82ca8315818e0b1a4c80"
+    },
+    {
+      "schema_name": "private",
+      "proname": "vendor_activation_ready_phase_b",
+      "arguments": "p_vendor uuid, p_owner uuid",
+      "returns": "boolean",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres}",
+      "definition_md5": "80fff1d0bd801a20e389497968ddf4bf"
+    },
+    {
+      "schema_name": "private",
+      "proname": "vendor_activation_ready_phase_c",
+      "arguments": "p_vendor uuid, p_owner uuid",
+      "returns": "boolean",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres}",
+      "definition_md5": "02b2b3d14eafcdecf92c4922f5cfacfb"
+    },
+    {
+      "schema_name": "private",
+      "proname": "vendor_agreement_state",
+      "arguments": "",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "definition_md5": "1eefc5c6ee8c282751caed3d8aa33680"
+    },
+    {
+      "schema_name": "private",
+      "proname": "vendor_assignment_documents",
+      "arguments": "p_id uuid",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres}",
+      "definition_md5": "81295aa956929d7e6e053ca0f8c8689c"
+    },
+    {
+      "schema_name": "private",
+      "proname": "vendor_assignment_documents_phase_c",
+      "arguments": "p_id uuid",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres}",
+      "definition_md5": "0292465678f582e73d824affe1662540"
+    },
+    {
+      "schema_name": "private",
+      "proname": "vendor_can_see_order",
+      "arguments": "p_order_id uuid",
+      "returns": "boolean",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,service_role=X/postgres,authenticated=X/postgres}",
+      "definition_md5": "ff7c9e8470fe05c0a8fa2689d4d4ac29"
+    },
+    {
+      "schema_name": "private",
+      "proname": "vendor_compliance_state",
+      "arguments": "p_vendor uuid",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "definition_md5": "1802f69008995af62714a1b0b441a2e6"
+    },
+    {
+      "schema_name": "private",
+      "proname": "vendor_launch_ready",
+      "arguments": "p_vendor uuid",
+      "returns": "boolean",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres}",
+      "definition_md5": "b939f2005251d22e01413684f893402d"
+    },
+    {
+      "schema_name": "public",
+      "proname": "accept_assigned_vendor_agreement",
+      "arguments": "p_assignment uuid, p_acknowledged boolean",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": false,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "definition_md5": "45ec592a4ff95436fd7b5bfa8cdd8d7d"
+    },
+    {
+      "schema_name": "public",
+      "proname": "accept_vendor_legal",
+      "arguments": "p_vendor uuid, p_documents jsonb, p_ack jsonb",
+      "returns": "uuid",
+      "owner": "postgres",
+      "security_definer": false,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "definition_md5": "3fe39a6576f02f5f444dc0e100086cd9"
+    },
+    {
+      "schema_name": "public",
+      "proname": "admin_allocate_payout",
+      "arguments": "p_vendor_id uuid, p_suborder_ids uuid[], p_request_id uuid",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+      "definition_md5": "e2e3935091e1dc210a2d3c86d59bed0e"
+    },
+    {
+      "schema_name": "public",
+      "proname": "admin_cancel_refunded_manual_order",
+      "arguments": "p_order_id uuid, p_reason text",
+      "returns": "void",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "definition_md5": "d1e214507109e599e54e3a0f6fea8fb7"
+    },
+    {
+      "schema_name": "public",
+      "proname": "admin_classify_test_order",
+      "arguments": "p_order_id uuid, p_reason text, p_expected_version integer",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+      "definition_md5": "481ea5d45e7b511321c059d78a079504"
+    },
+    {
+      "schema_name": "public",
+      "proname": "admin_commercial_action",
+      "arguments": "p_action text, p_value jsonb",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": false,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "definition_md5": "fc3b1ce17addcfba0f3f2ac45646a2d7"
+    },
+    {
+      "schema_name": "public",
+      "proname": "admin_configure_retention",
+      "arguments": "p_days integer, p_schedule text",
+      "returns": "void",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+      "definition_md5": "8266b29119bd66dc97c5391d33b0159b"
+    },
+    {
+      "schema_name": "public",
+      "proname": "admin_customer_favourite_counts",
+      "arguments": "",
+      "returns": "TABLE(profile_id uuid, favourite_count bigint)",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+      "definition_md5": "86becac45ee2d0703754b3b08c21bb78"
+    },
+    {
+      "schema_name": "public",
+      "proname": "admin_manual_receivable_entry",
+      "arguments": "p_order_id uuid, p_kind text, p_amount numeric, p_evidence text, p_product_refund numeric",
+      "returns": "void",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "definition_md5": "671437456db93b1ef05fcd6d403d7fc7"
+    },
+    {
+      "schema_name": "public",
+      "proname": "admin_manual_settings",
+      "arguments": "p_eft boolean, p_payshap boolean, p_minutes integer, p_threshold numeric, p_reason text",
+      "returns": "void",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "definition_md5": "7c0a398be18ece9e1940840fe692ea6c"
+    },
+    {
+      "schema_name": "public",
+      "proname": "admin_manual_settings_checked",
+      "arguments": "p_eft boolean, p_payshap boolean, p_minutes integer, p_threshold numeric, p_reason text, p_expected_revision text",
+      "returns": "void",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "definition_md5": "1bfbcb468e5bb583449c3088ba1334c3"
+    },
+    {
+      "schema_name": "public",
+      "proname": "admin_preview_account_removal",
+      "arguments": "p_kind text, p_id uuid",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": false,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+      "definition_md5": "842dae1f693bb01506172ac9a5515913"
+    },
+    {
+      "schema_name": "public",
+      "proname": "admin_preview_retention",
+      "arguments": "",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+      "definition_md5": "e832176727cd1afbc93ec00b929b374e"
+    },
+    {
+      "schema_name": "public",
+      "proname": "admin_preview_test_order",
+      "arguments": "p_order_id uuid",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+      "definition_md5": "09e5731486c363bb1a0489be770fc103"
+    },
+    {
+      "schema_name": "public",
+      "proname": "admin_recent_payments",
+      "arguments": "p_limit integer",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+      "definition_md5": "9874dba1afb7f6be1384b59e725a2e41"
+    },
+    {
+      "schema_name": "public",
+      "proname": "admin_reconcile_payout",
+      "arguments": "p_payout_id uuid, p_status text, p_reference text",
+      "returns": "void",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+      "definition_md5": "6e6db4428a93b61e56186518bb0d99c9"
+    },
+    {
+      "schema_name": "public",
+      "proname": "admin_record_historical_commission",
+      "arguments": "p_suborder_id uuid, p_rate numeric, p_evidence text",
+      "returns": "void",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+      "definition_md5": "dc4cf6155cb394cf05bed9ce5a266812"
+    },
+    {
+      "schema_name": "public",
+      "proname": "admin_reply_support_ticket",
+      "arguments": "p_ticket_id uuid, p_body text, p_internal boolean",
+      "returns": "uuid",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+      "definition_md5": "7008f74c34c059a2d80df5ff3d15d8b7"
+    },
+    {
+      "schema_name": "public",
+      "proname": "admin_set_fee_policy",
+      "arguments": "p_policy text, p_reason text",
+      "returns": "void",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+      "definition_md5": "482788f0f7a475694c0595321e08692b"
+    },
+    {
+      "schema_name": "public",
+      "proname": "admin_update_payment_gateway",
+      "arguments": "p_provider text, p_enabled boolean, p_maintenance boolean, p_notice text",
+      "returns": "void",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": null,
+      "definition_md5": "dde32a7fed75f7dcd4e2eee96c6ef839"
+    },
+    {
+      "schema_name": "public",
+      "proname": "admin_update_support_ticket",
+      "arguments": "p_ticket_id uuid, p_status support_status, p_priority support_priority, p_assigned_to uuid",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+      "definition_md5": "639a1508dc078f77c468150ef6a667c8"
+    },
+    {
+      "schema_name": "public",
+      "proname": "admin_vendor_compliance",
+      "arguments": "p_vendor uuid, p_action text, p_value jsonb",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": false,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "definition_md5": "7c6401b5dad0987b7e34cad99fc16088"
+    },
+    {
+      "schema_name": "public",
+      "proname": "admin_verify_payment",
+      "arguments": "p_order_id uuid, p_approve boolean",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=public"
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+      "definition_md5": "12c9e7edc408f5930e22ca58bf737594"
+    },
+    {
+      "schema_name": "public",
+      "proname": "approve_vendor_payment_profile",
+      "arguments": "p_profile_id uuid, p_evidence text",
+      "returns": "void",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "definition_md5": "2f06971d7648dc42e00ab2d14817bcae"
+    },
+    {
+      "schema_name": "public",
+      "proname": "become_vendor",
+      "arguments": "p_business_name text, p_business_category text, p_building text",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+      "definition_md5": "c793f56d4b83abccba9f6696001f6144"
+    },
+    {
+      "schema_name": "public",
+      "proname": "cancel_unpaid_order",
+      "arguments": "p_order_id uuid, p_ticket_number text, p_guest_contact text",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,anon=X/postgres,authenticated=X/postgres}",
+      "definition_md5": "bce380c31d1617c6df05f26b6ce59105"
+    },
+    {
+      "schema_name": "public",
+      "proname": "close_order_conversation_on_terminal_suborder",
+      "arguments": "",
+      "returns": "trigger",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,service_role=X/postgres}",
+      "definition_md5": "124f6c44301cabf277d43599927b0361"
+    },
+    {
+      "schema_name": "public",
+      "proname": "complete_account_removal",
+      "arguments": "p_actor uuid, p_job_id uuid",
+      "returns": "void",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,service_role=X/postgres}",
+      "definition_md5": "f3f26702021482a6a8301ae71dceb65d"
+    },
+    {
+      "schema_name": "public",
+      "proname": "confirm_payfast_payment",
+      "arguments": "p_order_id uuid, p_pf_payment_id text, p_m_payment_id text, p_amount_gross numeric, p_payment_status text, p_raw_payload jsonb",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,service_role=X/postgres}",
+      "definition_md5": "8e0b0463a1c84106374f38a29c953bda"
+    },
+    {
+      "schema_name": "public",
+      "proname": "create_manual_order",
+      "arguments": "p_customer_id uuid, p_guest_name text, p_guest_contact text, p_guest_email text, p_delivery_date date, p_delivery_location text, p_items jsonb, p_quote_id uuid, p_method text, p_request_id uuid",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,anon=X/postgres,authenticated=X/postgres}",
+      "definition_md5": "279ec9b7f71e8d7407ad739987d413fe"
+    },
+    {
+      "schema_name": "public",
+      "proname": "create_manual_order_before_launch_gate",
+      "arguments": "p_customer_id uuid, p_guest_name text, p_guest_contact text, p_guest_email text, p_delivery_date date, p_delivery_location text, p_items jsonb, p_quote_id uuid, p_method text, p_request_id uuid",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres}",
+      "definition_md5": "abb7be451d1d68ca138fc5212bef48e7"
+    },
+    {
+      "schema_name": "public",
+      "proname": "create_order_from_cart",
+      "arguments": "p_customer_id uuid, p_guest_name text, p_guest_contact text, p_guest_email text, p_delivery_date date, p_delivery_location text, p_items jsonb",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": false,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+      "definition_md5": "e4d7dc3afcbfa9d453d08138326f862f"
+    },
+    {
+      "schema_name": "public",
+      "proname": "create_order_with_legal",
+      "arguments": "p_order jsonb, p_legal jsonb",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": false,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,anon=X/postgres,authenticated=X/postgres}",
+      "definition_md5": "7e35ec00f1e9e32387109d3c836d4db2"
+    },
+    {
+      "schema_name": "public",
+      "proname": "create_support_ticket",
+      "arguments": "p_subject text, p_category text, p_body text, p_requester_name text, p_requester_email text, p_requester_contact text, p_order_id uuid, p_meta jsonb, p_attachment_path text",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": false,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,service_role=X/postgres,authenticated=X/postgres}",
+      "definition_md5": "58af3cc0d5d3b2695b57a582af726226"
+    },
+    {
+      "schema_name": "public",
+      "proname": "enforce_order_status_transition",
+      "arguments": "",
+      "returns": "trigger",
+      "owner": "postgres",
+      "security_definer": false,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+      "definition_md5": "925d0c9bf224bdac29f381aec1d750d5"
+    },
+    {
+      "schema_name": "public",
+      "proname": "erase_old_conversations",
+      "arguments": "",
+      "returns": "void",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,service_role=X/postgres}",
+      "definition_md5": "edfdbe445212bf27e60e1267d6b26c08"
+    },
+    {
+      "schema_name": "public",
+      "proname": "finalize_vendor_evidence",
+      "arguments": "p_submission uuid",
+      "returns": "void",
+      "owner": "postgres",
+      "security_definer": false,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "definition_md5": "c41beb4c60ac913bdcea27acc4d94925"
+    },
+    {
+      "schema_name": "public",
+      "proname": "flag_manual_payment",
+      "arguments": "p_order_id uuid, p_reason text",
+      "returns": "void",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "definition_md5": "9296f9e8fcc88cd6deab74024c768dc1"
+    },
+    {
+      "schema_name": "public",
+      "proname": "get_admin_category_demand",
+      "arguments": "p_days integer",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+      "definition_md5": "36dbcbdecbf9e05efd65ccfd91d43e89"
+    },
+    {
+      "schema_name": "public",
+      "proname": "get_admin_platform_analytics",
+      "arguments": "p_days integer",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+      "definition_md5": "53a8e4c3033e05bd2b5b550aca94d8a2"
+    },
+    {
+      "schema_name": "public",
+      "proname": "get_commercial_workspace",
+      "arguments": "",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": false,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "definition_md5": "c75bafab847e55ad2403c6ba1a48ec07"
+    },
+    {
+      "schema_name": "public",
+      "proname": "get_customer_legal_state",
+      "arguments": "",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": false,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,anon=X/postgres,authenticated=X/postgres}",
+      "definition_md5": "399c548c78e9d2dade16fc75457c1fb3"
+    },
+    {
+      "schema_name": "public",
+      "proname": "get_financial_report",
+      "arguments": "p_vendor_id uuid, p_from date, p_to date",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+      "definition_md5": "e4caa1dd3362cd7a9828516f62573ede"
+    },
+    {
+      "schema_name": "public",
+      "proname": "get_guest_order_by_ticket_json",
+      "arguments": "p_ticket_number text, p_contact text",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=public"
+      ],
+      "acl": "{postgres=X/postgres,=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+      "definition_md5": "0948d1e0caa331d72d21458a2a0b9beb"
+    },
+    {
+      "schema_name": "public",
+      "proname": "get_guest_order_json",
+      "arguments": "p_order_id uuid",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=public"
+      ],
+      "acl": "{postgres=X/postgres,service_role=X/postgres}",
+      "definition_md5": "e95317d580ede1f93f8b0772b1f2b2a3"
+    },
+    {
+      "schema_name": "public",
+      "proname": "get_guest_orders_json",
+      "arguments": "p_ids uuid[]",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=public"
+      ],
+      "acl": "{postgres=X/postgres,service_role=X/postgres}",
+      "definition_md5": "8896c8b43fc8140d1842125695b8beae"
+    },
+    {
+      "schema_name": "public",
+      "proname": "get_legal_portal",
+      "arguments": "",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": false,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,anon=X/postgres,authenticated=X/postgres}",
+      "definition_md5": "97d0ab85a3c4d05cf9bdfa940960ab5d"
+    },
+    {
+      "schema_name": "public",
+      "proname": "get_manual_payment",
+      "arguments": "p_order_id uuid, p_token uuid",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres,anon=X/postgres}",
+      "definition_md5": "db07f517c41c47cbafc73b6f53cbd620"
+    },
+    {
+      "schema_name": "public",
+      "proname": "get_nearby_vendors",
+      "arguments": "p_latitude double precision, p_longitude double precision, p_limit integer",
+      "returns": "TABLE(id uuid, distance_km double precision)",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+      "definition_md5": "77c491c3b17bb7771516f9a11689dcbd"
+    },
+    {
+      "schema_name": "public",
+      "proname": "get_order_customer_names",
+      "arguments": "p_order_ids uuid[]",
+      "returns": "TABLE(order_id uuid, customer_name text)",
+      "owner": "postgres",
+      "security_definer": false,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,service_role=X/postgres,authenticated=X/postgres}",
+      "definition_md5": "ac16787bc2956c3d8b53eac71494c6a8"
+    },
+    {
+      "schema_name": "public",
+      "proname": "get_order_legal_receipt",
+      "arguments": "p_order uuid, p_token uuid",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": false,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,anon=X/postgres,authenticated=X/postgres}",
+      "definition_md5": "40eb809d6afdc430d218117cc72ff043"
+    },
+    {
+      "schema_name": "public",
+      "proname": "get_payment_gateways",
+      "arguments": "",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+      "definition_md5": "13923f94c9ac9eb33a9780b022a4e326"
+    },
+    {
+      "schema_name": "public",
+      "proname": "get_payout_ledger",
+      "arguments": "p_vendor_id uuid",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+      "definition_md5": "7b72c297faceaff52aeea388547a9bbc"
+    },
+    {
+      "schema_name": "public",
+      "proname": "get_vendor_agreement_state",
+      "arguments": "",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": false,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "definition_md5": "d347c419c6d0edd277767b948a99b65b"
+    },
+    {
+      "schema_name": "public",
+      "proname": "get_vendor_analytics",
+      "arguments": "p_vendor_id uuid, p_days integer",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+      "definition_md5": "4263fb205cf88b1a2d48eee0104eea76"
+    },
+    {
+      "schema_name": "public",
+      "proname": "get_vendor_compliance",
+      "arguments": "p_vendor uuid",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": false,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "definition_md5": "0675434bc8af6223720c0936764e3a69"
+    },
+    {
+      "schema_name": "public",
+      "proname": "get_vendor_dashboard_stats",
+      "arguments": "p_vendor_id uuid",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+      "definition_md5": "102b0d4c81291df386e9ef98f71f0c3f"
+    },
+    {
+      "schema_name": "public",
+      "proname": "get_vendor_manual_methods",
+      "arguments": "p_vendor_id uuid",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,anon=X/postgres,authenticated=X/postgres}",
+      "definition_md5": "db6728431cbf4c777d12c60d7523420b"
+    },
+    {
+      "schema_name": "public",
+      "proname": "get_vendor_manual_methods_before_launch_gate",
+      "arguments": "p_vendor_id uuid",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres}",
+      "definition_md5": "367a240eb52fcc96e65a4acd0f67c341"
+    },
+    {
+      "schema_name": "public",
+      "proname": "get_vendor_manual_methods_phase_c",
+      "arguments": "p_vendor_id uuid",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres}",
+      "definition_md5": "4f6325554db0f34d8e4e58c34a42d6c9"
+    },
+    {
+      "schema_name": "public",
+      "proname": "guard_profile_privileged_fields",
+      "arguments": "",
+      "returns": "trigger",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,service_role=X/postgres}",
+      "definition_md5": "389319aa4e0b30ada46bc315e97afbad"
+    },
+    {
+      "schema_name": "public",
+      "proname": "guard_vendor_privileged_fields",
+      "arguments": "",
+      "returns": "trigger",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,service_role=X/postgres}",
+      "definition_md5": "405aaa6295945413607a5413a8d965a3"
+    },
+    {
+      "schema_name": "public",
+      "proname": "handle_new_user",
+      "arguments": "",
+      "returns": "trigger",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres}",
+      "definition_md5": "002d0bc3b6391a26bf1573ec26b8d148"
+    },
+    {
+      "schema_name": "public",
+      "proname": "manual_payment_workspace",
+      "arguments": "p_test_only boolean",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+      "definition_md5": "c76ac77b680e5326397f2b629500b02c"
+    },
+    {
+      "schema_name": "public",
+      "proname": "manual_payment_workspace_before_checked_settings",
+      "arguments": "p_test_only boolean",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres}",
+      "definition_md5": "c5ce42dbfaef6afbf346a70af1561157"
+    },
+    {
+      "schema_name": "public",
+      "proname": "notify_chat_recipient",
+      "arguments": "",
+      "returns": "trigger",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,service_role=X/postgres}",
+      "definition_md5": "4c71b72915d43d9cefcf8b6c89b49bc2"
+    },
+    {
+      "schema_name": "public",
+      "proname": "notify_support_reply",
+      "arguments": "",
+      "returns": "trigger",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,service_role=X/postgres}",
+      "definition_md5": "6b40979b6c9472bf92b8492fb0f0c684"
+    },
+    {
+      "schema_name": "public",
+      "proname": "order_to_json",
+      "arguments": "o orders",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=public"
+      ],
+      "acl": "{postgres=X/postgres,service_role=X/postgres}",
+      "definition_md5": "eb97892cec39eea56115df1f4bde537e"
+    },
+    {
+      "schema_name": "public",
+      "proname": "prepare_account_removal",
+      "arguments": "p_actor uuid, p_kind text, p_id uuid, p_fingerprint text, p_confirmation text",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,service_role=X/postgres}",
+      "definition_md5": "d502b91d95f5a41f56de7fa36fc96607"
+    },
+    {
+      "schema_name": "public",
+      "proname": "prepare_payfast_order",
+      "arguments": "p_order_id uuid, p_caller_id uuid, p_guest_contact text",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,service_role=X/postgres}",
+      "definition_md5": "3d7e8f14c5e513a2cc0a341cf4ecde4d"
+    },
+    {
+      "schema_name": "public",
+      "proname": "prepare_vendor_consent",
+      "arguments": "p_documents jsonb, p_ack jsonb",
+      "returns": "void",
+      "owner": "postgres",
+      "security_definer": false,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "definition_md5": "e9ead35d1634af1b31ba633e5adf7a7c"
+    },
+    {
+      "schema_name": "public",
+      "proname": "record_manual_refund_status",
+      "arguments": "p_order_id uuid, p_status text, p_amount numeric, p_product_refund numeric, p_evidence text",
+      "returns": "void",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "definition_md5": "7996f9c65a3cf770c3eb91f7a2b650a2"
+    },
+    {
+      "schema_name": "public",
+      "proname": "report_manual_payment",
+      "arguments": "p_order_id uuid, p_token uuid",
+      "returns": "void",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres,anon=X/postgres}",
+      "definition_md5": "d8b773ffaa285104d7ac2b118d219ce5"
+    },
+    {
+      "schema_name": "public",
+      "proname": "reserve_vendor_evidence",
+      "arguments": "p_kind text, p_note text",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": false,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "definition_md5": "e99acf651fb879a64f4d0df9091922bf"
+    },
+    {
+      "schema_name": "public",
+      "proname": "resolve_manual_payment_dispute",
+      "arguments": "p_order_id uuid, p_evidence text",
+      "returns": "void",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "definition_md5": "e258761215d792096c170c84085d17cb"
+    },
+    {
+      "schema_name": "public",
+      "proname": "sanitize_support_ticket_create",
+      "arguments": "",
+      "returns": "trigger",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,service_role=X/postgres}",
+      "definition_md5": "aeedc765b7e52e95d68c4b2aef711634"
+    },
+    {
+      "schema_name": "public",
+      "proname": "set_conversation_retention",
+      "arguments": "",
+      "returns": "trigger",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,service_role=X/postgres}",
+      "definition_md5": "b69e6515511f00a71912c2b1bb404592"
+    },
+    {
+      "schema_name": "public",
+      "proname": "submit_payment_proof",
+      "arguments": "p_order_id uuid, p_proof_path text",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": false,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres}",
+      "definition_md5": "a5ebf42af58b6b7ec20ba56b79448f0e"
+    },
+    {
+      "schema_name": "public",
+      "proname": "submit_vendor_payment_profile",
+      "arguments": "p_vendor_id uuid, p_destination jsonb, p_eft boolean, p_payshap boolean",
+      "returns": "uuid",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "definition_md5": "d98f5345f98eee275911f9c3ffeeb403"
+    },
+    {
+      "schema_name": "public",
+      "proname": "touch_support_ticket",
+      "arguments": "",
+      "returns": "trigger",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,service_role=X/postgres}",
+      "definition_md5": "d1572c5c8666c37c14524c6a47c587ad"
+    },
+    {
+      "schema_name": "public",
+      "proname": "update_conversation_timestamp",
+      "arguments": "",
+      "returns": "trigger",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,service_role=X/postgres}",
+      "definition_md5": "8f4359943f187555581a2a76acc7f029"
+    },
+    {
+      "schema_name": "public",
+      "proname": "update_suborder_status_and_notify",
+      "arguments": "p_order_id uuid, p_next_status text",
+      "returns": "jsonb",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+      "definition_md5": "429194ce25e81fec4ed3535bad58b545"
+    },
+    {
+      "schema_name": "public",
+      "proname": "valid_sa_mobile",
+      "arguments": "p_value text, p_mode text",
+      "returns": "boolean",
+      "owner": "postgres",
+      "security_definer": false,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+      "definition_md5": "51cc2bd9bc8227fe5ed93902b92e7b36"
+    },
+    {
+      "schema_name": "public",
+      "proname": "verify_manual_payment",
+      "arguments": "p_order_id uuid, p_amount numeric, p_bank_reference text, p_suspicious boolean",
+      "returns": "text",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "definition_md5": "c35b9e7c3fecb979f70c81cda16938cb"
+    }
+  ]
+}

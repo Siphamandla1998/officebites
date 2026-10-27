@@ -1,0 +1,791 @@
+{
+  "triggers": [
+    {
+      "md5": "086649c1a17a57fbcfde261ea7bdba6a",
+      "table": "users",
+      "schema": "auth",
+      "enabled": "O",
+      "trigger": "on_auth_user_created",
+      "function": "handle_new_user()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "b18085a75ea95e16ebf85045d5b8157b",
+      "table": "acquisition_ledger",
+      "schema": "private",
+      "enabled": "O",
+      "trigger": "acquisition_immutable",
+      "function": "private.commercial_immutable()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "b18085a75ea95e16ebf85045d5b8157b",
+      "table": "commercial_audit",
+      "schema": "private",
+      "enabled": "O",
+      "trigger": "commercial_audit_immutable",
+      "function": "private.commercial_immutable()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "b18085a75ea95e16ebf85045d5b8157b",
+      "table": "commercial_refund_adjustments",
+      "schema": "private",
+      "enabled": "O",
+      "trigger": "refund_adjustment_immutable",
+      "function": "private.commercial_immutable()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "a6b75efb9534b4c4987e4f63353fe6a5",
+      "table": "corporate_agreements",
+      "schema": "private",
+      "enabled": "O",
+      "trigger": "corporate_contract_lock",
+      "function": "private.lock_corporate_contract()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "a3221dc683f93eacd4853cff0e47d0e6",
+      "table": "gateway_settings",
+      "schema": "private",
+      "enabled": "O",
+      "trigger": "marketplace_provider_block",
+      "function": "private.block_marketplace_provider()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "b18085a75ea95e16ebf85045d5b8157b",
+      "table": "legal_versions",
+      "schema": "private",
+      "enabled": "O",
+      "trigger": "legal_content_immutable",
+      "function": "private.commercial_immutable()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "ba32a14eefc6bfee43d81fed2a95436f",
+      "table": "manual_order_payments",
+      "schema": "private",
+      "enabled": "O",
+      "trigger": "manual_destination_immutable",
+      "function": "private.manual_immutable()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "ba32a14eefc6bfee43d81fed2a95436f",
+      "table": "manual_payment_events",
+      "schema": "private",
+      "enabled": "O",
+      "trigger": "manual_events_immutable",
+      "function": "private.manual_immutable()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "ba32a14eefc6bfee43d81fed2a95436f",
+      "table": "manual_receivable_entries",
+      "schema": "private",
+      "enabled": "O",
+      "trigger": "manual_entries_immutable",
+      "function": "private.manual_immutable()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "ba32a14eefc6bfee43d81fed2a95436f",
+      "table": "manual_receivables",
+      "schema": "private",
+      "enabled": "O",
+      "trigger": "manual_receivable_immutable",
+      "function": "private.manual_immutable()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "ba32a14eefc6bfee43d81fed2a95436f",
+      "table": "manual_refund_events",
+      "schema": "private",
+      "enabled": "O",
+      "trigger": "manual_refunds_immutable",
+      "function": "private.manual_immutable()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "3fc6bfd6b23f71d2bc04609a5de5cdf0",
+      "table": "payment_attempts",
+      "schema": "private",
+      "enabled": "O",
+      "trigger": "marketplace_attempt_block",
+      "function": "private.block_provider_attempt()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "b18085a75ea95e16ebf85045d5b8157b",
+      "table": "standard_fee_ledger",
+      "schema": "private",
+      "enabled": "O",
+      "trigger": "standard_fee_immutable",
+      "function": "private.commercial_immutable()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "b18085a75ea95e16ebf85045d5b8157b",
+      "table": "standard_sale_contracts",
+      "schema": "private",
+      "enabled": "O",
+      "trigger": "standard_contract_immutable",
+      "function": "private.commercial_immutable()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "b18085a75ea95e16ebf85045d5b8157b",
+      "table": "vendor_legal_acceptances",
+      "schema": "private",
+      "enabled": "O",
+      "trigger": "acceptance_immutable",
+      "function": "private.commercial_immutable()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "0440f9dd736d4e7546b0e275e5bd15f1",
+      "table": "vendor_payment_profiles",
+      "schema": "private",
+      "enabled": "O",
+      "trigger": "manual_profile_immutable",
+      "function": "private.manual_profile_lock()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "59c4603029b0f20308fe921add2de75f",
+      "table": "booking_pricing_rules",
+      "schema": "public",
+      "enabled": "O",
+      "trigger": "active_account_write",
+      "function": "private.reject_inactive_write()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "59c4603029b0f20308fe921add2de75f",
+      "table": "conversations",
+      "schema": "public",
+      "enabled": "O",
+      "trigger": "active_account_write",
+      "function": "private.reject_inactive_write()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "e732632b3b07753577f72dabaf806833",
+      "table": "conversations",
+      "schema": "public",
+      "enabled": "O",
+      "trigger": "conversations_set_retention",
+      "function": "set_conversation_retention()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "59c4603029b0f20308fe921add2de75f",
+      "table": "corporate_opportunities",
+      "schema": "public",
+      "enabled": "O",
+      "trigger": "active_account_write",
+      "function": "private.reject_inactive_write()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "59c4603029b0f20308fe921add2de75f",
+      "table": "event_booking_requests",
+      "schema": "public",
+      "enabled": "O",
+      "trigger": "active_account_write",
+      "function": "private.reject_inactive_write()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "d2eb5e5aa985d2954e29aec81e00a32c",
+      "table": "event_booking_requests",
+      "schema": "public",
+      "enabled": "O",
+      "trigger": "validate_booking_mobile",
+      "function": "private.validate_booking_mobile()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "59c4603029b0f20308fe921add2de75f",
+      "table": "favourites",
+      "schema": "public",
+      "enabled": "O",
+      "trigger": "active_account_write",
+      "function": "private.reject_inactive_write()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "59c4603029b0f20308fe921add2de75f",
+      "table": "feedback",
+      "schema": "public",
+      "enabled": "O",
+      "trigger": "active_account_write",
+      "function": "private.reject_inactive_write()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "59c4603029b0f20308fe921add2de75f",
+      "table": "help_articles",
+      "schema": "public",
+      "enabled": "O",
+      "trigger": "active_account_write",
+      "function": "private.reject_inactive_write()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "59c4603029b0f20308fe921add2de75f",
+      "table": "meals",
+      "schema": "public",
+      "enabled": "O",
+      "trigger": "active_account_write",
+      "function": "private.reject_inactive_write()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "6ebfe07c586e87b7338206334bfe0504",
+      "table": "meals",
+      "schema": "public",
+      "enabled": "O",
+      "trigger": "reject_temporary_meal_images",
+      "function": "private.reject_temporary_images()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "59c4603029b0f20308fe921add2de75f",
+      "table": "messages",
+      "schema": "public",
+      "enabled": "O",
+      "trigger": "active_account_write",
+      "function": "private.reject_inactive_write()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "930939a8c50110580a554017e91a585a",
+      "table": "messages",
+      "schema": "public",
+      "enabled": "O",
+      "trigger": "messages_notify_recipient",
+      "function": "notify_chat_recipient()",
+      "channel_review_required": true
+    },
+    {
+      "md5": "9cb6ae1590e4eb2cd4705d1ae4a8c219",
+      "table": "messages",
+      "schema": "public",
+      "enabled": "O",
+      "trigger": "messages_touch_conversation",
+      "function": "update_conversation_timestamp()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "59c4603029b0f20308fe921add2de75f",
+      "table": "notifications",
+      "schema": "public",
+      "enabled": "O",
+      "trigger": "active_account_write",
+      "function": "private.reject_inactive_write()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "59c4603029b0f20308fe921add2de75f",
+      "table": "order_flow",
+      "schema": "public",
+      "enabled": "O",
+      "trigger": "active_account_write",
+      "function": "private.reject_inactive_write()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "59c4603029b0f20308fe921add2de75f",
+      "table": "order_items",
+      "schema": "public",
+      "enabled": "O",
+      "trigger": "active_account_write",
+      "function": "private.reject_inactive_write()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "63dd72dac7cceec2c010efffe5513119",
+      "table": "order_items",
+      "schema": "public",
+      "enabled": "O",
+      "trigger": "guard_paid_item_history",
+      "function": "private.guard_paid_item_history()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "3b952c109592a3a37f714550c762476f",
+      "table": "order_items",
+      "schema": "public",
+      "enabled": "O",
+      "trigger": "snapshot_order_item",
+      "function": "private.snapshot_order_item()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "d0593edfa25f1b1f41db1ce3dc2e8dbf",
+      "table": "order_suborders",
+      "schema": "public",
+      "enabled": "O",
+      "trigger": "acquisition_completed",
+      "function": "private.acquisition_completed_event()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "59c4603029b0f20308fe921add2de75f",
+      "table": "order_suborders",
+      "schema": "public",
+      "enabled": "O",
+      "trigger": "active_account_write",
+      "function": "private.reject_inactive_write()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "b9a327a8640c62ed2ac76e0c56e74187",
+      "table": "order_suborders",
+      "schema": "public",
+      "enabled": "O",
+      "trigger": "guard_delivery_snapshot",
+      "function": "private.guard_delivery_snapshot()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "951440343443b4049c529105adf8cea6",
+      "table": "order_suborders",
+      "schema": "public",
+      "enabled": "O",
+      "trigger": "manual_dispute_fulfilment_hold",
+      "function": "private.manual_fulfilment_hold()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "5dd3ca6774fbe5699975d6447fba8bba",
+      "table": "order_suborders",
+      "schema": "public",
+      "enabled": "O",
+      "trigger": "order_suborders_close_conversation",
+      "function": "close_order_conversation_on_terminal_suborder()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "925d0c9bf224bdac29f381aec1d750d5",
+      "table": "order_suborders",
+      "schema": "public",
+      "enabled": "O",
+      "trigger": "order_suborders_status_guard",
+      "function": "enforce_order_status_transition()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "a7e102bfe10f81b531f9246c16397444",
+      "table": "order_suborders",
+      "schema": "public",
+      "enabled": "O",
+      "trigger": "require_fulfilment",
+      "function": "private.require_fulfilment_on_insert()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "2c9275f4b3b592c992b30cd5f8690d7a",
+      "table": "order_suborders",
+      "schema": "public",
+      "enabled": "O",
+      "trigger": "snapshot_paid_commission",
+      "function": "private.snapshot_paid_commission()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "60ec852e77ee4a2924978e5ea1904be9",
+      "table": "order_suborders",
+      "schema": "public",
+      "enabled": "O",
+      "trigger": "standard_contract_insert",
+      "function": "private.standard_contract_event()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "60ec852e77ee4a2924978e5ea1904be9",
+      "table": "order_suborders",
+      "schema": "public",
+      "enabled": "O",
+      "trigger": "standard_contract_paid",
+      "function": "private.standard_contract_event()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "59c4603029b0f20308fe921add2de75f",
+      "table": "orders",
+      "schema": "public",
+      "enabled": "O",
+      "trigger": "active_account_write",
+      "function": "private.reject_inactive_write()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "0832871700213c20ab023b9544680a55",
+      "table": "orders",
+      "schema": "public",
+      "enabled": "O",
+      "trigger": "new_checkout_validation",
+      "function": "private.new_checkout_validation()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "a7e102bfe10f81b531f9246c16397444",
+      "table": "orders",
+      "schema": "public",
+      "enabled": "O",
+      "trigger": "require_fulfilment",
+      "function": "private.require_fulfilment_on_insert()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "59c4603029b0f20308fe921add2de75f",
+      "table": "payfast_itn_log",
+      "schema": "public",
+      "enabled": "O",
+      "trigger": "active_account_write",
+      "function": "private.reject_inactive_write()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "4fc89abc8256435ddf4b73b3d117de78",
+      "table": "payfast_itn_log",
+      "schema": "public",
+      "enabled": "O",
+      "trigger": "audit_inactive_payment",
+      "function": "private.audit_inactive_payment()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "59c4603029b0f20308fe921add2de75f",
+      "table": "payout_allocations",
+      "schema": "public",
+      "enabled": "O",
+      "trigger": "active_account_write",
+      "function": "private.reject_inactive_write()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "65947b9e744814712d469f5730a34b26",
+      "table": "payout_allocations",
+      "schema": "public",
+      "enabled": "O",
+      "trigger": "corporate_settlement_hold",
+      "function": "private.commercial_payout_hold()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "59c4603029b0f20308fe921add2de75f",
+      "table": "profiles",
+      "schema": "public",
+      "enabled": "O",
+      "trigger": "active_account_write",
+      "function": "private.reject_inactive_write()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "389319aa4e0b30ada46bc315e97afbad",
+      "table": "profiles",
+      "schema": "public",
+      "enabled": "O",
+      "trigger": "guard_profile_privileged_fields",
+      "function": "guard_profile_privileged_fields()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "6ebfe07c586e87b7338206334bfe0504",
+      "table": "profiles",
+      "schema": "public",
+      "enabled": "O",
+      "trigger": "reject_temporary_profile_images",
+      "function": "private.reject_temporary_images()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "650d9109b10cf69b52a8297189dade46",
+      "table": "profiles",
+      "schema": "public",
+      "enabled": "O",
+      "trigger": "require_auth_identity",
+      "function": "private.require_auth_identity_on_profile_insert()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "59c4603029b0f20308fe921add2de75f",
+      "table": "reviews",
+      "schema": "public",
+      "enabled": "O",
+      "trigger": "active_account_write",
+      "function": "private.reject_inactive_write()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "59c4603029b0f20308fe921add2de75f",
+      "table": "support_ticket_messages",
+      "schema": "public",
+      "enabled": "O",
+      "trigger": "active_account_write",
+      "function": "private.reject_inactive_write()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "31c02b304e6ff20def53feddc3f17e86",
+      "table": "support_ticket_messages",
+      "schema": "public",
+      "enabled": "O",
+      "trigger": "support_messages_notify_requester",
+      "function": "notify_support_reply()",
+      "channel_review_required": true
+    },
+    {
+      "md5": "57d9bb59968d8abb061506d1d1e0a735",
+      "table": "support_ticket_messages",
+      "schema": "public",
+      "enabled": "O",
+      "trigger": "support_ticket_message_touch",
+      "function": "touch_support_ticket()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "59c4603029b0f20308fe921add2de75f",
+      "table": "support_tickets",
+      "schema": "public",
+      "enabled": "O",
+      "trigger": "active_account_write",
+      "function": "private.reject_inactive_write()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "39aa98640f8243d2f9a24865af88dec5",
+      "table": "support_tickets",
+      "schema": "public",
+      "enabled": "O",
+      "trigger": "support_ticket_sanitize_create",
+      "function": "sanitize_support_ticket_create()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "59c4603029b0f20308fe921add2de75f",
+      "table": "vendor_payouts",
+      "schema": "public",
+      "enabled": "O",
+      "trigger": "active_account_write",
+      "function": "private.reject_inactive_write()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "59c4603029b0f20308fe921add2de75f",
+      "table": "vendors",
+      "schema": "public",
+      "enabled": "O",
+      "trigger": "active_account_write",
+      "function": "private.reject_inactive_write()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "405aaa6295945413607a5413a8d965a3",
+      "table": "vendors",
+      "schema": "public",
+      "enabled": "O",
+      "trigger": "guard_vendor_privileged_fields",
+      "function": "guard_vendor_privileged_fields()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "c66f77ab9815c0d595ebbcf1e689a119",
+      "table": "vendors",
+      "schema": "public",
+      "enabled": "O",
+      "trigger": "invalidate_vendor_delivery_origin",
+      "function": "private.invalidate_vendor_delivery_origin()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "6ebfe07c586e87b7338206334bfe0504",
+      "table": "vendors",
+      "schema": "public",
+      "enabled": "O",
+      "trigger": "reject_temporary_vendor_images",
+      "function": "private.reject_temporary_images()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "4907f91c9ac06e2ce7d4d93a455ed67f",
+      "table": "vendors",
+      "schema": "public",
+      "enabled": "O",
+      "trigger": "validate_vendor_mobile",
+      "function": "private.validate_vendor_mobile()",
+      "channel_review_required": false
+    },
+    {
+      "md5": "da970a89529e65fb64e5cfe3a85778d8",
+      "table": "vendors",
+      "schema": "public",
+      "enabled": "O",
+      "trigger": "vendor_legal_application",
+      "function": "private.enforce_vendor_consent()",
+      "channel_review_required": false
+    }
+  ],
+  "cron_relation": null,
+  "storage_tables": [
+    {
+      "acl": [
+        "supabase_storage_admin=a*r*w*d*D*x*t*m*/supabase_storage_admin",
+        "service_role=arwdDxtm/supabase_storage_admin",
+        "authenticated=arwd/supabase_storage_admin",
+        "anon=arwd/supabase_storage_admin",
+        "postgres=a*r*w*d*D*x*t*m*/supabase_storage_admin"
+      ],
+      "rls": true,
+      "name": "buckets",
+      "owner": "supabase_storage_admin"
+    },
+    {
+      "acl": [
+        "supabase_storage_admin=a*r*w*d*D*x*t*m*/supabase_storage_admin",
+        "service_role=arwdDxtm/supabase_storage_admin",
+        "authenticated=arwd/supabase_storage_admin",
+        "anon=arwd/supabase_storage_admin",
+        "postgres=a*r*w*d*D*x*t*m*/supabase_storage_admin"
+      ],
+      "rls": true,
+      "name": "objects",
+      "owner": "supabase_storage_admin"
+    }
+  ],
+  "storage_policies": [
+    {
+      "cmd": "ALL",
+      "qual": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))",
+      "roles": [
+        "anon",
+        "authenticated"
+      ],
+      "permissive": "RESTRICTIVE",
+      "policyname": "active_account_storage",
+      "with_check": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))"
+    },
+    {
+      "cmd": "SELECT",
+      "qual": "(bucket_id = 'vendor-images'::text)",
+      "roles": [
+        "public"
+      ],
+      "permissive": "PERMISSIVE",
+      "policyname": "public_read_vendor_images",
+      "with_check": null
+    },
+    {
+      "cmd": "DELETE",
+      "qual": "((bucket_id = 'support-attachments'::text) AND (((storage.foldername(name))[1] = (auth.uid())::text) OR is_admin()))",
+      "roles": [
+        "authenticated"
+      ],
+      "permissive": "PERMISSIVE",
+      "policyname": "staging_support_delete_own",
+      "with_check": null
+    },
+    {
+      "cmd": "SELECT",
+      "qual": "((bucket_id = 'support-attachments'::text) AND (((storage.foldername(name))[1] = (auth.uid())::text) OR is_admin()))",
+      "roles": [
+        "authenticated"
+      ],
+      "permissive": "PERMISSIVE",
+      "policyname": "staging_support_read_own",
+      "with_check": null
+    },
+    {
+      "cmd": "INSERT",
+      "qual": null,
+      "roles": [
+        "authenticated"
+      ],
+      "permissive": "PERMISSIVE",
+      "policyname": "staging_support_upload_own",
+      "with_check": "((bucket_id = 'support-attachments'::text) AND ((storage.foldername(name))[1] = (auth.uid())::text))"
+    },
+    {
+      "cmd": "DELETE",
+      "qual": "((bucket_id = 'meal-images'::text) AND (EXISTS ( SELECT 1\n   FROM vendors v\n  WHERE (((v.id)::text = (storage.foldername(objects.name))[1]) AND (v.owner_id = ( SELECT auth.uid() AS uid))))))",
+      "roles": [
+        "authenticated"
+      ],
+      "permissive": "PERMISSIVE",
+      "policyname": "vendor_delete_own_meal_images",
+      "with_check": null
+    },
+    {
+      "cmd": "DELETE",
+      "qual": "((bucket_id = 'vendor-images'::text) AND (EXISTS ( SELECT 1\n   FROM vendors v\n  WHERE (((v.id)::text = (storage.foldername(objects.name))[1]) AND (v.owner_id = ( SELECT auth.uid() AS uid))))))",
+      "roles": [
+        "authenticated"
+      ],
+      "permissive": "PERMISSIVE",
+      "policyname": "vendor_delete_own_vendor_images",
+      "with_check": null
+    },
+    {
+      "cmd": "SELECT",
+      "qual": "((bucket_id = 'meal-images'::text) AND (EXISTS ( SELECT 1\n   FROM vendors v\n  WHERE (((v.id)::text = (storage.foldername(objects.name))[1]) AND (v.owner_id = ( SELECT auth.uid() AS uid))))))",
+      "roles": [
+        "authenticated"
+      ],
+      "permissive": "PERMISSIVE",
+      "policyname": "vendor_read_own_meal_images",
+      "with_check": null
+    },
+    {
+      "cmd": "UPDATE",
+      "qual": "((bucket_id = 'meal-images'::text) AND (EXISTS ( SELECT 1\n   FROM vendors v\n  WHERE (((v.id)::text = (storage.foldername(objects.name))[1]) AND (v.owner_id = ( SELECT auth.uid() AS uid))))))",
+      "roles": [
+        "authenticated"
+      ],
+      "permissive": "PERMISSIVE",
+      "policyname": "vendor_update_own_meal_images",
+      "with_check": "((bucket_id = 'meal-images'::text) AND (EXISTS ( SELECT 1\n   FROM vendors v\n  WHERE (((v.id)::text = (storage.foldername(objects.name))[1]) AND (v.owner_id = ( SELECT auth.uid() AS uid))))))"
+    },
+    {
+      "cmd": "UPDATE",
+      "qual": "((bucket_id = 'vendor-images'::text) AND (EXISTS ( SELECT 1\n   FROM vendors v\n  WHERE (((v.id)::text = (storage.foldername(objects.name))[1]) AND (v.owner_id = ( SELECT auth.uid() AS uid))))))",
+      "roles": [
+        "authenticated"
+      ],
+      "permissive": "PERMISSIVE",
+      "policyname": "vendor_update_own_vendor_images",
+      "with_check": "((bucket_id = 'vendor-images'::text) AND (EXISTS ( SELECT 1\n   FROM vendors v\n  WHERE (((v.id)::text = (storage.foldername(objects.name))[1]) AND (v.owner_id = ( SELECT auth.uid() AS uid))))))"
+    },
+    {
+      "cmd": "INSERT",
+      "qual": null,
+      "roles": [
+        "authenticated"
+      ],
+      "permissive": "PERMISSIVE",
+      "policyname": "vendor_upload_own_meal_images",
+      "with_check": "((bucket_id = 'meal-images'::text) AND (EXISTS ( SELECT 1\n   FROM vendors v\n  WHERE (((v.id)::text = (storage.foldername(objects.name))[1]) AND (v.owner_id = ( SELECT auth.uid() AS uid))))))"
+    },
+    {
+      "cmd": "INSERT",
+      "qual": null,
+      "roles": [
+        "authenticated"
+      ],
+      "permissive": "PERMISSIVE",
+      "policyname": "vendor_upload_own_vendor_images",
+      "with_check": "((bucket_id = 'vendor-images'::text) AND (EXISTS ( SELECT 1\n   FROM vendors v\n  WHERE (((v.id)::text = (storage.foldername(objects.name))[1]) AND (v.owner_id = ( SELECT auth.uid() AS uid))))))"
+    }
+  ],
+  "compliance_bucket": null,
+  "http_queue_relation": null,
+  "declared_policy_grants": "{\"postgres\":[\"auth.audit_log_entries\",\"auth.flow_state\",\"auth.identities\",\"auth.instances\",\"auth.mfa_amr_claims\",\"auth.mfa_challenges\",\"auth.mfa_factors\",\"auth.oauth_clients\",\"auth.one_time_tokens\",\"auth.refresh_tokens\",\"auth.saml_providers\",\"auth.saml_relay_states\",\"auth.sessions\",\"auth.sso_domains\",\"auth.sso_providers\",\"auth.users\",\"realtime.messages\",\"realtime.subscription\",\"storage.buckets\",\"storage.buckets_analytics\",\"storage.objects\",\"storage.prefixes\",\"storage.s3_multipart_uploads\",\"storage.s3_multipart_uploads_parts\"]}",
+  "declared_role_api_settings": null,
+  "declared_supautils_version": null,
+  "declared_db_role_api_settings": null
+}
+

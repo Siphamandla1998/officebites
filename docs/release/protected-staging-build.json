@@ -1,0 +1,499 @@
+{
+  "observedUtc": "2026-10-27T11:55:44.604Z",
+  "mode": "protected-staging",
+  "hostname": "eyhmarmekioovcjibcbr.supabase.co",
+  "publicKeySha256": "b394bbe788df26dbc990e576088a078c0eb40d013c60ef35f8d7bf6043dc6c65",
+  "keyMembership": "matched read-only project public-key API",
+  "javascriptAssets": 121,
+  "compiledHosts": [
+    "eyhmarmekioovcjibcbr.supabase.co"
+  ],
+  "assets": [
+    {
+      "file": "dist\\assets\\AccountRemoval-CS331BaR.js",
+      "sha256": "cbaef4c821fa4e728d0caea5712b34bddc240905ac4949c3965f4ec074ce59a1"
+    },
+    {
+      "file": "dist\\assets\\AdminAnalytics-B5f11rBL.js",
+      "sha256": "eef2992329a10a4795d99070fba463c6e440eb48a00a8539d70c600c8c712916"
+    },
+    {
+      "file": "dist\\assets\\AdminChats-G5O4oVJg.js",
+      "sha256": "85656d186efb3a7297a57b613c4ac4885d55ffbd171de05f32f1ac1efe78ebc2"
+    },
+    {
+      "file": "dist\\assets\\AdminCustomers-BoiPjZjA.js",
+      "sha256": "f77f862193336f94129ef6620aea6bf60f2636f6bf39c0054c8d71ae1646441e"
+    },
+    {
+      "file": "dist\\assets\\AdminOverview-BOEODBhO.js",
+      "sha256": "d96a30b4b3abb3319a171e8e1e192a8c17d17915a7529027f7f35321f8435cff"
+    },
+    {
+      "file": "dist\\assets\\AdminPayments-av4pQYmo.js",
+      "sha256": "4d934f86c463502de8b3989d65dbaab5736a9e7649bb58ca79488e3195f09804"
+    },
+    {
+      "file": "dist\\assets\\AdminReports-DkTfP6-P.js",
+      "sha256": "c811674229efe8d44e64e6b3454836b6f529f12f4b71e278bee32638477fac27"
+    },
+    {
+      "file": "dist\\assets\\adminService-PsJyH6M_.js",
+      "sha256": "27fdbe98eaab4dfda0c1a8160aaeed77860736b7602192b2c74f53d95c3c4cd4"
+    },
+    {
+      "file": "dist\\assets\\AdminSupport-CZZtqM6S.js",
+      "sha256": "fe362a65e5b5645c159ed2ba789a8e6521ad65f183f6fa5f3e97aecd051448c2"
+    },
+    {
+      "file": "dist\\assets\\AdminVendorCompliance-ByX1SQvl.js",
+      "sha256": "b9cff65220e4c2022f16eeb33f0ba286801bec6d96e3a655c0817a5844ae4cb9"
+    },
+    {
+      "file": "dist\\assets\\AdminVendors-BHdbp91O.js",
+      "sha256": "284eb179ad9b9aec535f0f8cf6e8cbc1038a9a0378297cccb2fdf37c57c05ee3"
+    },
+    {
+      "file": "dist\\assets\\AgreementDocuments-BMe-LXBy.js",
+      "sha256": "661232910527973451321fe6a8818e335cbcd46bd577b46895257ad73e52d990"
+    },
+    {
+      "file": "dist\\assets\\authService-gKUUjxfT.js",
+      "sha256": "6f39d87cf54a15971cc94cfcab7811b10166e6c723ea22f28cfea7bdffb48efd"
+    },
+    {
+      "file": "dist\\assets\\BarChart-CoaamWOA.js",
+      "sha256": "7e5a51c54f1dc819ce35215938ead5713434b79d8abe300ce56a0168b150723b"
+    },
+    {
+      "file": "dist\\assets\\BecomeVendor-BwFV-t1i.js",
+      "sha256": "ae3d35495e00aca0a62ac00e926d4c981d1a7891a03426660230009c5d9cf3f2"
+    },
+    {
+      "file": "dist\\assets\\BusinessHours-CijbD8Wy.js",
+      "sha256": "7f4513f97f09dc0375c5ab46bd6a5c40d6f39617532bbf7a4521e46f2681e173"
+    },
+    {
+      "file": "dist\\assets\\catalogueFilters-4xLOvzOa.js",
+      "sha256": "8d123171bd45cd6a97a249ef41dfeab009366b182d6400c9c97f7bd22a93895c"
+    },
+    {
+      "file": "dist\\assets\\CategoryDetail-DYYELvlJ.js",
+      "sha256": "84c140d569f6a468bc6a6fd9e1eafd66519a7bcf487f16fad3ebabec40cce652"
+    },
+    {
+      "file": "dist\\assets\\ChatConversation-Ci_CExdC.js",
+      "sha256": "af86c32209425c77a05ee8ac35f181e084b977696d28ca81ddc60c9f8c771386"
+    },
+    {
+      "file": "dist\\assets\\ChatList-TB6I_R54.js",
+      "sha256": "24780fbf0652dbe690d0ba04c5ab97f00fc013443a5caa457468d6995ce21595"
+    },
+    {
+      "file": "dist\\assets\\chatService-Dquw8ILI.js",
+      "sha256": "5ee5585766fde1f9cfb8f3658f076062a623047d148bcf4ca297ade8c60f24dd"
+    },
+    {
+      "file": "dist\\assets\\Checkout-sfac4tP3.js",
+      "sha256": "d51ac51c9f2fa0f44325c960b7c5c32ce0f2fb189219b1704a4a46b298dd9881"
+    },
+    {
+      "file": "dist\\assets\\CommercialWorkspace-DYFSF-j6.js",
+      "sha256": "aed715be90f0f3b132af626975fc498976283769a8fe296cefe2ec6c1b153c3c"
+    },
+    {
+      "file": "dist\\assets\\constants-BJgsnS6_.js",
+      "sha256": "ac82333fc2f3a2118d92616043068e5d23581c0519889d730e3bc9a180ac430e"
+    },
+    {
+      "file": "dist\\assets\\ContactSupport-BT-oK4QZ.js",
+      "sha256": "c6fed3c43472bacadaae45853053f365081e128bc8329667eba40d27e0419e1d"
+    },
+    {
+      "file": "dist\\assets\\csv-BAeHJDQT.js",
+      "sha256": "892ce1fc3bca6b7e53bddcbd270003d16dca8b59de9efc2c4a86db3ce8111d1d"
+    },
+    {
+      "file": "dist\\assets\\CustomerLegalReview-Ca0YXW6h.js",
+      "sha256": "63706149ca366725a9bf8d759797619d297c3e98f6ebcd026260e070d58b8e1b"
+    },
+    {
+      "file": "dist\\assets\\customerNameService-BbZtMRcH.js",
+      "sha256": "e25fb9dceab028b3b2dd84310442269c8ea29e81fc26234f461e62ad0934e466"
+    },
+    {
+      "file": "dist\\assets\\FAQPage-DSWDOrZK.js",
+      "sha256": "a43a8ba7abca8c266381d1743f349df1bf906c3a27cc6bf1ec225d14fb1893fd"
+    },
+    {
+      "file": "dist\\assets\\Favourites-CefsLm6O.js",
+      "sha256": "fad0e5bafa32829f077652f48187d9c63ae64c2da494dc9c1bb5a30948c2684c"
+    },
+    {
+      "file": "dist\\assets\\Feedback-DHOgjPex.js",
+      "sha256": "5b8fb04fbbeacb9f5549c12cf1388ea19dbb2fc45072a8c58807be987894d9a1"
+    },
+    {
+      "file": "dist\\assets\\fi-Ci9chMD9.js",
+      "sha256": "5e875f2531ce0dd04617c2c55623f05e3afbd14bc9234de77618bcdf2a8c7cdd"
+    },
+    {
+      "file": "dist\\assets\\FileUpload-ZlVPTBxa.js",
+      "sha256": "e64145be976628cd1bee8dd69bc6b684419bb13257143795a442a34734dc8222"
+    },
+    {
+      "file": "dist\\assets\\Filters-D6UjiY_X.js",
+      "sha256": "90f7fe938c22283579e5211dbd835f317036718ba05ae90a1c4ee05eb77e8d32"
+    },
+    {
+      "file": "dist\\assets\\financialService-C1yUrtxt.js",
+      "sha256": "f5e4430044e67be4195987c30dc537f027dfa920e4bc59e98146efc5a3bdd83d"
+    },
+    {
+      "file": "dist\\assets\\FoodCard-ia8IqYx7.js",
+      "sha256": "fe21a8d5450154d4a692ed1f51922ebc6dff550f7bc81b32f437812b572f92d9"
+    },
+    {
+      "file": "dist\\assets\\FoodDetails-DqWqKle1.js",
+      "sha256": "18262f7d0a4c746e4647b1bdd9edbdca42ce4c83a14b1c21c207a1e36a20e99a"
+    },
+    {
+      "file": "dist\\assets\\FoodSearch-oZXiw9lW.js",
+      "sha256": "5d3a8dc2c9d0e344c2eb2e59e921571408c5a9c06c1cc973e41c4b4227f2d6bf"
+    },
+    {
+      "file": "dist\\assets\\foodService-D24svGK2.js",
+      "sha256": "c5d5d1e9fea71148b63452abd733ee005157f99f1fade666ae8436c9b4fb7816"
+    },
+    {
+      "file": "dist\\assets\\ForgotPassword-zzzODgp2.js",
+      "sha256": "af8268ba8185b34f2dc845d39479f61e71970361b4fcaa28eecff122e0d68489"
+    },
+    {
+      "file": "dist\\assets\\guest-De6_3_rT.js",
+      "sha256": "a87deaf8b7632a189c3d4864910b2d11f34e2ce8927ffde5bfc3629d298717bf"
+    },
+    {
+      "file": "dist\\assets\\GuideDetail-DUTSP79C.js",
+      "sha256": "e9ddba04e372b2ee7cd589b2bd382eef4eb929ea49990b870dccb49aa7c53873"
+    },
+    {
+      "file": "dist\\assets\\Guides-CB4vnrfK.js",
+      "sha256": "38d28cda472a15442e50543e8a1a7d7eaa9017be989b67bd955a4667b7dbe569"
+    },
+    {
+      "file": "dist\\assets\\HelpHome-DOTF4NP1.js",
+      "sha256": "7de4e1073eaf9d87c343839c8ae3da049028c16a1e81ce2254619435c762384e"
+    },
+    {
+      "file": "dist\\assets\\Home-DNg5G_uX.js",
+      "sha256": "1bbf883ccd2605e41353ee016f84dfb0c9bf61e71e53debd0ed60acd775fb248"
+    },
+    {
+      "file": "dist\\assets\\index-BC-6y0IQ.js",
+      "sha256": "422f2209a189dca0688fdebc994efb7ac2f218b18b71ed2cd5b8c2255bc08d0c"
+    },
+    {
+      "file": "dist\\assets\\jsx-runtime-CbZIRoI9.js",
+      "sha256": "2c0255b3d1c014e0890a03fb43b336a71d12c85848a8438eb95fd06308fc3842"
+    },
+    {
+      "file": "dist\\assets\\Landing-4A__w-KQ.js",
+      "sha256": "98b7503cfe4a01bbc7e346331ac490a2820c4b034854e2c6abc10f9aafb7c2cd"
+    },
+    {
+      "file": "dist\\assets\\LegalDocument-B-Ire1Ax.js",
+      "sha256": "d389d9bc7bba7347c3fd9d72b61727a126f31497dd4bc934ce5bb31b19deb1eb"
+    },
+    {
+      "file": "dist\\assets\\LineChart-dux4_7Zq.js",
+      "sha256": "b7a7aed137d83da5e45fc6f7e207d4ea63c41d1eb1d01b03e0d8bba382843874"
+    },
+    {
+      "file": "dist\\assets\\LiveChatSupport-B8sMeVRv.js",
+      "sha256": "6a2f07d4b4fc5947d3971aa13abba1613b356fc454dc1b6c0943f0cbaec43b46"
+    },
+    {
+      "file": "dist\\assets\\Login-O-ahUm-h.js",
+      "sha256": "b2f9f63d763bd8a730fe13deb77503dfd18cdf33aab80c9d069f52dbe4f842bb"
+    },
+    {
+      "file": "dist\\assets\\manualPaymentService-CCsrBFs_.js",
+      "sha256": "3f6dab0172ea8375115a0f8778c656d03ff2f5bbb3e3491915f23cf702fd52f0"
+    },
+    {
+      "file": "dist\\assets\\ManualPaymentWorkspace-BYCE1zlS.js",
+      "sha256": "22bb79d0fa5188eaeec1b90fe22aa9396c4af35440ae35fc66607193b3fe6a42"
+    },
+    {
+      "file": "dist\\assets\\mappers-Bhn49Hoy.js",
+      "sha256": "bcd51e20229f7f06be60743345cf4e9ece52b5626dd6536f8bf6deced64f50fd"
+    },
+    {
+      "file": "dist\\assets\\mobile-DiJ-FnHV.js",
+      "sha256": "1f981f9028e2e931cc62f8c013a7e2205da43c658abecd24ad7dff35dc3e8184"
+    },
+    {
+      "file": "dist\\assets\\Navbar-DLqZQUib.js",
+      "sha256": "802d45ed66930516ea1407674d3feb72c9492d699bc44650314e67303ee59b1f"
+    },
+    {
+      "file": "dist\\assets\\NotFound-BLkMqfEP.js",
+      "sha256": "57e73547976ba1334fb01d2f24fcd7760ea0166b9c630e35de0b32c48e719fba"
+    },
+    {
+      "file": "dist\\assets\\Notifications-Cb2dpPbg.js",
+      "sha256": "69149e79a32212a103f6faaec85cfff79686080b8620273ab47d5866cffe17bf"
+    },
+    {
+      "file": "dist\\assets\\NotificationsPanel-B1okqNjr.js",
+      "sha256": "8612df6fe2aca71fb42fc15db039c22705e82becc76b35dd2710c7939dc5f341"
+    },
+    {
+      "file": "dist\\assets\\OrderCard-CCXptOpZ.js",
+      "sha256": "3a0b02c4e79012db426654a8ca07552e92c863ff104671e488d5904e52f068cb"
+    },
+    {
+      "file": "dist\\assets\\OrderHistory-DhdfwfTV.js",
+      "sha256": "55314d90c5c53e99e3821d57def7c4c1e3dc57c21a8decd8ccc90a21e1a930ef"
+    },
+    {
+      "file": "dist\\assets\\OrderLegalReceipt-Ci5lWLEC.js",
+      "sha256": "edd2ef613dad6c524ecd6a1691209e430cde12a299c63c28a561de7a41153cca"
+    },
+    {
+      "file": "dist\\assets\\orderService-C66rS5b8.js",
+      "sha256": "1169593890bf72c4212eee63f3593ae623a9997802fb6c739e9947ec38a1e71e"
+    },
+    {
+      "file": "dist\\assets\\orderState-Du2h2-Zc.js",
+      "sha256": "3a2760668c1327fedf3899da279fcd5ccf6edfc55930cad73379de864c1789b8"
+    },
+    {
+      "file": "dist\\assets\\OrderTracking-DikOkgLH.js",
+      "sha256": "4ec311e804aac61d4d9e176d4e295d8bbc1a3f0d1289d9b8464b794985964fb3"
+    },
+    {
+      "file": "dist\\assets\\PaymentUpload-LqsUx4Wk.js",
+      "sha256": "7e526f89a2d2fcb07d026ad15b7af54f9868b50cee291d2110338337065822fa"
+    },
+    {
+      "file": "dist\\assets\\PayoutLedger-D_M_6LYx.js",
+      "sha256": "4c2dec4061816e73919df8a0b6890caeef9f19edebfed2825d97095b4acde296"
+    },
+    {
+      "file": "dist\\assets\\Privacy-BSCOZLJW.js",
+      "sha256": "d31e865d4b223804196ed10a89c7cf08c9188ba5ed839b1f86b98f369c04377b"
+    },
+    {
+      "file": "dist\\assets\\Profile-bF7Tw54c.js",
+      "sha256": "b3283516a6edb7e2abd9b0bfcb607e1e9d89c0e9b314b931e0282a91310f319e"
+    },
+    {
+      "file": "dist\\assets\\Rating-BaErInwm.js",
+      "sha256": "30ac2f9ee29415af988e2dd42c7af13f5e034230634a86efba47ea5539e477a8"
+    },
+    {
+      "file": "dist\\assets\\RefundPolicy-C71arBHF.js",
+      "sha256": "49affc7b936fb733a5872d2ffc5ebd65be92422484c8a5524b2287cefd29990a"
+    },
+    {
+      "file": "dist\\assets\\Register-CXhDmCtN.js",
+      "sha256": "7c6e191ba17c29f23990cec43f25ae605ea5fc3991990a3cb4e2f313f7745b93"
+    },
+    {
+      "file": "dist\\assets\\releaseAvailability-Dk0H9Q5S.js",
+      "sha256": "904af7c147d826b38587617b0fdc60a6d1966c90999f47641ca990b9eebd4208"
+    },
+    {
+      "file": "dist\\assets\\reportingDates-X9orqd3t.js",
+      "sha256": "fa4928720c0c72114ddffc06762258a30155fa635fc1811dc4bb0c9f7f222bbb"
+    },
+    {
+      "file": "dist\\assets\\ReportProblem-CpIEIEu8.js",
+      "sha256": "4c9465e8e622971a522e97fd27dfae665d11c3abeb1b0a470f0a9d9203f134a1"
+    },
+    {
+      "file": "dist\\assets\\RequestError-C81oEPSM.js",
+      "sha256": "989373119a7b6a0fea8375aadf5f76bf65aab08394c891dac20bfa059ec27109"
+    },
+    {
+      "file": "dist\\assets\\requestScope-tSdMXY63.js",
+      "sha256": "8236159fa6ec320ffa1e639eef1861b8c94164167f623b18b3ab79aca9ec7a1c"
+    },
+    {
+      "file": "dist\\assets\\ResetPassword-Chr1mh_h.js",
+      "sha256": "bcfdcdce778105b19343999d738a9a5670085ba904ab7aba62a18c12ea174340"
+    },
+    {
+      "file": "dist\\assets\\Reviews-BTq5a66J.js",
+      "sha256": "fbf63754e8d6b8fcdb5fcfefb9e824ca2b9a9947a049c58d1586eedc971b2c3f"
+    },
+    {
+      "file": "dist\\assets\\SearchBar-C8R_h-hc.js",
+      "sha256": "8691b4aa4cf6778e33650116ef8f5b42358291c1661e4355941d8f4792649910"
+    },
+    {
+      "file": "dist\\assets\\SelectField-BBkAVuSj.js",
+      "sha256": "7555b4aa7b400bdcf942b516875bcc0c015100a4d206edaad4334ddd196e50d0"
+    },
+    {
+      "file": "dist\\assets\\SignInRequired-CxGYfoMd.js",
+      "sha256": "321475e306fd5ecbd416084c2a499dd7b0f34eefebc68d473c55c62c07788553"
+    },
+    {
+      "file": "dist\\assets\\StatCard-Z6ixI9QA.js",
+      "sha256": "c0413bc3c4dd08aaa2436061886a9c41d81e0c8bbd3889e29a62cc9c2bd244a0"
+    },
+    {
+      "file": "dist\\assets\\StatusBadge-phlOIWKN.js",
+      "sha256": "e545661bf85b87f0b71b65fa37d953df4e1681baa5bbd153d6da01e254415757"
+    },
+    {
+      "file": "dist\\assets\\supabaseClient-DFG6VVXv.js",
+      "sha256": "ff7d733eca064be8dbf070b86c95098a6155bf2fa5e7c5d8f92b5e75bc75361c"
+    },
+    {
+      "file": "dist\\assets\\supportService-Dk0R65OZ.js",
+      "sha256": "7eca4f7e8f8d56b813104415b8c0d4aaf9a079f16e3cfc918d6909892212247c"
+    },
+    {
+      "file": "dist\\assets\\SupportTickets-CI_2vfH2.js",
+      "sha256": "648fd1b0f9ce003cb1c5c4c2598359c2ace30fd4d7cd1d96eaf1531660ffbc10"
+    },
+    {
+      "file": "dist\\assets\\Table-CRjy72l0.js",
+      "sha256": "d5a937a112390f257b5d1b4cb021ce850697a9a7b77369a661b57519468cc11e"
+    },
+    {
+      "file": "dist\\assets\\Terms-CDeFvXy-.js",
+      "sha256": "211a75a9f3a84247591b57b70d12cffe4a527b652f0bbb13564c2248cf26584f"
+    },
+    {
+      "file": "dist\\assets\\TextAreaField-CRAoA8bP.js",
+      "sha256": "0484ba4031d68d04c25fffc2c734ceb11dabf0b5c32f8b85ce62e0104494b56f"
+    },
+    {
+      "file": "dist\\assets\\TextField-BaBvEMjQ.js",
+      "sha256": "bc9a62856892bfb1a1154a52e8338bf7936023947a6da8a947dba3bf6c74b639"
+    },
+    {
+      "file": "dist\\assets\\TicketConfirmation-Bd3oQmHM.js",
+      "sha256": "7b9b1d50f49ffeef8730e16dee1c3d23a030cfa5fb072dd6d06fa29a9a1f422c"
+    },
+    {
+      "file": "dist\\assets\\TicketSubmittedPanel-B41zxl7C.js",
+      "sha256": "c90ebf535c4e6d64008b528a766a9d5466b4fbb02799a250cdf2eec8743f1ba1"
+    },
+    {
+      "file": "dist\\assets\\TrackOrder-DSsjJco8.js",
+      "sha256": "0b35a293675504d98faf2e02f2eb3fe6f7ed1a7a33c33f1c80344288e91b7439"
+    },
+    {
+      "file": "dist\\assets\\useAsync-DI0t1wK1.js",
+      "sha256": "0edfc8d2204b666245cca6a95b49c8171e80e638e7bb4f5094a924f4472df2e8"
+    },
+    {
+      "file": "dist\\assets\\useDebounce-DLy8JabF.js",
+      "sha256": "387ed79f536355649580ce330fed87f812507bddd255c628e039d2fa6a1f10db"
+    },
+    {
+      "file": "dist\\assets\\useDeliveryDate-DCftEuWb.js",
+      "sha256": "e98d0a19791e53aa09e1ae036e79dacabe180894a8a8be95a8b839f063f231eb"
+    },
+    {
+      "file": "dist\\assets\\useLiveRefresh-DbB3qpiE.js",
+      "sha256": "5f912db89737b35b10916943771e421e4a99ab42e31fc3a96b1a5e8400e23f94"
+    },
+    {
+      "file": "dist\\assets\\useOnlineStatus-DKkAvstr.js",
+      "sha256": "943e8005da574ac145a965f40fec5aca9d7b90ee1734e8d7bdd928b54992e8cc"
+    },
+    {
+      "file": "dist\\assets\\useOperationalRefresh-DDYc8LYF.js",
+      "sha256": "23d3a8681dc1279fba8bcff005f97223db0dfa9bba2aac7ab7bfed3bdfb6a67c"
+    },
+    {
+      "file": "dist\\assets\\useRequestGuard-BRhchJDC.js",
+      "sha256": "05d8924c9b49b3d49e3ce2e2eeeeef6d8b1de356af6ceb3e91d77071f3178bf0"
+    },
+    {
+      "file": "dist\\assets\\VendorAgreement-B2QM1vxo.js",
+      "sha256": "a4a16589efd9a5b23af0985773afd4400c01b45172b3be93ca56eccab8e5ae05"
+    },
+    {
+      "file": "dist\\assets\\VendorChat-BVDBIOjd.js",
+      "sha256": "13f7baf84e6a3645c92b0f9cc18546a9dac67c5552cdcad175296560baa17678"
+    },
+    {
+      "file": "dist\\assets\\VendorCompliance-Bzjizh6j.js",
+      "sha256": "17a2908b3a7a276a7e753fcceb76df2519125feab83e40bde5ef29b03abf26d1"
+    },
+    {
+      "file": "dist\\assets\\VendorCompliancePanel-DuDrEHBe.js",
+      "sha256": "154bf227549c2d84d9724348de5238f5054542d4c1c96783829cbd25762cab70"
+    },
+    {
+      "file": "dist\\assets\\vendorComplianceService-BNybt-Yh.js",
+      "sha256": "a87773fc168a5ba1d69feeb89c84a357682ffdacfcbae487bf5a4ddf2242546b"
+    },
+    {
+      "file": "dist\\assets\\VendorConsent-Dl4pPt7o.js",
+      "sha256": "7d17d631c49bcb1b872ef4308b814f5c8603ae8c456eb57539ca63bb9cd6142f"
+    },
+    {
+      "file": "dist\\assets\\VendorInsights-DbiVEfXq.js",
+      "sha256": "93c43ed9c9d1af9ab9bdcbd9b3de042261c5ac102e10f4ec66d66ddbef54f102"
+    },
+    {
+      "file": "dist\\assets\\VendorListing-D_tBM85W.js",
+      "sha256": "544aa4f2af48492577e4e0f59c7c2361eb46b270776c2b2d4f00e3b6eccea27f"
+    },
+    {
+      "file": "dist\\assets\\VendorMenu-JA8lLRr6.js",
+      "sha256": "c5e93c99866b4b172dbafd901950393bd6bac5b30a26eb2bb899f4e4c59fcc77"
+    },
+    {
+      "file": "dist\\assets\\VendorNotifications-DUtgdaOm.js",
+      "sha256": "f54729dbec72d529c7d2b8ca205d5b694d93e02afec35cd8620176b8b75d53ad"
+    },
+    {
+      "file": "dist\\assets\\VendorOrders-BxtmAf4J.js",
+      "sha256": "4c456d49a51b08b7d146c44f0b0a35a977ba137e47948076607826e699205d28"
+    },
+    {
+      "file": "dist\\assets\\VendorOverview-D7QFWXWu.js",
+      "sha256": "73dbbbdd254341dafc4a7a07806875e33b5270bf6867276374b7a417a9e074a5"
+    },
+    {
+      "file": "dist\\assets\\VendorProfile-CaBhCZYf.js",
+      "sha256": "74b147be0ebd94b2207988c24f13d81a3ae75a02ddb5a0df83324ddeea66e154"
+    },
+    {
+      "file": "dist\\assets\\VendorRevenue-DPnm_Bu_.js",
+      "sha256": "2e6894a78171469cc4c4e7e8da3fa30542405d5f7ee617fdfce6a9e029b21e54"
+    },
+    {
+      "file": "dist\\assets\\vendorService-BWy2XchF.js",
+      "sha256": "fbeab1e87e0e7cac876165efa8e0404eb3723aad48765c09f12839aa1caa0b93"
+    },
+    {
+      "file": "dist\\assets\\VendorSettings-CriIJL92.js",
+      "sha256": "3d72b76d3324ff739000891a1c9e904434ac0d699486f278096a33d7ac4d1f50"
+    },
+    {
+      "file": "dist\\registerSW.js",
+      "sha256": "9742073ef7fc795e7673d98f272992843298426a0ffd8cb3507784df5143608b"
+    },
+    {
+      "file": "dist\\sw.js",
+      "sha256": "f601a53126074d45197acef020daf860aeb272a2edd669a59dfe1322159ec7bb"
+    },
+    {
+      "file": "dist\\workbox-dcde9eb3.js",
+      "sha256": "046096e76e8c6584babb03f8d76fa963d0ccfa195f0b7de847276fa0eaf92eda"
+    }
+  ],
+  "deployed": false,
+  "activeTests": false
+}

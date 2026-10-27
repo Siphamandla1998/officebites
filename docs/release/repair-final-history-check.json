@@ -1,0 +1,38 @@
+[
+  {
+    "status": "fulfilled",
+    "value": {
+      "project_id": "gfzhdkitdyqftealgqfi",
+      "evidence": [
+        {
+          "observed_utc": "2026-10-27 12:13:17.418265+00",
+          "migration_count": 38,
+          "latest_version": "20261010101910",
+          "security_function_hashes": {
+            "handle_new_user": "086649c1a17a57fbcfde261ea7bdba6a",
+            "guard_vendor_privileged_fields": "405aaa6295945413607a5413a8d965a3",
+            "guard_profile_privileged_fields": "389319aa4e0b30ada46bc315e97afbad"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "status": "fulfilled",
+    "value": {
+      "project_id": "eyhmarmekioovcjibcbr",
+      "evidence": [
+        {
+          "observed_utc": "2026-10-27 12:13:19.762019+00",
+          "migration_count": 54,
+          "latest_version": "20261021100655",
+          "security_function_hashes": {
+            "handle_new_user": "086649c1a17a57fbcfde261ea7bdba6a",
+            "guard_vendor_privileged_fields": "405aaa6295945413607a5413a8d965a3",
+            "guard_profile_privileged_fields": "389319aa4e0b30ada46bc315e97afbad"
+          }
+        }
+      ]
+    }
+  }
+]
