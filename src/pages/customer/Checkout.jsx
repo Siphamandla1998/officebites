@@ -1,4 +1,13 @@
+import CustomerLegalReview from '../../components/features/CustomerLegalReview';
+import { commercialService } from '../../services/commercialService';
+import { customerLegalPayload } from '../../utils/customerLegal';
+import { useOnlineStatus } from '../../hooks/useOnlineStatus';
 import { useRequestGuard } from '../../hooks/useRequestGuard';
+import { validateMobile } from '../../utils/mobile';
+import { manualPaymentService, manualRequestKey } from '../../services/manualPaymentService';
+import { useAsync } from '../../hooks/useAsync';
+import { useOperationalRefresh } from '../../hooks/useOperationalRefresh';
+import RequestError from '../../components/ui/RequestError';
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../../components/layout/Navbar";
@@ -20,6 +29,14 @@ export default function Checkout() {
   const { user, isAuthenticated } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
+  const online = useOnlineStatus();
+  const legal = useAsync(commercialService.customerState, [user?.id], null);
+  const reloadLegal = legal.refetch;
+  const [legalChecked, setLegalChecked] = useState(false);
+  const legalVersionKey = JSON.stringify(legal.data?.documents || {});
+  useEffect(() => { setLegalChecked(false); }, [user?.id, legalVersionKey, online, legal.loading]);
+  useEffect(() => { const refresh=()=>{setLegalChecked(false);void reloadLegal();};window.addEventListener('focus',refresh);return()=>window.removeEventListener('focus',refresh); }, [reloadLegal]);
+  const legalBlocked = !online || legal.loading || !!legal.error || legal.data?.enabled !== true || legal.data?.ready !== true || !legalChecked;
   const creating = useRef(false);
   const requests = useRequestGuard(user?.id || 'guest');
   useEffect(() => { setCreatedOrder(null); setSubmitting(false); }, [user?.id]);
@@ -31,6 +48,15 @@ export default function Checkout() {
   });
   const [deliveryLocation, setDeliveryLocation] = useState("");
   const [errors, setErrors] = useState({});
+  const vendorId = items[0]?.vendorId;
+  const gateways = useAsync(() => vendorId ? manualPaymentService.methods(vendorId) : Promise.resolve({}), [vendorId, user?.id], {});
+  useOperationalRefresh(() => gateways.refetch({ silent: true }), 'checkout-gateways', 30000);
+  const [paymentMethod, setPaymentMethod] = useState('manual_eft');
+  const requestKey = useRef(null);
+  const singleVendor = new Set(items.map(item => item.vendorId)).size === 1;
+  const selectedMethod = gateways.data?.[paymentMethod] === true ? paymentMethod : gateways.data?.manual_eft === true ? 'manual_eft' : gateways.data?.manual_payshap === true ? 'manual_payshap' : null;
+  const paymentAvailable = singleVendor && gateways.data?.[selectedMethod] === true;
+  const cartKey = JSON.stringify(items.map(item => ({ mealId: item.mealId, qty: item.qty })));
 
   const grouped = splitCartByVendor(items);
   const deliveryDate = useDeliveryDate();
@@ -44,14 +70,16 @@ export default function Checkout() {
       setErrors(next);
       return Object.keys(next).length === 0;
     }
-    if (!guestDetails.name.trim()) next.name = "Enter your name so vendors know who's collecting";
-    if (!guestDetails.phone.trim()) next.phone = "Enter a mobile number we can reach you on";
+    if (!guestDetails.name.trim()) next.name = "Enter your name so vendors know who placed the order";
+    const mobile = validateMobile(guestDetails.phone);
+    if (!mobile.valid) next.phone = mobile.message;
     setErrors(next);
     return Object.keys(next).length === 0;
   };
 
   const handlePlaceOrder = async () => {
-    if (creating.current || createdOrder) return;
+    if (creating.current || createdOrder || legalBlocked) return;
+    if (gateways.loading || gateways.error || !paymentAvailable) return;
     if (!isOrderingOpen(deliveryDate)) {
       showToast("The ordering cutoff has passed. Please review the updated delivery date before ordering.", { type: "info" });
       return;
@@ -64,22 +92,28 @@ export default function Checkout() {
     creating.current = true;
     setSubmitting(true);
     try {
+      const payloadKey = JSON.stringify([user?.id, guestDetails, deliveryDateKey(deliveryDate), deliveryLocation.trim(), cartKey, selectedMethod]);
+      if (requestKey.current?.payload !== payloadKey) requestKey.current = { payload: payloadKey, ...await manualRequestKey(payloadKey) };
       const order = await orderService.createOrder({
         customerId: isAuthenticated ? user.id : null,
         customerName: isAuthenticated ? user.name : guestDetails.name,
-        guestContact: isAuthenticated ? null : guestDetails.phone.trim(),
+        guestContact: isAuthenticated ? null : validateMobile(guestDetails.phone).value,
         guestEmail: null,
         deliveryDate: deliveryDateKey(deliveryDate),
         deliveryLocation: deliveryLocation.trim(),
         cartItems: items,
+        paymentMethod: selectedMethod,
+        requestId: requestKey.current.id,
+        legalAcceptance: legal.data.enabled ? customerLegalPayload(legal.data) : null,
       });
       // Preserve the completed guest order even if navigation changed while
       // the server was creating it. Only current-scope UI/cart effects follow.
       const persisted = isAuthenticated || addGuestOrder({
         id: order.id,
         ticketNumber: order.ticketNumber,
-        contact: guestDetails.phone.trim(),
+        contact: validateMobile(guestDetails.phone).value,
       });
+      requestKey.current.clear();
       if (!current()) return;
       setCreatedOrder(order);
       if (!persisted) {
@@ -90,7 +124,7 @@ export default function Checkout() {
       clearCart();
 
       showToast(
-        "Order created — continue to PayFast to complete payment",
+        "Order created — continue to payment options",
         { type: "success" }
       );
 
@@ -98,6 +132,7 @@ export default function Checkout() {
 
     } catch (err) {
       if (!current()) return;
+      setLegalChecked(false);void legal.refetch();
       showToast(err.message || "Couldn't place order", { type: "error" });
     } finally {
       creating.current = false;
@@ -162,6 +197,10 @@ export default function Checkout() {
               />
               <TextField
                 label="Mobile number"
+                type="tel"
+                inputMode="tel"
+                autoComplete="tel-national"
+                maxLength={24}
                 value={guestDetails.phone}
                 onChange={updateGuest("phone")}
                 error={errors.phone}
@@ -185,8 +224,7 @@ export default function Checkout() {
           <p className="text-xs font-medium text-ink-muted mb-1">Delivery date</p>
           <p className="text-sm font-semibold text-ink">{formatDate(deliveryDate)}</p>
           <p className="text-xs text-ink-muted mt-1">
-            One checkout, one experience — your order is split behind the scenes so each vendor only
-            sees their own items.
+            One vendor per checkout. Pay that food vendor directly through your banking app.
           </p>
         </div>
 
@@ -207,14 +245,38 @@ export default function Checkout() {
             </div>
           </div>
         ))}
+        <section className="flex flex-col gap-3" aria-label="Payment">
+          <h2 className="section-title">Payment</h2>
+          {gateways.loading ? <p role="status" className="text-sm text-ink-muted">Checking available payment options…</p> : gateways.error ? <RequestError error={gateways.error} onRetry={gateways.refetch} /> : singleVendor && paymentAvailable ? <fieldset disabled={submitting} className="flex flex-col gap-3">
+            <legend className="font-semibold mb-3">How would you like to pay?</legend>
+            {[
+              {value:'manual_eft',title:'EFT / Bank Transfer',description:"Transfer directly to the vendor's bank account."},
+              {value:'manual_payshap',title:'PayShap',description:'Pay directly from your banking app.'},
+            ].filter(method => gateways.data?.[method.value] === true).map(method => <label key={method.value} className="flex items-center gap-3 rounded-xl border border-line p-4 cursor-pointer has-[:checked]:border-nude-500 has-[:checked]:bg-nude-50 focus-within:ring-2 focus-within:ring-nude-500 focus-within:ring-offset-2">
+              <input type="radio" name="method" value={method.value} checked={selectedMethod === method.value} onChange={() => setPaymentMethod(method.value)} className="accent-nude-700 shrink-0" />
+              <span className="min-w-0"><span className="block font-semibold text-sm">{method.title}</span><span className="block text-sm text-ink-muted">{method.description}</span></span>
+            </label>)}
+          </fieldset> : singleVendor ? <div className="rounded-xl bg-nude-50 p-4 flex flex-col gap-2" role="status">
+            <p className="font-semibold">Online ordering is temporarily unavailable.</p>
+            <p className="text-sm text-ink-muted">Payment options are being prepared. Your cart remains saved.</p>
+            <button type="button" className="btn-outline min-h-11" onClick={() => gateways.refetch()}>Check payment options again</button>
+            <Link to="/help/contact" className="underline min-h-11 flex items-center">Contact support</Link>
+            <Link to="/food/search" className="btn-outline min-h-11 mt-1">Back to menu</Link>
+          </div> : <p className="text-sm">Choose items from one vendor to see payment options.</p>}
+          {!gateways.loading && !gateways.error && paymentAvailable && <p className="text-sm text-ink-muted">Place your order to receive the vendor's payment details and unique reference. Pay in your banking app, then report payment and wait for independent vendor confirmation.</p>}
+        </section>
+        <CustomerLegalReview result={legal} checked={legalChecked} onChange={setLegalChecked} disabled={submitting || !online} />
+        <p className="text-xs text-ink-muted">Your payment goes directly to the vendor. OfficeBites does not automatically process payments or bank refunds. The vendor confirms receipt and handles refunds; OfficeBites can help coordinate disputes.</p>
       </div>
 
       <div className="fixed bottom-0 left-0 right-0 mx-auto w-full max-w-app bg-paper-raised border-t border-line px-4 pt-4 pb-[calc(1rem+env(safe-area-inset-bottom))] shadow-nav flex flex-col gap-3">
+        {!singleVendor && <p role="alert">Please complete one vendor order at a time. Remove the other vendor’s items before checkout.</p>}
+
         <div className="flex justify-between text-sm">
           <span className="text-ink-muted">Total</span>
           <span className="font-bold text-ink text-base">{formatCurrency(subtotal)}</span>
         </div>
-        <button onClick={handlePlaceOrder} className="btn-primary w-full" disabled={submitting}>
+        <button onClick={handlePlaceOrder} className="btn-primary w-full" disabled={legalBlocked || submitting || gateways.loading || !!gateways.error || !paymentAvailable}>
           {submitting ? <Spinner size={16} className="!border-paper/30 !border-t-paper" /> : "Place order"}
         </button>
       </div>

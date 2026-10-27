@@ -1,10 +1,11 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FiUploadCloud, FiCheckCircle } from "react-icons/fi";
 
 export default function FileUpload({ onFileSelect, accept = "image/*", label = "Upload image" }) {
   const inputRef = useRef(null);
   const [preview, setPreview] = useState(null);
   const [fileName, setFileName] = useState("");
+  useEffect(() => () => { if (preview) URL.revokeObjectURL(preview); }, [preview]);
 
   const handleFile = (file) => {
     if (!file) return;

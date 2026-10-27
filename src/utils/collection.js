@@ -1,0 +1,2 @@
+export const collectionDay=stamp=>new Intl.DateTimeFormat('en-CA',{timeZone:'Africa/Johannesburg',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(stamp));
+export const collectionLabel=window=>`${new Intl.DateTimeFormat('en-ZA',{timeZone:'Africa/Johannesburg',dateStyle:'medium',timeStyle:'short'}).format(new Date(window.startsAt))} – ${new Intl.DateTimeFormat('en-ZA',{timeZone:'Africa/Johannesburg',timeStyle:'short'}).format(new Date(window.endsAt))}`;

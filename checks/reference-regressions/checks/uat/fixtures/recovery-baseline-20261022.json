@@ -1,0 +1,99 @@
+{
+  "captured_at": "2026-10-22 10:02:16.836852+00",
+  "project": "eyhmarmekioovcjibcbr",
+  "uat_installed": false,
+  "latest_migration": "20261021100655",
+  "required_migrations": [
+    "20261020100740",
+    "20261021100655"
+  ],
+  "active_account": {
+    "acl": "{postgres=X/postgres,anon=X/postgres,authenticated=X/postgres}",
+    "owner": "postgres",
+    "grants": [
+      {
+        "grantee": "postgres",
+        "grantor": "postgres",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      },
+      {
+        "grantee": "anon",
+        "grantor": "postgres",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      },
+      {
+        "grantee": "authenticated",
+        "grantor": "postgres",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      }
+    ],
+    "definition": "CREATE OR REPLACE FUNCTION private.active_account()\n RETURNS boolean\n LANGUAGE sql\n STABLE SECURITY DEFINER\n SET search_path TO ''\nAS $function$\n SELECT EXISTS(SELECT 1 FROM public.profiles p JOIN auth.users u ON u.id=p.id WHERE p.id=auth.uid() AND NOT p.suspended AND p.deleted_at IS NULL\n AND (p.role<>'vendor' OR EXISTS(SELECT 1 FROM public.vendors v WHERE v.id=p.vendor_id AND v.owner_id=p.id AND v.status<>'suspended' AND v.archived_at IS NULL)));\n$function$\n"
+  },
+  "rest_role_settings": [],
+  "rest_database_settings": [],
+  "methods": [
+    {
+      "ready": true,
+      "enabled": false,
+      "provider": "manual_eft",
+      "maintenance": false
+    },
+    {
+      "ready": true,
+      "enabled": false,
+      "provider": "manual_payshap",
+      "maintenance": false
+    },
+    {
+      "ready": false,
+      "enabled": false,
+      "provider": "ozow",
+      "maintenance": true
+    },
+    {
+      "ready": true,
+      "enabled": false,
+      "provider": "payfast",
+      "maintenance": true
+    }
+  ],
+  "manual_settings": [
+    {
+      "singleton": true,
+      "deadline_minutes": 15,
+      "review_threshold": 500
+    }
+  ],
+  "orders": 15,
+  "payment_profiles": 0,
+  "manual_payments": 0,
+  "run": "OB-UAT-20261020",
+  "releaseCommit": "695e5e19cf581f6202dcc058afad1ee2fba23208",
+  "preview": "dpl_DGWZnPj1ubqxzCfzDcZVUJ3iEYTQ",
+  "previewUrl": "https://officebites-70l6nc42z-sp24tg-6983s-projects.vercel.app",
+  "capture_mode": "read_only; no hosted writes",
+  "rest_effective_service_configuration": {
+    "verified": false,
+    "db_config": null,
+    "pre_request": null,
+    "pre_config": null,
+    "reload_mechanism": null,
+    "reason": "SQL catalog settings are not running PostgREST service configuration"
+  },
+  "auth_email_configuration": {
+    "status": "current_hosted_configuration_not_exposed_by_connected_tools",
+    "previous_hook_known": false,
+    "previous_hook": null,
+    "historical_operator_baseline": "checks/uat/fixtures/auth-baseline-20261021.json",
+    "historical_observation": "Email enabled, Phone disabled, public signup enabled, custom SMTP disabled, no hooks; operator observation from 21 October, not freshly reverified",
+    "safe_notification_suppression_baseline": false,
+    "recovery_policy": "Retain verified active suppression; never restore absent hook as no-delivery"
+  },
+  "provisioning_authorized": false,
+  "notificationIsolationVerified": false,
+  "backendRestrictionVerified": false,
+  "authHooksReviewed": false
+}

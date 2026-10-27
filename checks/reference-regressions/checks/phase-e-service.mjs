@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
+import {customerLegalPayload,customerLegalLabels} from '../src/utils/customerLegal.js';
+import {checkoutError} from '../src/utils/checkoutError.js';
+let count=0;const eq=(a,b)=>{assert.deepEqual(a,b);count++;};const calls=[];let session=null;const tokens=[];
+const context=vm.createContext({supabase:{auth:{getSession:async()=>({data:{session}}),getUser:async()=>({data:{user:session?.user}})},rpc:async(name,args)=>{calls.push({name,args});return {data:{id:'SYNTHETIC-order',payment_token:'SYNTHETIC-private-token'},error:null};}},mapOrder:x=>x,savePaymentToken:(...x)=>tokens.push(x),checkoutError});
+const code=fs.readFileSync('src/services/orderService.js','utf8').replace(/^import .*;\r?$/gm,'').replace('export const orderService','globalThis.service');vm.runInContext(code,context);
+const documents=Object.fromEntries(Object.keys(customerLegalLabels).map(k=>[k,{id:'SYNTHETIC-'+k,content_hash:'server-only-hash',accepted_at:'forged',actor_id:'forged'}]));
+const legal=customerLegalPayload({documents});eq(Object.keys(legal).sort(),['acknowledged','documents']);eq(Object.keys(legal.documents).length,6);eq(JSON.stringify(legal).includes('forged'),false);
+const request={customerId:null,customerName:'SYNTHETIC guest',guestContact:'0821234567',deliveryDate:'2099-01-01',deliveryLocation:'SYNTHETIC place',cartItems:[{mealId:'SYNTHETIC-meal',qty:1,price:0.01}],paymentMethod:'manual_eft',requestId:'SYNTHETIC-request'};
+await context.service.createOrder({...request,legalAcceptance:legal});eq(calls.at(-1).name,'create_order_with_legal');eq(Object.keys(calls.at(-1).args).sort(),['p_legal','p_order']);eq(calls.at(-1).args.p_order.p_customer_id,null);eq(JSON.stringify(calls.at(-1).args.p_order.p_items),'[{"mealId":"SYNTHETIC-meal","qty":1}]');eq(tokens.length,1);
+await context.service.createOrder({...request,legalAcceptance:legal,collection:{id:'SYNTHETIC-window',destinationId:'SYNTHETIC-point',policyRevision:4,revision:2,fee:999}});eq(calls.at(-1).args.p_order.p_window_revision,2);eq(calls.at(-1).args.p_order.p_fee,undefined);
+await context.service.createOrder(request);eq(calls.at(-1).name,'create_manual_order');
+session={user:{id:'member'}};await context.service.createOrder({...request,customerId:'member',legalAcceptance:legal});eq(calls.at(-1).args.p_order.p_guest_name,null);eq(calls.at(-1).args.p_order.p_customer_id,'member');
+const before=calls.length;await assert.rejects(()=>context.service.createOrder({...request,legalAcceptance:legal}),/session/i);count++;eq(calls.length,before);
+console.log(`${count} customer legal service/payload/guest/member/session/legacy assertions passed; SDK mocked, no network.`);

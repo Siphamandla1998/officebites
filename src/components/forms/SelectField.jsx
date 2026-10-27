@@ -1,8 +1,12 @@
-export default function SelectField({ label, error, options = [], className = "", ...props }) {
+import { useId } from 'react';
+
+export default function SelectField({ label, error, options = [], className = "", id: providedId, ...props }) {
+  const generatedId = useId();
+  const id = providedId ?? generatedId;
   return (
     <div className={className}>
-      {label && <label className="field-label">{label}</label>}
-      <select className="input" {...props}>
+      {label && <label htmlFor={id} className="field-label">{label}</label>}
+      <select id={id} className="input" {...props}>
         {options.map((opt) => (
           <option key={opt.value} value={opt.value}>
             {opt.label}

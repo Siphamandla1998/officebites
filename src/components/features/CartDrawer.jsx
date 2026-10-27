@@ -46,8 +46,7 @@ export default function CartDrawer() {
         <div className="flex flex-col gap-5">
           {vendorCount > 1 && (
             <p className="text-xs text-ink-muted bg-nude-50 rounded-lg px-3 py-2">
-              You're ordering from {vendorCount} vendors — one checkout, split automatically into
-              separate vendor tickets.
+              Your saved cart contains {vendorCount} vendors. Complete one vendor order at a time; remove the other vendors’ items before checkout.
             </p>
           )}
           {grouped.map((group) => (

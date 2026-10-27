@@ -21,9 +21,12 @@ const CARDS = [
   { to: "/help/guides", icon: FiBookOpen, title: "Guides", desc: "Step-by-step help articles" },
   { to: "/help/tickets", icon: FiFileText, title: "My Tickets", desc: "Track support requests you've raised" },
   { to: "/help/feedback", icon: FiStar, title: "Rate Support", desc: "Tell us how we're doing" },
-  { to: "/help/terms", icon: FiShield, title: "Terms & Conditions", desc: "Our platform terms" },
-  { to: "/help/privacy", icon: FiShield, title: "Privacy Policy", desc: "How we handle your data" },
-  { to: "/help/refunds", icon: FiRefreshCw, title: "Refund Policy", desc: "How refunds work" },
+  { to: "/help/terms", icon: FiShield, title: "Terms", desc: "Our platform terms" },
+  { to: "/help/privacy", icon: FiShield, title: "Privacy", desc: "How we handle your data" },
+  { to: "/help/refunds", icon: FiRefreshCw, title: "Refunds", desc: "How refunds work" },
+  { to: "/delivery", icon: FiFileText, title: "Delivery", desc: "Delivery arrangements" },
+  { to: "/cookies", icon: FiShield, title: "Cookies", desc: "Storage and choices" },
+  { to: "/company-information", icon: FiFileText, title: "Company information", desc: "Business disclosures" },
   { to: "/help/hours", icon: FiClock, title: "Business Hours", desc: "When our support team is online" },
 ];
 

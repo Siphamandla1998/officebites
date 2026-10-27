@@ -6,6 +6,7 @@ import {
   useMemo,
   useState,
 } from "react";
+import Modal from '../components/ui/Modal';
 
 const CartContext = createContext(null);
 
@@ -48,6 +49,7 @@ export function CartProvider({ children }) {
   });
 
   const [isCartOpen, setCartOpen] = useState(false);
+  const [replacement, setReplacement] = useState(null);
 
   useEffect(() => {
     try {
@@ -73,6 +75,11 @@ export function CartProvider({ children }) {
     }
 
     const amount = wholeQuantity(qty);
+
+    if (items.some(item => item.vendorId !== meal.vendorId)) {
+      setReplacement({ meal, amount });
+      return;
+    }
 
     setItems((current) => {
       const existing = current.find(
@@ -106,7 +113,7 @@ export function CartProvider({ children }) {
     });
 
     setCartOpen(true);
-  }, []);
+  }, [items]);
 
   const removeItem = useCallback((mealId) => {
     setItems((current) =>
@@ -188,6 +195,17 @@ export function CartProvider({ children }) {
       }}
     >
       {children}
+      <Modal open={!!replacement} onClose={() => setReplacement(null)} title="One vendor per order">
+        <p>Your cart contains another vendor’s meals. Complete that order first, or replace the cart with this meal.</p>
+        <div className="flex flex-col gap-3 mt-4">
+          <button className="btn-outline" onClick={() => { setReplacement(null); setCartOpen(true); }}>Keep cart and complete current order</button>
+          <button className="btn-primary" onClick={() => {
+            const { meal, amount } = replacement;
+            setItems([{ mealId: meal.id, name: meal.name, price: Number(meal.price), image: meal.image, vendorId: meal.vendorId, vendorName: meal.vendorName || 'OfficeBites vendor', qty: amount }]);
+            setReplacement(null);setCartOpen(true);
+          }}>Replace cart with new vendor’s meal</button>
+        </div>
+      </Modal>
     </CartContext.Provider>
   );
 }

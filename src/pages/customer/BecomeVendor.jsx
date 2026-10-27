@@ -1,4 +1,5 @@
 import { useState } from "react";
+import VendorConsent from '../../components/features/VendorConsent';
 import { useNavigate } from "react-router-dom";
 import { FiArrowLeft, FiShoppingBag } from "react-icons/fi";
 import TextField from "../../components/forms/TextField";
@@ -44,6 +45,7 @@ const VENDOR_CATEGORIES = [
 ];
 
 export default function BecomeVendor() {
+  const [vendorConsent, setVendorConsent] = useState(null);
   const navigate = useNavigate();
 
   const { user, refreshUser } = useAuth();
@@ -84,7 +86,7 @@ export default function BecomeVendor() {
     setSubmitting(true);
 
     try {
-      const result = await authService.becomeVendor(form);
+      const result = await authService.becomeVendor({ ...form, vendorConsent });
 
       const refreshedUser = await refreshUser();
 
@@ -101,7 +103,7 @@ export default function BecomeVendor() {
         refreshedUser?.role === "vendor" &&
         refreshedUser?.vendorId
       ) {
-        navigate("/vendor", {
+        navigate("/vendor/agreement", {
           replace: true,
         });
         return;
@@ -209,6 +211,7 @@ export default function BecomeVendor() {
               </p>
             </div>
 
+            <VendorConsent onChange={setVendorConsent} />
             <button
               type="submit"
               className="btn-primary w-full"

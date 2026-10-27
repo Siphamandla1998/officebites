@@ -1,6 +1,6 @@
 import { defineConfig } from '@playwright/test';
 export default defineConfig({
-  testDir: './checks', testMatch: 'recovery-browser.spec.mjs',
+  testDir: './checks', testIgnore: ['**/reference-regressions/**'], testMatch: ['launch-scope-browser.spec.mjs','legal-readiness-browser.spec.mjs','vendor-compliance-browser.spec.mjs','vendor-agreement-browser.spec.mjs','manual-payments-browser.spec.mjs','admin-settings-browser.spec.mjs','manual-profile-browser.spec.mjs'],
   workers: 1, timeout: 180000, expect: { timeout: 60000 },
   use: {
     baseURL: 'http://127.0.0.1:5176',

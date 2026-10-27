@@ -1,4 +1,5 @@
 import { Outlet } from "react-router-dom";
+import LegalLinks from '../components/layout/LegalLinks';
 import { APP_NAME } from "../utils/constants";
 
 export default function AuthLayout() {
@@ -19,6 +20,7 @@ export default function AuthLayout() {
       </div>
 
       <Outlet />
+      <LegalLinks />
     </div>
   );
 }

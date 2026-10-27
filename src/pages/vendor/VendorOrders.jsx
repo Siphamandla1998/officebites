@@ -1,6 +1,7 @@
 import { useRequestGuard } from '../../hooks/useRequestGuard';
 import { useOperationalRefresh } from '../../hooks/useOperationalRefresh';
 import RequestError from '../../components/ui/RequestError';
+import ManualPaymentWorkspace from '../../components/features/ManualPaymentWorkspace';
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FiEye, FiMessageCircle } from "react-icons/fi";
@@ -36,6 +37,7 @@ export default function VendorOrders() {
   const { showToast } = useToast();
   const navigate = useNavigate();
   const [filter, setFilter] = useState("all");
+  const [serviceDate,setServiceDate]=useState('');
   const [selectedSnapshot, setSelected] = useState(null);
   const [messaging, setMessaging] = useState(false);
   const { data: orders, loading, error, refetch } = useAsync(
@@ -44,7 +46,7 @@ export default function VendorOrders() {
   );
 
   useOperationalRefresh(() => refetch({ silent: true }), `${user.id}:${user.vendorId}`);
-  const filtered = (orders || []).filter((o) => filter === "all" || o.subOrder.status === filter);
+  const filtered = (orders || []).filter((o) => (filter === "all" || o.subOrder.status === filter)&&(!serviceDate||o.deliveryDate===serviceDate));
 
   const advance = async (order) => {
     const next = nextStatusFor(order.subOrder.status, order.subOrder.paymentStatus);
@@ -90,7 +92,7 @@ export default function VendorOrders() {
   const columns = [
     { key: "ticket", header: "Ticket", render: (o) => <span className="font-medium text-ink">{o.ticketNumber}</span> },
     { key: "customer", header: "Customer", render: (o) => o.customerName },
-    { key: "date", header: "Delivery", render: (o) => formatDate(o.deliveryDate) },
+    { key: "date", header: "Service date", render: (o) => formatDate(o.deliveryDate) },
     { key: "items", header: "Items", render: (o) => o.subOrder.items.reduce((s, i) => s + i.qty, 0) },
     { key: "total", header: "Total", render: (o) => formatCurrency(o.subOrder.subtotal) },
     { key: "status", header: "Status", render: (o) => <StatusBadge status={o.subOrder.status} /> },
@@ -129,6 +131,7 @@ export default function VendorOrders() {
           Confirmed orders cannot be rejected — move them through your prep pipeline instead.
         </p>
       </div>
+      <label>Service date<input type="date" className="input" value={serviceDate} onChange={e=>setServiceDate(e.target.value)}/></label>
       <Filters
         options={[
           ORDER_STATUS.CONFIRMED,
@@ -145,6 +148,7 @@ export default function VendorOrders() {
         labels={ORDER_STATUS_LABELS}
       />
       {loading ? <div className="skeleton h-64" /> : <Table columns={columns} data={filtered} />}
+      <ManualPaymentWorkspace />
 
       <Modal
         open={!!selected}
@@ -176,7 +180,7 @@ export default function VendorOrders() {
           <div className="flex flex-col gap-4">
             <div className="flex items-center justify-between">
               <StatusBadge status={selected.subOrder.status} />
-              <StatusBadge status={selected.subOrder.paymentStatus === "paid" ? "completed" : selected.subOrder.paymentStatus === "verifying" ? "payment_submitted" : "pending_payment"} />
+              <span className="flex items-center gap-2 text-xs">Payment <StatusBadge status={selected.subOrder.paymentStatus === "paid" ? "paid" : selected.subOrder.paymentStatus === "verifying" ? "payment_submitted" : selected.subOrder.paymentStatus === "unpaid" ? "pending_payment" : "status_review"} /></span>
             </div>
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div>

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { persistentImage } from '../../utils/persistentImage';
 
 import Modal from "../ui/Modal";
 import TextField from "../forms/TextField";
@@ -47,9 +48,11 @@ export default function MealFormModal({
   const [errors, setErrors] = useState({});
   const [imageFile, setImageFile] = useState(null);
   const [preview, setPreview] = useState("");
+  useEffect(() => () => { if (preview.startsWith('blob:')) URL.revokeObjectURL(preview); }, [preview]);
 
   useEffect(() => {
     if (!open) {
+      setPreview('');
       return;
     }
 
@@ -62,11 +65,11 @@ export default function MealFormModal({
         preparationTime: meal.preparationTime ?? "",
         available: meal.available ?? true,
         featured: meal.featured ?? false,
-        image: meal.image || "",
+        image: persistentImage(meal.image),
         availableDays: meal.availableDays || ALL_DAYS,
       });
 
-      setPreview(meal.image || "");
+      setPreview(persistentImage(meal.image));
     } else {
       setForm({ ...EMPTY_FORM });
       setPreview("");

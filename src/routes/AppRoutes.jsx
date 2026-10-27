@@ -34,6 +34,7 @@ import {
   Notifications,
   ChatConversation,
   VendorOverview,
+  VendorAgreement,
   VendorOrders,
   VendorMenu,
   VendorRevenue,
@@ -44,6 +45,8 @@ import {
   AdminOverview,
   AdminPayments,
   AdminVendors,
+  AdminVendorCompliance,
+  VendorCompliance,
   AdminCustomers,
   AdminChats,
   AdminSupport,
@@ -58,10 +61,9 @@ import {
   Guides,
   GuideDetail,
   Feedback,
-  Terms,
-  Privacy,
-  RefundPolicy,
   BusinessHours,
+  LegalDocument, OrderLegalReceipt,
+  CommercialWorkspace,
   NotFound,
 } from "./routeComponents";
 
@@ -244,6 +246,8 @@ export default function AppRoutes() {
           }
         >
           <Route index element={<VendorOverview />} />
+          <Route path="agreement" element={<VendorAgreement />} />
+          <Route path="compliance" element={<VendorCompliance />} />
 
           <Route
             path="orders"
@@ -294,6 +298,8 @@ export default function AppRoutes() {
             index
             element={<AdminOverview />}
           />
+          <Route path="legal" element={<CommercialWorkspace />} />
+          <Route path="vendors/:vendorId/compliance" element={<AdminVendorCompliance />} />
 
           <Route
             path="payments"
@@ -333,6 +339,10 @@ export default function AppRoutes() {
 
         {/* Help and support */}
         <Route element={<PublicLayout />}>
+          <Route path="/support" element={<Navigate to="/help/contact" replace />} />
+          <Route path="/orders/:orderId/legal" element={<OrderLegalReceipt />} />
+          {['terms','privacy','refund-policy','delivery','cookies','company-information'].map(kind => <Route key={kind} path={`/${kind}`} element={<LegalDocument kind={kind} />} />)}
+          {['vendor-agreement','vendor-fees'].map(kind => <Route key={kind} path={`/${kind}`} element={<ProtectedRoute allowedRoles={[ROLES.VENDOR, ROLES.ADMIN]}><LegalDocument kind={kind} /></ProtectedRoute>} />)}
           <Route
             path="/help"
             element={<HelpHome />}
@@ -380,17 +390,17 @@ export default function AppRoutes() {
 
           <Route
             path="/help/terms"
-            element={<Terms />}
+            element={<Navigate to="/terms" replace />}
           />
 
           <Route
             path="/help/privacy"
-            element={<Privacy />}
+            element={<Navigate to="/privacy" replace />}
           />
 
           <Route
             path="/help/refunds"
-            element={<RefundPolicy />}
+            element={<Navigate to="/refund-policy" replace />}
           />
 
           <Route

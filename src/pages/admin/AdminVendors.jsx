@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link, useNavigate } from 'react-router-dom';
 import AccountRemoval from '../../components/features/AccountRemoval';
 import RequestError from '../../components/ui/RequestError';
 import Filters from "../../components/ui/Filters";
@@ -13,6 +14,7 @@ import { useToast } from "../../context/ToastContext";
 import { VENDOR_STATUS } from "../../utils/constants";
 
 export default function AdminVendors() {
+  const navigate = useNavigate();
 
   const [filter, setFilter] = useState(
     VENDOR_STATUS.PENDING
@@ -147,7 +149,7 @@ export default function AdminVendors() {
 
       render:(v)=>(
 
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2"><Link className="btn-outline text-xs" to={`/admin/vendors/${v.id}/compliance`}>Compliance and approval</Link>
           {v.archivedAt ? <span className="text-xs">Archived; financial history retained</span> : <AccountRemoval kind="vendor" id={v.id} onRemoved={refetch} />}
 
 
@@ -158,15 +160,11 @@ export default function AdminVendors() {
 
                 <button
                   onClick={() =>
-                    act(
-                      vendorService.approveVendor,
-                      v,
-                      "approved"
-                    )
+                    navigate('/admin/vendors/' + v.id + '/compliance')
                   }
                   className="btn-secondary !px-3 !py-1.5 text-xs"
                 >
-                  Approve
+                  Review approval
                 </button>
 
 
@@ -195,15 +193,11 @@ export default function AdminVendors() {
 
               <button
                 onClick={() =>
-                  act(
-                    vendorService.suspendVendor,
-                    v,
-                    "suspended"
-                  )
+                  navigate('/admin/vendors/' + v.id + '/compliance')
                 }
                 className="btn-outline !px-3 !py-1.5 text-xs"
               >
-                Suspend
+                Review suspension
               </button>
 
             )
@@ -212,15 +206,11 @@ export default function AdminVendors() {
             v.status === VENDOR_STATUS.SUSPENDED && !v.archivedAt && (
               <button
                 onClick={() =>
-                  act(
-                    vendorService.restoreVendor,
-                    v,
-                    "restored"
-                  )
+                  navigate('/admin/vendors/' + v.id + '/compliance')
                 }
                 className="btn-secondary !px-3 !py-1.5 text-xs"
               >
-                Restore
+                Review restoration
               </button>
             )
           }

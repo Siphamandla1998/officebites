@@ -1,0 +1,28 @@
+{
+  "project": "eyhmarmekioovcjibcbr",
+  "run": "OB-UAT-20261020",
+  "observation_date": "2026-10-21",
+  "exact_operator_timestamp": null,
+  "source": "Operator direct Supabase Dashboard confirmation relayed in user instruction",
+  "historical_fixture_preserved": "recovery-baseline.json",
+  "email_provider_enabled": true,
+  "phone_provider_enabled": false,
+  "public_signup_enabled": true,
+  "custom_smtp_enabled": false,
+  "previous_hook_known": true,
+  "previous_hook": { "enabled": false, "uri": null, "present": false },
+  "other_auth_hooks_present": false,
+  "payment_methods": { "payfast": false, "ozow": false, "manual_payshap": false, "manual_eft": false },
+  "settings_saved": false,
+  "safe_notification_suppression_baseline": false,
+  "recovery_policy": "retain verified active suppression; never automatically restore absent hook",
+  "agent_read_only_health": { "http_status": 200, "name": "GoTrue", "version": "v2.197.0" },
+  "pending_operator_evidence": [
+    "effective PostgREST service environment and pre-config overrides",
+    "security notification toggles, MFA SMS and independent hosted message automation inventory"
+  ],
+  "pending_installation_acceptance": [
+    "saved Auth sink enabled URI, permissions and non-delivery evidence",
+    "actual REST gate-specific denials after reload on RPC and table reads"
+  ]
+}

@@ -1,0 +1,3 @@
+export const customerLegalLabels = { terms: 'Terms', privacy: 'Privacy', 'refund-policy': 'Refunds', delivery: 'Delivery', cookies: 'Cookies', 'company-information': 'Company information' };
+export const customerLegalAcknowledgement = 'I agree to the Terms and have been given access to Privacy, Refunds, Delivery, Cookies and Company information. This does not consent to marketing or waive statutory rights.';
+export function customerLegalPayload(state) { return { acknowledged: true, documents: Object.fromEntries(Object.keys(customerLegalLabels).map(kind => [kind, state.documents[kind].id])) }; }

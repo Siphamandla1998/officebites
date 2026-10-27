@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Outlet } from "react-router-dom";
 import { FiGrid, FiClock, FiCheckCircle, FiBarChart2, FiMenu, FiPieChart, FiMessageSquare, FiBell, FiSettings, FiHelpCircle } from "react-icons/fi";
 import Sidebar from "../components/layout/Sidebar";
+import LegalLinks from '../components/layout/LegalLinks';
 
 const TABS = [
   { to: "/vendor", icon: FiGrid, label: "Overview", end: true },
@@ -11,6 +12,8 @@ const TABS = [
   { to: "/vendor/insights", icon: FiPieChart, label: "Popular meals" },
   { to: "/vendor/chat", icon: FiMessageSquare, label: "Messages" },
   { to: "/vendor/notifications", icon: FiBell, label: "Notifications" },
+  { to: "/vendor/compliance", icon: FiCheckCircle, label: "Compliance" },
+  { to: "/vendor/agreement", icon: FiCheckCircle, label: "Agreement" },
   { to: "/vendor/settings", icon: FiSettings, label: "Settings" },
   { to: "/help", icon: FiHelpCircle, label: "Help & Support" },
 ];
@@ -25,7 +28,7 @@ export default function VendorLayout() {
         <header className="lg:hidden sticky top-0 z-30 bg-paper/90 backdrop-blur border-b border-line">
           <div className="px-5 pt-[env(safe-area-inset-top)]">
             <div className="h-16 flex items-center gap-3">
-              <button onClick={() => setSidebarOpen(true)} className="btn-icon">
+              <button onClick={() => setSidebarOpen(true)} className="btn-icon" aria-label="Open vendor menu">
                 <FiMenu size={18} />
               </button>
               <span className="text-sm font-semibold text-ink">Vendor dashboard</span>
@@ -34,6 +37,7 @@ export default function VendorLayout() {
         </header>
         <main className="px-5 pt-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] lg:px-8 lg:pt-8 lg:pb-[calc(2rem+env(safe-area-inset-bottom))] max-w-6xl mx-auto">
           <Outlet />
+          <LegalLinks commercial />
         </main>
       </div>
     </div>

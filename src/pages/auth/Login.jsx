@@ -51,7 +51,7 @@ export default function Login() {
       let destination = ROLE_HOME[role] || "/";
 
       if (role === "vendor") {
-        destination = "/vendor";
+        destination = location.state?.from?.pathname === "/vendor/agreement" ? "/vendor/agreement" : "/vendor";
       } else if (role === "admin") {
         destination = "/admin";
       } else if (role === "customer") {
@@ -74,7 +74,7 @@ export default function Login() {
         state: {},
       });
     } catch (loginError) {
-      console.error("[OfficeBites] Login failed:", loginError);
+      console.error("[OfficeBites] Login failed:", { code: loginError?.code || 'AUTH_UNAVAILABLE' });
 
       setError(
         loginError?.message ||

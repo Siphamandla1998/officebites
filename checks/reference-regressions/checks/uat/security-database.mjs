@@ -1,0 +1,83 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
+export async function verifyUatSecurity(db) {
+  let count = 0;
+  const id = n => '00000000-0000-4000-8000-' + String(n).padStart(12, '0');
+  const root = () => db.exec("RESET ROLE; SELECT set_config('request.jwt.claim.sub','',false),set_config('request.jwt.claim.role','service_role',false)");
+  const as = async (n, role = n ? 'authenticated' : 'anon', header = '') => {
+    await root();
+    await db.query("SELECT set_config('request.jwt.claim.sub',$1,false),set_config('request.jwt.claim.role',$2,false),set_config('request.headers',$3,false)", [n ? id(n) : '', role, JSON.stringify({ 'x-officebites-uat': header })]);
+    await db.exec(`SET ROLE ${role}`);
+  };
+  const q = async (sql, args = []) => (await db.query(sql, args)).rows[0];
+  const rejected = async (sql, args = []) => { await assert.rejects(() => db.query(sql, args), /required|permission|unavailable|ownership|denied|immutable|retain/i); count++; };
+  await root();
+  await db.exec('CREATE ROLE supabase_auth_admin;');
+  await db.exec('BEGIN');
+  await db.query("SELECT set_config('officebites.verified_project_ref',$1,true)", ['eyhmarmekioovcjibcbr']);
+  await db.exec(fs.readFileSync('checks/uat/staging-security.sql', 'utf8'));
+  await db.exec('COMMIT');
+  const capability = 'a'.repeat(64);
+  const digest = createHash('sha256').update(capability).digest('hex');
+  await db.query("UPDATE private.uat_security SET capability_hash=$1,expires_at=now()+interval '1 hour'", [digest]);
+  await db.query("INSERT INTO private.uat_actors(user_id,fixture) VALUES($1,'admin'),($2,'vendorA'),($3,'vendorB')", [id(1), id(802), id(803)]);
+  await as(null); await rejected('SELECT private.uat_pre_request()');
+  await as(null, 'anon', 'b'.repeat(64)); await rejected('SELECT private.uat_pre_request()');
+  await as(null, 'anon', capability); await q('SELECT private.uat_pre_request()'); count++;
+  await rejected("SELECT public.admin_manual_settings(true,true,15,500,'Unauthorised test activation')");
+  await rejected('SELECT * FROM private.uat_security');
+  await rejected('SELECT * FROM private.uat_message_capture');
+  await rejected("SELECT private.uat_send_email('{}')");
+  // Existing admin outside the allowlist loses helper-based access too (Realtime/Storage).
+  await root(); await db.query('DELETE FROM private.uat_actors WHERE user_id=$1', [id(1)]);
+  await db.query("INSERT INTO public.notifications(user_id,type,title,body) VALUES($1,'general','Synthetic-only notification','Synthetic-only body')", [id(1)]);
+  await db.query("INSERT INTO storage.objects(bucket_id,name,owner_id,owner) VALUES('support-uploads',$1,$2,$3)", [`${id(1)}/synthetic.txt`, id(1), id(1)]);
+  await as(1, 'authenticated', capability); await rejected('SELECT private.uat_pre_request()');
+  assert.equal((await q('SELECT private.active_account() ok')).ok, false); count++;
+  assert.equal(Number((await q('SELECT count(*) n FROM public.orders')).n), 0); count++;
+  assert.equal(Number((await q("SELECT count(*) n FROM public.notifications WHERE title='Synthetic-only notification'")).n), 0); count++;
+  assert.equal(Number((await q("SELECT count(*) n FROM storage.objects WHERE name LIKE '%synthetic.txt'")).n), 0); count++;
+  await rejected("SELECT public.admin_manual_settings(true,true,15,500,'Unauthorised test activation')");
+  await root(); await db.query("INSERT INTO private.uat_actors(user_id,fixture) VALUES($1,'admin')", [id(1)]);
+  await as(802, 'authenticated', capability); await q('SELECT private.uat_pre_request()'); count++;
+  assert.equal((await q('SELECT private.active_account() ok')).ok, true); count++;
+  await rejected("SELECT public.admin_manual_settings(true,true,15,500,'Ordinary vendor cannot activate')");
+  await rejected("SELECT public.submit_vendor_payment_profile($1,'{}',true,true)", [id(805)]);
+  await as(803, 'authenticated', capability); await q('SELECT private.uat_pre_request()'); count++;
+  await rejected("SELECT public.submit_vendor_payment_profile($1,'{}',true,true)", [id(804)]);
+  await as(1, 'authenticated', capability); await q('SELECT private.uat_pre_request()'); count++;
+  assert.equal((await q('SELECT private.is_admin() ok')).ok, true); count++;
+  await rejected("SELECT public.admin_update_payment_gateway('payfast',true,false,'')");
+  await rejected("SELECT public.admin_update_payment_gateway('ozow',true,false,'')");
+  await root(); await db.exec("UPDATE private.uat_security SET expires_at=now()-interval '1 second'");
+  await as(null, 'anon', capability); await rejected('SELECT private.uat_pre_request()');
+  await as(802, 'authenticated', capability); await rejected('SELECT private.uat_pre_request()');
+  assert.equal((await q('SELECT private.active_account() ok')).ok, false); count++;
+  await as(null, 'service_role'); await q('SELECT private.uat_pre_request()'); count++;
+  await root();
+  const historical = await q("SELECT o.id,o.ticket_number,o.total FROM public.orders o WHERE o.payment_method='payfast' AND o.status='pending_payment' AND EXISTS(SELECT 1 FROM public.order_suborders s WHERE s.order_id=o.id AND s.payment_status='unpaid') LIMIT 1");
+  assert.ok(historical); count++;
+  await db.query("SELECT public.confirm_payfast_payment($1,'UAT-GATE-HISTORICAL-CALLBACK',$2,$3,'COMPLETE','{}')", [historical.id, historical.ticket_number, historical.total]);
+  assert.equal((await q('SELECT payment_status FROM public.order_suborders WHERE order_id=$1 LIMIT 1', [historical.id])).payment_status, 'paid'); count++;
+  const sensitive = { user: { email: 'not-a-test@real.invalid' }, email_data: { email_action_type: 'recovery', token: 'NEVER-CAPTURE', token_hash: 'NEVER-CAPTURE', redirect_to: 'NEVER-CAPTURE' } };
+  await as(null, 'supabase_auth_admin');
+  assert.deepEqual((await q('SELECT private.uat_send_email($1) r', [sensitive])).r, {}); count++;
+  for (const action of ['invite', 'signup', 'magiclink', 'email_change', 'reauthentication', 'secret-raw-body']) {
+    await q('SELECT private.uat_send_email($1)', [{ ...sensitive, email_data: { ...sensitive.email_data, email_action_type: action } }]); count++;
+  }
+  await rejected('SELECT * FROM private.uat_message_capture');
+  await root();
+  const captured = (await db.query('SELECT * FROM private.uat_message_capture')).rows;
+  assert.equal(captured.length, 7); count++;
+  assert.ok(captured.every(row => row.suppressed && /^[a-f0-9]{64}$/.test(row.recipient_hash))); count++;
+  assert.doesNotMatch(JSON.stringify(captured), /NEVER-CAPTURE|real.invalid|secret-raw-body/); count++;
+  await rejected('DELETE FROM private.uat_message_capture');
+  assert.equal((await q('SELECT bool_and(NOT enabled) ok FROM private.gateway_settings')).ok, true); count++;
+  // Empty/missing configuration fails rather than falling through to SMTP.
+  await db.exec('DELETE FROM private.uat_security');
+  await as(null, 'supabase_auth_admin');
+  await assert.rejects(() => q('SELECT private.uat_send_email($1)', [sensitive]), /no rows/i); count++;
+  await root();
+  console.log(`${count} staging gate/allowlist/private capture assertions passed locally. PostgREST/Auth/Realtime transport verification remains hosted-only.`);
+}

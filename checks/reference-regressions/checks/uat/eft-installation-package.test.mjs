@@ -1,0 +1,56 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+import {PGlite} from '../../node_modules/@electric-sql/pglite/dist/index.js';
+export async function verifyEftInstallationPackage(db, afterInstall){
+ if(!(db instanceof PGlite))throw Error('Disposable PGlite instance required');
+ const folder='supabase/staging-release/20261026-eft/';let checks=0;
+ const q=async(s,p=[])=>(await db.query(s,p)).rows[0];
+ const raw=fs.readFileSync(folder+'install.sql','utf8');
+ const replaceBaseline=(sql,baseline)=>sql.replace(/\$eft_baseline\$[\s\S]*?\$eft_baseline\$::jsonb/g,()=>'$eft_baseline$'+JSON.stringify(baseline)+'$eft_baseline$::jsonb');
+ const reject=async(sql,pattern)=>{await db.exec('SAVEPOINT negative');try{await assert.rejects(()=>db.exec(sql),pattern);checks++;}finally{await db.exec('ROLLBACK TO negative; RELEASE negative');}};
+ await db.exec("RESET ROLE;SELECT set_config('request.jwt.claim.sub','',false)");
+ const before=(await q("SELECT pg_get_functiondef('private.active_account()'::regprocedure) d")).d;
+ await db.exec('BEGIN');
+ try{
+  await reject(raw,/Baseline|baseline|drift/);
+  await db.exec(fs.readFileSync('supabase/migrations/20261021094956_fix_admin_manual_settings_singleton.sql','utf8').replace(/^\s*(BEGIN|COMMIT);\s*$/gm,''));
+  await db.exec("CREATE ROLE supabase_auth_admin NOLOGIN; CREATE SCHEMA supabase_migrations; CREATE TABLE supabase_migrations.schema_migrations(version text); INSERT INTO supabase_migrations.schema_migrations VALUES('20261020100740'),('20261021100655');");
+  const baseline=(await q(fs.readFileSync(folder+'baseline-capture.sql','utf8'))).jsonb_build_object;
+  const local=replaceBaseline(raw,baseline);
+  const readiness=replaceBaseline(fs.readFileSync(folder+'readiness.sql','utf8'),baseline);
+  assert.equal((await db.query(readiness)).rows.every(r=>r.passed),true);checks++;
+  await db.exec('SAVEPOINT failed_install');
+  const fault=local.replace('INSERT INTO private.officebites_eft_release_installations',"RAISE EXCEPTION 'Synthetic atomic rollback'; INSERT INTO private.officebites_eft_release_installations");
+  await assert.rejects(()=>db.exec(fault),/Synthetic atomic rollback/);checks++;
+  await db.exec('ROLLBACK TO failed_install; RELEASE failed_install');
+  assert.equal((await q("SELECT to_regclass('private.pilot_policy') r")).r,null);checks++;
+  await db.exec(local);checks++;
+  await db.exec(local);checks++;
+  assert.equal(Number((await q('SELECT count(*) n FROM private.officebites_eft_release_installations')).n),1);checks++;
+  await reject("UPDATE private.officebites_eft_release_installations SET payload_sha256='forged'",/immutable|append.only/i);
+  await db.exec('SAVEPOINT acl_drift');
+  await db.exec('GRANT SELECT ON private.collection_financials TO anon');
+  await reject(local,/Private table\/RLS\/ACL violation/);
+  await db.exec('ROLLBACK TO acl_drift; RELEASE acl_drift');
+  await db.exec('SAVEPOINT function_drift');
+  await db.exec('REVOKE EXECUTE ON FUNCTION public.create_collection_order(uuid,text,text,jsonb,text,uuid,uuid,uuid,bigint,bigint) FROM anon');
+  await reject(local,/function\/ACL drift/);
+  await db.exec('ROLLBACK TO function_drift; RELEASE function_drift');
+  await reject(local.replaceAll(JSON.parse(fs.readFileSync(folder+'manifest.json','utf8')).payloadSha256,'0'.repeat(64)),/Different or partial/);
+  await db.exec('SAVEPOINT settings_drift');
+  await db.exec("UPDATE private.gateway_settings SET maintenance=NOT maintenance WHERE provider='payfast'");
+  await reject(local,/settings.*drift/);
+  await db.exec('ROLLBACK TO settings_drift; RELEASE settings_drift');
+  const recovery=replaceBaseline(fs.readFileSync(folder+'forward-containment.sql','utf8'),baseline);
+  await db.exec("INSERT INTO private.uat_actors(user_id,fixture) SELECT id,'admin' FROM auth.users WHERE email='admin@test.invalid'");
+  await db.exec(recovery);checks++;
+  assert.equal(Number((await q('SELECT count(*) n FROM private.uat_actors')).n),1);checks++;
+  await db.exec(recovery);checks++;
+  await db.exec(replaceBaseline(fs.readFileSync(folder+'post-recovery.sql','utf8'),baseline));checks++;
+  assert.equal((await q("SELECT bool_and(NOT enabled) ok FROM private.gateway_settings")).ok,true);checks++;
+  if(afterInstall)await afterInstall(db,local);
+ }finally{await db.exec('ROLLBACK');}
+ assert.equal((await q("SELECT pg_get_functiondef('private.active_account()'::regprocedure) d")).d,before);checks++;
+ assert.equal((await q("SELECT to_regclass('private.officebites_eft_release_installations') r")).r,null);checks++;
+ console.log(`${checks} EFT-only installer/readiness/retry/drift/immutable/containment/atomic-rollback assertions passed in disposable PGlite. Baseline metadata replaced only in memory; no hosted writes.`);
+}

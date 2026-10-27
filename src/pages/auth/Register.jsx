@@ -6,6 +6,7 @@ import TextField from "../../components/forms/TextField";
 import SelectField from "../../components/forms/SelectField";
 import Spinner from "../../components/ui/Spinner";
 import { ROLES } from "../../utils/constants";
+import VendorConsent from '../../components/features/VendorConsent';
 
 const VENDOR_CATEGORIES = [
   { value: "Home-cooked meals", label: "Home-cooked meals" },
@@ -30,6 +31,7 @@ export default function Register() {
   });
 
   const [submitting, setSubmitting] = useState(false);
+  const [vendorConsent, setVendorConsent] = useState(null);
   const [confirmSent, setConfirmSent] = useState(false);
 
   const { register } = useAuth();
@@ -65,7 +67,7 @@ export default function Register() {
 
     try {
       const { user, needsEmailConfirmation } =
-        await register(form);
+        await register({ ...form, vendorConsent: isVendor ? vendorConsent : null });
 
       if (needsEmailConfirmation) {
         setConfirmSent(true);
@@ -81,7 +83,7 @@ export default function Register() {
 
       navigate(
         user.role === ROLES.VENDOR
-          ? "/vendor"
+          ? "/vendor/agreement"
           : user.role === ROLES.ADMIN
             ? "/admin"
             : "/"
@@ -113,13 +115,13 @@ export default function Register() {
 
         {isVendor && (
           <p className="text-xs text-ink-muted bg-nude-50 rounded-lg px-3 py-2.5 mt-2">
-            Your OfficeBites storefront has been created
+            After signing in, review your vendor agreement. Your OfficeBites storefront has been created
             and will remain under review until approved.
           </p>
         )}
 
         <Link
-          to="/login"
+          to="/login" state={isVendor ? { from: { pathname: "/vendor/agreement" } } : undefined}
           className="btn-primary mt-3"
         >
           Go to sign in
@@ -224,6 +226,7 @@ export default function Register() {
           </div>
         )}
 
+        {isVendor && <VendorConsent onChange={setVendorConsent} />}
         <button
           type="submit"
           className="btn-primary w-full mt-1"
@@ -245,7 +248,7 @@ export default function Register() {
       <p className="text-sm text-center text-ink-soft">
         Already have an account?{" "}
         <Link
-          to="/login"
+          to="/login" state={isVendor ? { from: { pathname: "/vendor/agreement" } } : undefined}
           className="font-semibold text-ink"
         >
           Sign in

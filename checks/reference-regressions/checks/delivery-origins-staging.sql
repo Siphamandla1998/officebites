@@ -1,0 +1,85 @@
+-- STAGING ONLY. Synthetic records/settings/notifications; outer rollback is mandatory.
+BEGIN;
+DO $qa$ DECLARE admin_id uuid:=gen_random_uuid();owner_id uuid:=gen_random_uuid();customer_id uuid:=gen_random_uuid();second_owner uuid:=gen_random_uuid();second_vendor uuid;second_meal uuid:=gen_random_uuid();vendor_id uuid;meal_id uuid:=gen_random_uuid();cart jsonb;mixed jsonb;q jsonb;result jsonb;current_origin jsonb;o jsonb;snapshot jsonb;tx text;km double precision;expected numeric;n integer:=0;failed boolean;failure text;
+BEGIN
+ BEGIN
+ PERFORM set_config('request.jwt.claim.role','service_role',true);PERFORM set_config('request.jwt.claim.sub','',true);
+ INSERT INTO auth.users(id,email,raw_user_meta_data) VALUES(admin_id,'origin-qa-'||admin_id||'@example.invalid','{"role":"customer","name":"Synthetic origin admin"}'),(owner_id,'origin-qa-'||owner_id||'@example.invalid','{"role":"vendor","name":"Synthetic origin vendor","business_name":"Synthetic origin vendor","business_category":"Meals"}');
+ UPDATE public.profiles SET role='admin' WHERE id=admin_id;
+ SELECT p.vendor_id INTO STRICT vendor_id FROM public.profiles p WHERE p.id=owner_id;
+ UPDATE public.vendors SET status='approved',latitude=NULL,longitude=NULL,commission_rate=0.17 WHERE id=vendor_id;
+ INSERT INTO public.meals(id,vendor_id,name,category,price,available) VALUES(meal_id,vendor_id,'Synthetic origin meal','Meals',100,true);
+ cart:=jsonb_build_array(jsonb_build_object('mealId',meal_id,'qty',1));
+ result:=public.create_order_from_cart(NULL,'Synthetic unenforced guest','0821234567',NULL,current_date+7,'Synthetic unenforced',cart);
+ IF NOT EXISTS(SELECT 1 FROM public.order_suborders WHERE order_id=(result->>'id')::uuid AND delivery_snapshot->>'quoteEnforced'='false' AND delivery_snapshot->>'distanceKm' IS NULL AND (delivery_snapshot->>'allocatedCharge')::numeric=0) THEN RAISE EXCEPTION 'Unenforced order context missing';END IF;n:=n+1;
+ -- Test-only attestations, never persisted or presented as operational verification.
+ UPDATE private.delivery_settings SET enabled=true,hub_pin_verified=true,fee_structure_confirmed=true,activation_ready=true;
+ PERFORM set_config('request.jwt.claim.role','anon',true);EXECUTE 'SET LOCAL ROLE anon';
+ FOREACH km IN ARRAY ARRAY[0,0.5,0.51,5]::double precision[] LOOP
+ q:=public.quote_delivery(jsonb_build_object('latitude',-29.72118+km/6371.0088*180/pi(),'longitude',31.071621,'accuracy',10,'capturedAt',clock_timestamp()),cart,'0821234567');
+ expected:=CASE WHEN km<=0.5 THEN 0 ELSE 15 END;
+ IF (q->>'fee')::numeric<>expected OR q#>>'{vendors,0,mode}'<>'CENTRAL' THEN RAISE EXCEPTION 'CENTRAL boundary mismatch %',km;END IF;n:=n+1;
+ END LOOP;
+ failed:=false;BEGIN PERFORM public.quote_delivery(jsonb_build_object('latitude',-29.72118+5.01/6371.0088*180/pi(),'longitude',31.071621,'accuracy',10,'capturedAt',clock_timestamp()),cart,'0821234567');EXCEPTION WHEN OTHERS THEN failed:=true;END;
+ IF NOT failed THEN RAISE EXCEPTION 'Outside CENTRAL radius accepted';END IF;n:=n+1;
+ EXECUTE 'RESET ROLE';PERFORM set_config('request.jwt.claim.role','authenticated',true);PERFORM set_config('request.jwt.claim.sub',owner_id::text,true);EXECUTE 'SET LOCAL ROLE authenticated';
+ PERFORM public.request_vendor_delivery_origin(vendor_id,'Synthetic proposed premises',-29.72118+1.0/6371.0088*180/pi(),31.071621);
+ current_origin:=public.get_vendor_delivery_origin(vendor_id)->'current';
+ IF current_origin->>'status'<>'pending' OR current_origin->>'mode'<>'CENTRAL' THEN RAISE EXCEPTION 'Pending mode mismatch';END IF;n:=n+1;
+ failed:=false;BEGIN PERFORM public.admin_decide_delivery_origin(vendor_id,(current_origin->>'revision')::integer,'approve','Forged vendor approval',NULL);EXCEPTION WHEN insufficient_privilege THEN failed:=true;END;
+ IF NOT failed THEN RAISE EXCEPTION 'Vendor self approval accepted';END IF;n:=n+1;
+ EXECUTE 'RESET ROLE';PERFORM set_config('request.jwt.claim.sub',admin_id::text,true);EXECUTE 'SET LOCAL ROLE authenticated';
+ PERFORM public.admin_decide_delivery_origin(vendor_id,(current_origin->>'revision')::integer,'approve','Synthetic inspected pin',NULL);
+ current_origin:=public.get_vendor_delivery_origin(vendor_id)->'current';IF current_origin->>'mode'<>'CENTRAL' THEN RAISE EXCEPTION 'Approval implicitly activated VENDOR';END IF;n:=n+1;
+ PERFORM public.admin_decide_delivery_origin(vendor_id,(current_origin->>'revision')::integer,'vendor','Synthetic explicit VENDOR mode',NULL);
+ EXECUTE 'RESET ROLE';PERFORM set_config('request.jwt.claim.role','anon',true);PERFORM set_config('request.jwt.claim.sub','',true);EXECUTE 'SET LOCAL ROLE anon';
+ FOREACH km IN ARRAY ARRAY[0,0.5,0.51,5]::double precision[] LOOP
+ q:=public.quote_delivery(jsonb_build_object('latitude',-29.72118+(1+km)/6371.0088*180/pi(),'longitude',31.071621,'accuracy',10,'capturedAt',clock_timestamp()),cart,'0821234567');
+ IF (q->>'fee')::numeric<>(CASE WHEN km<=0.5 THEN 0 ELSE 15 END) OR q#>>'{vendors,0,mode}'<>'VENDOR' THEN RAISE EXCEPTION 'VENDOR boundary mismatch %',km;END IF;n:=n+1;
+ END LOOP;
+ q:=public.quote_delivery(jsonb_build_object('latitude',-29.72118+1.51/6371.0088*180/pi(),'longitude',31.071621,'accuracy',10,'capturedAt',clock_timestamp()),cart,'0821234567');
+ o:=public.create_order_with_delivery(NULL,'Synthetic guest','0821234567',NULL,current_date+7,'Synthetic staging',cart,(q->>'id')::uuid);
+ IF (o->>'total')::numeric<>115 THEN RAISE EXCEPTION 'Server fee total mismatch';END IF;n:=n+1;
+ EXECUTE 'RESET ROLE';PERFORM set_config('request.jwt.claim.role','service_role',true);
+ SELECT delivery_snapshot INTO snapshot FROM public.order_suborders WHERE order_id=(o->>'id')::uuid;
+ IF snapshot->>'mode'<>'VENDOR' OR (snapshot->>'allocatedCharge')::numeric<>15 THEN RAISE EXCEPTION 'Snapshot missing';END IF;n:=n+1;
+ result:=public.prepare_payfast_order((o->>'id')::uuid,NULL,'0821234567');IF (result->>'total')::numeric<>115 THEN RAISE EXCEPTION 'Provider preparation did not use server total';END IF;n:=n+1;
+ PERFORM public.confirm_payfast_payment((o->>'id')::uuid,'SYNTHETIC-ORIGIN-'||(o->>'id'),o->>'ticket_number',115,'COMPLETE','{"amount_fee":"-2.30"}');
+ q:=public.quote_delivery(jsonb_build_object('latitude',-29.72118+1.51/6371.0088*180/pi(),'longitude',31.071621,'accuracy',10,'capturedAt',clock_timestamp()),cart,'0821234567');
+ PERFORM set_config('request.jwt.claim.role','authenticated',true);PERFORM set_config('request.jwt.claim.sub',admin_id::text,true);EXECUTE 'SET LOCAL ROLE authenticated';
+ current_origin:=public.get_vendor_delivery_origin(vendor_id)->'current';
+ PERFORM public.admin_decide_delivery_origin(vendor_id,(current_origin->>'revision')::integer,'revoke','Synthetic revoked location',NULL);
+ EXECUTE 'RESET ROLE';PERFORM set_config('request.jwt.claim.role','anon',true);PERFORM set_config('request.jwt.claim.sub','',true);EXECUTE 'SET LOCAL ROLE anon';
+ failed:=false;BEGIN PERFORM public.create_order_with_delivery(NULL,'Synthetic guest','0821234567',NULL,current_date+7,'Synthetic staging',cart,(q->>'id')::uuid);EXCEPTION WHEN OTHERS THEN failed:=true;END;
+ IF NOT failed THEN RAISE EXCEPTION 'Stale revoked quote accepted';END IF;n:=n+1;
+ q:=public.quote_delivery(jsonb_build_object('latitude',-29.72118+1.51/6371.0088*180/pi(),'longitude',31.071621,'accuracy',10,'capturedAt',clock_timestamp()),cart,'0821234567');IF q#>>'{vendors,0,mode}'<>'CENTRAL' THEN RAISE EXCEPTION 'Revoked origin did not fall back';END IF;n:=n+1;
+ EXECUTE 'RESET ROLE';IF NOT EXISTS(SELECT 1 FROM public.orders WHERE id=(o->>'id')::uuid AND total=115) OR NOT EXISTS(SELECT 1 FROM public.order_suborders WHERE order_id=(o->>'id')::uuid AND delivery_snapshot=snapshot) THEN RAISE EXCEPTION 'Historical payment changed';END IF;n:=n+1;
+ IF has_function_privilege('authenticated','public.service_confirm_delivery_checks(integer,text)','EXECUTE') OR has_table_privilege('authenticated','private.vendor_delivery_origins','UPDATE') THEN RAISE EXCEPTION 'Approval privilege leak';END IF;n:=n+1;
+ -- Authenticated checkout and mixed CENTRAL/VENDOR eligibility; still no SDK login or provider call.
+ PERFORM set_config('request.jwt.claim.role','service_role',true);PERFORM set_config('request.jwt.claim.sub','',true);
+ INSERT INTO auth.users(id,email,raw_user_meta_data) VALUES(customer_id,'origin-qa-'||customer_id||'@example.invalid','{"role":"customer","name":"Synthetic origin customer"}'),(second_owner,'origin-qa-'||second_owner||'@example.invalid','{"role":"vendor","name":"Synthetic central vendor","business_name":"Synthetic central vendor","business_category":"Meals"}');
+ SELECT p.vendor_id INTO STRICT second_vendor FROM public.profiles p WHERE p.id=second_owner;
+ UPDATE public.vendors SET status='approved',latitude=NULL,longitude=NULL WHERE id=second_vendor;
+ INSERT INTO public.meals(id,vendor_id,name,category,price,available) VALUES(second_meal,second_vendor,'Synthetic central meal','Meals',50,true);
+ PERFORM set_config('request.jwt.claim.role','authenticated',true);PERFORM set_config('request.jwt.claim.sub',owner_id::text,true);EXECUTE 'SET LOCAL ROLE authenticated';
+ PERFORM public.request_vendor_delivery_origin(vendor_id,'Synthetic re-requested premises',-29.72118+1.0/6371.0088*180/pi(),31.071621);
+ EXECUTE 'RESET ROLE';PERFORM set_config('request.jwt.claim.sub',admin_id::text,true);EXECUTE 'SET LOCAL ROLE authenticated';
+ current_origin:=public.get_vendor_delivery_origin(vendor_id)->'current';
+ PERFORM public.admin_decide_delivery_origin(vendor_id,(current_origin->>'revision')::integer,'approve','Synthetic mixed approval',NULL);
+ current_origin:=public.get_vendor_delivery_origin(vendor_id)->'current';
+ PERFORM public.admin_decide_delivery_origin(vendor_id,(current_origin->>'revision')::integer,'vendor','Synthetic mixed mode',NULL);
+ EXECUTE 'RESET ROLE';PERFORM set_config('request.jwt.claim.sub',customer_id::text,true);EXECUTE 'SET LOCAL ROLE authenticated';
+ mixed:=cart||jsonb_build_array(jsonb_build_object('mealId',second_meal,'qty',1));
+ q:=public.quote_delivery(jsonb_build_object('latitude',-29.72118+1.51/6371.0088*180/pi(),'longitude',31.071621,'accuracy',10,'capturedAt',clock_timestamp()),mixed,NULL);
+ IF (q->>'fee')::numeric<>15 OR jsonb_array_length(q->'vendors')<>2 OR (SELECT sum((v->>'allocatedCharge')::numeric) FROM jsonb_array_elements(q->'vendors') v)<>15 THEN RAISE EXCEPTION 'Mixed fee duplicated';END IF;n:=n+1;
+ result:=public.create_order_with_delivery(customer_id,NULL,NULL,NULL,current_date+7,'Synthetic member checkout',mixed,(q->>'id')::uuid);
+ IF (result->>'total')::numeric<>165 THEN RAISE EXCEPTION 'Member server total mismatch';END IF;n:=n+1;
+ failed:=false;BEGIN PERFORM public.quote_delivery(jsonb_build_object('latitude',-29.72118+5.01/6371.0088*180/pi(),'longitude',31.071621,'accuracy',10,'capturedAt',clock_timestamp()),mixed,NULL);EXCEPTION WHEN OTHERS THEN failed:=true;END;
+ IF NOT failed THEN RAISE EXCEPTION 'Undeliverable mixed CENTRAL suborder accepted';END IF;n:=n+1;
+ failed:=false;BEGIN PERFORM public.admin_decide_delivery_origin(vendor_id,(current_origin->>'revision')::integer,'revoke','Forged customer decision',NULL);EXCEPTION WHEN insufficient_privilege THEN failed:=true;END;
+ IF NOT failed THEN RAISE EXCEPTION 'Customer approval write accepted';END IF;n:=n+1;
+ EXCEPTION WHEN OTHERS THEN GET STACKED DIAGNOSTICS failure=MESSAGE_TEXT; END;
+ EXECUTE 'RESET ROLE';PERFORM set_config('officebites.origin_qa_result',jsonb_build_object('passed',failure IS NULL,'failure',failure,'assertions',n,'fixtures','synthetic; rollback')::text,true);
+END $qa$;
+SELECT current_setting('officebites.origin_qa_result')::jsonb delivery_origin_result;
+ROLLBACK;

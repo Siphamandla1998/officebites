@@ -1,0 +1,491 @@
+{
+  "date": "2026-10-26",
+  "finalPaymentAndHistoryRead": [{"observed_utc":"2026-10-26 13:36:03.908424+00","gateway_flags":[{"ready":true,"enabled":false,"provider":"manual_eft","maintenance":false},{"ready":true,"enabled":false,"provider":"manual_payshap","maintenance":false},{"ready":false,"enabled":false,"provider":"ozow","maintenance":true},{"ready":true,"enabled":false,"provider":"payfast","maintenance":false}],"manual_settings":{"minutes":15,"threshold":500},"delivery_settings":{"fee":15,"enabled":false,"revision":2},"history_count":54,"latest_version":"20261021100655","eft_installed":false,"collection_installed":false}],
+  "scope": "Read-only metadata only; no secret values, user rows or banking contents; not an approval",
+  "project": "eyhmarmekioovcjibcbr",
+  "policyEvidence": [
+    {
+      "observed_utc": "2026-10-26 13:28:35.543323+00",
+      "schema": "public",
+      "table_name": "profiles",
+      "policy": "active_account_access",
+      "using_expression": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))",
+      "check_expression": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))"
+    },
+    {
+      "observed_utc": "2026-10-26 13:28:35.543339+00",
+      "schema": "public",
+      "table_name": "profiles",
+      "policy": "profiles_self_select",
+      "using_expression": "((id = ( SELECT auth.uid() AS uid)) OR ( SELECT is_admin() AS is_admin))",
+      "check_expression": null
+    },
+    {
+      "observed_utc": "2026-10-26 13:28:35.54334+00",
+      "schema": "public",
+      "table_name": "profiles",
+      "policy": "profiles_self_update",
+      "using_expression": "((id = ( SELECT auth.uid() AS uid)) OR ( SELECT is_admin() AS is_admin))",
+      "check_expression": "((id = ( SELECT auth.uid() AS uid)) OR ( SELECT is_admin() AS is_admin))"
+    },
+    {
+      "observed_utc": "2026-10-26 13:28:35.54334+00",
+      "schema": "public",
+      "table_name": "vendors",
+      "policy": "active_account_access",
+      "using_expression": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))",
+      "check_expression": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))"
+    },
+    {
+      "observed_utc": "2026-10-26 13:28:35.543341+00",
+      "schema": "public",
+      "table_name": "vendors",
+      "policy": "staging_approved_vendor_catalog",
+      "using_expression": "(status = 'approved'::vendor_status)",
+      "check_expression": null
+    },
+    {
+      "observed_utc": "2026-10-26 13:28:35.543342+00",
+      "schema": "public",
+      "table_name": "vendors",
+      "policy": "vendors_orderable_members",
+      "using_expression": "(private.vendor_orderable(id) OR (owner_id = ( SELECT auth.uid() AS uid)) OR ( SELECT private.is_admin() AS is_admin))",
+      "check_expression": null
+    },
+    {
+      "observed_utc": "2026-10-26 13:28:35.543342+00",
+      "schema": "public",
+      "table_name": "vendors",
+      "policy": "vendors_orderable_public",
+      "using_expression": "private.vendor_orderable(id)",
+      "check_expression": null
+    },
+    {
+      "observed_utc": "2026-10-26 13:28:35.543349+00",
+      "schema": "public",
+      "table_name": "vendors",
+      "policy": "vendors_owner_admin_select",
+      "using_expression": "((status = 'approved'::vendor_status) OR (owner_id = ( SELECT auth.uid() AS uid)) OR ( SELECT is_admin() AS is_admin))",
+      "check_expression": null
+    },
+    {
+      "observed_utc": "2026-10-26 13:28:35.543349+00",
+      "schema": "public",
+      "table_name": "vendors",
+      "policy": "vendors_owner_admin_update",
+      "using_expression": "((owner_id = ( SELECT auth.uid() AS uid)) OR ( SELECT is_admin() AS is_admin))",
+      "check_expression": "((owner_id = ( SELECT auth.uid() AS uid)) OR ( SELECT is_admin() AS is_admin))"
+    }
+  ],
+  "guardAndPrivilegeEvidence": [
+    {
+      "jsonb_build_object": {
+        "guards": [
+          {
+            "table": "users",
+            "schema": "auth",
+            "enabled": "O",
+            "trigger": "on_auth_user_created",
+            "function": "handle_new_user",
+            "definitionMd5": "086649c1a17a57fbcfde261ea7bdba6a"
+          },
+          {
+            "table": "profiles",
+            "schema": "public",
+            "enabled": "O",
+            "trigger": "active_account_write",
+            "function": "reject_inactive_write",
+            "definitionMd5": "59c4603029b0f20308fe921add2de75f"
+          },
+          {
+            "table": "profiles",
+            "schema": "public",
+            "enabled": "O",
+            "trigger": "guard_profile_privileged_fields",
+            "function": "guard_profile_privileged_fields",
+            "definitionMd5": "389319aa4e0b30ada46bc315e97afbad"
+          },
+          {
+            "table": "profiles",
+            "schema": "public",
+            "enabled": "O",
+            "trigger": "reject_temporary_profile_images",
+            "function": "reject_temporary_images",
+            "definitionMd5": "6ebfe07c586e87b7338206334bfe0504"
+          },
+          {
+            "table": "profiles",
+            "schema": "public",
+            "enabled": "O",
+            "trigger": "require_auth_identity",
+            "function": "require_auth_identity_on_profile_insert",
+            "definitionMd5": "650d9109b10cf69b52a8297189dade46"
+          },
+          {
+            "table": "vendors",
+            "schema": "public",
+            "enabled": "O",
+            "trigger": "active_account_write",
+            "function": "reject_inactive_write",
+            "definitionMd5": "59c4603029b0f20308fe921add2de75f"
+          },
+          {
+            "table": "vendors",
+            "schema": "public",
+            "enabled": "O",
+            "trigger": "guard_vendor_privileged_fields",
+            "function": "guard_vendor_privileged_fields",
+            "definitionMd5": "405aaa6295945413607a5413a8d965a3"
+          },
+          {
+            "table": "vendors",
+            "schema": "public",
+            "enabled": "O",
+            "trigger": "invalidate_vendor_delivery_origin",
+            "function": "invalidate_vendor_delivery_origin",
+            "definitionMd5": "c66f77ab9815c0d595ebbcf1e689a119"
+          },
+          {
+            "table": "vendors",
+            "schema": "public",
+            "enabled": "O",
+            "trigger": "reject_temporary_vendor_images",
+            "function": "reject_temporary_images",
+            "definitionMd5": "6ebfe07c586e87b7338206334bfe0504"
+          },
+          {
+            "table": "vendors",
+            "schema": "public",
+            "enabled": "O",
+            "trigger": "validate_vendor_mobile",
+            "function": "validate_vendor_mobile",
+            "definitionMd5": "4907f91c9ac06e2ce7d4d93a455ed67f"
+          },
+          {
+            "table": "vendors",
+            "schema": "public",
+            "enabled": "O",
+            "trigger": "vendor_legal_application",
+            "function": "enforce_vendor_consent",
+            "definitionMd5": "da970a89529e65fb64e5cfe3a85778d8"
+          }
+        ],
+        "bankRpcs": [
+          {
+            "acl": "{postgres=X/postgres,service_role=X/postgres,authenticated=X/postgres}",
+            "owner": "postgres",
+            "config": [
+              "search_path=\"\""
+            ],
+            "function": "public.approve_vendor_payment_profile",
+            "signature": "uuid, text",
+            "definitionMd5": "2f06971d7648dc42e00ab2d14817bcae"
+          },
+          {
+            "acl": "{postgres=X/postgres,service_role=X/postgres}",
+            "owner": "postgres",
+            "config": [
+              "search_path=\"\""
+            ],
+            "function": "public.handle_new_user",
+            "signature": "",
+            "definitionMd5": "086649c1a17a57fbcfde261ea7bdba6a"
+          },
+          {
+            "acl": "{postgres=X/postgres,service_role=X/postgres,authenticated=X/postgres}",
+            "owner": "postgres",
+            "config": [
+              "search_path=\"\""
+            ],
+            "function": "public.submit_vendor_payment_profile",
+            "signature": "uuid, jsonb, boolean, boolean",
+            "definitionMd5": "d9441343ed181cf11352b28604411db4"
+          }
+        ],
+        "observedUtc": "2026-10-26T13:34:14.763162+00:00",
+        "columnWrites": [
+          {
+            "table": "profiles",
+            "column": "avatar_url",
+            "grantee": "authenticated",
+            "privilege": "UPDATE"
+          },
+          {
+            "table": "profiles",
+            "column": "building",
+            "grantee": "authenticated",
+            "privilege": "UPDATE"
+          },
+          {
+            "table": "profiles",
+            "column": "created_at",
+            "grantee": "authenticated",
+            "privilege": "UPDATE"
+          },
+          {
+            "table": "profiles",
+            "column": "deleted_at",
+            "grantee": "authenticated",
+            "privilege": "UPDATE"
+          },
+          {
+            "table": "profiles",
+            "column": "email",
+            "grantee": "authenticated",
+            "privilege": "UPDATE"
+          },
+          {
+            "table": "profiles",
+            "column": "id",
+            "grantee": "authenticated",
+            "privilege": "UPDATE"
+          },
+          {
+            "table": "profiles",
+            "column": "name",
+            "grantee": "authenticated",
+            "privilege": "UPDATE"
+          },
+          {
+            "table": "profiles",
+            "column": "role",
+            "grantee": "authenticated",
+            "privilege": "UPDATE"
+          },
+          {
+            "table": "profiles",
+            "column": "suspended",
+            "grantee": "authenticated",
+            "privilege": "UPDATE"
+          },
+          {
+            "table": "profiles",
+            "column": "vendor_id",
+            "grantee": "authenticated",
+            "privilege": "UPDATE"
+          },
+          {
+            "table": "vendors",
+            "column": "address",
+            "grantee": "authenticated",
+            "privilege": "UPDATE"
+          },
+          {
+            "table": "vendors",
+            "column": "analytics_enabled",
+            "grantee": "authenticated",
+            "privilege": "UPDATE"
+          },
+          {
+            "table": "vendors",
+            "column": "archived_at",
+            "grantee": "authenticated",
+            "privilege": "UPDATE"
+          },
+          {
+            "table": "vendors",
+            "column": "building",
+            "grantee": "authenticated",
+            "privilege": "UPDATE"
+          },
+          {
+            "table": "vendors",
+            "column": "category",
+            "grantee": "authenticated",
+            "privilege": "UPDATE"
+          },
+          {
+            "table": "vendors",
+            "column": "commission_rate",
+            "grantee": "authenticated",
+            "privilege": "UPDATE"
+          },
+          {
+            "table": "vendors",
+            "column": "contact_number",
+            "grantee": "authenticated",
+            "privilege": "UPDATE"
+          },
+          {
+            "table": "vendors",
+            "column": "corporate_orders_enabled",
+            "grantee": "authenticated",
+            "privilege": "UPDATE"
+          },
+          {
+            "table": "vendors",
+            "column": "corporate_priority_enabled",
+            "grantee": "authenticated",
+            "privilege": "UPDATE"
+          },
+          {
+            "table": "vendors",
+            "column": "cover_image",
+            "grantee": "authenticated",
+            "privilege": "UPDATE"
+          },
+          {
+            "table": "vendors",
+            "column": "created_at",
+            "grantee": "authenticated",
+            "privilege": "UPDATE"
+          },
+          {
+            "table": "vendors",
+            "column": "delivery_radius",
+            "grantee": "authenticated",
+            "privilege": "UPDATE"
+          },
+          {
+            "table": "vendors",
+            "column": "email",
+            "grantee": "authenticated",
+            "privilege": "UPDATE"
+          },
+          {
+            "table": "vendors",
+            "column": "featured",
+            "grantee": "authenticated",
+            "privilege": "UPDATE"
+          },
+          {
+            "table": "vendors",
+            "column": "id",
+            "grantee": "authenticated",
+            "privilege": "UPDATE"
+          },
+          {
+            "table": "vendors",
+            "column": "latitude",
+            "grantee": "authenticated",
+            "privilege": "UPDATE"
+          },
+          {
+            "table": "vendors",
+            "column": "logo",
+            "grantee": "authenticated",
+            "privilege": "UPDATE"
+          },
+          {
+            "table": "vendors",
+            "column": "longitude",
+            "grantee": "authenticated",
+            "privilege": "UPDATE"
+          },
+          {
+            "table": "vendors",
+            "column": "name",
+            "grantee": "authenticated",
+            "privilege": "UPDATE"
+          },
+          {
+            "table": "vendors",
+            "column": "operating_hours",
+            "grantee": "authenticated",
+            "privilege": "UPDATE"
+          },
+          {
+            "table": "vendors",
+            "column": "owner_id",
+            "grantee": "authenticated",
+            "privilege": "UPDATE"
+          },
+          {
+            "table": "vendors",
+            "column": "plan",
+            "grantee": "authenticated",
+            "privilege": "UPDATE"
+          },
+          {
+            "table": "vendors",
+            "column": "prep_time_mins",
+            "grantee": "authenticated",
+            "privilege": "UPDATE"
+          },
+          {
+            "table": "vendors",
+            "column": "rating",
+            "grantee": "authenticated",
+            "privilege": "UPDATE"
+          },
+          {
+            "table": "vendors",
+            "column": "recommendations_enabled",
+            "grantee": "authenticated",
+            "privilege": "UPDATE"
+          },
+          {
+            "table": "vendors",
+            "column": "review_count",
+            "grantee": "authenticated",
+            "privilege": "UPDATE"
+          },
+          {
+            "table": "vendors",
+            "column": "status",
+            "grantee": "authenticated",
+            "privilege": "UPDATE"
+          },
+          {
+            "table": "vendors",
+            "column": "subscription_tier",
+            "grantee": "authenticated",
+            "privilege": "UPDATE"
+          },
+          {
+            "table": "vendors",
+            "column": "tagline",
+            "grantee": "authenticated",
+            "privilege": "UPDATE"
+          }
+        ],
+        "privateSchemaUsage": {
+          "anon": true,
+          "service_role": true,
+          "authenticated": true
+        }
+      }
+    }
+  ],
+  "roleAndNotificationCatalog": [
+    {
+      "jsonb_build_object": {
+        "utc": "2026-10-26T13:20:11.400612+00:00",
+        "cronPresent": false,
+        "roleSettings": [],
+        "netQueuePresent": false,
+        "externalExtensions": [],
+        "notificationTriggers": [
+          {
+            "table": "messages",
+            "trigger": "messages_notify_recipient",
+            "function": "notify_chat_recipient"
+          },
+          {
+            "table": "support_ticket_messages",
+            "trigger": "support_messages_notify_requester",
+            "function": "notify_support_reply"
+          }
+        ]
+      }
+    }
+  ],
+  "preview": {
+    "deployment": "dpl_3GkXn3xL5nWA9NNER2YWDxTDp2ej",
+    "branch": "feat/vendor-direct-launch-payments",
+    "commit": "4cac836a35ef0e75e589a2640772f775ca1a260c",
+    "ssoProtection": {
+      "enabled": true,
+      "deploymentType": "preview"
+    },
+    "passwordEnabled": false,
+    "trustedIpsEnabled": false,
+    "publicSupabaseUrl": "https://eyhmarmekioovcjibcbr.supabase.co"
+  },
+  "accessLimitations": {
+    "webhooks": "403 forbidden; not evidence of absence",
+    "projectViewIntegrationConfigurations": "Empty array only for queried project view",
+    "effectivePostgREST": "Unknown; role settings are not effective service configuration",
+    "notificationIsolation": "Unverified; all-channel operator attestation missing"
+  }
+}

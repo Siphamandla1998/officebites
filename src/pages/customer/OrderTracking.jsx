@@ -1,7 +1,7 @@
 import { useAuth } from '../../context/AuthContext';
 import { useRequestGuard } from '../../hooks/useRequestGuard';
 import { useCallback, useEffect, useState } from "react";
-import { useParams, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { FiCheck, FiClock } from "react-icons/fi";
 import Navbar from "../../components/layout/Navbar";
 import StatusBadge from "../../components/ui/StatusBadge";
@@ -10,11 +10,14 @@ import { orderService } from "../../services/orderService";
 import { formatCurrency, formatDate } from "../../utils/formatters";
 import { ORDER_STATUS } from "../../utils/constants";
 import RequestError from '../../components/ui/RequestError';
+import ManualPaymentStatus from '../../components/features/ManualPaymentStatus';
+import { canRetryPayment, paymentMessage, displayOrderStatus } from '../../utils/orderState';
 
 // Recovery is based on the stored order state, including browser Back returns
 // where PayFast never adds a return/cancel query parameter.
 function PaymentRecovery({ order, payfastState, onRefresh, onPayment, refreshing, refreshError }) {
   if (order.status !== ORDER_STATUS.PENDING_PAYMENT) return null;
+  if (!canRetryPayment(order)) return <div className="card p-4"><p role="status">{paymentMessage(order)}</p><button className="btn-secondary" disabled={refreshing} onClick={onRefresh}>Refresh payment status</button></div>;
   const returned = payfastState === "return";
   return (
     <div className="card p-4 flex items-start gap-3 border-l-4 border-l-nude-400">
@@ -63,13 +66,15 @@ const SHORT_LABELS = {
 };
 
 function SubOrderTimeline({ subOrder }) {
-  const currentIndex = TIMELINE.indexOf(subOrder.status);
+  const paid = subOrder.paymentStatus === 'paid';
+  const currentIndex = paid ? TIMELINE.indexOf(subOrder.status) : -1;
   return (
     <div className="card p-4">
       <div className="flex items-center justify-between mb-4">
         <p className="text-sm font-semibold text-ink">{subOrder.vendorName}</p>
-        <StatusBadge status={subOrder.status} />
+        <StatusBadge status={displayOrderStatus({ status: subOrder.status, subOrders: [subOrder] })} />
       </div>
+      <p className="text-xs text-ink-muted mb-3">Payment: {paid ? 'Paid' : subOrder.paymentStatus === 'verifying' ? 'Awaiting verification' : subOrder.paymentStatus === 'unpaid' ? 'Unpaid' : 'Needs review'}. {paid && subOrder.status === ORDER_STATUS.CONFIRMED ? 'Waiting for vendor acceptance.' : !paid ? 'Payment must be confirmed before vendor acceptance and preparation.' : ''}</p>
       <div className="flex items-center">
         {TIMELINE.map((step, i) => (
           <div key={step} className="flex items-center flex-1 last:flex-none">
@@ -136,7 +141,7 @@ export default function OrderTracking() {
     try {
       const fresh = await refreshOrder();
       if (!current() || !fresh) return;
-      if (openOptions && fresh.status === ORDER_STATUS.PENDING_PAYMENT) {
+      if (openOptions && canRetryPayment(fresh)) {
         navigate(`/payment/${orderId}`);
       }
     } catch (err) {
@@ -207,6 +212,7 @@ export default function OrderTracking() {
     <div className="pb-8">
       <Navbar showBack title={order.ticketNumber} showCart={false} />
       <div className="ob-container pt-4 flex flex-col gap-4">
+        {['manual_payshap','manual_eft'].includes(order.paymentMethod) && <ManualPaymentStatus orderId={orderId} />}
         <PaymentRecovery
           order={order}
           payfastState={payfastState}
@@ -215,6 +221,7 @@ export default function OrderTracking() {
           refreshing={refreshing}
           refreshError={refreshError}
         />
+        <Link to="/help/contact" className="btn-outline min-h-11">Get Help with This Order</Link>
         <p className="text-xs text-ink-muted">Delivery date: {formatDate(order.deliveryDate)}</p>
         {order.subOrders.map((so) => (
           <SubOrderTimeline key={so.vendorId} subOrder={so} />

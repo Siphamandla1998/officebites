@@ -1,4 +1,4 @@
-import { ORDER_STATUS } from '../../utils/constants';
+import { paymentMessage } from '../../utils/orderState';
 import { useAuth } from '../../context/AuthContext';
 import { useParams, useNavigate } from "react-router-dom";
 import Navbar from "../../components/layout/Navbar";
@@ -31,11 +31,7 @@ export default function TicketConfirmation() {
       <div className="ob-container pt-4 flex flex-col gap-5">
         <TicketCard order={order} />
         <p className="text-xs text-ink-muted text-center px-4">
-          {order.status === ORDER_STATUS.PENDING_PAYMENT ? 'Payment is still required. If your bank shows a debit, wait for confirmation or contact support before paying again.'
-            : order.status === ORDER_STATUS.CANCELLED ? 'This order has been cancelled. Contact support if a payment needs review.'
-            : order.status === ORDER_STATUS.COMPLETED ? 'Your order is complete. Thank you for ordering with OfficeBites.'
-            : order.status === ORDER_STATUS.PAYMENT_SUBMITTED ? 'Your payment is awaiting verification.'
-            : 'Your payment is confirmed. Track your order for fulfilment updates.'}
+          {paymentMessage(order)}
         </p>
         {!order.customerId && (
           <p className="text-xs text-ink-muted text-center px-4">

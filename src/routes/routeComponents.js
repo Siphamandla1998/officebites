@@ -32,6 +32,7 @@ export const Reviews = lazy(() => import("../pages/customer/Reviews"));
 export const Notifications = lazy(() => import("../pages/shared/Notifications"));
 export const ChatConversation = lazy(() => import("../pages/shared/ChatConversation"));
 
+export const VendorAgreement = lazy(() => import('../pages/vendor/VendorAgreement'));
 export const VendorOverview = lazy(() => import("../pages/vendor/VendorOverview"));
 export const VendorOrders = lazy(() => import("../pages/vendor/VendorOrders"));
 export const VendorMenu = lazy(() => import("../pages/vendor/VendorMenu"));
@@ -43,6 +44,8 @@ export const VendorSettings = lazy(() => import("../pages/vendor/VendorSettings"
 
 export const AdminOverview = lazy(() => import("../pages/admin/AdminOverview"));
 export const AdminPayments = lazy(() => import("../pages/admin/AdminPayments"));
+export const AdminVendorCompliance = lazy(() => import('../pages/admin/AdminVendorCompliance'));
+export const VendorCompliance = lazy(() => import('../pages/vendor/VendorCompliance'));
 export const AdminVendors = lazy(() => import("../pages/admin/AdminVendors"));
 export const AdminCustomers = lazy(() => import("../pages/admin/AdminCustomers"));
 export const AdminChats = lazy(() => import("../pages/admin/AdminChats"));
@@ -63,5 +66,9 @@ export const Terms = lazy(() => import("../pages/help/Terms"));
 export const Privacy = lazy(() => import("../pages/help/Privacy"));
 export const RefundPolicy = lazy(() => import("../pages/help/RefundPolicy"));
 export const BusinessHours = lazy(() => import("../pages/help/BusinessHours"));
+export const LegalDocument = lazy(() => import('../pages/help/LegalDocument'));
+export const CommercialWorkspace = lazy(() => import('../pages/shared/CommercialWorkspace'));
 
 export const NotFound = lazy(() => import("../pages/shared/NotFound"));
+
+export const OrderLegalReceipt = lazy(() => import('../pages/help/OrderLegalReceipt'));

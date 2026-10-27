@@ -1,0 +1,58 @@
+{
+  "methods": [
+    {
+      "enabled": false,
+      "provider": "ozow"
+    },
+    {
+      "enabled": false,
+      "provider": "payfast"
+    },
+    {
+      "enabled": false,
+      "provider": "manual_eft"
+    },
+    {
+      "enabled": false,
+      "provider": "manual_payshap"
+    }
+  ],
+  "project": "eyhmarmekioovcjibcbr",
+  "captured_at": "2026-10-20T12:07:46.018459+00:00",
+  "uat_installed": false,
+  "active_account": {
+    "acl": "{postgres=X/postgres,anon=X/postgres,authenticated=X/postgres}",
+    "owner": "postgres",
+    "grants": [
+      {
+        "grantee": "postgres",
+        "grantor": "postgres",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      },
+      {
+        "grantee": "anon",
+        "grantor": "postgres",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      },
+      {
+        "grantee": "authenticated",
+        "grantor": "postgres",
+        "grantable": false,
+        "privilege": "EXECUTE"
+      }
+    ],
+    "definition": "CREATE OR REPLACE FUNCTION private.active_account()\n RETURNS boolean\n LANGUAGE sql\n STABLE SECURITY DEFINER\n SET search_path TO ''\nAS $function$\n SELECT EXISTS(SELECT 1 FROM public.profiles p JOIN auth.users u ON u.id=p.id WHERE p.id=auth.uid() AND NOT p.suspended AND p.deleted_at IS NULL\n AND (p.role<>'vendor' OR EXISTS(SELECT 1 FROM public.vendors v WHERE v.id=p.vendor_id AND v.owner_id=p.id AND v.status<>'suspended' AND v.archived_at IS NULL)));\n$function$\n"
+  },
+  "latest_migration": "20261020100740",
+  "rest_role_settings": [],
+  "rest_database_settings": [],
+  "auth_email_configuration": {
+    "status": "not_accessible_via_connected_read_tools",
+    "previous_hook": null,
+    "previous_hook_known": false,
+    "smtp_delivery_state": "unknown",
+    "required_operator_capture": "Staging Auth Hooks Send Email enabled flag/URI; security email toggles; SMTP configured flag and capture-only status; other Auth hooks. No secrets."
+  }
+}

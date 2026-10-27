@@ -1,0 +1,61 @@
+{
+  "helpers": [
+    {
+      "name": "private.is_admin()",
+      "definition": "CREATE OR REPLACE FUNCTION private.is_admin()\n RETURNS boolean\n LANGUAGE sql\n STABLE SECURITY DEFINER\n SET search_path TO ''\nAS $function$\n SELECT private.active_account() AND EXISTS(SELECT 1 FROM public.profiles WHERE id=auth.uid() AND role='admin');\n$function$\n"
+    },
+    {
+      "name": "private.active_account()",
+      "definition": "CREATE OR REPLACE FUNCTION private.active_account()\n RETURNS boolean\n LANGUAGE sql\n STABLE SECURITY DEFINER\n SET search_path TO ''\nAS $function$\n SELECT EXISTS(SELECT 1 FROM public.profiles p JOIN auth.users u ON u.id=p.id WHERE p.id=auth.uid() AND NOT p.suspended AND p.deleted_at IS NULL\n AND (p.role<>'vendor' OR EXISTS(SELECT 1 FROM public.vendors v WHERE v.id=p.vendor_id AND v.owner_id=p.id AND v.status<>'suspended' AND v.archived_at IS NULL)));\n$function$\n"
+    },
+    {
+      "name": "admin_update_payment_gateway(text,boolean,boolean,text)",
+      "definition": "CREATE OR REPLACE FUNCTION public.admin_update_payment_gateway(p_provider text, p_enabled boolean, p_maintenance boolean, p_notice text)\n RETURNS void\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO ''\nAS $function$ BEGIN\n IF NOT private.active_account() OR NOT private.is_admin() THEN RAISE EXCEPTION 'Active administrator required' USING ERRCODE='42501';END IF;\n IF length(coalesce(p_notice,''))>500 THEN RAISE EXCEPTION 'Notice must be at most 500 characters';END IF;\n UPDATE private.gateway_settings SET enabled=p_enabled,maintenance=p_maintenance,notice=coalesce(p_notice,''),updated_at=clock_timestamp(),updated_by=auth.uid() WHERE provider=p_provider AND (NOT p_enabled OR ready);\n IF NOT FOUND THEN RAISE EXCEPTION 'Provider unavailable or not verified ready';END IF;\n INSERT INTO private.business_audit(actor_id,action,reason,details) VALUES(auth.uid(),'gateway_settings','Administrator configuration',jsonb_build_object('provider',p_provider,'enabled',p_enabled,'maintenance',p_maintenance));\nEND $function$\n"
+    },
+    {
+      "name": "private.block_marketplace_provider()",
+      "definition": "CREATE OR REPLACE FUNCTION private.block_marketplace_provider()\n RETURNS trigger\n LANGUAGE plpgsql\n SET search_path TO ''\nAS $function$\nBEGIN IF NEW.provider IN('payfast','ozow') AND NEW.enabled THEN RAISE EXCEPTION 'Provider authorisation required: marketplace gateways are blocked. Reviewed provider approval and a new migration are required.'; END IF; RETURN NEW; END $function$\n"
+    }
+  ],
+  "methods": [
+    {
+      "ready": false,
+      "enabled": false,
+      "provider": "ozow",
+      "maintenance": true
+    },
+    {
+      "ready": true,
+      "enabled": false,
+      "provider": "payfast",
+      "maintenance": true
+    },
+    {
+      "ready": true,
+      "enabled": false,
+      "provider": "manual_eft",
+      "maintenance": false
+    },
+    {
+      "ready": true,
+      "enabled": false,
+      "provider": "manual_payshap",
+      "maintenance": false
+    }
+  ],
+  "project": "eyhmarmekioovcjibcbr",
+  "function": {
+    "acl": "{postgres=X/postgres,service_role=X/postgres,authenticated=X/postgres}",
+    "owner": "postgres",
+    "definition": "CREATE OR REPLACE FUNCTION public.admin_manual_settings(p_eft boolean, p_payshap boolean, p_minutes integer, p_threshold numeric, p_reason text)\n RETURNS void\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO ''\nAS $function$ BEGIN\n IF NOT private.active_account() OR NOT private.is_admin() THEN RAISE EXCEPTION 'Active admin required';END IF;\n IF length(btrim(coalesce(p_reason,''))) NOT BETWEEN 10 AND 1000 THEN RAISE EXCEPTION 'Configuration reason required';END IF;\n UPDATE private.manual_payment_settings SET deadline_minutes=p_minutes,review_threshold=p_threshold;\n PERFORM public.admin_update_payment_gateway('manual_eft',p_eft,false,p_reason);\n PERFORM public.admin_update_payment_gateway('manual_payshap',p_payshap,false,p_reason);\n INSERT INTO private.manual_payment_events(actor_id,action,note) VALUES(auth.uid(),'settings_changed',p_reason||' '||jsonb_build_object('eft',p_eft,'payshap',p_payshap,'minutes',p_minutes,'reviewThreshold',p_threshold)::text);\nEND $function$\n"
+  },
+  "settings": [
+    {
+      "singleton": true,
+      "deadline_minutes": 15,
+      "review_threshold": 500
+    }
+  ],
+  "migration": "20261020100740",
+  "captured_at": "2026-10-21T09:48:24.690279+00:00"
+}

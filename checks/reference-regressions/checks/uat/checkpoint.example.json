@@ -1,0 +1,16 @@
+{
+  "project": "eyhmarmekioovcjibcbr",
+  "run": "OB-UAT-20261020",
+  "releaseCommit": "695e5e19cf581f6202dcc058afad1ee2fba23208",
+  "preview": "dpl_DGWZnPj1ubqxzCfzDcZVUJ3iEYTQ",
+  "previewUrl": "https://officebites-70l6nc42z-sp24tg-6983s-projects.vercel.app",
+  "provisioningApproved": false,
+  "migration": "20261020100740",
+  "name": "officebites-staging",
+  "status": "ACTIVE_HEALTHY",
+  "checkedAt": "OPERATOR_MUST_RECORD_CURRENT_ISO_TIMESTAMP",
+  "notificationIsolationVerified": false,
+  "backendRestrictionVerified": false,
+  "authHooksReviewed": false,
+  "allPaymentsDisabled": false
+}

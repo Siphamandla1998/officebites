@@ -20,7 +20,7 @@ export default function Modal({ open, onClose, title, children, footer }) {
         className="absolute inset-0 bg-ink/40 backdrop-blur-[2px] animate-fade-in"
         onClick={onClose}
       />
-      <div className="relative w-full max-w-app sm:max-w-md bg-paper-raised rounded-t-2xl sm:rounded-2xl shadow-float animate-sheet-up sm:animate-fade-in max-h-[88vh] flex flex-col">
+      <div role="dialog" aria-modal="true" aria-label={title} className="relative w-full max-w-app sm:max-w-md bg-paper-raised rounded-t-2xl sm:rounded-2xl shadow-float animate-sheet-up sm:animate-fade-in max-h-[88vh] flex flex-col">
         <div className="flex items-center justify-between px-5 pt-5 pb-3 shrink-0">
           <h3 className="text-base font-semibold text-ink">{title}</h3>
           <button onClick={onClose} className="btn-icon" aria-label="Close">
