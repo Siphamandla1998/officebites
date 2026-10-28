@@ -281,7 +281,7 @@ END $$;
 ALTER TABLE private.collection_activation ENABLE ROW LEVEL SECURITY;
 REVOKE ALL ON private.collection_activation FROM PUBLIC,anon,authenticated,service_role;
 CREATE FUNCTION private.collection_activation_guard() RETURNS trigger
-LANGUAGE plpgsql SECURITY DEFINER SET search_path='' AS $
+LANGUAGE plpgsql SECURITY DEFINER SET search_path='' AS $$
 BEGIN
   -- EFT remains usable for ordinary vendor-direct orders while the collection
   -- pilot is disabled. When the pilot is enabled, collection EFT additionally
@@ -302,7 +302,7 @@ BEGIN
   END IF;
   RETURN NEW;
 END
-$;
+$$;
 CREATE TRIGGER collection_activation_guard BEFORE INSERT OR UPDATE ON private.gateway_settings FOR EACH ROW EXECUTE FUNCTION private.collection_activation_guard();
 ALTER FUNCTION public.get_vendor_manual_methods(uuid) SET SCHEMA private;
 REVOKE ALL ON FUNCTION private.get_vendor_manual_methods(uuid) FROM PUBLIC,anon,authenticated,service_role;
