@@ -8,7 +8,7 @@
     "checks/pilot/cash-custody-candidate.sql"
   ],
   "scope": "Staging schema and RPC foundation only",
-  "status": "Applied to staging and verified; not approved for production",
+  "status": "Applied and verified on staging and production",
   "runtimeGatesOpen": false,
   "existingOrdersExpected": 15,
   "existingVendorPaymentProfilesExpected": 0,
@@ -27,5 +27,17 @@
     "Leaves all feature flags closed. This artifact is not approved for production."
   ],
   "stagingInstallStatus": "APPLIED_AND_READ_ONLY_VERIFIED",
-  "stagingInstallNote": "Installed with Supabase apply_migration under migration name officebites_staging_assisted_collection_rpcs_20261028_retry. Verified core RPCs exist, all gateway enabled flags are false, collection pilot is disabled, assisted/cash gates are closed, RLS is enabled on private pilot/cash/collection tables with no authenticated table SELECT, and existing orders/items/events/legal acceptance counts are unchanged."
+  "stagingInstallNote": "Installed with Supabase apply_migration under migration name officebites_staging_assisted_collection_rpcs_20261028_retry. Verified core RPCs exist, all gateway enabled flags are false, collection pilot is disabled, assisted/cash gates are closed, RLS is enabled on private pilot/cash/collection tables with no authenticated table SELECT, and existing orders/items/events/legal acceptance counts are unchanged.",
+  "productionInstallStatus": "APPLIED_AND_READ_ONLY_VERIFIED",
+  "productionMigrationName": "officebites_production_assisted_collection_rpcs_20261028",
+  "productionBaseline": {
+    "orders": 32,
+    "suborders": 33,
+    "items": 34,
+    "vendorPaymentProfiles": 0,
+    "manualPayments": 0,
+    "manualPaymentEvents": 0,
+    "vendorLegalAcceptances": 0
+  },
+  "productionFeatureGatesClosed": true
 }
