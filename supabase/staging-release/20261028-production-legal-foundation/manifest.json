@@ -1,0 +1,28 @@
+{
+  "environment": "production",
+  "project_id": "gfzhdkitdyqftealgqfi",
+  "migration": "officebites_production_legal_foundation_20261028",
+  "status": "APPLIED_AND_READ_ONLY_VERIFIED",
+  "changes": [
+    "Added private legal/commercial schema and RPCs",
+    "Added nullable public.order_suborders.delivery_snapshot column without backfill",
+    "Enabled RLS and revoked direct API table access on legal/commercial tables"
+  ],
+  "unchanged": {
+    "orders": 32,
+    "suborders": 33,
+    "vendors": 10,
+    "profiles": 20,
+    "payout_allocations": 0,
+    "legal_documents": 0,
+    "vendor_legal_acceptances": 0,
+    "vendor_consent_intents": 0
+  },
+  "gates": {
+    "onboarding_enforced": false,
+    "acquisition_enabled": false,
+    "standard_breakdown_enabled": false
+  },
+  "businessDisclosureDefaults": "Blank pending verified admin entry; no registration number, bank details, legal contact or address invented",
+  "caveat": "Legal portal returns businessReady=false and no approved documents. Agreement acceptance is not available until verified disclosures and approved legal versions are entered."
+}

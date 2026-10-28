@@ -1,0 +1,51 @@
+{
+  "environment": "production",
+  "project_id": "gfzhdkitdyqftealgqfi",
+  "migration": "officebites_production_manual_payment_foundation_20261028",
+  "checkedSettingsMigration": "officebites_production_checked_manual_settings_20261028",
+  "status": "APPLIED_AND_READ_ONLY_VERIFIED",
+  "unchanged": {
+    "orders": 32,
+    "suborders": 33,
+    "vendorPaymentProfiles": 0,
+    "manualPayments": 0,
+    "manualPaymentEvents": 0,
+    "receivables": 0,
+    "vendorLegalAcceptances": 0
+  },
+  "providers": {
+    "manual_eft": {
+      "enabled": false,
+      "ready": true
+    },
+    "manual_payshap": {
+      "enabled": false,
+      "ready": true
+    },
+    "payfast": {
+      "enabled": false,
+      "ready": true,
+      "maintenance": true
+    },
+    "ozow": {
+      "enabled": false,
+      "ready": false,
+      "maintenance": true
+    }
+  },
+  "settings": {
+    "deadlineMinutes": 15,
+    "reviewThresholdZAR": 500,
+    "revision": 0
+  },
+  "checks": [
+    "create_manual_order exists",
+    "submit_vendor_payment_profile exists",
+    "admin_manual_settings_checked exists",
+    "RLS enabled on payment tables",
+    "Authenticated vendor/admin RPCs have no anon execute",
+    "Safe negative checkout test attempted a guest manual-EFT order with a valid available meal; disabled-provider guard rejected it and orders/suborders remained unchanged."
+  ],
+  "caveat": "No banking profile exists yet; EFT checkout must remain disabled until vendor submits a profile and an independent admin approves it.",
+  "lastVerifiedAt": "2026-10-28"
+}

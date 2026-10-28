@@ -9,6 +9,7 @@ import { downloadCsv } from '../../utils/csv';
 import { formatCurrency } from '../../utils/formatters';
 import { periodDates, sastDateKey } from '../../utils/reportingDates';
 import RequestError from '../ui/RequestError';
+import VendorPaymentProfileForm from './VendorPaymentProfileForm';
 
 const fields = { accountHolder: 'Account holder', bank: 'Bank', accountNumber: 'Account number', accountType: 'Account type', branchCode: 'Branch code', shapId: 'Registered ShapID' };
 const balance = r => (Math.round(Number(r.commission)*100)-Math.round(Number(r.credits)*100)-Math.round(Number(r.collected)*100))/100;
@@ -46,23 +47,16 @@ export default function ManualPaymentWorkspace({ admin = false, profiles = false
     {!profiles && <label><input type="checkbox" checked={testOnly} disabled={busy} onChange={event => setTestOnly(event.target.checked)} /> Show synthetic test orders only</label>}
     {testOnly && <p role="status">Test orders only. These figures are excluded from normal statements and operational revenue.</p>}
     <RequestError error={error || result.error} onRetry={result.refetch} />
+    {profiles && !admin && <VendorPaymentProfileForm vendorId={user?.vendorId} onSaved={() => result.refetch({ throwOnError: true })} />}
     {message && <p role="status">{message}</p>}
     {result.loading && <p>Loading payment workspace…</p>}
+    {admin && <AdminPaymentProfileForm key={`banking:${user?.id}`} userId={user?.id} fields={fields} busy={busy} submit={(vendor, destination, eft, payshap) => run(() => service.submit(vendor, destination, eft, payshap))} />}
+    {admin && !data && result.error && <p role="alert">The admin payment workspace could not load. Banking submissions can be attempted above, but existing profiles and approval actions cannot be safely verified until this read succeeds. Use Retry before approving or resubmitting anything.</p>}
     {data && <>
       {admin && data.settings && <ManualSettingsForm key={user?.id} settings={data.settings} loading={result.loading} loadError={result.error} reload={result.refetch} onBusyChange={setBusy} />}
-      {admin && <AdminPaymentProfileForm key={`banking:${user?.id}`} userId={user?.id} fields={fields} busy={busy} submit={(vendor, destination, eft, payshap) => run(() => service.submit(vendor, destination, eft, payshap))} />}
-      {profiles && !admin && <form className="flex flex-col gap-3" onSubmit={event => {
-        event.preventDefault();const f = new FormData(event.currentTarget);
-        void run(() => service.submit(user.vendorId,Object.fromEntries(Object.keys(fields).map(k => [k,String(f.get(k) || '')])),f.has('eft'),f.has('payshap')));
-      }}>
-        <h3 className="font-semibold">Submit a payment profile</h3>
-        <p>Use this vendor’s own receiving account. Every change creates a pending version. An independent administrator must verify bank ownership and receiving capabilities. Existing order instructions keep their original recipient.</p>
-        {Object.entries(fields).map(([key,label]) => <label key={key}>{label}<input className="input" name={key} required={['accountHolder','bank'].includes(key)} maxLength={150} autoComplete="off" /></label>)}
-        <label><input type="checkbox" name="eft" /> Account supports EFT</label>
-        <label><input type="checkbox" name="payshap" /> Registered ShapID supports receiving PayShap</label>
-        <button className="btn-outline" disabled={busy}>Submit for independent approval</button>
-      </form>}
-      {(profiles || admin) && <details><summary className="font-semibold cursor-pointer">Payment profile versions ({data.profiles.length})</summary>
+      {admin && !data.settings && <p role="alert">Admin settings were not returned by the backend. Saving is intentionally unavailable until the settings RPC contract is repaired; do not try to bypass this safeguard.</p>}
+      {(profiles || admin) && <details><summary className="font-semibold cursor-pointer">Payment profile versions ({(data.profiles || []).length})</summary>
+        {!(data.profiles || []).length && <p>No vendor banking profiles were returned. If a vendor says they submitted details, do not ask them to resubmit yet; check the submission RPC and audit records first.</p>}
         {data.profiles.map(p => <div className="border-t py-3 flex flex-col gap-2" key={p.id}>
           <p>Vendor {p.vendor_id} · Version {p.id} · {p.approved_at ? 'Approved' : 'Pending verification'} · {new Date(p.created_at).toLocaleString()}</p>
           <dl>{Object.entries(fields).map(([key,label]) => <div key={key}><dt className="text-xs">{label}</dt><dd className="break-all">{p.destination[key] || '—'}</dd></div>)}</dl>

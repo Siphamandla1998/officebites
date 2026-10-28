@@ -1,0 +1,35 @@
+{
+  "environment": "production",
+  "project_id": "gfzhdkitdyqftealgqfi",
+  "migration": "officebites_production_assisted_collection_rpcs_20261028",
+  "status": "APPLIED_AND_READ_ONLY_VERIFIED",
+  "unchanged": {
+    "orders": 32,
+    "suborders": 33,
+    "orderItems": 34,
+    "vendorPaymentProfiles": 0,
+    "manualPayments": 0,
+    "manualPaymentEvents": 0,
+    "vendorLegalAcceptances": 0,
+    "legalDocuments": 0,
+    "orderOrigins": 0,
+    "orderRequests": 0,
+    "cashEvents": 0,
+    "cashHandovers": 0,
+    "collectionOutbox": 0
+  },
+  "gates": {
+    "collectionEnabled": false,
+    "assistedEnabled": false,
+    "adminCashEnabled": false,
+    "collectionEftUnlocked": false
+  },
+  "providerFlags": {
+    "manual_eft": false,
+    "manual_payshap": false,
+    "payfast": false,
+    "ozow": false
+  },
+  "verifiedRpcCount": 20,
+  "caveat": "RPC existence and permissions verified through SQL metadata. Authenticated end-to-end UI flows remain untested; gates are intentionally closed."
+}
