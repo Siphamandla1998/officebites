@@ -59,7 +59,7 @@ END $$;
 REVOKE ALL ON FUNCTION public.cancel_unpaid_order(uuid,text,text) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.cancel_unpaid_order(uuid,text,text) TO anon,authenticated;
 CREATE TABLE private.gateway_settings(provider text PRIMARY KEY CHECK(provider IN('payfast','ozow')),enabled boolean NOT NULL DEFAULT false,ready boolean NOT NULL DEFAULT false,maintenance boolean NOT NULL DEFAULT false,notice text NOT NULL DEFAULT '',updated_at timestamptz NOT NULL DEFAULT now(),updated_by uuid);
-INSERT INTO private.gateway_settings(provider,enabled,ready) VALUES('payfast',true,true),('ozow',false,false);
+INSERT INTO private.gateway_settings(provider,enabled,ready) VALUES('payfast',false,true),('ozow',false,false);
 REVOKE ALL ON private.gateway_settings FROM PUBLIC,anon,authenticated;
 CREATE FUNCTION public.get_payment_gateways() RETURNS jsonb LANGUAGE sql STABLE SECURITY DEFINER SET search_path='' AS $$ SELECT jsonb_agg(to_jsonb(g)-'updated_by' ORDER BY provider) FROM private.gateway_settings g $$;
 REVOKE ALL ON FUNCTION public.get_payment_gateways() FROM PUBLIC;
