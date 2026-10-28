@@ -43,7 +43,9 @@
     "submit_vendor_payment_profile exists",
     "admin_manual_settings_checked exists",
     "RLS enabled on payment tables",
-    "Authenticated vendor/admin RPCs have no anon execute"
+    "Authenticated vendor/admin RPCs have no anon execute",
+    "Safe negative checkout test attempted a guest manual-EFT order with a valid available meal; disabled-provider guard rejected it and orders/suborders remained unchanged."
   ],
-  "caveat": "No banking profile exists yet; EFT checkout must remain disabled until vendor submits a profile and an independent admin approves it."
+  "caveat": "No banking profile exists yet; EFT checkout must remain disabled until vendor submits a profile and an independent admin approves it.",
+  "lastVerifiedAt": "2026-10-28"
 }
