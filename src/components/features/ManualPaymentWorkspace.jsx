@@ -54,7 +54,9 @@ export default function ManualPaymentWorkspace({ admin = false, profiles = false
     {admin && !data && result.error && <p role="alert">The admin payment workspace could not load. Banking submissions can be attempted above, but existing profiles and approval actions cannot be safely verified until this read succeeds. Use Retry before approving or resubmitting anything.</p>}
     {data && <>
       {admin && data.settings && <ManualSettingsForm key={user?.id} settings={data.settings} loading={result.loading} loadError={result.error} reload={result.refetch} onBusyChange={setBusy} />}
+      {admin && !data.settings && <p role="alert">Admin settings were not returned by the backend. Saving is intentionally unavailable until the settings RPC contract is repaired; do not try to bypass this safeguard.</p>}
       {(profiles || admin) && <details><summary className="font-semibold cursor-pointer">Payment profile versions ({(data.profiles || []).length})</summary>
+        {!(data.profiles || []).length && <p>No vendor banking profiles were returned. If a vendor says they submitted details, do not ask them to resubmit yet; check the submission RPC and audit records first.</p>}
         {data.profiles.map(p => <div className="border-t py-3 flex flex-col gap-2" key={p.id}>
           <p>Vendor {p.vendor_id} · Version {p.id} · {p.approved_at ? 'Approved' : 'Pending verification'} · {new Date(p.created_at).toLocaleString()}</p>
           <dl>{Object.entries(fields).map(([key,label]) => <div key={key}><dt className="text-xs">{label}</dt><dd className="break-all">{p.destination[key] || '—'}</dd></div>)}</dl>
