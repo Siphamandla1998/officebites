@@ -60,9 +60,9 @@ export default function ManualPaymentWorkspace({ admin = false, profiles = false
         {data.profiles.map(p => <div className="border-t py-3 flex flex-col gap-2" key={p.id}>
           <p>Vendor {p.vendor_id} · Version {p.id} · {p.approved_at ? 'Approved' : 'Pending verification'} · {new Date(p.created_at).toLocaleString()}</p>
           <dl>{Object.entries(fields).map(([key,label]) => <div key={key}><dt className="text-xs">{label}</dt><dd className="break-all">{p.destination[key] || '—'}</dd></div>)}</dl>
-          {admin && !p.approved_at && p.submitted_by === user?.id && <p>A different administrator must independently approve this submitted version.</p>}
-          {admin && !p.approved_at && p.submitted_by !== user?.id && <form onSubmit={event => { event.preventDefault();const f = new FormData(event.currentTarget);void run(() => service.approve(p.id,String(f.get('evidence')))); }}>
-            <label>Independent ownership, recipient and receiving-capability evidence<textarea className="input" name="evidence" required minLength={15} maxLength={1000} /></label>
+          {admin && !p.approved_at && <form onSubmit={event => { event.preventDefault();const f = new FormData(event.currentTarget);void run(() => service.approve(p.id,String(f.get('evidence')))); }}>
+            <p>Single-admin approval is permitted for the current OfficeBites setup. Record how you verified the bank-account owner, recipient name and EFT receiving capability. Do not enable PayShap unless the registered ShapID is separately verified.</p>
+            <label>Bank ownership, recipient and EFT receiving-capability verification evidence<textarea className="input" name="evidence" required minLength={15} maxLength={1000} placeholder="e.g. I checked the account holder and bank details against the vendor-provided bank confirmation." /></label>
             <button className="btn-outline" disabled={busy}>Approve verified profile</button>
           </form>}
         </div>)}
