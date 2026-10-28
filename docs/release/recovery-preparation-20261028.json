@@ -1,0 +1,134 @@
+{
+  "productionProject": "gfzhdkitdyqftealgqfi",
+  "productionOrganizationPlan": "free",
+  "preflight": {
+    "orders": {
+      "count": 32,
+      "digest": "bf3538a529fe7a6170a32db04b53664d",
+      "pending": 31,
+      "preparing": 1
+    },
+    "history": {
+      "count": 38,
+      "digest": "ffa2bc5fbcf4470b5f0d0277d6d2bfa1",
+      "latest": "20261010101910",
+      "matches_20261028": true
+    },
+    "storage": [
+      {
+        "rls": true,
+        "name": "buckets",
+        "owner": "supabase_storage_admin"
+      },
+      {
+        "rls": true,
+        "name": "objects",
+        "owner": "supabase_storage_admin"
+      }
+    ],
+    "observer": "postgres",
+    "item_digest": "f48cc8df5fb710dd4ac3a83d11c473a1",
+    "new_objects": [
+      {
+        "name": "private.vendor_payment_profiles",
+        "exists": false
+      },
+      {
+        "name": "private.manual_order_payments",
+        "exists": false
+      },
+      {
+        "name": "private.legal_versions",
+        "exists": false
+      },
+      {
+        "name": "private.vendor_compliance_events",
+        "exists": false
+      },
+      {
+        "name": "private.order_legal_acceptances",
+        "exists": false
+      }
+    ],
+    "backup_proof": "NOT PROVIDED BY THIS QUERY: require private archive and isolated restore evidence",
+    "core_objects": [
+      {
+        "rls": true,
+        "name": "order_items",
+        "owner": "postgres"
+      },
+      {
+        "rls": true,
+        "name": "order_suborders",
+        "owner": "postgres"
+      },
+      {
+        "rls": true,
+        "name": "orders",
+        "owner": "postgres"
+      },
+      {
+        "rls": true,
+        "name": "profiles",
+        "owner": "postgres"
+      },
+      {
+        "rls": true,
+        "name": "vendors",
+        "owner": "postgres"
+      }
+    ],
+    "observed_utc": "2026-10-28T07:20:48.9326+00:00",
+    "storage_counts": {
+      "buckets": 5,
+      "objects": 60
+    },
+    "suborder_digest": "a5ed8815047b1cfe2887f60a939bca42",
+    "policy_delegation": {
+      "postgres_buckets": true,
+      "postgres_objects": true,
+      "session_preload_libraries": "supautils",
+      "postgres_is_storage_owner_member": false
+    },
+    "security_functions": [
+      {
+        "actual": "086649c1a17a57fbcfde261ea7bdba6a",
+        "matches": true,
+        "expected": "086649c1a17a57fbcfde261ea7bdba6a",
+        "signature": "public.handle_new_user()"
+      },
+      {
+        "actual": "405aaa6295945413607a5413a8d965a3",
+        "matches": true,
+        "expected": "405aaa6295945413607a5413a8d965a3",
+        "signature": "public.guard_vendor_privileged_fields()"
+      },
+      {
+        "actual": "389319aa4e0b30ada46bc315e97afbad",
+        "matches": true,
+        "expected": "389319aa4e0b30ada46bc315e97afbad",
+        "signature": "public.guard_profile_privileged_fields()"
+      }
+    ],
+    "vendor_restrictions_digest": "f9b9f72ed35b2e687245c768f8e268b5",
+    "profile_restrictions_digest": "62d9cbf2544e8c75ca17891b7a2d1171"
+  },
+  "migrationHashesMatch": true,
+  "backup": {
+    "exportCreated": false,
+    "restoreTestPerformed": false,
+    "restorableBackupVerified": false,
+    "nativeClientsFound": false,
+    "approvedConnectionConfigurationDetected": false,
+    "operator": null
+  },
+  "storage": {
+    "supportedPolicyDelegationConfigured": true,
+    "policyDDLTested": false,
+    "originalP4RequiresManagedOwner": true,
+    "originalP4Changed": false,
+    "executorDecision": "BLOCKED: confirm exact owner execution with Supabase or review/rehearse a separately versioned API-bucket plus delegated-policy alternative"
+  },
+  "productionDataChanged": false,
+  "deployed": false
+}

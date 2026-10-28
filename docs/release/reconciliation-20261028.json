@@ -1,0 +1,980 @@
+{
+  "observedDate": "2026-10-28",
+  "productionProject": "gfzhdkitdyqftealgqfi",
+  "deployment": {
+    "id": "dpl_6MGnguqN7HkhPMpsyGYvA7bcf2hm",
+    "commit": "4b94fbe89e8b5a672e4f308701df61c1224580fd",
+    "branch": "feat/vendor-direct-launch-payments",
+    "alias": "officebites.co.za"
+  },
+  "catalog": {
+    "rpcs": [
+      {
+        "proname": "get_vendor_dashboard_stats",
+        "arguments": "p_vendor_id uuid",
+        "anon_execute": false,
+        "authenticated_execute": true
+      },
+      {
+        "proname": "update_suborder_status_and_notify",
+        "arguments": "p_order_id uuid, p_next_status text",
+        "anon_execute": false,
+        "authenticated_execute": true
+      }
+    ],
+    "orders": {
+      "count": 32,
+      "digest": "bf3538a529fe7a6170a32db04b53664d",
+      "pending": 31,
+      "preparing": 1
+    },
+    "settings": [
+      {
+        "rolname": "anon",
+        "rolconfig": [
+          "statement_timeout=3s"
+        ]
+      },
+      {
+        "rolname": "authenticated",
+        "rolconfig": [
+          "statement_timeout=8s"
+        ]
+      },
+      {
+        "rolname": "authenticator",
+        "rolconfig": [
+          "session_preload_libraries=supautils, safeupdate",
+          "statement_timeout=8s",
+          "lock_timeout=8s"
+        ]
+      }
+    ],
+    "auth_orphans": 0,
+    "profiles_rls": {
+      "rls": true,
+      "owner": "postgres",
+      "authenticated_select": true
+    },
+    "storage_owner": "supabase_storage_admin",
+    "active_account": "CREATE OR REPLACE FUNCTION private.active_account()\n RETURNS boolean\n LANGUAGE sql\n STABLE SECURITY DEFINER\n SET search_path TO ''\nAS $function$\n SELECT EXISTS(SELECT 1 FROM public.profiles p JOIN auth.users u ON u.id=p.id WHERE p.id=auth.uid() AND NOT p.suspended AND p.deleted_at IS NULL\n AND (p.role<>'vendor' OR EXISTS(SELECT 1 FROM public.vendors v WHERE v.id=p.vendor_id AND v.owner_id=p.id AND v.status<>'suspended' AND v.archived_at IS NULL)));\n$function$\n",
+    "profiles_policies": [
+      {
+        "cmd": "ALL",
+        "qual": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))",
+        "roles": [
+          "anon",
+          "authenticated"
+        ],
+        "permissive": "RESTRICTIVE",
+        "policyname": "active_account_access",
+        "with_check": "((( SELECT auth.uid() AS uid) IS NULL) OR ( SELECT private.active_account() AS active_account))"
+      },
+      {
+        "cmd": "SELECT",
+        "qual": "((id = ( SELECT auth.uid() AS uid)) OR ( SELECT private.is_admin() AS is_admin))",
+        "roles": [
+          "authenticated"
+        ],
+        "permissive": "PERMISSIVE",
+        "policyname": "profiles_self_select",
+        "with_check": null
+      },
+      {
+        "cmd": "UPDATE",
+        "qual": "((id = ( SELECT auth.uid() AS uid)) OR ( SELECT private.is_admin() AS is_admin))",
+        "roles": [
+          "authenticated"
+        ],
+        "permissive": "PERMISSIVE",
+        "policyname": "profiles_self_update",
+        "with_check": "((id = ( SELECT auth.uid() AS uid)) OR ( SELECT private.is_admin() AS is_admin))"
+      }
+    ],
+    "duplicate_profiles": 0
+  },
+  "permissions": {
+    "schema_settings": {
+      "db_schemas": null,
+      "pre_request": null,
+      "extra_search_path": null
+    },
+    "security_hashes": [
+      {
+        "md5": "389319aa4e0b30ada46bc315e97afbad",
+        "name": "guard_profile_privileged_fields"
+      },
+      {
+        "md5": "405aaa6295945413607a5413a8d965a3",
+        "name": "guard_vendor_privileged_fields"
+      },
+      {
+        "md5": "086649c1a17a57fbcfde261ea7bdba6a",
+        "name": "handle_new_user"
+      }
+    ],
+    "schema_privileges": [
+      {
+        "role": "anon",
+        "public_usage": true,
+        "private_usage": true,
+        "active_account_execute": true
+      },
+      {
+        "role": "authenticated",
+        "public_usage": true,
+        "private_usage": true,
+        "active_account_execute": true
+      },
+      {
+        "role": "authenticator",
+        "public_usage": true,
+        "private_usage": false,
+        "active_account_execute": false
+      }
+    ],
+    "column_permissions": [
+      {
+        "column": "id",
+        "authenticated_select": true
+      },
+      {
+        "column": "role",
+        "authenticated_select": true
+      },
+      {
+        "column": "vendor_id",
+        "authenticated_select": true
+      },
+      {
+        "column": "suspended",
+        "authenticated_select": true
+      },
+      {
+        "column": "deleted_at",
+        "authenticated_select": true
+      }
+    ]
+  },
+  "backupRestore": "NOT_VERIFIED: connector exposes no backup inventory; local recovery evidence is staging-only",
+  "productionWrites": false,
+  "functions": [
+    {
+      "name": "get_admin_platform_analytics",
+      "arguments": "p_days integer",
+      "anon_execute": false,
+      "authenticated_execute": true
+    },
+    {
+      "name": "handle_new_user",
+      "arguments": "",
+      "anon_execute": false,
+      "authenticated_execute": false
+    },
+    {
+      "name": "update_conversation_timestamp",
+      "arguments": "",
+      "anon_execute": false,
+      "authenticated_execute": false
+    },
+    {
+      "name": "get_guest_order_by_ticket_json",
+      "arguments": "p_ticket_number text, p_contact text",
+      "anon_execute": true,
+      "authenticated_execute": true
+    },
+    {
+      "name": "get_guest_order_json",
+      "arguments": "p_order_id uuid",
+      "anon_execute": false,
+      "authenticated_execute": false
+    },
+    {
+      "name": "get_guest_orders_json",
+      "arguments": "p_ids uuid[]",
+      "anon_execute": false,
+      "authenticated_execute": false
+    },
+    {
+      "name": "submit_payment_proof",
+      "arguments": "p_order_id uuid, p_proof_path text",
+      "anon_execute": false,
+      "authenticated_execute": false
+    },
+    {
+      "name": "enforce_order_status_transition",
+      "arguments": "",
+      "anon_execute": true,
+      "authenticated_execute": true
+    },
+    {
+      "name": "update_suborder_status_and_notify",
+      "arguments": "p_order_id uuid, p_next_status text",
+      "anon_execute": false,
+      "authenticated_execute": true
+    },
+    {
+      "name": "create_order_from_cart",
+      "arguments": "p_customer_id uuid, p_guest_name text, p_guest_contact text, p_guest_email text, p_delivery_date date, p_delivery_location text, p_items jsonb",
+      "anon_execute": true,
+      "authenticated_execute": true
+    },
+    {
+      "name": "admin_verify_payment",
+      "arguments": "p_order_id uuid, p_approve boolean",
+      "anon_execute": false,
+      "authenticated_execute": true
+    },
+    {
+      "name": "set_conversation_retention",
+      "arguments": "",
+      "anon_execute": false,
+      "authenticated_execute": false
+    },
+    {
+      "name": "close_order_conversation_on_terminal_suborder",
+      "arguments": "",
+      "anon_execute": false,
+      "authenticated_execute": false
+    },
+    {
+      "name": "sanitize_support_ticket_create",
+      "arguments": "",
+      "anon_execute": false,
+      "authenticated_execute": false
+    },
+    {
+      "name": "touch_support_ticket",
+      "arguments": "",
+      "anon_execute": false,
+      "authenticated_execute": false
+    },
+    {
+      "name": "get_nearby_vendors",
+      "arguments": "p_latitude double precision, p_longitude double precision, p_limit integer",
+      "anon_execute": true,
+      "authenticated_execute": true
+    },
+    {
+      "name": "guard_vendor_privileged_fields",
+      "arguments": "",
+      "anon_execute": false,
+      "authenticated_execute": false
+    },
+    {
+      "name": "notify_chat_recipient",
+      "arguments": "",
+      "anon_execute": false,
+      "authenticated_execute": false
+    },
+    {
+      "name": "notify_support_reply",
+      "arguments": "",
+      "anon_execute": false,
+      "authenticated_execute": false
+    },
+    {
+      "name": "order_to_json",
+      "arguments": "o orders",
+      "anon_execute": false,
+      "authenticated_execute": false
+    },
+    {
+      "name": "become_vendor",
+      "arguments": "p_business_name text, p_business_category text, p_building text",
+      "anon_execute": false,
+      "authenticated_execute": true
+    },
+    {
+      "name": "get_admin_category_demand",
+      "arguments": "p_days integer",
+      "anon_execute": false,
+      "authenticated_execute": true
+    },
+    {
+      "name": "get_vendor_analytics",
+      "arguments": "p_vendor_id uuid, p_days integer",
+      "anon_execute": false,
+      "authenticated_execute": true
+    },
+    {
+      "name": "admin_reply_support_ticket",
+      "arguments": "p_ticket_id uuid, p_body text, p_internal boolean",
+      "anon_execute": false,
+      "authenticated_execute": true
+    },
+    {
+      "name": "admin_update_support_ticket",
+      "arguments": "p_ticket_id uuid, p_status support_status, p_priority support_priority, p_assigned_to uuid",
+      "anon_execute": false,
+      "authenticated_execute": true
+    },
+    {
+      "name": "get_order_customer_names",
+      "arguments": "p_order_ids uuid[]",
+      "anon_execute": false,
+      "authenticated_execute": true
+    },
+    {
+      "name": "guard_profile_privileged_fields",
+      "arguments": "",
+      "anon_execute": false,
+      "authenticated_execute": false
+    },
+    {
+      "name": "admin_classify_test_order",
+      "arguments": "p_order_id uuid, p_reason text, p_expected_version integer",
+      "anon_execute": false,
+      "authenticated_execute": true
+    },
+    {
+      "name": "get_financial_report",
+      "arguments": "p_vendor_id uuid, p_from date, p_to date",
+      "anon_execute": false,
+      "authenticated_execute": true
+    },
+    {
+      "name": "create_support_ticket",
+      "arguments": "p_subject text, p_category text, p_body text, p_requester_name text, p_requester_email text, p_requester_contact text, p_order_id uuid, p_meta jsonb, p_attachment_path text",
+      "anon_execute": false,
+      "authenticated_execute": true
+    },
+    {
+      "name": "admin_allocate_payout",
+      "arguments": "p_vendor_id uuid, p_suborder_ids uuid[], p_request_id uuid",
+      "anon_execute": false,
+      "authenticated_execute": true
+    },
+    {
+      "name": "admin_preview_test_order",
+      "arguments": "p_order_id uuid",
+      "anon_execute": false,
+      "authenticated_execute": true
+    },
+    {
+      "name": "admin_reconcile_payout",
+      "arguments": "p_payout_id uuid, p_status text, p_reference text",
+      "anon_execute": false,
+      "authenticated_execute": true
+    },
+    {
+      "name": "confirm_payfast_payment",
+      "arguments": "p_order_id uuid, p_pf_payment_id text, p_m_payment_id text, p_amount_gross numeric, p_payment_status text, p_raw_payload jsonb",
+      "anon_execute": false,
+      "authenticated_execute": false
+    },
+    {
+      "name": "get_payout_ledger",
+      "arguments": "p_vendor_id uuid",
+      "anon_execute": false,
+      "authenticated_execute": true
+    },
+    {
+      "name": "admin_record_historical_commission",
+      "arguments": "p_suborder_id uuid, p_rate numeric, p_evidence text",
+      "anon_execute": false,
+      "authenticated_execute": true
+    },
+    {
+      "name": "admin_set_fee_policy",
+      "arguments": "p_policy text, p_reason text",
+      "anon_execute": false,
+      "authenticated_execute": true
+    },
+    {
+      "name": "get_vendor_dashboard_stats",
+      "arguments": "p_vendor_id uuid",
+      "anon_execute": false,
+      "authenticated_execute": true
+    },
+    {
+      "name": "admin_preview_account_removal",
+      "arguments": "p_kind text, p_id uuid",
+      "anon_execute": false,
+      "authenticated_execute": true
+    },
+    {
+      "name": "admin_preview_retention",
+      "arguments": "",
+      "anon_execute": false,
+      "authenticated_execute": true
+    },
+    {
+      "name": "prepare_account_removal",
+      "arguments": "p_actor uuid, p_kind text, p_id uuid, p_fingerprint text, p_confirmation text",
+      "anon_execute": false,
+      "authenticated_execute": false
+    },
+    {
+      "name": "complete_account_removal",
+      "arguments": "p_actor uuid, p_job_id uuid",
+      "anon_execute": false,
+      "authenticated_execute": false
+    },
+    {
+      "name": "admin_configure_retention",
+      "arguments": "p_days integer, p_schedule text",
+      "anon_execute": false,
+      "authenticated_execute": true
+    },
+    {
+      "name": "erase_old_conversations",
+      "arguments": "",
+      "anon_execute": false,
+      "authenticated_execute": false
+    },
+    {
+      "name": "prepare_payfast_order",
+      "arguments": "p_order_id uuid, p_caller_id uuid, p_guest_contact text",
+      "anon_execute": false,
+      "authenticated_execute": false
+    },
+    {
+      "name": "admin_recent_payments",
+      "arguments": "p_limit integer",
+      "anon_execute": false,
+      "authenticated_execute": true
+    },
+    {
+      "name": "admin_customer_favourite_counts",
+      "arguments": "",
+      "anon_execute": false,
+      "authenticated_execute": true
+    }
+  ],
+  "deployedSource": {
+    "filesInspected": 174,
+    "literalRpcNames": 63,
+    "method": "Literal rpc/call/financialRpc names across deployed src, including unused service methods; no claim of complete runtime reachability",
+    "calls": [
+      {
+        "name": "accept_vendor_legal",
+        "files": [
+          "src/services/commercialService.js"
+        ],
+        "production": null
+      },
+      {
+        "name": "admin_allocate_payout",
+        "files": [
+          "src/services/financialService.js"
+        ],
+        "production": {
+          "name": "admin_allocate_payout",
+          "arguments": "p_vendor_id uuid, p_suborder_ids uuid[], p_request_id uuid",
+          "anon_execute": false,
+          "authenticated_execute": true
+        }
+      },
+      {
+        "name": "admin_cancel_refunded_manual_order",
+        "files": [
+          "src/services/manualPaymentService.js"
+        ],
+        "production": null
+      },
+      {
+        "name": "admin_classify_test_order",
+        "files": [
+          "src/services/financialService.js"
+        ],
+        "production": {
+          "name": "admin_classify_test_order",
+          "arguments": "p_order_id uuid, p_reason text, p_expected_version integer",
+          "anon_execute": false,
+          "authenticated_execute": true
+        }
+      },
+      {
+        "name": "admin_collection_config",
+        "files": [
+          "src/services/collectionService.js"
+        ],
+        "production": null
+      },
+      {
+        "name": "admin_collection_workspace",
+        "files": [
+          "src/services/collectionService.js"
+        ],
+        "production": null
+      },
+      {
+        "name": "admin_commercial_action",
+        "files": [
+          "src/services/commercialService.js"
+        ],
+        "production": null
+      },
+      {
+        "name": "admin_configure_retention",
+        "files": [
+          "src/pages/admin/AdminReports.jsx"
+        ],
+        "production": {
+          "name": "admin_configure_retention",
+          "arguments": "p_days integer, p_schedule text",
+          "anon_execute": false,
+          "authenticated_execute": true
+        }
+      },
+      {
+        "name": "admin_decide_delivery_origin",
+        "files": [
+          "src/services/checkoutService.js"
+        ],
+        "production": null
+      },
+      {
+        "name": "admin_delivery_origin_queue",
+        "files": [
+          "src/services/checkoutService.js"
+        ],
+        "production": null
+      },
+      {
+        "name": "admin_manual_receivable_entry",
+        "files": [
+          "src/services/manualPaymentService.js"
+        ],
+        "production": null
+      },
+      {
+        "name": "admin_manual_settings_checked",
+        "files": [
+          "src/services/manualPaymentService.js"
+        ],
+        "production": null
+      },
+      {
+        "name": "admin_preview_retention",
+        "files": [
+          "src/pages/admin/AdminReports.jsx"
+        ],
+        "production": {
+          "name": "admin_preview_retention",
+          "arguments": "",
+          "anon_execute": false,
+          "authenticated_execute": true
+        }
+      },
+      {
+        "name": "admin_preview_test_order",
+        "files": [
+          "src/services/financialService.js"
+        ],
+        "production": {
+          "name": "admin_preview_test_order",
+          "arguments": "p_order_id uuid",
+          "anon_execute": false,
+          "authenticated_execute": true
+        }
+      },
+      {
+        "name": "admin_reconcile_payout",
+        "files": [
+          "src/services/financialService.js"
+        ],
+        "production": {
+          "name": "admin_reconcile_payout",
+          "arguments": "p_payout_id uuid, p_status text, p_reference text",
+          "anon_execute": false,
+          "authenticated_execute": true
+        }
+      },
+      {
+        "name": "admin_reply_support_ticket",
+        "files": [
+          "src/services/supportService.js"
+        ],
+        "production": {
+          "name": "admin_reply_support_ticket",
+          "arguments": "p_ticket_id uuid, p_body text, p_internal boolean",
+          "anon_execute": false,
+          "authenticated_execute": true
+        }
+      },
+      {
+        "name": "admin_save_delivery_hub",
+        "files": [
+          "src/services/checkoutService.js"
+        ],
+        "production": null
+      },
+      {
+        "name": "admin_set_fee_policy",
+        "files": [
+          "src/services/financialService.js"
+        ],
+        "production": {
+          "name": "admin_set_fee_policy",
+          "arguments": "p_policy text, p_reason text",
+          "anon_execute": false,
+          "authenticated_execute": true
+        }
+      },
+      {
+        "name": "admin_update_delivery_settings",
+        "files": [
+          "src/services/checkoutService.js"
+        ],
+        "production": null
+      },
+      {
+        "name": "admin_update_payment_gateway",
+        "files": [
+          "src/services/checkoutService.js"
+        ],
+        "production": null
+      },
+      {
+        "name": "admin_update_support_ticket",
+        "files": [
+          "src/services/supportService.js"
+        ],
+        "production": {
+          "name": "admin_update_support_ticket",
+          "arguments": "p_ticket_id uuid, p_status support_status, p_priority support_priority, p_assigned_to uuid",
+          "anon_execute": false,
+          "authenticated_execute": true
+        }
+      },
+      {
+        "name": "approve_vendor_payment_profile",
+        "files": [
+          "src/services/manualPaymentService.js"
+        ],
+        "production": null
+      },
+      {
+        "name": "assisted_order_workspace",
+        "files": [
+          "src/services/assistedOrderService.js"
+        ],
+        "production": null
+      },
+      {
+        "name": "become_vendor",
+        "files": [
+          "src/services/authService.js"
+        ],
+        "production": {
+          "name": "become_vendor",
+          "arguments": "p_business_name text, p_business_category text, p_building text",
+          "anon_execute": false,
+          "authenticated_execute": true
+        }
+      },
+      {
+        "name": "cancel_unpaid_order",
+        "files": [
+          "src/services/paymentService.js"
+        ],
+        "production": null
+      },
+      {
+        "name": "cash_custody_workspace",
+        "files": [
+          "src/services/assistedOrderService.js"
+        ],
+        "production": null
+      },
+      {
+        "name": "convert_order_request",
+        "files": [
+          "src/services/assistedOrderService.js"
+        ],
+        "production": null
+      },
+      {
+        "name": "create_assisted_order",
+        "files": [
+          "src/services/assistedOrderService.js"
+        ],
+        "production": null
+      },
+      {
+        "name": "create_support_ticket",
+        "files": [
+          "src/services/supportService.js"
+        ],
+        "production": {
+          "name": "create_support_ticket",
+          "arguments": "p_subject text, p_category text, p_body text, p_requester_name text, p_requester_email text, p_requester_contact text, p_order_id uuid, p_meta jsonb, p_attachment_path text",
+          "anon_execute": false,
+          "authenticated_execute": true
+        }
+      },
+      {
+        "name": "flag_manual_payment",
+        "files": [
+          "src/services/manualPaymentService.js"
+        ],
+        "production": null
+      },
+      {
+        "name": "get_collection_options",
+        "files": [
+          "src/services/collectionService.js"
+        ],
+        "production": null
+      },
+      {
+        "name": "get_commercial_report",
+        "files": [
+          "src/services/commercialService.js"
+        ],
+        "production": null
+      },
+      {
+        "name": "get_commercial_workspace",
+        "files": [
+          "src/services/commercialService.js"
+        ],
+        "production": null
+      },
+      {
+        "name": "get_delivery_settings",
+        "files": [
+          "src/services/checkoutService.js"
+        ],
+        "production": null
+      },
+      {
+        "name": "get_financial_report",
+        "files": [
+          "src/services/financialService.js"
+        ],
+        "production": {
+          "name": "get_financial_report",
+          "arguments": "p_vendor_id uuid, p_from date, p_to date",
+          "anon_execute": false,
+          "authenticated_execute": true
+        }
+      },
+      {
+        "name": "get_guest_order_by_ticket_json",
+        "files": [
+          "src/services/orderService.js"
+        ],
+        "production": {
+          "name": "get_guest_order_by_ticket_json",
+          "arguments": "p_ticket_number text, p_contact text",
+          "anon_execute": true,
+          "authenticated_execute": true
+        }
+      },
+      {
+        "name": "get_legal_portal",
+        "files": [
+          "src/services/commercialService.js"
+        ],
+        "production": null
+      },
+      {
+        "name": "get_manual_payment",
+        "files": [
+          "src/services/manualPaymentService.js"
+        ],
+        "production": null
+      },
+      {
+        "name": "get_nearby_vendors",
+        "files": [
+          "src/services/foodService.js",
+          "src/services/vendorService.js"
+        ],
+        "production": {
+          "name": "get_nearby_vendors",
+          "arguments": "p_latitude double precision, p_longitude double precision, p_limit integer",
+          "anon_execute": true,
+          "authenticated_execute": true
+        }
+      },
+      {
+        "name": "get_order_assistance_options",
+        "files": [
+          "src/services/assistedOrderService.js"
+        ],
+        "production": null
+      },
+      {
+        "name": "get_order_customer_names",
+        "files": [
+          "src/services/customerNameService.js"
+        ],
+        "production": {
+          "name": "get_order_customer_names",
+          "arguments": "p_order_ids uuid[]",
+          "anon_execute": false,
+          "authenticated_execute": true
+        }
+      },
+      {
+        "name": "get_order_request",
+        "files": [
+          "src/services/assistedOrderService.js"
+        ],
+        "production": null
+      },
+      {
+        "name": "get_payment_gateways",
+        "files": [
+          "src/services/checkoutService.js"
+        ],
+        "production": null
+      },
+      {
+        "name": "get_payout_ledger",
+        "files": [
+          "src/services/financialService.js"
+        ],
+        "production": {
+          "name": "get_payout_ledger",
+          "arguments": "p_vendor_id uuid",
+          "anon_execute": false,
+          "authenticated_execute": true
+        }
+      },
+      {
+        "name": "get_vendor_delivery_origin",
+        "files": [
+          "src/services/checkoutService.js"
+        ],
+        "production": null
+      },
+      {
+        "name": "get_vendor_manual_methods",
+        "files": [
+          "src/services/manualPaymentService.js"
+        ],
+        "production": null
+      },
+      {
+        "name": "initiate_cash_handover",
+        "files": [
+          "src/services/assistedOrderService.js"
+        ],
+        "production": null
+      },
+      {
+        "name": "manual_payment_workspace",
+        "files": [
+          "src/services/manualPaymentService.js"
+        ],
+        "production": null
+      },
+      {
+        "name": "prepare_vendor_consent",
+        "files": [
+          "src/services/commercialService.js"
+        ],
+        "production": null
+      },
+      {
+        "name": "quote_delivery",
+        "files": [
+          "src/services/checkoutService.js"
+        ],
+        "production": null
+      },
+      {
+        "name": "record_cash_event",
+        "files": [
+          "src/services/assistedOrderService.js"
+        ],
+        "production": null
+      },
+      {
+        "name": "record_eft_receipt",
+        "files": [
+          "src/services/assistedOrderService.js"
+        ],
+        "production": null
+      },
+      {
+        "name": "record_manual_refund_status",
+        "files": [
+          "src/services/manualPaymentService.js"
+        ],
+        "production": null
+      },
+      {
+        "name": "report_manual_payment",
+        "files": [
+          "src/services/manualPaymentService.js"
+        ],
+        "production": null
+      },
+      {
+        "name": "request_vendor_delivery_origin",
+        "files": [
+          "src/services/checkoutService.js"
+        ],
+        "production": null
+      },
+      {
+        "name": "resolve_manual_payment_dispute",
+        "files": [
+          "src/services/manualPaymentService.js"
+        ],
+        "production": null
+      },
+      {
+        "name": "respond_cash_handover",
+        "files": [
+          "src/services/assistedOrderService.js"
+        ],
+        "production": null
+      },
+      {
+        "name": "respond_corporate_agreement",
+        "files": [
+          "src/services/commercialService.js"
+        ],
+        "production": null
+      },
+      {
+        "name": "submit_order_request",
+        "files": [
+          "src/services/assistedOrderService.js"
+        ],
+        "production": null
+      },
+      {
+        "name": "submit_vendor_payment_profile",
+        "files": [
+          "src/services/manualPaymentService.js"
+        ],
+        "production": null
+      },
+      {
+        "name": "update_suborder_status_and_notify",
+        "files": [
+          "src/services/orderService.js"
+        ],
+        "production": {
+          "name": "update_suborder_status_and_notify",
+          "arguments": "p_order_id uuid, p_next_status text",
+          "anon_execute": false,
+          "authenticated_execute": true
+        }
+      },
+      {
+        "name": "vendor_set_service_date",
+        "files": [
+          "src/services/assistedOrderService.js"
+        ],
+        "production": null
+      },
+      {
+        "name": "verify_manual_payment",
+        "files": [
+          "src/services/manualPaymentService.js"
+        ],
+        "production": null
+      }
+    ]
+  },
+  "candidateMigrationHashesMatch": true
+}

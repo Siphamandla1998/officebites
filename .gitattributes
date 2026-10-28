@@ -1,0 +1,4 @@
+# Keep reviewed SQL hashes and Linux restore scripts stable across Windows checkouts.
+release/production-candidates/*.sql text eol=lf
+release/storage-alternative/*.sql text eol=lf
+checks/operator/*.sh text eol=lf

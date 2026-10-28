@@ -1,0 +1,47 @@
+{
+  "project": "gfzhdkitdyqftealgqfi",
+  "productionChanged": false,
+  "productionDeploymentApproved": false,
+  "readiness": "NO-GO until backup/restore, managed rehearsal, hosted UAT and explicit approval",
+  "native": {
+    "assertions": 134,
+    "result": "passed",
+    "evidence": "native-integrated-result.json",
+    "expiry": "Real five-minute deadline; immutable deadline update denied",
+    "limitation": "Synthetic schema/roles and Auth/Storage contracts; not managed runtime or a production restore"
+  },
+  "browser": {
+    "cases": 77,
+    "passed": 77,
+    "failed": 0,
+    "duration": "7.8 minutes",
+    "scope": "Local synthetic fixtures; mobile/desktop, legal, payments, banking, compliance, auth/session"
+  },
+  "backupPreparation": {
+    "operator": "Siphamandla Khumalo",
+    "setupSyntaxAndSyntheticAclTest": "passed; current user and SYSTEM only",
+    "integrityTests": 10,
+    "localFixtureDataCaptures": 50,
+    "restoreShellSyntax": "passed",
+    "actualProductionConnectionConfigured": false,
+    "actualProductionArchiveCreated": false,
+    "actualIsolatedRestoreVerified": false
+  },
+  "storage": {
+    "originalFourMigrationHashes": "unchanged and verified",
+    "alternativePolicies": "Six definitions identical to original P4",
+    "vanillaPostgresDelegationGuard": "correctly rejected",
+    "providerConfiguration": "Verified read-only: supautils policy delegation to postgres",
+    "managedRehearsalVerified": false,
+    "originalP4AndAlternativeMustNotBothRun": true
+  },
+  "productionIntegrity": {
+    "observedUtc": "2026-10-28T07:37:46.24521Z",
+    "orders": 32,
+    "pendingPayment": 31,
+    "preparing": 1,
+    "history": 38,
+    "ordersSubordersItemsAndRestrictions": "digests unchanged from reconciliation baseline",
+    "backupEvidence": false
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "project": "gfzhdkitdyqftealgqfi",
+  "installed": false,
+  "approved": false,
+  "status": "review-only; provider delegation configured; managed rehearsal and recovery evidence outstanding",
+  "replaces": "release/production-candidates/20261027115843_production_compliance_storage_owner_policies.sql",
+  "neverApplyTogether": true,
+  "steps": [
+    {
+      "order": 1,
+      "file": "release/production-candidates/20261027093453_production_launch_browser_grants.sql",
+      "version": "20261027093453",
+      "name": "production_launch_browser_grants",
+      "executor": "postgres (non-superuser, BYPASSRLS)",
+      "sha256": "73dbb7a10a46ddc21cc39388265a29b8d587f83611c1a65d968d38b24d005bc7",
+      "requires": "independently verified production preflight",
+      "transaction": "one BEGIN/COMMIT per file; authorized runner records ledger only after successful commit"
+    },
+    {
+      "order": 2,
+      "file": "release/production-candidates/20261027112327_production_minimum_manual_legal_foundation.sql",
+      "version": "20261027112327",
+      "name": "production_minimum_manual_legal_foundation",
+      "executor": "postgres (non-superuser, BYPASSRLS)",
+      "sha256": "74362e1b0d82e1b735a37fc1601e489191d5c524ab60c1ee692969fca3850eb6",
+      "requires": "20261027093453_production_launch_browser_grants.sql",
+      "transaction": "one BEGIN/COMMIT per file; authorized runner records ledger only after successful commit"
+    },
+    {
+      "order": 3,
+      "file": "release/production-candidates/20261027112437_production_checked_settings.sql",
+      "version": "20261027112437",
+      "name": "production_checked_settings",
+      "executor": "postgres (non-superuser, BYPASSRLS)",
+      "sha256": "5ee05523511454535c4269318516e76fcce08b5f5b591de7ff4aa8529f41ea48",
+      "requires": "20261027112327_production_minimum_manual_legal_foundation.sql",
+      "transaction": "one BEGIN/COMMIT per file; authorized runner records ledger only after successful commit"
+    },
+    {
+      "order": 4,
+      "file": "release/storage-alternative/20261028073200_production_compliance_delegated_policies.sql",
+      "version": "20261028073200",
+      "name": "production_compliance_delegated_policies",
+      "sha256": "0619487b207b3a3fcee10bd83973170098e561ef60d5a30472b799e522f73583",
+      "executor": "postgres via provider-installed supautils policy delegation",
+      "requires": "P1-P3 recorded; API-created private empty bucket; closed rollout controls; managed rehearsal"
+    }
+  ],
+  "bucket": {
+    "id": "vendor-compliance",
+    "name": "vendor-compliance",
+    "public": false,
+    "fileSizeLimit": 5242880,
+    "allowedMimeTypes": [
+      "application/pdf",
+      "image/jpeg",
+      "image/png"
+    ],
+    "executor": "owner through Storage API/dashboard; separately authorized"
+  },
+  "expectedFinalHistoryCount": 42,
+  "expectedLatest": "20261028073200",
+  "policyDefinitionsIdentical": true,
+  "managedRehearsalVerified": false,
+  "recoveryVerified": false,
+  "productionApproval": false
+}

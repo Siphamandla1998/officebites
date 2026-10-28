@@ -112,6 +112,10 @@ try {
  const managedFile='20261027115843_production_compliance_storage_owner_policies.sql';
  const managedSql=fs.readFileSync('release/production-candidates/'+managedFile,'utf8');
  await reject(managedSql,[],/Storage-owner/);await q('ROLLBACK');
+ // Vanilla PostgreSQL has no provider-installed delegation. Never spoof settings
+ // or weaken the alternative guard merely to obtain a local PASS.
+ await reject(fs.readFileSync('release/storage-alternative/20261028073200_production_compliance_delegated_policies.sql','utf8'),[],/Provider-installed Storage policy delegation/);
+ await q('ROLLBACK');
  const storageOwner=await connect(database,'supabase_storage_admin');await proof(storageOwner,database);
  try{await storageOwner.query(managedSql);}finally{await storageOwner.end();}
  await q('INSERT INTO supabase_migrations.schema_migrations VALUES($1,$2)',[managedFile.slice(0,14),managedFile.slice(15,-4)]);

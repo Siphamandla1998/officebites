@@ -1,0 +1,49 @@
+{
+  "project": "gfzhdkitdyqftealgqfi",
+  "observedUtc": "2026-10-28T07:10:10.254Z",
+  "probes": [
+    {
+      "kind": "schemaExposure",
+      "schema": "public",
+      "status": 200,
+      "code": null
+    },
+    {
+      "kind": "schemaExposure",
+      "schema": "private",
+      "status": 406,
+      "code": "PGRST106"
+    },
+    {
+      "kind": "readOnlyRpc",
+      "name": "manual_payment_workspace",
+      "status": 404,
+      "code": "PGRST202"
+    },
+    {
+      "kind": "readOnlyRpc",
+      "name": "get_vendor_manual_methods",
+      "status": 404,
+      "code": "PGRST202"
+    },
+    {
+      "kind": "readOnlyRpc",
+      "name": "get_vendor_delivery_origin",
+      "status": 404,
+      "code": "PGRST202"
+    },
+    {
+      "kind": "readOnlyRpc",
+      "name": "get_commercial_workspace",
+      "status": 404,
+      "code": "PGRST202"
+    },
+    {
+      "kind": "readOnlyRpc",
+      "name": "get_legal_portal",
+      "status": 404,
+      "code": "PGRST202"
+    }
+  ],
+  "businessWrites": false
+}

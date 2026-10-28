@@ -64,6 +64,12 @@ export async function verify({q,eq,reject,rootRole,as,id,connect,proof,beforeCon
  await denied('SELECT public.create_order_with_legal($1,$2)',[JSON.stringify(payload()),JSON.stringify({...legal,acknowledged:false})]);
  await denied('SELECT public.create_order_with_legal($1,$2)',[JSON.stringify(payload()),JSON.stringify({...legal,documents:{...legal.documents,terms:randomUUID()}})],/version changed/i);
  const p=payload();const guest=await create(p);eq(guest.legalReceipt.actor_id,null);eq(guest.legalReceipt.is_guest,true);eq(guest.legalReceipt.marketing,undefined);eq(guest.legalReceipt.documents.terms.content_hash,docs.terms.content_hash);
+ const instructions=(await one('SELECT public.get_manual_payment($1,$2) r',[guest.id,guest.payment_token])).r;
+ eq(instructions.destination,destination);eq(Number(instructions.amount),100);
+ eq(instructions.reference,guest.ticket_number);eq(instructions.state,'awaiting_payment');
+ await as(13);await denied('SELECT public.get_manual_payment($1,NULL)',[guest.id],/Payment access unavailable/);
+ await as(2);await denied('SELECT public.verify_manual_payment($1,100,$2,false)',[guest.id,'SYNTHETIC CUSTOMER CANNOT SETTLE']);
+ await as(null);
  eq((await create(p)).id,guest.id);
  await denied('SELECT public.create_order_with_legal($1,$2)',[JSON.stringify({...p,p_items:[{mealId:id(20),qty:2}]}),JSON.stringify(legal)],/changed/);
  await denied('SELECT public.get_manual_payment($1,NULL)',[guest.id],/capability|author|access|proof|token|ownership/i);
@@ -84,6 +90,28 @@ export async function verify({q,eq,reject,rootRole,as,id,connect,proof,beforeCon
  await as(2);const member=await create(payload(id(2),'manual_payshap'));eq(member.legalReceipt.actor_id,id(2));eq(member.legalReceipt.is_guest,false);
  await as(1);eq((await one('SELECT public.verify_manual_payment($1,99,$2,false) r',[member.id,'SYNTHETIC WRONG AMOUNT'])).r,'under_review');
  await rootRole();eq((await one('SELECT payment_status FROM public.order_suborders WHERE order_id=$1',[member.id])).payment_status,'unpaid');
+ // Expired instructions and cancelled orders require review even with a bank
+ // reference; neither may silently become paid through normal confirmation.
+ await rootRole();const priorMinutes=(await one('SELECT deadline_minutes FROM private.manual_payment_settings')).deadline_minutes;
+ await q('UPDATE private.manual_payment_settings SET deadline_minutes=5');
+ await as(null);const timedOut=await create(payload());await rootRole();
+ await q('UPDATE private.manual_payment_settings SET deadline_minutes=$1',[priorMinutes]);
+ await denied("UPDATE private.manual_order_payments SET deadline=clock_timestamp()-interval '1 minute' WHERE order_id=$1",[timedOut.id],/immutable/);
+ const expires=(await one('SELECT deadline FROM private.manual_order_payments WHERE order_id=$1',[timedOut.id])).deadline;
+ const remaining=new Date(expires).getTime()-Date.now()+1000;
+ if(remaining<0||remaining>301000)throw new Error('Unexpected fixture expiry window');
+ console.log('Waiting for real five-minute fixture expiry; immutable history remains protected.');
+ await new Promise(resolve=>setTimeout(resolve,remaining));
+ await as(null);eq((await one('SELECT public.get_manual_payment($1,$2) r',[timedOut.id,timedOut.payment_token])).r.state,'expired');
+ await denied('SELECT public.report_manual_payment($1,$2)',[timedOut.id,timedOut.payment_token],/deadline|review/i);
+ await as(12);eq((await one('SELECT public.verify_manual_payment($1,100,$2,false) r',[timedOut.id,'SYNTHETIC EXPIRED RECEIPT'])).r,'under_review');
+ await rootRole();eq((await one('SELECT payment_status FROM public.order_suborders WHERE order_id=$1',[timedOut.id])).payment_status,'unpaid');
+ await as(null);const declined=await create(payload());
+ await q('SELECT public.cancel_unpaid_order($1,$2,$3)',[declined.id,declined.ticket_number,'0820000000']);
+ eq((await one('SELECT public.get_manual_payment($1,$2) r',[declined.id,declined.payment_token])).r.state,'cancelled');
+ await as(1);eq((await one('SELECT public.verify_manual_payment($1,100,$2,false) r',[declined.id,'SYNTHETIC CANCELLED RECEIPT'])).r,'under_review');
+ await rootRole();eq((await one('SELECT payment_status FROM public.order_suborders WHERE order_id=$1',[declined.id])).payment_status,'unpaid');
+ await as(1);
  await as(1);await denied('SELECT public.verify_manual_payment($1,100,$2,false)',[member.id,'SYNTHETIC RECEIPT ONE'],/duplicate|unique/i);
  if(beforeContainment)await beforeContainment({q,eq,reject,rootRole,as,id,vendor,receipt,guest,member,create,payload,legal});
  // Expiry between the successful create call and COMMIT must roll back everything.
