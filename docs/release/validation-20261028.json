@@ -1,0 +1,31 @@
+{
+  "observedDate": "2026-10-28",
+  "browser": {
+    "initial": {
+      "passed": 70,
+      "failed": 0
+    },
+    "extended": {
+      "passed": 76,
+      "failed": 1,
+      "reason": "New synthetic auth fixture lacked query-builder limit()"
+    },
+    "authRetestAfterFixtureRepair": {
+      "passed": 7,
+      "failed": 0
+    },
+    "distinctPassingCases": 77
+  },
+  "authServiceAssertions": 18,
+  "authRaceScenarios": 3,
+  "managementAssertions": 17,
+  "baselinePGliteAssertions": 73,
+  "grantCandidatePGliteAssertions": 18,
+  "availabilityAssertions": 9,
+  "lint": {
+    "errors": 0,
+    "existingWarnings": 9
+  },
+  "productionDeployed": false,
+  "nativeRerun": "NOT_COMPLETED: Windows runtime dependencies prevent PostgreSQL startup"
+}

@@ -1,0 +1,435 @@
+{
+  "observedDate": "2026-10-28",
+  "project": "gfzhdkitdyqftealgqfi",
+  "tables": [
+    {
+      "rls": true,
+      "name": "feedback",
+      "anon_select": false,
+      "authenticated_select": true
+    },
+    {
+      "rls": true,
+      "name": "favourites",
+      "anon_select": true,
+      "authenticated_select": true
+    },
+    {
+      "rls": true,
+      "name": "reviews",
+      "anon_select": true,
+      "authenticated_select": true
+    },
+    {
+      "rls": true,
+      "name": "profiles",
+      "anon_select": true,
+      "authenticated_select": true
+    },
+    {
+      "rls": true,
+      "name": "vendors",
+      "anon_select": true,
+      "authenticated_select": true
+    },
+    {
+      "rls": true,
+      "name": "order_flow",
+      "anon_select": true,
+      "authenticated_select": true
+    },
+    {
+      "rls": true,
+      "name": "meals",
+      "anon_select": true,
+      "authenticated_select": true
+    },
+    {
+      "rls": true,
+      "name": "orders",
+      "anon_select": true,
+      "authenticated_select": true
+    },
+    {
+      "rls": true,
+      "name": "order_suborders",
+      "anon_select": true,
+      "authenticated_select": true
+    },
+    {
+      "rls": true,
+      "name": "order_items",
+      "anon_select": true,
+      "authenticated_select": true
+    },
+    {
+      "rls": true,
+      "name": "messages",
+      "anon_select": true,
+      "authenticated_select": true
+    },
+    {
+      "rls": true,
+      "name": "payfast_itn_log",
+      "anon_select": true,
+      "authenticated_select": true
+    },
+    {
+      "rls": true,
+      "name": "conversations",
+      "anon_select": true,
+      "authenticated_select": true
+    },
+    {
+      "rls": true,
+      "name": "notifications",
+      "anon_select": true,
+      "authenticated_select": true
+    },
+    {
+      "rls": true,
+      "name": "support_tickets",
+      "anon_select": true,
+      "authenticated_select": true
+    },
+    {
+      "rls": true,
+      "name": "support_ticket_messages",
+      "anon_select": true,
+      "authenticated_select": true
+    },
+    {
+      "rls": true,
+      "name": "event_booking_requests",
+      "anon_select": true,
+      "authenticated_select": true
+    },
+    {
+      "rls": true,
+      "name": "corporate_opportunities",
+      "anon_select": true,
+      "authenticated_select": true
+    },
+    {
+      "rls": true,
+      "name": "help_articles",
+      "anon_select": true,
+      "authenticated_select": true
+    },
+    {
+      "rls": true,
+      "name": "booking_pricing_rules",
+      "anon_select": true,
+      "authenticated_select": true
+    },
+    {
+      "rls": true,
+      "name": "vendor_payouts",
+      "anon_select": false,
+      "authenticated_select": true
+    },
+    {
+      "rls": true,
+      "name": "payout_allocations",
+      "anon_select": false,
+      "authenticated_select": true
+    }
+  ],
+  "functions": [
+    {
+      "anon": false,
+      "args": "p_days integer",
+      "name": "get_admin_platform_analytics",
+      "authenticated": true
+    },
+    {
+      "anon": false,
+      "args": "",
+      "name": "handle_new_user",
+      "authenticated": false
+    },
+    {
+      "anon": false,
+      "args": "",
+      "name": "update_conversation_timestamp",
+      "authenticated": false
+    },
+    {
+      "anon": true,
+      "args": "p_ticket_number text, p_contact text",
+      "name": "get_guest_order_by_ticket_json",
+      "authenticated": true
+    },
+    {
+      "anon": false,
+      "args": "p_order_id uuid",
+      "name": "get_guest_order_json",
+      "authenticated": false
+    },
+    {
+      "anon": false,
+      "args": "p_ids uuid[]",
+      "name": "get_guest_orders_json",
+      "authenticated": false
+    },
+    {
+      "anon": false,
+      "args": "p_order_id uuid, p_proof_path text",
+      "name": "submit_payment_proof",
+      "authenticated": false
+    },
+    {
+      "anon": true,
+      "args": "",
+      "name": "enforce_order_status_transition",
+      "authenticated": true
+    },
+    {
+      "anon": false,
+      "args": "p_order_id uuid, p_next_status text",
+      "name": "update_suborder_status_and_notify",
+      "authenticated": true
+    },
+    {
+      "anon": true,
+      "args": "p_customer_id uuid, p_guest_name text, p_guest_contact text, p_guest_email text, p_delivery_date date, p_delivery_location text, p_items jsonb",
+      "name": "create_order_from_cart",
+      "authenticated": true
+    },
+    {
+      "anon": false,
+      "args": "p_order_id uuid, p_approve boolean",
+      "name": "admin_verify_payment",
+      "authenticated": true
+    },
+    {
+      "anon": false,
+      "args": "",
+      "name": "set_conversation_retention",
+      "authenticated": false
+    },
+    {
+      "anon": false,
+      "args": "",
+      "name": "close_order_conversation_on_terminal_suborder",
+      "authenticated": false
+    },
+    {
+      "anon": false,
+      "args": "",
+      "name": "sanitize_support_ticket_create",
+      "authenticated": false
+    },
+    {
+      "anon": false,
+      "args": "",
+      "name": "touch_support_ticket",
+      "authenticated": false
+    },
+    {
+      "anon": true,
+      "args": "p_latitude double precision, p_longitude double precision, p_limit integer",
+      "name": "get_nearby_vendors",
+      "authenticated": true
+    },
+    {
+      "anon": false,
+      "args": "",
+      "name": "guard_vendor_privileged_fields",
+      "authenticated": false
+    },
+    {
+      "anon": false,
+      "args": "",
+      "name": "notify_chat_recipient",
+      "authenticated": false
+    },
+    {
+      "anon": false,
+      "args": "",
+      "name": "notify_support_reply",
+      "authenticated": false
+    },
+    {
+      "anon": false,
+      "args": "o orders",
+      "name": "order_to_json",
+      "authenticated": false
+    },
+    {
+      "anon": false,
+      "args": "p_business_name text, p_business_category text, p_building text",
+      "name": "become_vendor",
+      "authenticated": true
+    },
+    {
+      "anon": false,
+      "args": "p_days integer",
+      "name": "get_admin_category_demand",
+      "authenticated": true
+    },
+    {
+      "anon": false,
+      "args": "p_vendor_id uuid, p_days integer",
+      "name": "get_vendor_analytics",
+      "authenticated": true
+    },
+    {
+      "anon": false,
+      "args": "p_ticket_id uuid, p_body text, p_internal boolean",
+      "name": "admin_reply_support_ticket",
+      "authenticated": true
+    },
+    {
+      "anon": false,
+      "args": "p_ticket_id uuid, p_status support_status, p_priority support_priority, p_assigned_to uuid",
+      "name": "admin_update_support_ticket",
+      "authenticated": true
+    },
+    {
+      "anon": false,
+      "args": "p_order_ids uuid[]",
+      "name": "get_order_customer_names",
+      "authenticated": true
+    },
+    {
+      "anon": false,
+      "args": "",
+      "name": "guard_profile_privileged_fields",
+      "authenticated": false
+    },
+    {
+      "anon": false,
+      "args": "p_order_id uuid, p_reason text, p_expected_version integer",
+      "name": "admin_classify_test_order",
+      "authenticated": true
+    },
+    {
+      "anon": false,
+      "args": "p_vendor_id uuid, p_from date, p_to date",
+      "name": "get_financial_report",
+      "authenticated": true
+    },
+    {
+      "anon": false,
+      "args": "p_subject text, p_category text, p_body text, p_requester_name text, p_requester_email text, p_requester_contact text, p_order_id uuid, p_meta jsonb, p_attachment_path text",
+      "name": "create_support_ticket",
+      "authenticated": true
+    },
+    {
+      "anon": false,
+      "args": "p_vendor_id uuid, p_suborder_ids uuid[], p_request_id uuid",
+      "name": "admin_allocate_payout",
+      "authenticated": true
+    },
+    {
+      "anon": false,
+      "args": "p_order_id uuid",
+      "name": "admin_preview_test_order",
+      "authenticated": true
+    },
+    {
+      "anon": false,
+      "args": "p_payout_id uuid, p_status text, p_reference text",
+      "name": "admin_reconcile_payout",
+      "authenticated": true
+    },
+    {
+      "anon": false,
+      "args": "p_order_id uuid, p_pf_payment_id text, p_m_payment_id text, p_amount_gross numeric, p_payment_status text, p_raw_payload jsonb",
+      "name": "confirm_payfast_payment",
+      "authenticated": false
+    },
+    {
+      "anon": false,
+      "args": "p_vendor_id uuid",
+      "name": "get_payout_ledger",
+      "authenticated": true
+    },
+    {
+      "anon": false,
+      "args": "p_suborder_id uuid, p_rate numeric, p_evidence text",
+      "name": "admin_record_historical_commission",
+      "authenticated": true
+    },
+    {
+      "anon": false,
+      "args": "p_policy text, p_reason text",
+      "name": "admin_set_fee_policy",
+      "authenticated": true
+    },
+    {
+      "anon": false,
+      "args": "p_vendor_id uuid",
+      "name": "get_vendor_dashboard_stats",
+      "authenticated": true
+    },
+    {
+      "anon": false,
+      "args": "p_kind text, p_id uuid",
+      "name": "admin_preview_account_removal",
+      "authenticated": true
+    },
+    {
+      "anon": false,
+      "args": "",
+      "name": "admin_preview_retention",
+      "authenticated": true
+    },
+    {
+      "anon": false,
+      "args": "p_actor uuid, p_kind text, p_id uuid, p_fingerprint text, p_confirmation text",
+      "name": "prepare_account_removal",
+      "authenticated": false
+    },
+    {
+      "anon": false,
+      "args": "p_actor uuid, p_job_id uuid",
+      "name": "complete_account_removal",
+      "authenticated": false
+    },
+    {
+      "anon": false,
+      "args": "p_days integer, p_schedule text",
+      "name": "admin_configure_retention",
+      "authenticated": true
+    },
+    {
+      "anon": false,
+      "args": "",
+      "name": "erase_old_conversations",
+      "authenticated": false
+    },
+    {
+      "anon": false,
+      "args": "p_order_id uuid, p_caller_id uuid, p_guest_contact text",
+      "name": "prepare_payfast_order",
+      "authenticated": false
+    },
+    {
+      "anon": false,
+      "args": "p_limit integer",
+      "name": "admin_recent_payments",
+      "authenticated": true
+    },
+    {
+      "anon": false,
+      "args": "",
+      "name": "admin_customer_favourite_counts",
+      "authenticated": true
+    }
+  ],
+  "item_digest": "f48cc8df5fb710dd4ac3a83d11c473a1",
+  "order_counts": [
+    {
+      "count": 31,
+      "status": "pending_payment"
+    },
+    {
+      "count": 1,
+      "status": "preparing"
+    }
+  ],
+  "order_digest": "bf3538a529fe7a6170a32db04b53664d",
+  "suborder_digest": "a5ed8815047b1cfe2887f60a939bca42"
+}

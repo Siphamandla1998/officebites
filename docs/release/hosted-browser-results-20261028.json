@@ -1,0 +1,54 @@
+{
+  "observedUtc": "2026-10-28T06:46:00.450Z",
+  "project": "gfzhdkitdyqftealgqfi",
+  "origin": "https://officebites.co.za",
+  "roles": [
+    {
+      "role": "admin",
+      "pages": [
+        {
+          "path": "/admin/payments",
+          "landedPath": "/admin/payments",
+          "alerts": 3,
+          "headings": 4
+        },
+        {
+          "path": "/admin/vendors",
+          "landedPath": "/admin/vendors",
+          "alerts": 0,
+          "headings": 1
+        },
+        {
+          "path": "/admin/legal",
+          "landedPath": "/404",
+          "alerts": 0,
+          "headings": 1
+        }
+      ],
+      "apiFailures": [
+        {
+          "path": "/rest/v1/rpc/get_delivery_settings",
+          "status": 404
+        },
+        {
+          "path": "/rest/v1/rpc/manual_payment_workspace",
+          "status": 404
+        },
+        {
+          "path": "/rest/v1/rpc/get_payment_gateways",
+          "status": 404
+        }
+      ],
+      "blockedWrites": 2,
+      "blockedPaths": [
+        "/rest/v1/rpc/admin_delivery_origin_queue",
+        "/rest/v1/rpc/admin_collection_workspace"
+      ],
+      "pageErrors": 0,
+      "login": "PASS",
+      "restoredPath": "/admin",
+      "restore": "PASS"
+    }
+  ],
+  "businessWrites": false
+}

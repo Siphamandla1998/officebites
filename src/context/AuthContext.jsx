@@ -9,6 +9,7 @@ export function AuthProvider({ children }) {
 
   const requestVersion = useRef(0);
   const mounted = useRef(true);
+  const sessionUserId = useRef(null);
 
   const loadCurrentUser = useCallback(async () => {
     const version = ++requestVersion.current;
@@ -16,7 +17,10 @@ export function AuthProvider({ children }) {
 
     try {
       const currentUser = await authService.getCurrentUser();
-      if (isCurrent()) setUser(currentUser);
+      if (isCurrent()) {
+        sessionUserId.current = currentUser?.id || null;
+        setUser(currentUser);
+      }
       return currentUser;
     } catch (error) {
       if (isCurrent()) {
@@ -38,11 +42,17 @@ export function AuthProvider({ children }) {
 
       if (!session) {
         ++requestVersion.current;
+        sessionUserId.current = null;
         setUser(null);
         setLoading(false);
         return;
       }
 
+      if (session.user.id !== sessionUserId.current) {
+        sessionUserId.current = session.user.id;
+        setUser(null);
+        setLoading(true);
+      }
       return loadCurrentUser();
     });
 

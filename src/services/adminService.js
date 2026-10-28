@@ -28,7 +28,10 @@ export const adminService = {
     const { error } = await supabase
       .from("profiles")
       .update({ suspended: true })
-      .eq("id", id);
+      .eq("id", id)
+      .eq("role", ROLES.CUSTOMER)
+      .select("id")
+      .single();
 
     if (error) {
       throw { message: error.message };

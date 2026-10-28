@@ -1,0 +1,838 @@
+{
+  "observedDate": "2026-10-28",
+  "project": "gfzhdkitdyqftealgqfi",
+  "method": "All src literal RPC/call/financialRpc calls plus conditional creator, literal table/storage references and Edge invocations; unused service methods identified separately. Does not certify nested selects or managed API behavior.",
+  "rpcs": [
+    {
+      "name": "accept_assigned_vendor_agreement",
+      "files": [
+        "src/services/vendorAgreementService.js"
+      ],
+      "live": null,
+      "candidate": true,
+      "launchActive": true
+    },
+    {
+      "name": "accept_vendor_legal",
+      "files": [
+        "src/services/commercialService.js"
+      ],
+      "live": null,
+      "candidate": true,
+      "launchActive": true
+    },
+    {
+      "name": "admin_allocate_payout",
+      "files": [
+        "src/services/financialService.js"
+      ],
+      "live": {
+        "anon": false,
+        "args": "p_vendor_id uuid, p_suborder_ids uuid[], p_request_id uuid",
+        "name": "admin_allocate_payout",
+        "authenticated": true
+      },
+      "candidate": true,
+      "launchActive": true
+    },
+    {
+      "name": "admin_cancel_refunded_manual_order",
+      "files": [
+        "src/services/manualPaymentService.js"
+      ],
+      "live": null,
+      "candidate": true,
+      "launchActive": true
+    },
+    {
+      "name": "admin_classify_test_order",
+      "files": [
+        "src/services/financialService.js"
+      ],
+      "live": {
+        "anon": false,
+        "args": "p_order_id uuid, p_reason text, p_expected_version integer",
+        "name": "admin_classify_test_order",
+        "authenticated": true
+      },
+      "candidate": true,
+      "launchActive": true
+    },
+    {
+      "name": "admin_commercial_action",
+      "files": [
+        "src/services/commercialService.js"
+      ],
+      "live": null,
+      "candidate": true,
+      "launchActive": false
+    },
+    {
+      "name": "admin_configure_retention",
+      "files": [
+        "src/pages/admin/AdminReports.jsx"
+      ],
+      "live": {
+        "anon": false,
+        "args": "p_days integer, p_schedule text",
+        "name": "admin_configure_retention",
+        "authenticated": true
+      },
+      "candidate": true,
+      "launchActive": true
+    },
+    {
+      "name": "admin_decide_delivery_origin",
+      "files": [
+        "src/services/checkoutService.js"
+      ],
+      "live": null,
+      "candidate": false,
+      "launchActive": false
+    },
+    {
+      "name": "admin_delivery_origin_queue",
+      "files": [
+        "src/services/checkoutService.js"
+      ],
+      "live": null,
+      "candidate": false,
+      "launchActive": false
+    },
+    {
+      "name": "admin_manual_receivable_entry",
+      "files": [
+        "src/services/manualPaymentService.js"
+      ],
+      "live": null,
+      "candidate": true,
+      "launchActive": true
+    },
+    {
+      "name": "admin_manual_settings_checked",
+      "files": [
+        "src/services/manualPaymentService.js"
+      ],
+      "live": null,
+      "candidate": true,
+      "launchActive": true
+    },
+    {
+      "name": "admin_preview_retention",
+      "files": [
+        "src/pages/admin/AdminReports.jsx"
+      ],
+      "live": {
+        "anon": false,
+        "args": "",
+        "name": "admin_preview_retention",
+        "authenticated": true
+      },
+      "candidate": true,
+      "launchActive": true
+    },
+    {
+      "name": "admin_preview_test_order",
+      "files": [
+        "src/services/financialService.js"
+      ],
+      "live": {
+        "anon": false,
+        "args": "p_order_id uuid",
+        "name": "admin_preview_test_order",
+        "authenticated": true
+      },
+      "candidate": true,
+      "launchActive": true
+    },
+    {
+      "name": "admin_reconcile_payout",
+      "files": [
+        "src/services/financialService.js"
+      ],
+      "live": {
+        "anon": false,
+        "args": "p_payout_id uuid, p_status text, p_reference text",
+        "name": "admin_reconcile_payout",
+        "authenticated": true
+      },
+      "candidate": true,
+      "launchActive": true
+    },
+    {
+      "name": "admin_reply_support_ticket",
+      "files": [
+        "src/services/supportService.js"
+      ],
+      "live": {
+        "anon": false,
+        "args": "p_ticket_id uuid, p_body text, p_internal boolean",
+        "name": "admin_reply_support_ticket",
+        "authenticated": true
+      },
+      "candidate": true,
+      "launchActive": true
+    },
+    {
+      "name": "admin_save_delivery_hub",
+      "files": [
+        "src/services/checkoutService.js"
+      ],
+      "live": null,
+      "candidate": false,
+      "launchActive": false
+    },
+    {
+      "name": "admin_set_fee_policy",
+      "files": [
+        "src/services/financialService.js"
+      ],
+      "live": {
+        "anon": false,
+        "args": "p_policy text, p_reason text",
+        "name": "admin_set_fee_policy",
+        "authenticated": true
+      },
+      "candidate": true,
+      "launchActive": true
+    },
+    {
+      "name": "admin_update_delivery_settings",
+      "files": [
+        "src/services/checkoutService.js"
+      ],
+      "live": null,
+      "candidate": false,
+      "launchActive": false
+    },
+    {
+      "name": "admin_update_payment_gateway",
+      "files": [
+        "src/services/checkoutService.js"
+      ],
+      "live": null,
+      "candidate": true,
+      "launchActive": false
+    },
+    {
+      "name": "admin_update_support_ticket",
+      "files": [
+        "src/services/supportService.js"
+      ],
+      "live": {
+        "anon": false,
+        "args": "p_ticket_id uuid, p_status support_status, p_priority support_priority, p_assigned_to uuid",
+        "name": "admin_update_support_ticket",
+        "authenticated": true
+      },
+      "candidate": true,
+      "launchActive": true
+    },
+    {
+      "name": "admin_vendor_compliance",
+      "files": [
+        "src/services/vendorComplianceService.js"
+      ],
+      "live": null,
+      "candidate": true,
+      "launchActive": true
+    },
+    {
+      "name": "approve_vendor_payment_profile",
+      "files": [
+        "src/services/manualPaymentService.js"
+      ],
+      "live": null,
+      "candidate": true,
+      "launchActive": true
+    },
+    {
+      "name": "become_vendor",
+      "files": [
+        "src/services/authService.js"
+      ],
+      "live": {
+        "anon": false,
+        "args": "p_business_name text, p_business_category text, p_building text",
+        "name": "become_vendor",
+        "authenticated": true
+      },
+      "candidate": true,
+      "launchActive": true
+    },
+    {
+      "name": "cancel_unpaid_order",
+      "files": [
+        "src/services/paymentService.js"
+      ],
+      "live": null,
+      "candidate": true,
+      "launchActive": true
+    },
+    {
+      "name": "create_manual_order",
+      "files": [
+        "src/services/orderService.js"
+      ],
+      "live": null,
+      "candidate": true,
+      "launchActive": true
+    },
+    {
+      "name": "create_order_with_legal",
+      "files": [
+        "src/services/orderService.js"
+      ],
+      "live": null,
+      "candidate": true,
+      "launchActive": true
+    },
+    {
+      "name": "create_support_ticket",
+      "files": [
+        "src/services/supportService.js"
+      ],
+      "live": {
+        "anon": false,
+        "args": "p_subject text, p_category text, p_body text, p_requester_name text, p_requester_email text, p_requester_contact text, p_order_id uuid, p_meta jsonb, p_attachment_path text",
+        "name": "create_support_ticket",
+        "authenticated": true
+      },
+      "candidate": true,
+      "launchActive": true
+    },
+    {
+      "name": "finalize_vendor_evidence",
+      "files": [
+        "src/services/vendorComplianceService.js"
+      ],
+      "live": null,
+      "candidate": true,
+      "launchActive": true
+    },
+    {
+      "name": "flag_manual_payment",
+      "files": [
+        "src/services/manualPaymentService.js"
+      ],
+      "live": null,
+      "candidate": true,
+      "launchActive": true
+    },
+    {
+      "name": "get_commercial_report",
+      "files": [
+        "src/services/commercialService.js"
+      ],
+      "live": null,
+      "candidate": false,
+      "launchActive": false
+    },
+    {
+      "name": "get_commercial_workspace",
+      "files": [
+        "src/services/commercialService.js"
+      ],
+      "live": null,
+      "candidate": true,
+      "launchActive": true
+    },
+    {
+      "name": "get_customer_legal_state",
+      "files": [
+        "src/services/commercialService.js"
+      ],
+      "live": null,
+      "candidate": true,
+      "launchActive": true
+    },
+    {
+      "name": "get_delivery_settings",
+      "files": [
+        "src/services/checkoutService.js"
+      ],
+      "live": null,
+      "candidate": false,
+      "launchActive": false
+    },
+    {
+      "name": "get_financial_report",
+      "files": [
+        "src/services/financialService.js"
+      ],
+      "live": {
+        "anon": false,
+        "args": "p_vendor_id uuid, p_from date, p_to date",
+        "name": "get_financial_report",
+        "authenticated": true
+      },
+      "candidate": true,
+      "launchActive": true
+    },
+    {
+      "name": "get_guest_order_by_ticket_json",
+      "files": [
+        "src/services/orderService.js"
+      ],
+      "live": {
+        "anon": true,
+        "args": "p_ticket_number text, p_contact text",
+        "name": "get_guest_order_by_ticket_json",
+        "authenticated": true
+      },
+      "candidate": true,
+      "launchActive": true
+    },
+    {
+      "name": "get_legal_portal",
+      "files": [
+        "src/services/commercialService.js"
+      ],
+      "live": null,
+      "candidate": true,
+      "launchActive": true
+    },
+    {
+      "name": "get_manual_payment",
+      "files": [
+        "src/services/manualPaymentService.js"
+      ],
+      "live": null,
+      "candidate": true,
+      "launchActive": true
+    },
+    {
+      "name": "get_nearby_vendors",
+      "files": [
+        "src/services/foodService.js",
+        "src/services/vendorService.js"
+      ],
+      "live": {
+        "anon": true,
+        "args": "p_latitude double precision, p_longitude double precision, p_limit integer",
+        "name": "get_nearby_vendors",
+        "authenticated": true
+      },
+      "candidate": true,
+      "launchActive": true
+    },
+    {
+      "name": "get_order_customer_names",
+      "files": [
+        "src/services/customerNameService.js"
+      ],
+      "live": {
+        "anon": false,
+        "args": "p_order_ids uuid[]",
+        "name": "get_order_customer_names",
+        "authenticated": true
+      },
+      "candidate": true,
+      "launchActive": true
+    },
+    {
+      "name": "get_order_legal_receipt",
+      "files": [
+        "src/services/commercialService.js"
+      ],
+      "live": null,
+      "candidate": true,
+      "launchActive": true
+    },
+    {
+      "name": "get_payment_gateways",
+      "files": [
+        "src/services/checkoutService.js"
+      ],
+      "live": null,
+      "candidate": true,
+      "launchActive": false
+    },
+    {
+      "name": "get_payout_ledger",
+      "files": [
+        "src/services/financialService.js"
+      ],
+      "live": {
+        "anon": false,
+        "args": "p_vendor_id uuid",
+        "name": "get_payout_ledger",
+        "authenticated": true
+      },
+      "candidate": true,
+      "launchActive": true
+    },
+    {
+      "name": "get_vendor_agreement_state",
+      "files": [
+        "src/services/vendorAgreementService.js"
+      ],
+      "live": null,
+      "candidate": true,
+      "launchActive": true
+    },
+    {
+      "name": "get_vendor_compliance",
+      "files": [
+        "src/services/vendorComplianceService.js"
+      ],
+      "live": null,
+      "candidate": true,
+      "launchActive": true
+    },
+    {
+      "name": "get_vendor_delivery_origin",
+      "files": [
+        "src/services/checkoutService.js"
+      ],
+      "live": null,
+      "candidate": false,
+      "launchActive": false
+    },
+    {
+      "name": "get_vendor_manual_methods",
+      "files": [
+        "src/services/manualPaymentService.js"
+      ],
+      "live": null,
+      "candidate": true,
+      "launchActive": true
+    },
+    {
+      "name": "manual_payment_workspace",
+      "files": [
+        "src/services/manualPaymentService.js"
+      ],
+      "live": null,
+      "candidate": true,
+      "launchActive": true
+    },
+    {
+      "name": "prepare_vendor_consent",
+      "files": [
+        "src/services/commercialService.js"
+      ],
+      "live": null,
+      "candidate": true,
+      "launchActive": true
+    },
+    {
+      "name": "quote_delivery",
+      "files": [
+        "src/services/checkoutService.js"
+      ],
+      "live": null,
+      "candidate": false,
+      "launchActive": false
+    },
+    {
+      "name": "record_manual_refund_status",
+      "files": [
+        "src/services/manualPaymentService.js"
+      ],
+      "live": null,
+      "candidate": true,
+      "launchActive": true
+    },
+    {
+      "name": "report_manual_payment",
+      "files": [
+        "src/services/manualPaymentService.js"
+      ],
+      "live": null,
+      "candidate": true,
+      "launchActive": true
+    },
+    {
+      "name": "request_vendor_delivery_origin",
+      "files": [
+        "src/services/checkoutService.js"
+      ],
+      "live": null,
+      "candidate": false,
+      "launchActive": false
+    },
+    {
+      "name": "reserve_vendor_evidence",
+      "files": [
+        "src/services/vendorComplianceService.js"
+      ],
+      "live": null,
+      "candidate": true,
+      "launchActive": true
+    },
+    {
+      "name": "resolve_manual_payment_dispute",
+      "files": [
+        "src/services/manualPaymentService.js"
+      ],
+      "live": null,
+      "candidate": true,
+      "launchActive": true
+    },
+    {
+      "name": "respond_corporate_agreement",
+      "files": [
+        "src/services/commercialService.js"
+      ],
+      "live": null,
+      "candidate": false,
+      "launchActive": false
+    },
+    {
+      "name": "submit_vendor_payment_profile",
+      "files": [
+        "src/services/manualPaymentService.js"
+      ],
+      "live": null,
+      "candidate": true,
+      "launchActive": true
+    },
+    {
+      "name": "update_suborder_status_and_notify",
+      "files": [
+        "src/services/orderService.js"
+      ],
+      "live": {
+        "anon": false,
+        "args": "p_order_id uuid, p_next_status text",
+        "name": "update_suborder_status_and_notify",
+        "authenticated": true
+      },
+      "candidate": true,
+      "launchActive": true
+    },
+    {
+      "name": "verify_manual_payment",
+      "files": [
+        "src/services/manualPaymentService.js"
+      ],
+      "live": null,
+      "candidate": true,
+      "launchActive": true
+    }
+  ],
+  "tablesAndBuckets": [
+    {
+      "name": "conversations",
+      "files": [
+        "src/services/chatService.js"
+      ],
+      "live": {
+        "rls": true,
+        "name": "conversations",
+        "anon_select": true,
+        "authenticated_select": true
+      },
+      "storageBucket": false
+    },
+    {
+      "name": "favourites",
+      "files": [
+        "src/context/FavouriteContext.jsx"
+      ],
+      "live": {
+        "rls": true,
+        "name": "favourites",
+        "anon_select": true,
+        "authenticated_select": true
+      },
+      "storageBucket": false
+    },
+    {
+      "name": "feedback",
+      "files": [
+        "src/services/supportService.js"
+      ],
+      "live": {
+        "rls": true,
+        "name": "feedback",
+        "anon_select": false,
+        "authenticated_select": true
+      },
+      "storageBucket": false
+    },
+    {
+      "name": "help_articles",
+      "files": [
+        "src/services/supportService.js"
+      ],
+      "live": {
+        "rls": true,
+        "name": "help_articles",
+        "anon_select": true,
+        "authenticated_select": true
+      },
+      "storageBucket": false
+    },
+    {
+      "name": "meals",
+      "files": [
+        "src/services/foodService.js",
+        "src/services/vendorService.js"
+      ],
+      "live": {
+        "rls": true,
+        "name": "meals",
+        "anon_select": true,
+        "authenticated_select": true
+      },
+      "storageBucket": false
+    },
+    {
+      "name": "messages",
+      "files": [
+        "src/services/chatService.js"
+      ],
+      "live": {
+        "rls": true,
+        "name": "messages",
+        "anon_select": true,
+        "authenticated_select": true
+      },
+      "storageBucket": false
+    },
+    {
+      "name": "notifications",
+      "files": [
+        "src/services/notificationService.js"
+      ],
+      "live": {
+        "rls": true,
+        "name": "notifications",
+        "anon_select": true,
+        "authenticated_select": true
+      },
+      "storageBucket": false
+    },
+    {
+      "name": "order_suborders",
+      "files": [
+        "src/services/orderService.js"
+      ],
+      "live": {
+        "rls": true,
+        "name": "order_suborders",
+        "anon_select": true,
+        "authenticated_select": true
+      },
+      "storageBucket": false
+    },
+    {
+      "name": "orders",
+      "files": [
+        "src/services/orderService.js"
+      ],
+      "live": {
+        "rls": true,
+        "name": "orders",
+        "anon_select": true,
+        "authenticated_select": true
+      },
+      "storageBucket": false
+    },
+    {
+      "name": "profiles",
+      "files": [
+        "src/services/adminService.js",
+        "src/services/authService.js",
+        "src/services/chatService.js",
+        "src/services/notificationService.js",
+        "src/services/supportService.js"
+      ],
+      "live": {
+        "rls": true,
+        "name": "profiles",
+        "anon_select": true,
+        "authenticated_select": true
+      },
+      "storageBucket": false
+    },
+    {
+      "name": "reviews",
+      "files": [
+        "src/services/vendorService.js"
+      ],
+      "live": {
+        "rls": true,
+        "name": "reviews",
+        "anon_select": true,
+        "authenticated_select": true
+      },
+      "storageBucket": false
+    },
+    {
+      "name": "support_ticket_messages",
+      "files": [
+        "src/services/supportService.js"
+      ],
+      "live": {
+        "rls": true,
+        "name": "support_ticket_messages",
+        "anon_select": true,
+        "authenticated_select": true
+      },
+      "storageBucket": false
+    },
+    {
+      "name": "support_tickets",
+      "files": [
+        "src/services/supportService.js"
+      ],
+      "live": {
+        "rls": true,
+        "name": "support_tickets",
+        "anon_select": true,
+        "authenticated_select": true
+      },
+      "storageBucket": false
+    },
+    {
+      "name": "vendor-compliance",
+      "files": [
+        "src/services/vendorComplianceService.js"
+      ],
+      "live": null,
+      "storageBucket": true
+    },
+    {
+      "name": "vendors",
+      "files": [
+        "src/services/vendorService.js"
+      ],
+      "live": {
+        "rls": true,
+        "name": "vendors",
+        "anon_select": true,
+        "authenticated_select": true
+      },
+      "storageBucket": false
+    }
+  ],
+  "edges": [
+    {
+      "name": "admin-account-removal",
+      "files": [
+        "src/components/features/AccountRemoval.jsx"
+      ],
+      "live": true,
+      "launchActive": true
+    },
+    {
+      "name": "ozow-initiate",
+      "files": [
+        "src/services/paymentService.js"
+      ],
+      "live": false,
+      "launchActive": false
+    },
+    {
+      "name": "payfast-initiate",
+      "files": [
+        "src/services/paymentService.js"
+      ],
+      "live": true,
+      "launchActive": false
+    }
+  ]
+}

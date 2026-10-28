@@ -20,9 +20,14 @@ export default function ResetPassword() {
     // recovery session automatically on load. That can either already be
     // done by the time this effect runs, or fire moments later as a
     // PASSWORD_RECOVERY auth event — so we check both.
-    supabase.auth.getSession().then(({ data }) => {
-      if (mounted && data.session) {
-        setReady(true);
+    supabase.auth.getSession().then(({ data, error: sessionError }) => {
+      if (mounted) {
+        setReady(!sessionError && Boolean(data?.session));
+        setChecking(false);
+      }
+    }).catch(() => {
+      if (mounted) {
+        setReady(false);
         setChecking(false);
       }
     });
@@ -32,6 +37,7 @@ export default function ResetPassword() {
       if (event === "PASSWORD_RECOVERY") {
         setReady(true);
       }
+      if (event === "SIGNED_OUT") setReady(false);
       setChecking(false);
     });
 
@@ -50,7 +56,7 @@ export default function ResetPassword() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (submitting) return;
+    if (submitting || !ready || checking || done) return;
 
     setError("");
 

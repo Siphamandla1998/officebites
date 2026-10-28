@@ -15,11 +15,17 @@ async function fetchProfile(userId) {
     .single();
 
   if (error) {
-    const failure = new Error('Your account profile could not be loaded. Refresh or contact OfficeBites support.');
+    const failure = new Error(error.code === 'PGRST116'
+      ? 'Your OfficeBites account is unavailable or is not fully set up. Please contact support.'
+      : 'Your account profile could not be loaded. Refresh or contact OfficeBites support.');
     failure.code = error.code;
     throw failure;
   }
   if (data.suspended || data.deleted_at) throw new Error("Your OfficeBites account is unavailable. Please contact support.");
+  if (!['customer', 'vendor', 'admin'].includes(data.role) ||
+      (data.role === 'vendor' && !data.vendor_id)) {
+    throw new Error('Your account role could not be resolved. Please contact OfficeBites support.');
+  }
 
   return {
     id: data.id,

@@ -15,6 +15,7 @@ import { paymentService } from '../src/services/paymentService';
 import { manualPaymentService } from '../src/services/manualPaymentService';
 import { supabase } from '../src/services/api/supabaseClient';
 import '../src/styles/index.css';
+const realAuth = { login: authService.login, getCurrentUser: authService.getCurrentUser };
 const fixture=window.fixture={user:null,authChanged:null,notificationsFail:false,pending:[],deferOrder:false,deferPayment:false,redirects:[],creates:0,policy:null,unknownRpcs:[],deferCreate:false,reportCalls:0,vendorRefreshes:0,gatewayDisabled:!!window.fixtureGatewayDisabled,deliveryConfig:window.fixtureDeliveryConfig};
 fixture.guestAccess = getGuestOrderAccess;
 fixture.businessDates = () => ({
@@ -197,6 +198,21 @@ Object.defineProperty(supabase,'storage',{value:{from:bucket=>bucket!=='vendor-c
  upload:async(path,file,options)=>{fixture.complianceUploads ||= [];fixture.complianceUploads.push({path,type:file.type,options});return {data:{path},error:null};},
  createSignedUrl:async(path,seconds)=>{fixture.evidenceLink={path,seconds};return {data:{signedUrl:'https://private-fixture.invalid/evidence'},error:null};},
 }}});
-supabase.from=()=>({select(){return this;},eq(){return this;},order(){return this;},then(resolve){return Promise.resolve({data:[],error:null}).then(resolve);}});
+supabase.from=table=>({select(){return this;},eq(){return this;},order(){return this;},limit(){return this;},
+ single:async()=>({data:table==='profiles'?fixture.authProfile:null,error:fixture.profileError || null}),
+ then(resolve){return Promise.resolve({data:[],error:null}).then(resolve);}});
+if (window.fixtureAuthTransport) {
+ authService.login = realAuth.login;
+ authService.getCurrentUser = realAuth.getCurrentUser;
+ fixture.authProfile = window.fixtureAuthProfile || null;
+ supabase.auth.signInWithPassword = async () => {
+  if(window.fixtureAuthError)return {data:null,error:window.fixtureAuthError};
+  fixture.user=fixture.authProfile;
+  const session={user:fixture.user,access_token:'synthetic-token'};
+  void fixture.authChanged?.(session);
+  return {data:{user:fixture.user,session},error:null};
+ };
+ if(window.fixtureRestoreSession)fixture.user=fixture.authProfile;
+}
 history.replaceState({},'',new URLSearchParams(location.search).get('route') || (location.pathname === '/checks/browser-harness.html' ? '/' : location.pathname));
 createRoot(document.getElementById('root')).render(<React.StrictMode><App /></React.StrictMode>);

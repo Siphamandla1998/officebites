@@ -307,7 +307,9 @@ export const vendorService = {
       .update({
         status: VENDOR_STATUS.APPROVED,
       })
-      .eq("id", vendorId);
+      .eq("id", vendorId)
+      .select("id")
+      .single();
 
     if (error) {
       throw new Error(error.message);
@@ -325,7 +327,9 @@ export const vendorService = {
         status: VENDOR_STATUS.APPROVED,
       })
       .eq("id", vendorId)
-      .eq("status", VENDOR_STATUS.SUSPENDED);
+      .eq("status", VENDOR_STATUS.SUSPENDED)
+      .select("id")
+      .single();
   
     if (error) {
       throw new Error(error.message);
@@ -342,7 +346,9 @@ export const vendorService = {
       .update({
         status: VENDOR_STATUS.REJECTED,
       })
-      .eq("id", vendorId);
+      .eq("id", vendorId)
+      .select("id")
+      .single();
 
     if (error) {
       throw new Error(error.message);
@@ -360,7 +366,9 @@ export const vendorService = {
       .update({
         status: VENDOR_STATUS.SUSPENDED,
       })
-      .eq("id", vendorId);
+      .eq("id", vendorId)
+      .select("id")
+      .single();
 
     if (error) {
       throw new Error(error.message);

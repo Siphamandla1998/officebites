@@ -1,0 +1,83 @@
+{
+  "observedUtc": "2026-10-28T06:43:35.886Z",
+  "project": "gfzhdkitdyqftealgqfi",
+  "roles": [
+    {
+      "role": "customer",
+      "login": "PASS",
+      "authError": null,
+      "actualRole": null,
+      "profileError": "PGRST116",
+      "suspended": false,
+      "deleted": false,
+      "vendorLinked": false,
+      "profileAndRole": "FAIL",
+      "restore": "PASS",
+      "refresh": "PASS",
+      "visibleProfileCount": 0,
+      "profileIsolation": "PASS",
+      "paymentWorkspace": "FAIL",
+      "workspaceError": "PGRST202",
+      "logout": "PASS"
+    },
+    {
+      "role": "vendor",
+      "login": "PASS",
+      "authError": null,
+      "actualRole": null,
+      "profileError": "PGRST116",
+      "suspended": false,
+      "deleted": false,
+      "vendorLinked": false,
+      "profileAndRole": "FAIL",
+      "restore": "PASS",
+      "refresh": "PASS",
+      "visibleProfileCount": 0,
+      "profileIsolation": "PASS",
+      "paymentWorkspace": "FAIL",
+      "workspaceError": "PGRST202",
+      "logout": "PASS"
+    },
+    {
+      "role": "admin",
+      "login": "PASS",
+      "authError": null,
+      "actualRole": "admin",
+      "profileError": null,
+      "suspended": false,
+      "deleted": false,
+      "vendorLinked": false,
+      "profileAndRole": "PASS",
+      "restore": "PASS",
+      "refresh": "PASS",
+      "visibleProfileCount": 20,
+      "profileIsolation": "NOT_ASSERTED_ADMIN_SCOPE",
+      "paymentWorkspace": "FAIL",
+      "workspaceError": "PGRST202",
+      "logout": "PASS"
+    }
+  ],
+  "businessWrites": false,
+  "adminAccountDiagnostics": [
+    {
+      "expectedRole": "customer",
+      "actualRole": "vendor",
+      "profileError": null,
+      "suspended": false,
+      "deleted": false,
+      "vendorStatus": "suspended",
+      "vendorArchived": false,
+      "vendorOwnerMatches": true
+    },
+    {
+      "expectedRole": "vendor",
+      "actualRole": "vendor",
+      "profileError": null,
+      "suspended": false,
+      "deleted": false,
+      "vendorStatus": "suspended",
+      "vendorArchived": false,
+      "vendorOwnerMatches": true
+    }
+  ]
+}

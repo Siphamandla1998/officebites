@@ -1,0 +1,32 @@
+{
+  "observedUtc": "2026-10-28T06:40:31.702Z",
+  "project": "gfzhdkitdyqftealgqfi",
+  "mobileWidth": 390,
+  "apiFailures": [
+    {
+      "path": "/rest/v1/rpc/get_order_assistance_options",
+      "status": 404
+    },
+    {
+      "path": "/rest/v1/rpc/get_delivery_settings",
+      "status": 404
+    },
+    {
+      "path": "/rest/v1/rpc/get_vendor_manual_methods",
+      "status": 404
+    },
+    {
+      "path": "/rest/v1/rpc/get_collection_options",
+      "status": 404
+    }
+  ],
+  "blockedWrites": 0,
+  "ordersCreated": false,
+  "vendorMenu": "PASS",
+  "menuToCart": "PASS",
+  "step": "checkout",
+  "cartToCheckout": "PASS",
+  "placeOrderDisabled": true,
+  "ordering": "FAIL",
+  "cartRetained": true
+}

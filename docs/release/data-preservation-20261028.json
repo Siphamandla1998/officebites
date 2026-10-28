@@ -1,0 +1,19 @@
+{
+  "observedDate": "2026-10-28",
+  "project": "gfzhdkitdyqftealgqfi",
+  "orders": 32,
+  "statuses": [
+    {
+      "count": 31,
+      "status": "pending_payment"
+    },
+    {
+      "count": 1,
+      "status": "preparing"
+    }
+  ],
+  "item_digest": "f48cc8df5fb710dd4ac3a83d11c473a1",
+  "order_digest": "bf3538a529fe7a6170a32db04b53664d",
+  "suborder_digest": "a5ed8815047b1cfe2887f60a939bca42",
+  "matchesBeforeTesting": true
+}

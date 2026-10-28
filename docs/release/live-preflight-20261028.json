@@ -1,0 +1,34 @@
+{
+  "observedDate": "2026-10-28",
+  "project": "gfzhdkitdyqftealgqfi",
+  "history": {
+    "count": 38,
+    "latest": "20261010101910"
+  },
+  "storage_owners": [
+    {
+      "owner": "supabase_storage_admin",
+      "table": "buckets"
+    },
+    {
+      "owner": "supabase_storage_admin",
+      "table": "objects"
+    }
+  ],
+  "security_functions": [
+    {
+      "proname": "guard_profile_privileged_fields",
+      "definition_md5": "389319aa4e0b30ada46bc315e97afbad"
+    },
+    {
+      "proname": "guard_vendor_privileged_fields",
+      "definition_md5": "405aaa6295945413607a5413a8d965a3"
+    },
+    {
+      "proname": "handle_new_user",
+      "definition_md5": "086649c1a17a57fbcfde261ea7bdba6a"
+    }
+  ],
+  "backupRestoreVerified": false,
+  "productionWrites": false
+}
