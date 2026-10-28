@@ -8,7 +8,7 @@
     "checks/pilot/cash-custody-candidate.sql"
   ],
   "scope": "Staging schema and RPC foundation only",
-  "status": "Prepared for staging application; not approved for production",
+  "status": "Bundle prepared in branch; not installed on staging and not approved for production",
   "runtimeGatesOpen": false,
   "existingOrdersExpected": 15,
   "existingVendorPaymentProfilesExpected": 0,
@@ -25,5 +25,7 @@
     "Uses the locally tested booking, atomic-collection, assisted-cash and cash-custody candidates with fixture-only guards removed.",
     "Adjusts the collection activation trigger so ordinary manual EFT may be configured while the collection pilot is disabled; collection EFT remains time-gated when the pilot is enabled.",
     "Leaves all feature flags closed. This artifact is not approved for production."
-  ]
+  ],
+  "stagingInstallStatus": "NOT_APPLIED",
+  "stagingInstallNote": "The connected migration tool blocked the combined DDL before execution. Read-only follow-up confirmed no pilot tables or assisted/collection RPCs were created."
 }
