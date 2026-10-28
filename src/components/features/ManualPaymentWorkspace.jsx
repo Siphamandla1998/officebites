@@ -50,10 +50,11 @@ export default function ManualPaymentWorkspace({ admin = false, profiles = false
     {profiles && !admin && <VendorPaymentProfileForm vendorId={user?.vendorId} onSaved={() => result.refetch({ throwOnError: true })} />}
     {message && <p role="status">{message}</p>}
     {result.loading && <p>Loading payment workspace…</p>}
+    {admin && <AdminPaymentProfileForm key={`banking:${user?.id}`} userId={user?.id} fields={fields} busy={busy} submit={(vendor, destination, eft, payshap) => run(() => service.submit(vendor, destination, eft, payshap))} />}
+    {admin && !data && result.error && <p role="alert">The admin payment workspace could not load. Banking submissions can be attempted above, but existing profiles and approval actions cannot be safely verified until this read succeeds. Use Retry before approving or resubmitting anything.</p>}
     {data && <>
       {admin && data.settings && <ManualSettingsForm key={user?.id} settings={data.settings} loading={result.loading} loadError={result.error} reload={result.refetch} onBusyChange={setBusy} />}
-      {admin && <AdminPaymentProfileForm key={`banking:${user?.id}`} userId={user?.id} fields={fields} busy={busy} submit={(vendor, destination, eft, payshap) => run(() => service.submit(vendor, destination, eft, payshap))} />}
-      {(profiles || admin) && <details><summary className="font-semibold cursor-pointer">Payment profile versions ({data.profiles.length})</summary>
+      {(profiles || admin) && <details><summary className="font-semibold cursor-pointer">Payment profile versions ({(data.profiles || []).length})</summary>
         {data.profiles.map(p => <div className="border-t py-3 flex flex-col gap-2" key={p.id}>
           <p>Vendor {p.vendor_id} · Version {p.id} · {p.approved_at ? 'Approved' : 'Pending verification'} · {new Date(p.created_at).toLocaleString()}</p>
           <dl>{Object.entries(fields).map(([key,label]) => <div key={key}><dt className="text-xs">{label}</dt><dd className="break-all">{p.destination[key] || '—'}</dd></div>)}</dl>
