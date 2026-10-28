@@ -82,7 +82,24 @@ export default function ManualSettingsForm({ settings, loading, loadError, reloa
       <label><input type="checkbox" name="payshap" checked={state.draft.payshap} onChange={e => edit('payshap', e.target.checked)} /> PayShap available for approved profiles</label>
       <label>Payment deadline (minutes)<input className="input" type="number" min="5" max="60" required value={state.draft.minutes} onChange={e => edit('minutes', e.target.value)} /></label>
       <label>Admin review threshold (ZAR)<input className="input" type="number" min="1" step="0.01" required value={state.draft.threshold} onChange={e => edit('threshold', e.target.value)} /></label>
-      <label>Change reason<input className="input" required minLength={10} maxLength={500} value={reason} onChange={e => setReason(e.target.value)} /></label>
+      <label>Change reason<input className="input" required minLength={10} maxLength={500} placeholder="e.g. Enable EFT for verified vendor profiles" value={reason} onChange={e => setReason(e.target.value)} /></label>
+      <p className="text-sm" role="status">
+        {reason.trim().length < 10
+          ? `Enter a reason of at least 10 characters (${reason.trim().length}/10).`
+          : !state.confirmed.revision
+            ? 'Reload settings: the server revision is missing.'
+            : !dirty
+              ? 'Change a setting before saving.'
+              : uncertain
+                ? 'Reload settings to confirm the outcome of the previous save.'
+                : state.conflict
+                  ? 'Settings changed on the server. Review the latest settings before saving.'
+                  : loadError
+                    ? 'Settings could not be confirmed. Reload before saving.'
+                    : !online
+                      ? 'Reconnect to the internet before saving.'
+                      : 'Ready to save. The change will be recorded in the audit history.'}
+      </p>
       <button className="btn-outline" type="submit" disabled={!online || !state.confirmed.revision || !dirty || uncertain || state.conflict || !!loadError || reason.trim().length < 10}>Save manual settings</button>
       {state.conflict && <button className="btn-outline" type="button" onClick={() => { setState(old => ({ ...old, draft: old.confirmed, conflict: false })); setReason(''); }}>Discard draft and use latest settings</button>}
     </fieldset>
