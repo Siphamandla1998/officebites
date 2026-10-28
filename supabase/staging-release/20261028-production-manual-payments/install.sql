@@ -1,4 +1,4 @@
--- Local candidate. Promote through the documented staging procedure only.
+-- Reviewed production manual-payment foundation. Fail-closed, additive data migration.
 BEGIN;
 SET LOCAL lock_timeout='10s';
 SET LOCAL statement_timeout='90s';
