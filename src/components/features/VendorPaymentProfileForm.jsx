@@ -88,8 +88,9 @@ export default function VendorPaymentProfileForm({ vendorId, onSaved }) {
               inputMode={numberField || branchField ? 'numeric' : undefined}
               autoComplete="off"
               maxLength={key === 'accountNumber' ? 20 : key === 'branchCode' ? 6 : 150}
-              minLength={numberField ? 6 : branchField ? 6 : undefined}
+              minLength={numberField ? 6 : branchField ? 6 : key === 'accountType' ? 2 : undefined}
               pattern={numberField ? '[0-9]{6,20}' : branchField ? '[0-9]{6}' : undefined}
+              title={numberField ? 'Enter 6–20 digits without spaces or hyphens.' : branchField ? 'Enter the six-digit branch code without spaces.' : key === 'accountType' ? 'Enter an account type at least 2 characters long.' : undefined}
               value={destination[key]}
               onChange={update(key)}
               required={required}
