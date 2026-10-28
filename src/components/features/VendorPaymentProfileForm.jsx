@@ -25,12 +25,13 @@ export default function VendorPaymentProfileForm({ vendorId, onSaved }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
   const [message, setMessage] = useState('');
+  const [submittedUnconfirmed, setSubmittedUnconfirmed] = useState(false);
 
   const update = key => event => setDestination(current => ({ ...current, [key]: event.target.value }));
 
   async function submit(event) {
     event.preventDefault();
-    if (busy || !vendorId) return;
+    if (busy || submittedUnconfirmed || !vendorId) return;
     if (!eft && !payshap) {
       setError(new Error('Select at least one receiving method.'));
       return;
@@ -41,15 +42,19 @@ export default function VendorPaymentProfileForm({ vendorId, onSaved }) {
     setMessage('');
     try {
       await manualPaymentService.submit(vendorId, destination, eft, payshap);
-      setDestination(emptyDestination());
-      setEft(true);
-      setPayshap(false);
-      setMessage('Banking details saved as a pending version. An independent administrator must verify them before EFT instructions can be used.');
       try {
         await onSaved?.();
       } catch {
-        setMessage('Banking details were submitted. The profile list could not refresh, so reload this page to confirm the pending version.');
+        // The RPC may have committed even if the follow-up workspace read failed.
+        // Keep the entered values visible and prevent a duplicate version submission.
+        setSubmittedUnconfirmed(true);
+        setMessage('The server accepted the submission, but OfficeBites could not reload the profile list to verify it. Do not submit these details again yet. Refresh the page or ask an administrator to check the pending profile.');
+        return;
       }
+      setDestination(emptyDestination());
+      setEft(true);
+      setPayshap(false);
+      setMessage('Banking details saved and reloaded as a pending version. An independent administrator must verify them before EFT instructions can be used.');
     } catch (failure) {
       if (failure?.code === 'PGRST202' || /could not find the function|schema cache/i.test(failure?.message || '')) {
         setError(new Error('Secure banking-profile saving is not installed in this environment yet. Your details were not saved; contact the OfficeBites administrator to finish the database setup.'));
@@ -69,7 +74,7 @@ export default function VendorPaymentProfileForm({ vendorId, onSaved }) {
     {error && <p role="alert" className="text-sm">{error.message}</p>}
     {message && <p role="status" className="text-sm">{message}</p>}
     <form className="flex flex-col gap-3" onSubmit={submit}>
-      <fieldset disabled={busy || !vendorId} className="flex flex-col gap-3">
+      <fieldset disabled={busy || submittedUnconfirmed || !vendorId} className="flex flex-col gap-3">
         {Object.entries(fields).map(([key, label]) => {
           const isEftField = ['accountNumber', 'accountType', 'branchCode'].includes(key);
           const required = ['accountHolder', 'bank'].includes(key) || (eft && isEftField) || (payshap && key === 'shapId');
@@ -99,8 +104,8 @@ export default function VendorPaymentProfileForm({ vendorId, onSaved }) {
           <input type="checkbox" checked={payshap} onChange={event => setPayshap(event.target.checked)} />
           Registered ShapID supports receiving PayShap
         </label>
-        <button type="submit" className="btn-outline" disabled={busy || !vendorId || (!eft && !payshap)}>
-          {busy ? 'Saving banking details…' : 'Save banking details for review'}
+        <button type="submit" className="btn-outline" disabled={busy || submittedUnconfirmed || !vendorId || (!eft && !payshap)}>
+          {busy ? 'Saving banking details…' : submittedUnconfirmed ? 'Submission awaiting verification' : 'Save banking details for review'}
         </button>
       </fieldset>
     </form>
