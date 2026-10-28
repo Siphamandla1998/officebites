@@ -1,0 +1,29 @@
+{
+  "project": "eyhmarmekioovcjibcbr",
+  "migrationName": "officebites_staging_assisted_collection_rpcs_20261028",
+  "sourceFiles": [
+    "checks/pilot/booking-candidate.sql",
+    "checks/pilot/atomic-collection-candidate.sql",
+    "checks/pilot/assisted-cash-candidate.sql",
+    "checks/pilot/cash-custody-candidate.sql"
+  ],
+  "scope": "Staging schema and RPC foundation only",
+  "status": "Prepared for staging application; not approved for production",
+  "runtimeGatesOpen": false,
+  "existingOrdersExpected": 15,
+  "existingVendorPaymentProfilesExpected": 0,
+  "existingManualPaymentsExpected": 0,
+  "existingManualPaymentEventsExpected": 18,
+  "existingVendorLegalAcceptancesExpected": 0,
+  "providerEnabledFlagsExpected": {
+    "manual_eft": false,
+    "manual_payshap": false,
+    "payfast": false,
+    "ozow": false
+  },
+  "notes": [
+    "Uses the locally tested booking, atomic-collection, assisted-cash and cash-custody candidates with fixture-only guards removed.",
+    "Adjusts the collection activation trigger so ordinary manual EFT may be configured while the collection pilot is disabled; collection EFT remains time-gated when the pilot is enabled.",
+    "Leaves all feature flags closed. This artifact is not approved for production."
+  ]
+}
