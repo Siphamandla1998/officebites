@@ -334,6 +334,7 @@ export default function AppRoutes() {
           />
 
           <Route path="legal" element={<AdminLegalDocuments />} />
+          <Route path="commercial" element={<AdminLegalDocuments />} />
         </Route>
 
         {/* Help and support */}
