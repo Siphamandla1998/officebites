@@ -61,6 +61,9 @@ import {
   Terms,
   Privacy,
   RefundPolicy,
+  VendorAgreement,
+  VendorFees,
+  AdminLegalDocuments,
   BusinessHours,
   NotFound,
 } from "./routeComponents";
@@ -329,10 +332,18 @@ export default function AppRoutes() {
             path="reports"
             element={<AdminReports />}
           />
+
+          <Route path="legal" element={<AdminLegalDocuments />} />
         </Route>
 
         {/* Help and support */}
         <Route element={<PublicLayout />}>
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/refund-policy" element={<RefundPolicy />} />
+          <Route path="/vendor-agreement" element={<VendorAgreement />} />
+          <Route path="/vendor-fees" element={<VendorFees />} />
+
           <Route
             path="/help"
             element={<HelpHome />}
