@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
-import { FiGrid, FiUsers, FiShoppingBag, FiBarChart2, FiFileText, FiMenu, FiCreditCard, FiMessageCircle, FiHeadphones } from "react-icons/fi";
+import { FiGrid, FiUsers, FiShoppingBag, FiBarChart2, FiFileText, FiMenu, FiCreditCard, FiMessageCircle, FiHeadphones, FiBriefcase } from "react-icons/fi";
 import Sidebar from "../components/layout/Sidebar";
 
 const TABS = [
@@ -12,6 +12,7 @@ const TABS = [
   { to: "/admin/support", icon: FiHeadphones, label: "Support" },
   { to: "/admin/analytics", icon: FiBarChart2, label: "Analytics" },
   { to: "/admin/reports", icon: FiFileText, label: "Reports" },
+  { to: "/admin/commercial", icon: FiBriefcase, label: "Legal & Commercial" },
 ];
 
 export default function AdminLayout() {
