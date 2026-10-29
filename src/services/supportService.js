@@ -428,6 +428,30 @@ async function createTicket({ name, email, contact, subject, category, message,
   return mapTicket(data);
 }
 
+async function createGuestOrderTicket({ name, email, contact, ticketNumber, orderId, subject, category, message }) {
+  const cleanSubject = String(subject || "").trim();
+  const cleanMessage = String(message || "").trim();
+  if (!orderId) throw new Error("For guest support, open Get Help from your order so we can verify it securely.");
+  if (!String(ticketNumber || "").trim() || !String(contact || "").trim()) {
+    throw new Error("Enter the order code and the phone number used at checkout.");
+  }
+  if (!cleanSubject || cleanSubject.length > 200) throw new Error("Subject must be between 1 and 200 characters.");
+  if (cleanMessage.length < 10 || cleanMessage.length > 5000) throw new Error("Message must be between 10 and 5000 characters.");
+  if (attachment) {}
+  const { data, error } = await supabase.rpc("create_guest_order_support_ticket", {
+    p_order_id: orderId,
+    p_ticket_number: String(ticketNumber).trim().toUpperCase(),
+    p_guest_contact: String(contact).trim(),
+    p_subject: cleanSubject,
+    p_category: normalizeCategory(category),
+    p_body: cleanMessage,
+    p_requester_name: String(name || "").trim() || null,
+    p_requester_email: String(email || "").trim() || null,
+  });
+  if (error) throw new Error(error.message || "Could not verify this order or create the support request.");
+  return mapTicket(data);
+}
+
 export const supportService = {
   // ---------------------------------------------------------------------------
   // Knowledge base
@@ -549,12 +573,18 @@ export const supportService = {
     name,
     email,
     contact,
+    ticketNumber,
     subject,
     category,
     message,
     attachment,
     orderId = null,
   }) {
+    const user = await getCurrentUser({ allowGuest: true });
+    if (!user) {
+      if (attachment) throw new Error("Attachments are unavailable for guest support requests. Please submit the request without a file.");
+      return createGuestOrderTicket({ name, email, contact, ticketNumber, orderId, subject, category, message });
+    }
     return createTicket({
       name,
       email,
@@ -564,8 +594,7 @@ export const supportService = {
       message,
       orderId,
       attachment,
-      priority:
-        "normal",
+      priority: "normal",
     });
   },
 
