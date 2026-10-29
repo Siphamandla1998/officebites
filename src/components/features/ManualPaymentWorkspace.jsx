@@ -74,9 +74,13 @@ export default function ManualPaymentWorkspace({ admin = false, profiles = false
           <p className="font-semibold">{p.reference} · {formatCurrency(p.amount)} · {p.method === 'manual_payshap' ? 'PayShap' : 'EFT'}</p>
           <p>{p.state.replaceAll('_',' ')} · Order {p.orderStatus} · Deadline {new Date(p.deadline).toLocaleString()} · Reported {p.reportedAt ? new Date(p.reportedAt).toLocaleString() : 'not yet'}</p>
           {p.reviewRequired && <p>Additional admin review required.</p>}
-          {p.state !== 'paid' && <form className="flex flex-col gap-2" onSubmit={event => { event.preventDefault();const f = new FormData(event.currentTarget);void run(() => service.verify(p.orderId,f.get('amount'),String(f.get('reference')),f.has('suspicious'))); }}>
+          {p.state !== 'paid' && <form className="flex flex-col gap-2" onSubmit={event => { event.preventDefault();const f = new FormData(event.currentTarget);void run(() => service.verify(p.orderId,f.get('amount'),String(f.get('reference')),f.has('suspicious'),p.method,String(f.get('evidence') || ''),f.has('independentlyVerified'))); }}>
             <label>Amount independently received (ZAR)<input className="input" name="amount" type="number" min="0.01" step="0.01" required /></label>
             <label>Bank transaction reference<input className="input" name="reference" minLength={3} maxLength={200} required /></label>
+            {p.method === 'manual_eft' && <>
+              <label>Independent bank verification evidence<textarea className="input" name="evidence" minLength={15} maxLength={1000} required placeholder="Describe how you checked the actual incoming transaction in the bank account." /></label>
+              <label><input type="checkbox" name="independentlyVerified" required /> I independently checked the bank account and verified this incoming transaction.</label>
+            </>}
             <label><input type="checkbox" name="suspicious" /> Suspicious or unmatched payment</label>
             <button className="btn-primary" disabled={busy}>Confirm bank receipt / submit for review</button>
           </form>}
