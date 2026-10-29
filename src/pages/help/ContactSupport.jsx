@@ -38,6 +38,8 @@ export default function ContactSupport() {
     const next = {};
     if (!form.name.trim()) next.name = "Name is required";
     if (!form.email.trim() || !form.email.includes("@")) next.email = "Enter a valid email";
+    if (guestOrderSupport && !form.ticketNumber.trim()) next.ticketNumber = "Order code is required";
+    if (guestOrderSupport && !form.contact.trim()) next.contact = "Checkout phone number is required";
     if (!form.subject.trim()) next.subject = "Subject is required";
     if (!form.message.trim() || form.message.trim().length < 10)
       next.message = "Please describe your issue (at least 10 characters)";
