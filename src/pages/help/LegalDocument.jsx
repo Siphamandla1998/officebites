@@ -13,7 +13,7 @@ const titles = {
 
 export default function LegalDocument({ kind: supplied }) {
   const { pathname } = useLocation();
-  const kind = supplied || pathname.replace(/^\\//, '');
+  const kind = supplied || pathname.slice(1);
   const { data, loading, error, refetch } = useAsync(() => commercialService.portal(), [], null);
   const document = data?.documents?.[kind];
 
