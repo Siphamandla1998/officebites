@@ -35,7 +35,7 @@ export const manualPaymentService = {
   workspace: (testOnly = false) => rpc('manual_payment_workspace', { p_test_only: testOnly }),
   submit: (vendorId, destination, eft, payshap) => rpc('submit_vendor_payment_profile', { p_vendor_id: vendorId, p_destination: destination, p_eft: eft, p_payshap: payshap }),
   approve: (id, evidence) => rpc('approve_vendor_payment_profile', { p_profile_id: id, p_evidence: evidence }),
-  verify: (id, amount, reference, suspicious) => rpc('verify_manual_payment', { p_order_id: id, p_amount: Number(amount), p_bank_reference: reference, p_suspicious: suspicious }),
+  verify: (id, amount, reference, suspicious, method, evidence, independentlyVerified) => method === 'manual_eft' ? rpc('record_eft_receipt_checked', { p_order: id, p_amount: Number(amount), p_reference: reference, p_evidence: evidence, p_independently_verified: independentlyVerified, p_suspicious: suspicious }) : rpc('verify_manual_payment', { p_order_id: id, p_amount: Number(amount), p_bank_reference: reference, p_suspicious: suspicious }),
   flag: (id, reason) => rpc('flag_manual_payment', { p_order_id: id, p_reason: reason }),
   resolveDispute: (id, evidence) => rpc('resolve_manual_payment_dispute', { p_order_id: id, p_evidence: evidence }),
   cancelRefunded: (id, reason) => rpc('admin_cancel_refunded_manual_order', { p_order_id: id, p_reason: reason }),
