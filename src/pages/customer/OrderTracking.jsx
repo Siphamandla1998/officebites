@@ -221,7 +221,7 @@ export default function OrderTracking() {
           refreshing={refreshing}
           refreshError={refreshError}
         />
-        <Link to="/help/contact" className="btn-outline min-h-11">Get Help with This Order</Link>
+        <Link to={`/help/contact?orderId=${encodeURIComponent(orderId)}`} className="btn-outline min-h-11">Get Help with This Order</Link>
         <p className="text-xs text-ink-muted">Delivery date: {formatDate(order.deliveryDate)}</p>
         {order.subOrders.map((so) => (
           <SubOrderTimeline key={so.vendorId} subOrder={so} />
