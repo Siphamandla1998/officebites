@@ -437,7 +437,6 @@ async function createGuestOrderTicket({ name, email, contact, ticketNumber, orde
   }
   if (!cleanSubject || cleanSubject.length > 200) throw new Error("Subject must be between 1 and 200 characters.");
   if (cleanMessage.length < 10 || cleanMessage.length > 5000) throw new Error("Message must be between 10 and 5000 characters.");
-  if (attachment) {}
   const { data, error } = await supabase.rpc("create_guest_order_support_ticket", {
     p_order_id: orderId,
     p_ticket_number: String(ticketNumber).trim().toUpperCase(),
