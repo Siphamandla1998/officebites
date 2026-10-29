@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import Navbar from "../../components/layout/Navbar";
 import TextField from "../../components/forms/TextField";
 import TextAreaField from "../../components/forms/TextAreaField";
@@ -13,10 +14,15 @@ import { useAuth } from "../../context/AuthContext";
 
 export default function ContactSupport() {
   const { user } = useAuth();
+  const [searchParams] = useSearchParams();
+  const orderId = searchParams.get("orderId");
+  const guestOrderSupport = !user && !!orderId;
   const { showToast } = useToast();
   const [form, setForm] = useState({
     name: user?.name || "",
     email: user?.email || "",
+    contact: "",
+    ticketNumber: "",
     subject: "",
     category: FAQ_CATEGORIES[0],
     message: "",
@@ -44,7 +50,7 @@ export default function ContactSupport() {
     if (!validate()) return;
     setSubmitting(true);
     try {
-      const created = await supportService.submitContactForm({ ...form, attachment });
+      const created = await supportService.submitContactForm({ ...form, attachment: guestOrderSupport ? null : attachment, orderId });
       setTicket(created);
       showToast("Support ticket created", { type: "success" });
     } catch (err) {
@@ -60,8 +66,19 @@ export default function ContactSupport() {
       <div className="ob-container pt-4">
         {ticket ? (
           <TicketSubmittedPanel ticket={ticket} />
+        ) : !user && !orderId ? (
+          <div className="card p-4 flex flex-col gap-3">
+            <p className="font-semibold">Need help with a guest order?</p>
+            <p className="text-sm text-ink-muted">Open your order and choose “Get Help with This Order.” For security, we verify the order code and checkout phone number before creating a guest support ticket. General support tickets require signing in.</p>
+            <Link to="/track" className="btn-primary text-center">Find my order</Link>
+          </div>
         ) : (
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            {guestOrderSupport && <div className="rounded-xl bg-nude-50 p-3 text-sm text-ink-muted">To protect your order, enter the order code and the phone number used at checkout. Do not include bank passwords, PINs or one-time passwords.</div>}
+            {guestOrderSupport && <>
+              <TextField label="Order code" value={form.ticketNumber} onChange={update("ticketNumber")} error={errors.ticketNumber} />
+              <TextField label="Phone number used at checkout" value={form.contact} onChange={update("contact")} error={errors.contact} />
+            </>}
             <TextField label="Name" value={form.name} onChange={update("name")} error={errors.name} />
             <TextField label="Email" type="email" value={form.email} onChange={update("email")} error={errors.email} />
             <TextField label="Subject" value={form.subject} onChange={update("subject")} error={errors.subject} />
@@ -78,7 +95,7 @@ export default function ContactSupport() {
               error={errors.message}
               rows={5}
             />
-            <FileUpload label="Attachment (optional)" onFileSelect={setAttachment} />
+            {!guestOrderSupport && <FileUpload label="Attachment (optional)" onFileSelect={setAttachment} />}
             <button type="submit" className="btn-primary w-full" disabled={submitting}>
               {submitting ? <Spinner size={16} className="!border-paper/30 !border-t-paper" /> : "Submit request"}
             </button>
