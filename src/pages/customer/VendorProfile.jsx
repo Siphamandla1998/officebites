@@ -26,10 +26,13 @@ import { useToast } from "../../context/ToastContext";
 import { useAuth } from "../../context/AuthContext";
 
 import { formatRelativeTime } from "../../utils/formatters";
+import { deliveryWeekday } from "../../utils/catalogueFilters";
 import { useDeliveryDate } from "../../hooks/useDeliveryDate";
 import RequestError from "../../components/ui/RequestError";
 
 const TABS = ["Menu", "Reviews", "About"];
+const WEEKDAY_NAMES = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+const SHORT_WEEKDAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 export default function VendorProfile() {
   const deliveryDate = useDeliveryDate();
@@ -58,11 +61,8 @@ export default function VendorProfile() {
     data: menu = [],
     loading: menuLoading, error: menuError, refetch: retryMenu,
   } = useAsync(
-    () =>
-      vendorService.getVendorMenu(id, {
-        forDate: deliveryDate,
-      }),
-    [id, deliveryDate]
+    () => vendorService.getVendorMenu(id),
+    [id]
   );
 
   const {
@@ -387,14 +387,32 @@ export default function VendorProfile() {
                 </p>
               </div>
             ) : (
-              menu.map((meal) => (
-                <FoodCard
-                  key={meal.id}
-                  meal={meal}
-                  onAdd={handleAdd}
-                  layout="row"
-                />
-              ))
+              menu.map((meal) => {
+                const selectedWeekday = deliveryWeekday(deliveryDate);
+                const scheduled = !meal.availableDays || meal.availableDays.includes(selectedWeekday);
+                const canOrder = Boolean(meal.available) && scheduled;
+                const scheduleLabel = meal.availableDays
+                  ? `Vendor schedule: ${meal.availableDays.slice().sort((a, b) => a - b).map((day) => SHORT_WEEKDAY_NAMES[day]).join(", ")}`
+                  : "Vendor schedule: Every day";
+                const selectedDate = new Date(`${deliveryDate}T12:00:00+02:00`);
+                const selectedDayName = WEEKDAY_NAMES[selectedWeekday];
+                const availabilityNote = !meal.available
+                  ? "Temporarily unavailable — the vendor has paused this meal."
+                  : !scheduled
+                    ? `Not available on ${selectedDayName}. Check the vendor's schedule.`
+                    : "";
+                return (
+                  <FoodCard
+                    key={meal.id}
+                    meal={meal}
+                    onAdd={handleAdd}
+                    layout="row"
+                    canOrder={canOrder}
+                    availabilityNote={availabilityNote}
+                    scheduleLabel={scheduleLabel}
+                  />
+                );
+              })
             )}
           </div>
         )}
