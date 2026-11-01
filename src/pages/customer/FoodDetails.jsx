@@ -9,9 +9,16 @@ import { useCart } from "../../context/CartContext";
 import { useToast } from "../../context/ToastContext";
 import { formatCurrency } from "../../utils/formatters";
 import { useFavourites } from "../../context/FavouriteContext";
+import { useDeliveryDate } from "../../hooks/useDeliveryDate";
+import { deliveryWeekday } from "../../utils/catalogueFilters";
+import { sastDateKey } from "../../utils/reportingDates";
+
+const WEEKDAY_NAMES = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+const SHORT_WEEKDAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 export default function FoodDetails() {
   const { id } = useParams();
+  const deliveryDate = useDeliveryDate();
   const [qty, setQty] = useState(1);
   const { ids, toggleFavourite } = useFavourites();
   const fav = ids.includes(id);
@@ -33,7 +40,16 @@ export default function FoodDetails() {
     return <div><Navbar showBack /><p role="alert" className="ob-container pt-4">This meal is unavailable. Please browse the menu again.</p></div>;
   }
 
+  const selectedWeekday = deliveryWeekday(deliveryDate);
+  const scheduled = !meal.availableDays || meal.availableDays.includes(selectedWeekday);
+  const canOrder = Boolean(meal.available) && scheduled;
+  const scheduleLabel = meal.availableDays
+    ? meal.availableDays.slice().sort((a, b) => a - b).map((day) => SHORT_WEEKDAY_NAMES[day]).join(", ")
+    : "Every day";
+  const selectedDayName = deliveryDate === sastDateKey() ? "today" : WEEKDAY_NAMES[selectedWeekday];
+
   const handleAdd = () => {
+    if (!canOrder) return;
     addItem(meal, qty);
 
     showToast(`Added ${qty} × ${meal.name} to cart`, {
@@ -77,6 +93,20 @@ export default function FoodDetails() {
 
         <p className="text-sm text-ink-soft leading-relaxed mt-4">{meal.description}</p>
 
+        <div className="rounded-xl border border-line bg-paper-raised p-3 mt-4">
+          <p className="text-xs font-semibold text-ink">Vendor schedule: {scheduleLabel}</p>
+          {!canOrder && (
+            <div className="mt-1.5">
+              <p className="text-xs text-ink-muted">
+                {!meal.available
+                  ? "This meal is temporarily unavailable because the vendor has paused it."
+                  : `This meal is not available ${selectedDayName}. Please check the vendor's scheduled days.`}
+              </p>
+              <Link to={`/vendors/${meal.vendorId}`} className="inline-block text-xs font-semibold text-nude-700 mt-2">View vendor menu and updates</Link>
+            </div>
+          )}
+        </div>
+
         <div className="flex items-center gap-4 mt-6">
           <span className="text-sm font-medium text-ink-soft">Quantity</span>
           <div className="flex items-center gap-3">
@@ -92,8 +122,8 @@ export default function FoodDetails() {
       </div>
 
       <div className="fixed bottom-0 left-0 right-0 mx-auto w-full max-w-app bg-paper-raised border-t border-line px-4 pt-4 pb-[calc(1rem+env(safe-area-inset-bottom))] shadow-nav">
-        <button onClick={handleAdd} className="btn-primary w-full">
-          Add to cart · {formatCurrency(meal.price * qty)}
+        <button onClick={handleAdd} disabled={!canOrder} className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed">
+          {canOrder ? `Add to cart · ${formatCurrency(meal.price * qty)}` : "Not available for this date"}
         </button>
       </div>
     </div>
