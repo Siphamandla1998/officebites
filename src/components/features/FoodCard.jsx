@@ -12,6 +12,9 @@ export default function FoodCard({
   isFavourite,
   onToggleFavourite,
   layout = "grid",
+  canOrder = true,
+  availabilityNote = "",
+  scheduleLabel = "",
 }) {
   const favourites = useFavourites();
   isFavourite = isFavourite ?? favourites.ids.includes(meal?.id);
@@ -40,6 +43,8 @@ export default function FoodCard({
             <p className="text-xs text-ink-muted">
               {meal.vendorName}
             </p>
+            {availabilityNote && <p className="text-[11px] text-ink-muted mt-1">{availabilityNote}</p>}
+            {scheduleLabel && <p className="text-[11px] text-ink-muted mt-0.5">{scheduleLabel}</p>}
           </Link>
 
 
@@ -52,8 +57,9 @@ export default function FoodCard({
 
             <button
               onClick={() => onAdd?.(meal)}
-              className="btn-icon !h-8 !w-8 !bg-ink !text-paper !border-ink"
-              aria-label="Add to cart"
+              disabled={!canOrder}
+              className="btn-icon !h-8 !w-8 !bg-ink !text-paper !border-ink disabled:opacity-35 disabled:cursor-not-allowed"
+              aria-label={canOrder ? "Add to cart" : "Meal unavailable for selected date"}
             >
               <FiPlus size={15} />
             </button>
@@ -124,6 +130,8 @@ export default function FoodCard({
           <p className="text-xs text-ink-muted mt-0.5">
             {meal.vendorName}
           </p>
+          {availabilityNote && <p className="text-[11px] text-ink-muted mt-1">{availabilityNote}</p>}
+          {scheduleLabel && <p className="text-[11px] text-ink-muted mt-0.5">{scheduleLabel}</p>}
 
         </Link>
 
@@ -144,8 +152,9 @@ export default function FoodCard({
 
           <button
             onClick={() => onAdd?.(meal)}
-            className="btn-icon !h-8 !w-8 !bg-ink !text-paper !border-ink"
-            aria-label="Add to cart"
+            disabled={!canOrder}
+            className="btn-icon !h-8 !w-8 !bg-ink !text-paper !border-ink disabled:opacity-35 disabled:cursor-not-allowed"
+            aria-label={canOrder ? "Add to cart" : "Meal unavailable for selected date"}
           >
             <FiPlus size={15} />
           </button>
