@@ -27,6 +27,7 @@ import { useAuth } from "../../context/AuthContext";
 
 import { formatRelativeTime } from "../../utils/formatters";
 import { deliveryWeekday } from "../../utils/catalogueFilters";
+import { sastDateKey } from "../../utils/reportingDates";
 import { useDeliveryDate } from "../../hooks/useDeliveryDate";
 import RequestError from "../../components/ui/RequestError";
 
@@ -394,8 +395,7 @@ export default function VendorProfile() {
                 const scheduleLabel = meal.availableDays
                   ? `Vendor schedule: ${meal.availableDays.slice().sort((a, b) => a - b).map((day) => SHORT_WEEKDAY_NAMES[day]).join(", ")}`
                   : "Vendor schedule: Every day";
-                const selectedDate = new Date(`${deliveryDate}T12:00:00+02:00`);
-                const selectedDayName = WEEKDAY_NAMES[selectedWeekday];
+                const selectedDayName = deliveryDate === sastDateKey() ? "today" : WEEKDAY_NAMES[selectedWeekday];
                 const availabilityNote = !meal.available
                   ? "Temporarily unavailable — the vendor has paused this meal."
                   : !scheduled
